@@ -6,7 +6,7 @@ let tempContainerCounter = 0;
 let DEBUG = false;
 const debug = function() {
   if (!DEBUG) {
-    //return;
+    return;
   }
   console.log(...arguments);
 }
