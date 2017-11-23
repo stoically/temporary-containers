@@ -1,0 +1,31 @@
+{
+
+  "description": "Open Tabs automatically in Temporary Containers",
+  "manifest_version": 2,
+  "name": "Temporary Containers",
+  "version": "0.1",
+  "homepage_url": "https://github.com/stoically/firefox-add-on-temporary-containers",
+  "icons": {
+    "48": "icons/tmpcontainer-48.png"
+  },
+
+  "permissions": [
+    "<all_urls>",
+    "contextualIdentities",
+    "cookies",
+    "tabs",
+    "webRequestBlocking",
+    "webRequest"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["tmpcontainer.js"]
+    }
+  ],
+
+  "background": {
+    "scripts": ["background.js"]
+  }
+}
