@@ -1,4 +1,4 @@
-# Temporary Containers
+# Temporary Containers Firefox Add-on
 
 Automatically open Tabs in new Temporary Containers when:
 * Pressing the Ctrl+T Shortcut
