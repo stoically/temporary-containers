@@ -13,15 +13,16 @@ Doesn't open Tabs in new Temporary Containers when:
 * Clicking "New Tab" in the RightClick ContextMenu on a Link on a Website
 * Pressing Shift+LeftMouseClick on a Link on a Website
 
+
 ## Notes
 
-There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think
-that this Extension enhances privacy by providing Temporary/Throw-away Containers whenever possible, while not breaking
-navigation (or e.g. OAuth redirects) on a given Website as long as the user just LeftMouseClicks (or chooses on of the other ways that don't open a new Temporary Container).
+There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think that this Extension enhances privacy by providing Temporary/Throw-away/Disposable Containers whenever possible, while not breaking navigation (or e.g. OAuth redirects) on a given Website as long as the user just LeftMouseClicks (or chooses on of the other ways that don't open a new Temporary Container).
+
+If you have any Suggestions, Feedback or Bugreports please make sure to leave me an Issue. Preferences to configure some of the Add-ons features coming soon.
 
 Works together with [Multi-Account Containers](https://github.com/mozilla/multi-account-containers).
 
-The automatically created Containers get removed after the Last Tab in that Container closes.
+The automatically created Temporary Containers get removed after the Last Tab in a given Temporary Container closes.
 
 
 ## License
