@@ -1,7 +1,5 @@
 # Temporary Containers
 
-**Early Alpha Version.**
-
 Automatically open Tabs in new Temporary Containers when:
 * Pressing the Ctrl+T Shortcut
 * Clicking the "New Tab" Symbol (+)
@@ -18,7 +16,14 @@ Doesn't open Tabs in new Temporary Containers when:
 ## Notes
 
 There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think
-that this Extension does a moderate Job to enhance privacy by providing Temporary/Throwaway Containers whenever possible while don't breaking
-navigation (or e.g. OAuth redirects) on a given Website as long as the user just LeftMouse clicks.
+that this Extension enhances privacy by providing Temporary/Throw-away Containers whenever possible, while not breaking
+navigation (or e.g. OAuth redirects) on a given Website as long as the user just LeftMouseClicks (or chooses on of the other ways that don't open a new Temporary Container).
 
 Works together with [Multi-Account Containers](https://github.com/mozilla/multi-account-containers).
+
+The automatically created Containers get removed after the Last Tab in that Container closes.
+
+
+## License
+
+MIT
