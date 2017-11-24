@@ -1,3 +1,4 @@
+const tempContainers = {};
 const tabContainerMap = {};
 let tempContainerCounter = 0;
 
@@ -16,6 +17,54 @@ browser.runtime.onInstalled.addListener((details) => {
 });
 
 
+const tryToRemoveContainer = async (cookieStoreId) => {
+  const tempTabs = await browser.tabs.query({
+    cookieStoreId
+  });
+  if (tempTabs.length > 0) {
+    debug('not removing container because it still has tabs', cookieStoreId, tempTabs.length);
+    return;
+  }
+  debug('no tabs in temp container anymore, deleting container', cookieStoreId);
+  try {
+    const contextualIdentity = await browser.contextualIdentities.remove(cookieStoreId)
+    if (!contextualIdentity) {
+      debug('couldnt find container to remove', cookieStoreId)
+    } else {
+      delete tempContainers[cookieStoreId];
+      Object.keys(tabContainerMap).map((tabId) => {
+        if (tabContainerMap[tabId] === cookieStoreId) {
+          delete tabContainerMap[tabId];
+        }
+      })
+      debug('container removed', tempContainers, tabContainerMap, contextualIdentity);
+    }
+  } catch (error) {
+    debug('error while removing container', cookieStoreId, error);
+  }
+}
+
+
+setInterval(() => {
+  Object.keys(tempContainers).map((cookieStoreId) => {
+    debug('container removal interval', tempContainers, cookieStoreId);
+    tryToRemoveContainer(cookieStoreId);
+  });
+}, 60000);
+
+
+browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+  if (!tabContainerMap[tabId]) {
+    debug('removed tab that isnt in the tabContainerMap', tabId, tabContainerMap);
+    return;
+  }
+  const cookieStoreId = tabContainerMap[tabId];
+  setTimeout(() => {
+    tryToRemoveContainer(cookieStoreId);
+  }, 5000);
+});
+
+
 const createTabInTempContainer = async (tab, url) => {
   tempContainerCounter++;
   const containerName = `TempContainer${tempContainerCounter}`;
@@ -26,6 +75,7 @@ const createTabInTempContainer = async (tab, url) => {
       icon: 'circle'
     })
     debug('contextualIdentity created', contextualIdentity);
+    tempContainers[contextualIdentity.cookieStoreId] = true;
 
     try {
       const active = url ? false : true;
@@ -55,6 +105,7 @@ const reloadTabInTempContainer = async (tab, url) => {
     debug('error while removing old tab', tab, error);
   }
 }
+
 
 const maybeReloadTabInTempContainer = async (tab) => {
   if (tab.incognito) {
@@ -98,37 +149,6 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   await maybeReloadTabInTempContainer(tab);
 });
 
-
-browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-  if (!tabContainerMap[tabId]) {
-    debug('tabid is not in the tabContainerMap, not relevant', tabId);
-    return;
-  }
-  const cookieStoreId = tabContainerMap[tabId];
-  delete tabContainerMap[tabId];
-
-  const tempTabs = await browser.tabs.query({
-    cookieStoreId
-  });
-  if (tempTabs.length > 1) {
-    debug('there are still more than one tab in that temp container open', tempTabs, cookieStoreId);
-    return;
-  }
-
-  setTimeout(async () => {
-    debug('no tabs in temp container anymore, deleting container', cookieStoreId);
-    try {
-      const contextualIdentity = await browser.contextualIdentities.remove(cookieStoreId)
-      if (!contextualIdentity) {
-        debug('couldnt find container to remove', cookieStoreId)
-      } else {
-        debug('removed container', contextualIdentity);
-      }
-    } catch (error) {
-      debug('error while removing container', cookieStoreId, error);
-    }
-  }, 100);
-});
 
 const linkClickedState = {};
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
