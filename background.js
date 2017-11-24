@@ -88,11 +88,6 @@ browser.runtime.onInstalled.addListener(async (details) => {
 });
 
 
-
-
-
-
-
 const createTabInTempContainer = async (tab, url) => {
   storage.tempContainerCounter++;
   const containerName = `TempContainer${storage.tempContainerCounter}`;
@@ -137,21 +132,6 @@ const reloadTabInTempContainer = async (tab, url) => {
 }
 
 
-browser.runtime.onStartup.addListener(async () => {
-  await initialize();
-  // extension loads after the first tab opens most of the time
-  // lets see if we can reopen the first tab
-  const tempTabs = await browser.tabs.query({});
-  if (tempTabs.length !== 1) {
-    return;
-  }
-  if ((tempTabs[0].url === 'about:home' || tempTabs[0].url === 'about:newtab')
-      && tempTabs[0].cookieStoreId === 'firefox-default') {
-    await reloadTabInTempContainer(tempTabs[0]);
-  }
-});
-
-
 setInterval(() => {
   debug('container removal interval', storage.tempContainers);
   tryToRemoveContainers();
@@ -185,6 +165,18 @@ const maybeReloadTabInTempContainer = async (tab) => {
 
   debug('not a home/new/https(s) tab, we dont handle that', tab);
 }
+
+
+browser.runtime.onStartup.addListener(async () => {
+  await initialize();
+  // extension loads after the first tab opens most of the time
+  // lets see if we can reopen the first tab
+  const tempTabs = await browser.tabs.query({});
+  if (tempTabs.length !== 1) {
+    return;
+  }
+  await maybeReloadTabInTempContainer(tempTabs[0]);
+});
 
 
 browser.tabs.onCreated.addListener(async function(tab) {
