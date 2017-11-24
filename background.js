@@ -1,7 +1,3 @@
-const tempContainers = {};
-const tabContainerMap = {};
-let tempContainerCounter = 0;
-
 let DEBUG = false;
 const debug = function() {
   if (!DEBUG) {
@@ -10,11 +6,36 @@ const debug = function() {
   console.log(...arguments);
 }
 
-browser.runtime.onInstalled.addListener((details) => {
-  if (details.temporary) {
-    DEBUG = true;
+
+let storage;
+const loadStorage = async () => {
+  try {
+    storage = await browser.storage.local.get()
+    if (!Object.keys(storage).length) {
+      storage = {
+        tempContainerCounter: 0,
+        tempContainers: {},
+        tabContainerMap: {}
+      }
+      debug('storage empty, setting defaults', storage);
+    } else {
+      debug('storage loaded', storage);
+    }
+  } catch (error) {
+    debug('error while loading local storage', error);
+    // TODO: stop execution, inform user and/or retry?
   }
-});
+}
+
+
+const persistStorage = async () => {
+  try {
+    await browser.storage.local.set(storage);
+    debug('storage persisted');
+  } catch (error) {
+    debug('something went wrong while trying to persist the storage', error);
+  }
+}
 
 
 const tryToRemoveContainer = async (cookieStoreId) => {
@@ -31,43 +52,50 @@ const tryToRemoveContainer = async (cookieStoreId) => {
     if (!contextualIdentity) {
       debug('couldnt find container to remove', cookieStoreId)
     } else {
-      delete tempContainers[cookieStoreId];
-      Object.keys(tabContainerMap).map((tabId) => {
-        if (tabContainerMap[tabId] === cookieStoreId) {
-          delete tabContainerMap[tabId];
-        }
-      })
-      debug('container removed', tempContainers, tabContainerMap, contextualIdentity);
+      debug('container removed', cookieStoreId);
     }
+    delete storage.tempContainers[cookieStoreId];
+    Object.keys(storage.tabContainerMap).map((tabId) => {
+      if (storage.tabContainerMap[tabId] === cookieStoreId) {
+        delete storage.tabContainerMap[tabId];
+      }
+    })
+    await persistStorage();
   } catch (error) {
     debug('error while removing container', cookieStoreId, error);
   }
 }
 
 
-setInterval(() => {
-  Object.keys(tempContainers).map((cookieStoreId) => {
-    debug('container removal interval', tempContainers, cookieStoreId);
+const tryToRemoveContainers = () => {
+  Object.keys(storage.tempContainers).map((cookieStoreId) => {
     tryToRemoveContainer(cookieStoreId);
   });
-}, 60000);
+}
 
 
-browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-  if (!tabContainerMap[tabId]) {
-    debug('removed tab that isnt in the tabContainerMap', tabId, tabContainerMap);
-    return;
+const initialize = async () => {
+  await loadStorage();
+  tryToRemoveContainers();
+}
+
+
+browser.runtime.onInstalled.addListener(async (details) => {
+  if (details.temporary) {
+    DEBUG = true;
   }
-  const cookieStoreId = tabContainerMap[tabId];
-  setTimeout(() => {
-    tryToRemoveContainer(cookieStoreId);
-  }, 5000);
+  await initialize();
 });
 
 
+
+
+
+
+
 const createTabInTempContainer = async (tab, url) => {
-  tempContainerCounter++;
-  const containerName = `TempContainer${tempContainerCounter}`;
+  storage.tempContainerCounter++;
+  const containerName = `TempContainer${storage.tempContainerCounter}`;
   try {
     const contextualIdentity = await browser.contextualIdentities.create({
       name: containerName,
@@ -75,7 +103,8 @@ const createTabInTempContainer = async (tab, url) => {
       icon: 'circle'
     })
     debug('contextualIdentity created', contextualIdentity);
-    tempContainers[contextualIdentity.cookieStoreId] = true;
+    storage.tempContainers[contextualIdentity.cookieStoreId] = true;
+    await persistStorage();
 
     try {
       const active = url ? false : true;
@@ -86,7 +115,8 @@ const createTabInTempContainer = async (tab, url) => {
         index: tab.index + 1
       });
       debug('new tab in temp container created', newTab);
-      tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
+      storage.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
+      await persistStorage();
     } catch (error) {
       debug('error while creating new tab', error);
     }
@@ -105,6 +135,27 @@ const reloadTabInTempContainer = async (tab, url) => {
     debug('error while removing old tab', tab, error);
   }
 }
+
+
+browser.runtime.onStartup.addListener(async () => {
+  await initialize();
+  // extension loads after the first tab opens most of the time
+  // lets see if we can reopen the first tab
+  const tempTabs = await browser.tabs.query({});
+  if (tempTabs.length !== 1) {
+    return;
+  }
+  if ((tempTabs[0].url === 'about:home' || tempTabs[0].url === 'about:newtab')
+      && tempTabs[0].cookieStoreId === 'firefox-default') {
+    await reloadTabInTempContainer(tempTabs[0]);
+  }
+});
+
+
+setInterval(() => {
+  debug('container removal interval', storage.tempContainers);
+  tryToRemoveContainers();
+}, 60000);
 
 
 const maybeReloadTabInTempContainer = async (tab) => {
@@ -147,6 +198,18 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     return;
   }
   await maybeReloadTabInTempContainer(tab);
+});
+
+
+browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+  if (!storage.tabContainerMap[tabId]) {
+    debug('removed tab that isnt in the tabContainerMap', tabId, storage.tabContainerMap);
+    return;
+  }
+  const cookieStoreId = storage.tabContainerMap[tabId];
+  setTimeout(() => {
+    tryToRemoveContainer(cookieStoreId);
+  }, 5000);
 });
 
 
