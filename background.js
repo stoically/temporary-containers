@@ -18,16 +18,6 @@ browser.runtime.onInstalled.addListener((details) => {
 });
 
 
-browser.runtime.onStartup.addListener(async () => {
-  try {
-    const tabs = await browser.tabs.query();
-    debug(tabs);
-  } catch (error) {
-    debug('error while retrieving tabs on startup', error);
-  }
-});
-
-
 const reloadTabInTempContainer = async (tab, url) => {
   tempContainerCounter++;
   const containerName = `TempContainer${tempContainerCounter}`;
@@ -63,8 +53,7 @@ const reloadTabInTempContainer = async (tab, url) => {
   }
 }
 
-
-browser.tabs.onCreated.addListener(async function(tab) {
+const maybeReloadTabInTempContainer = async (tab) => {
   if (tab.incognito) {
     debug('updated tab is incognito, ignore it', tab);
     return;
@@ -81,29 +70,36 @@ browser.tabs.onCreated.addListener(async function(tab) {
     return;
   }
 
-  if (tab.url !== 'about:newtab') {
-    debug('tab url is not about:newtab or about:home, we dont handle that', tab);
+  if (tab.url === 'about:home' ||
+      tab.url === 'about:newtab') {
+    debug('about:home/new tab in firefox-default container, reload in temp container', tab);
+    await reloadTabInTempContainer(tab);
     return;
   }
 
-  debug('fresh firefox-default tab, open in temp container', tab);
-  await reloadTabInTempContainer(tab);
+  if (tab.url.startsWith('https://') ||
+      tab.url.startsWith('http://')) {
+    debug('https(s) tab in firefox-default container, reload in temp container', tab);
+    await reloadTabInTempContainer(tab, tab.url);
+    return;
+  }
+
+  debug('not a home/new/https(s) tab, we dont handle that', tab);
+}
+
+
+browser.tabs.onCreated.addListener(async function(tab) {
+  await maybeReloadTabInTempContainer(tab);
 });
 
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (tab.incognito) {
-    debug('updated tab is incognito, ignore it', tab);
+  if (!changeInfo.url) {
+    debug('url didnt change, not relevant', tabId, changeInfo, tab);
     return;
   }
-  if ((changeInfo.url !== 'about:home' && changeInfo.url !== 'about:newtab')
-      || tab.cookieStoreId !== 'firefox-default') {
-    debug('tab updated but changed url isnt about:home and/or cookieStoreId isnt firefox-default', changeInfo);
-    return;
-  }
-  debug('tab updated to about:home or about:newtab and we are in the default store, open in temp container', tab);
-  await reloadTabInTempContainer(tab);
-})
+  await maybeReloadTabInTempContainer(tab);
+});
 
 
 browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
@@ -140,7 +136,6 @@ browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
 
 browser.webRequest.onBeforeRequest.addListener(async (request) => {
   if (request.tabId === -1) {
-    // shouldn't ever be the case because of main_frame
     debug('web request has no tabId, not relevant', request);
     return;
   }
