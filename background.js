@@ -30,7 +30,7 @@ browser.runtime.onStartup.addListener(async () => {
 
 const reloadTabInTempContainer = async (tab, url) => {
   tempContainerCounter++;
-  containerName = `TempContainer${tempContainerCounter}`;
+  const containerName = `TempContainer${tempContainerCounter}`;
   try {
     const contextualIdentity = await browser.contextualIdentities.create({
       name: containerName,
@@ -65,6 +65,10 @@ const reloadTabInTempContainer = async (tab, url) => {
 
 
 browser.tabs.onCreated.addListener(async function(tab) {
+  if (tab.incognito) {
+    debug('updated tab is incognito, ignore it', tab);
+    return;
+  }
   if (tab.openerTabId) {
     // TODO: consider checking whether the opener is an about: or moz-extension: page
     //       and if thats the case, track the tab and if it updates to an http(s) url, open in temp
@@ -78,7 +82,7 @@ browser.tabs.onCreated.addListener(async function(tab) {
   }
 
   if (tab.url !== 'about:newtab') {
-    debug('tab url is not about:newtab, we dont handle that', tab);
+    debug('tab url is not about:newtab or about:home, we dont handle that', tab);
     return;
   }
 
@@ -88,6 +92,10 @@ browser.tabs.onCreated.addListener(async function(tab) {
 
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (tab.incognito) {
+    debug('updated tab is incognito, ignore it', tab);
+    return;
+  }
   if ((changeInfo.url !== 'about:home' && changeInfo.url !== 'about:newtab')
       || tab.cookieStoreId !== 'firefox-default') {
     debug('tab updated but changed url isnt about:home and/or cookieStoreId isnt firefox-default', changeInfo);
@@ -154,6 +162,10 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
     debug('we have no information for that tab. ff broken?!', request.tabId);
     return;
   }
+  if (tab.incognito) {
+    debug('web request came from an incognito tab, just ignore it', tab);
+    return;
+  }
   if (!tabClickState[tab.openerTabId]) {
     debug('we have no relevant click state for this tab, openerTabId', tab.openerTabId);
     return;
@@ -188,6 +200,12 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
 
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (typeof message !== 'object' || !message.linkClicked) {
+    return;
+  }
+  debug('message from userscript received', message, sender);
+
+  if (sender.tab.incognito) {
+    debug('message came from an incognito tab, we dont handle that', message, sender);
     return;
   }
 
