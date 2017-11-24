@@ -1,5 +1,7 @@
 # Temporary Containers Firefox Add-on
 
+[![Build Status](https://travis-ci.org/stoically/firefox-add-on-temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/firefox-add-on-temporary-containers)
+
 Automatically open Tabs in new Temporary Containers when:
 * Pressing the Ctrl+T Shortcut
 * Clicking the "New Tab" Symbol (+)
