@@ -32,8 +32,12 @@ The automatically created Temporary Containers get removed after the Last Tab in
 
 * Opening a "New Window" or starting Firefox, only opens a Temporary Container if you don't set the Preference "When Firefox starts" to "Show a blank page". The reason for this is that new Tabs get (often/sometimes) created as url: "about:blank", title: "New Tab" and status: "complete" although they might start to load additional content - so there's (afaik) no way to differentiate between a Blank Tab on start and a Blank Tab that might load content. You also can't read the setting for "When Firefox start" and handle this case based on the setting, because there's (afaik) no API for that.
 
-* Disabled in Private Windows since Firefox doesn't support it
+* Disabled in "Private Windows" since Firefox doesn't support it
 
+
+## Technical Notes
+
+Since it's not possible to preventDefault a click event when a MiddleMouse Click is happening (mouseup/mousedown) without constantly checking for <a> elements on the page and attaching click events to them, I opted to instead send the clicked link to the background process and then register a webRequest.onBeforeRequest handler for explicitly that link. The handler then creates a new tab and removes the handler after that. The other benefit of that is, that by not calling preventDefault it won't break anything on the originating website.
 
 ## License
 

@@ -1,5 +1,3 @@
-const linksClicked = {};
-const tabClickState = {};
 const tabContainerMap = {};
 let tempContainerCounter = 0;
 
@@ -60,13 +58,7 @@ const reloadTabInTempContainer = async (tab, url) => {
 
 const maybeReloadTabInTempContainer = async (tab) => {
   if (tab.incognito) {
-    debug('updated tab is incognito, ignore it', tab);
-    return;
-  }
-  if (tab.openerTabId) {
-    // TODO: consider checking whether the opener is an about: or moz-extension: page
-    //       and if thats the case, track the tab and if it updates to an http(s) url, open in temp
-    debug('tab has an openerTabId, we handle that in onBeforeRequest', tab);
+    debug('tab is incognito, ignore it', tab);
     return;
   }
 
@@ -138,66 +130,7 @@ browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
   }, 100);
 });
 
-
-browser.webRequest.onBeforeRequest.addListener(async (request) => {
-  if (request.tabId === -1) {
-    debug('web request has no tabId, not relevant', request);
-    return;
-  }
-  debug('web request tab id', request.tabId);
-  debug('web request url', request.url);
-  if (!linksClicked[request.url]) {
-    debug('web request url not in linksClicked, not relevant', request.url);
-    return;
-  }
-  linksClicked[request.url]--;
-  if (!linksClicked[request.url]) {
-    delete linksClicked[request.url];
-  }
-  debug('linksClicked', JSON.stringify(linksClicked));
-
-  const tab = await browser.tabs.get(request.tabId);
-  debug('requested tab information', tab);
-  if (!tab) {
-    debug('we have no information for that tab. ff broken?!', request.tabId);
-    return;
-  }
-  if (tab.incognito) {
-    debug('web request came from an incognito tab, just ignore it', tab);
-    return;
-  }
-  if (!tabClickState[tab.openerTabId]) {
-    debug('we have no relevant click state for this tab, openerTabId', tab.openerTabId);
-    return;
-  }
-  if (!tabClickState[tab.openerTabId][request.url]) {
-    debug('we have no matching url in the click state', request.url);
-    return;
-  }
-  debug('url matched! we should open in container', request.url);
-
-  tabClickState[tab.openerTabId][request.url]--;
-  if (!tabClickState[tab.openerTabId][request.url]) {
-    delete tabClickState[tab.openerTabId][request.url];
-  }
-  if (!Object.keys(tabClickState[tab.openerTabId]).length) {
-    delete tabClickState[tab.openerTabId];
-  }
-  debug('tabClickState', JSON.stringify(tabClickState));
-
-  await reloadTabInTempContainer(tab, request.url);
-
-  return {
-    cancel: true
-  }
-},{
-    urls: ['<all_urls>'],
-    types: ['main_frame']
-  },
-  ['blocking']
-);
-
-
+const linkClickedState = {};
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (typeof message !== 'object' || !message.linkClicked) {
     return;
@@ -209,18 +142,51 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     return;
   }
 
-  if (!linksClicked[message.linkClicked.href]) {
-    linksClicked[message.linkClicked.href] = 0;
+  if (!linkClickedState[message.linkClicked.href]) {
+    linkClickedState[message.linkClicked.href] = {
+      count: 0
+    };
   }
-  linksClicked[message.linkClicked.href]++;
-  debug('linksClicked', JSON.stringify(linksClicked));
+  linkClickedState[message.linkClicked.href][sender.tab.id] = true;
+  linkClickedState[message.linkClicked.href].count++;
+  if (linkClickedState[message.linkClicked.href].count > 1) {
+    debug('we already have a listener for that, just let em handle it',
+          sender.tab.id, message.linkClicked.href, linkClickedState);
+    return;
+  }
 
-  if (!tabClickState[sender.tab.id]) {
-    tabClickState[sender.tab.id] = {};
+  const onBeforeRequest = async (request) => {
+    debug('onBeforeRequest', request);
+    const tab = await browser.tabs.get(request.tabId);
+    debug('requested tab information', tab);
+    if (!tab) {
+      debug('we have no information for that tab. ff broken?!', request.tabId);
+      return { cancel: true };
+    }
+    if (!linkClickedState[request.url] ||
+        !linkClickedState[request.url][tab.openerTabId]) {
+      debug('the tab loading the url didnt get opened from any of the message sender tabs ' +
+            'we can ignore this silently because it probably just means that someone opened ' +
+            'the same link quick in succession',
+            request, tab, linkClickedState);
+      return;
+    }
+
+    linkClickedState[request.url].count--;
+    if (!linkClickedState[request.url].count) {
+      browser.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
+      delete linkClickedState[request.url];
+    }
+
+    await reloadTabInTempContainer(tab, request.url);
+
+    return { cancel: true };
   }
-  if (!tabClickState[sender.tab.id][message.linkClicked.href]) {
-    tabClickState[sender.tab.id][message.linkClicked.href] = 0;
-  }
-  tabClickState[sender.tab.id][message.linkClicked.href]++;
-  debug('tabClickState', JSON.stringify(tabClickState));
+
+  browser.webRequest.onBeforeRequest.addListener(onBeforeRequest, {
+      urls: [message.linkClicked.href],
+      types: ['main_frame']
+    },
+    ['blocking']
+  );
 });
