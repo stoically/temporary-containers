@@ -18,7 +18,7 @@ browser.runtime.onInstalled.addListener((details) => {
 });
 
 
-const reloadTabInTempContainer = async (tab, url) => {
+const createTabInTempContainer = async (tab, url) => {
   tempContainerCounter++;
   const containerName = `TempContainer${tempContainerCounter}`;
   try {
@@ -34,22 +34,27 @@ const reloadTabInTempContainer = async (tab, url) => {
       const newTab = await browser.tabs.create({
         url,
         active,
-        cookieStoreId: contextualIdentity.cookieStoreId
+        cookieStoreId: contextualIdentity.cookieStoreId,
+        index: tab.index + 1
       });
       debug('new tab in temp container created', newTab);
       tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
-
-      try {
-        browser.tabs.remove(tab.id);
-        debug('removed old tab', tab.id);
-      } catch (error) {
-        debug('error while removing old tab', tab, error);
-      }
     } catch (error) {
       debug('error while creating new tab', error);
     }
   } catch (error) {
     debug('error while creating container', containerName, error);
+  }
+}
+
+
+const reloadTabInTempContainer = async (tab, url) => {
+  await createTabInTempContainer(tab, url);
+  try {
+    browser.tabs.remove(tab.id);
+    debug('removed old tab', tab.id);
+  } catch (error) {
+    debug('error while removing old tab', tab, error);
   }
 }
 
