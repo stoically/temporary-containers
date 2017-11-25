@@ -7,7 +7,7 @@ const debug = function() {
   console.log(...arguments);
 };
 
-
+const linkClickedState = {};
 let storage;
 const loadStorage = async () => {
   try {
@@ -123,9 +123,9 @@ const createTabInTempContainer = async (tab, url) => {
 
 
 const reloadTabInTempContainer = async (tab, url) => {
-  await createTabInTempContainer(tab, url);
   try {
-    browser.tabs.remove(tab.id);
+    await createTabInTempContainer(tab, url);
+    await browser.tabs.remove(tab.id);
     debug('removed old tab', tab.id);
   } catch (error) {
     debug('error while removing old tab', tab, error);
@@ -139,8 +139,40 @@ const maybeReloadTabInTempContainer = async (tab) => {
     return;
   }
 
+  if (tab.url.startsWith('moz-extension://f7b1bec3-21af-437d-a49f-b19b899b7708/confirm-page.html')) {
+    const parsedURL = new URL(tab.url);
+    debug('multi-account-containers is intervening', tab, parsedURL);
+    const queryParams = parsedURL.search.split('&').map(param => param.split('='));
+    const multiAccountTargetURL = decodeURIComponent(queryParams[0][1]);
+    const multiAccountOriginContainer = queryParams[2][1];
+
+    debug('multi-account-containers debug', multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(linkClickedState), tab);
+    if (linkClickedState[multiAccountTargetURL].containers[multiAccountOriginContainer]) {
+      debug('we can remove this tab, i guess - and yes this is a bit hacky', tab);
+      await browser.tabs.remove(tab.id);
+      debug('removed multi-account-containers tab', tab.id);
+      return;
+    }
+  }
+
   if (tab.cookieStoreId !== 'firefox-default') {
-    debug('tab already belongs to a container, we dont handle that', tab);
+    // we have to rely on the title here.. granted its a bit messy
+    // and there could be a racecondition because of missing protocol, meh.
+    Object.keys(linkClickedState).map(async linkClicked => {
+      if (linkClicked.endsWith(tab.title)) {
+        debug('tab is loading an url that was clicked before', tab);
+        if (!storage.tempContainers[tab.cookieStoreId]) {
+          debug('tab is loading the before clicked url in unkown container, just close it');
+          try {
+            await browser.tabs.remove(tab.id);
+            debug('removed tab (probably multi-account-containers huh)', tab.id);
+          } catch (error) {
+            debug('couldnt remove tab', tab.id, error);
+          }
+        }
+      }
+    });
+    debug('tab already belongs to a container', tab, JSON.stringify(linkClickedState));
     return;
   }
 
@@ -175,11 +207,13 @@ browser.runtime.onStartup.addListener(async () => {
 
 
 browser.tabs.onCreated.addListener(async function(tab) {
+  debug('tab created', tab);
   await maybeReloadTabInTempContainer(tab);
 });
 
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  debug('tab updated', tab);
   if (!changeInfo.url) {
     debug('url didnt change, not relevant', tabId, changeInfo, tab);
     return;
@@ -194,13 +228,13 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
     return;
   }
   const cookieStoreId = storage.tabContainerMap[tabId];
+  debug('queuing container removal because of tab removal', cookieStoreId, tabId);
   setTimeout(() => {
     tryToRemoveContainer(cookieStoreId);
   }, 5000);
 });
 
 
-const linkClickedState = {};
 browser.runtime.onMessage.addListener(async (message, sender) => {
   if (typeof message !== 'object' || !message.linkClicked) {
     return;
@@ -214,10 +248,13 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 
   if (!linkClickedState[message.linkClicked.href]) {
     linkClickedState[message.linkClicked.href] = {
+      tabs: {},
+      containers: {},
       count: 0
     };
   }
-  linkClickedState[message.linkClicked.href][sender.tab.id] = true;
+  linkClickedState[message.linkClicked.href].tabs[sender.tab.id] = true;
+  linkClickedState[message.linkClicked.href].containers[sender.tab.cookieStoreId] = true;
   linkClickedState[message.linkClicked.href].count++;
   if (linkClickedState[message.linkClicked.href].count > 1) {
     debug('we already have a listener for that, just let em handle it',
@@ -233,21 +270,22 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       debug('we have no information for that tab. ff broken?!', request.tabId);
       return { cancel: true };
     }
+
     if (!linkClickedState[request.url] ||
-        !linkClickedState[request.url][tab.openerTabId]) {
+        !linkClickedState[request.url].tabs[tab.openerTabId]) {
       debug('the tab loading the url didnt get opened from any of the message sender tabs ' +
         'we can ignore this silently because it probably just means that someone opened ' +
         'the same link quick in succession', request, tab, linkClickedState);
       return;
     }
 
+    await reloadTabInTempContainer(tab, request.url);
+
     linkClickedState[request.url].count--;
     if (!linkClickedState[request.url].count) {
       browser.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
       delete linkClickedState[request.url];
     }
-
-    await reloadTabInTempContainer(tab, request.url);
 
     return { cancel: true };
   };
