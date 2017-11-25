@@ -1,5 +1,5 @@
 {
-  "description": "Open Tabs automatically in Temporary Containers",
+  "description": "Automatically open Tabs in new Temporary Containers",
   "manifest_version": 2,
   "name": "Temporary Containers",
   "version": "0.5",

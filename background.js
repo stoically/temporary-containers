@@ -3,20 +3,21 @@ const debug = function() {
   if (!DEBUG) {
     return;
   }
+  // eslint-disable-next-line no-console
   console.log(...arguments);
-}
+};
 
 
 let storage;
 const loadStorage = async () => {
   try {
-    storage = await browser.storage.local.get()
+    storage = await browser.storage.local.get();
     if (!Object.keys(storage).length) {
       storage = {
         tempContainerCounter: 0,
         tempContainers: {},
         tabContainerMap: {}
-      }
+      };
       debug('storage empty, setting defaults', storage);
     } else {
       debug('storage loaded', storage);
@@ -25,7 +26,7 @@ const loadStorage = async () => {
     debug('error while loading local storage', error);
     // TODO: stop execution, inform user and/or retry?
   }
-}
+};
 
 
 const persistStorage = async () => {
@@ -35,7 +36,7 @@ const persistStorage = async () => {
   } catch (error) {
     debug('something went wrong while trying to persist the storage', error);
   }
-}
+};
 
 
 const tryToRemoveContainer = async (cookieStoreId) => {
@@ -48,9 +49,9 @@ const tryToRemoveContainer = async (cookieStoreId) => {
   }
   debug('no tabs in temp container anymore, deleting container', cookieStoreId);
   try {
-    const contextualIdentity = await browser.contextualIdentities.remove(cookieStoreId)
+    const contextualIdentity = await browser.contextualIdentities.remove(cookieStoreId);
     if (!contextualIdentity) {
-      debug('couldnt find container to remove', cookieStoreId)
+      debug('couldnt find container to remove', cookieStoreId);
     } else {
       debug('container removed', cookieStoreId);
     }
@@ -59,25 +60,25 @@ const tryToRemoveContainer = async (cookieStoreId) => {
       if (storage.tabContainerMap[tabId] === cookieStoreId) {
         delete storage.tabContainerMap[tabId];
       }
-    })
+    });
     await persistStorage();
   } catch (error) {
     debug('error while removing container', cookieStoreId, error);
   }
-}
+};
 
 
 const tryToRemoveContainers = () => {
   Object.keys(storage.tempContainers).map((cookieStoreId) => {
     tryToRemoveContainer(cookieStoreId);
   });
-}
+};
 
 
 const initialize = async () => {
   await loadStorage();
   tryToRemoveContainers();
-}
+};
 
 
 browser.runtime.onInstalled.addListener(async (details) => {
@@ -96,7 +97,7 @@ const createTabInTempContainer = async (tab, url) => {
       name: containerName,
       color: 'red',
       icon: 'circle'
-    })
+    });
     debug('contextualIdentity created', contextualIdentity);
     storage.tempContainers[contextualIdentity.cookieStoreId] = true;
     await persistStorage();
@@ -118,7 +119,7 @@ const createTabInTempContainer = async (tab, url) => {
   } catch (error) {
     debug('error while creating container', containerName, error);
   }
-}
+};
 
 
 const reloadTabInTempContainer = async (tab, url) => {
@@ -129,13 +130,7 @@ const reloadTabInTempContainer = async (tab, url) => {
   } catch (error) {
     debug('error while removing old tab', tab, error);
   }
-}
-
-
-setInterval(() => {
-  debug('container removal interval', storage.tempContainers);
-  tryToRemoveContainers();
-}, 60000);
+};
 
 
 const maybeReloadTabInTempContainer = async (tab) => {
@@ -164,7 +159,7 @@ const maybeReloadTabInTempContainer = async (tab) => {
   }
 
   debug('not a home/new/https(s) tab, we dont handle that', tab);
-}
+};
 
 
 browser.runtime.onStartup.addListener(async () => {
@@ -193,7 +188,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 });
 
 
-browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+browser.tabs.onRemoved.addListener(async (tabId) => {
   if (!storage.tabContainerMap[tabId]) {
     debug('removed tab that isnt in the tabContainerMap', tabId, storage.tabContainerMap);
     return;
@@ -206,7 +201,7 @@ browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
 
 
 const linkClickedState = {};
-browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener(async (message, sender) => {
   if (typeof message !== 'object' || !message.linkClicked) {
     return;
   }
@@ -226,7 +221,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   linkClickedState[message.linkClicked.href].count++;
   if (linkClickedState[message.linkClicked.href].count > 1) {
     debug('we already have a listener for that, just let em handle it',
-          sender.tab.id, message.linkClicked.href, linkClickedState);
+      sender.tab.id, message.linkClicked.href, linkClickedState);
     return;
   }
 
@@ -241,9 +236,8 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (!linkClickedState[request.url] ||
         !linkClickedState[request.url][tab.openerTabId]) {
       debug('the tab loading the url didnt get opened from any of the message sender tabs ' +
-            'we can ignore this silently because it probably just means that someone opened ' +
-            'the same link quick in succession',
-            request, tab, linkClickedState);
+        'we can ignore this silently because it probably just means that someone opened ' +
+        'the same link quick in succession', request, tab, linkClickedState);
       return;
     }
 
@@ -256,12 +250,18 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     await reloadTabInTempContainer(tab, request.url);
 
     return { cancel: true };
-  }
+  };
 
   browser.webRequest.onBeforeRequest.addListener(onBeforeRequest, {
-      urls: [message.linkClicked.href],
-      types: ['main_frame']
-    },
-    ['blocking']
-  );
+    urls: [message.linkClicked.href],
+    types: ['main_frame']
+  }, [
+    'blocking'
+  ]);
 });
+
+
+setInterval(() => {
+  debug('container removal interval', storage.tempContainers);
+  tryToRemoveContainers();
+}, 60000);

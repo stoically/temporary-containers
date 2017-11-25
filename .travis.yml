@@ -1,9 +1,6 @@
 language: node_js
 node_js: "lts/*"
 
-install:
-  - npm install web-ext addons-linter
-
 script:
-- web-ext build
-- addons-linter web-ext-artifacts/temporary_containers-*.zip
+  - npm run lint
+  - npm run build

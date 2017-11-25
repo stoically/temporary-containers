@@ -1,0 +1,25 @@
+{
+  "name": "tmpcontainers",
+  "version": "0.0.0",
+  "description": "Temporary Containers",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "web-ext build && addons-linter web-ext-artifacts/temporary_containers-*.zip"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stoically/firefox-add-on-temporary-containers.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stoically/firefox-add-on-temporary-containers/issues"
+  },
+  "homepage": "https://github.com/stoically/firefox-add-on-temporary-containers#readme",
+  "devDependencies": {
+    "addons-linter": "^0.29.0",
+    "eslint": "^4.11.0",
+    "web-ext": "^2.2.2"
+  },
+  "private": true
+}
