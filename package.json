@@ -5,7 +5,7 @@
   "scripts": {
     "test": "ava",
     "lint": "eslint .",
-    "build": "web-ext build && addons-linter web-ext-artifacts/temporary_containers-*.zip"
+    "build": "web-ext build --ignore-files test/**/* package* README.md TODO.todo && addons-linter web-ext-artifacts/temporary_containers-*.zip"
   },
   "repository": {
     "type": "git",

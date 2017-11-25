@@ -139,14 +139,19 @@ const maybeReloadTabInTempContainer = async (tab) => {
     return;
   }
 
-  if (tab.url.startsWith('moz-extension://f7b1bec3-21af-437d-a49f-b19b899b7708/confirm-page.html')) {
+  // so this is *probably* the confirm page from multi-account-containers
+  // i need to reach out to the multi-account-containers devs, maybe its possible
+  // to handle this in a cleaner fashion
+  const multiAccountMatch = tab.url.match(/moz-extension:\/\/[^/]*\/confirm-page.html\?url=/);
+  if (multiAccountMatch) {
     const parsedURL = new URL(tab.url);
     debug('multi-account-containers is intervening', tab, parsedURL);
     const queryParams = parsedURL.search.split('&').map(param => param.split('='));
     const multiAccountTargetURL = decodeURIComponent(queryParams[0][1]);
     const multiAccountOriginContainer = queryParams[2][1];
 
-    debug('multi-account-containers debug', multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(linkClickedState), tab);
+    debug('multi-account-containers debug',
+      multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(linkClickedState), tab);
     if (linkClickedState[multiAccountTargetURL].containers[multiAccountOriginContainer]) {
       debug('we can remove this tab, i guess - and yes this is a bit hacky', tab);
       await browser.tabs.remove(tab.id);
@@ -156,13 +161,14 @@ const maybeReloadTabInTempContainer = async (tab) => {
   }
 
   if (tab.cookieStoreId !== 'firefox-default') {
-    // we have to rely on the title here.. granted its a bit messy
+    // we have to rely on the tab title here.. granted its a bit messy
     // and there could be a racecondition because of missing protocol, meh.
+    // this is also only necessary when multi-account-containers is intervening
     Object.keys(linkClickedState).map(async linkClicked => {
       if (linkClicked.endsWith(tab.title)) {
         debug('tab is loading an url that was clicked before', tab);
         if (!storage.tempContainers[tab.cookieStoreId]) {
-          debug('tab is loading the before clicked url in unkown container, just close it');
+          debug('tab is loading the before clicked url in unkown container, just close it?', tab);
           try {
             await browser.tabs.remove(tab.id);
             debug('removed tab (probably multi-account-containers huh)', tab.id);
