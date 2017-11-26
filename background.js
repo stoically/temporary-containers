@@ -170,21 +170,23 @@ const maybeReloadTabInTempContainer = async (tab) => {
     // we have to rely on the tab title here.. granted its a bit messy
     // and there could be a racecondition because of missing protocol, meh.
     // this is also only necessary when multi-account-containers is intervening
-    Object.keys(linkClickedState).map(async linkClicked => {
-      if (linkClicked.endsWith(tab.title)) {
-        debug('tab is loading an url that was clicked before', tab);
-        if (!storage.tempContainers[tab.cookieStoreId]) {
-          debug('tab is loading the before clicked url in unkown container, just close it?', tab);
-          try {
-            await browser.tabs.remove(tab.id);
-            debug('removed tab (probably multi-account-containers huh)', tab.id);
-          } catch (error) {
-            debug('couldnt remove tab', tab.id, error);
-          }
+    Object.keys(linkClickedState).forEach(async linkClicked => {
+      if (!linkClicked.endsWith(tab.title)) {
+        return;
+      }
+      debug('tab is loading an url that was clicked before', tab);
+      if (!storage.tempContainers[tab.cookieStoreId] &&
+          !linkClickedState[linkClicked].containers[tab.cookieStoreId]) {
+        debug('tab is loading the before clicked url in unkown container, just close it?', tab);
+        try {
+          await browser.tabs.remove(tab.id);
+          debug('removed tab (probably multi-account-containers huh)', tab.id);
+        } catch (error) {
+          debug('couldnt remove tab', tab.id, error);
         }
       }
     });
-
+    
     debug('tab already belongs to a container', tab, JSON.stringify(linkClickedState));
     return;
   }
