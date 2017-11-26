@@ -8,6 +8,33 @@
     "48": "icons/tmpcontainer-48.png"
   },
 
+  "browser_action": {
+    "browser_style": true,
+    "default_title": "Open Temporary Container",
+    "default_icon": {
+      "16": "icons/page-w-16.svg",
+      "32": "icons/page-w-32.svg"
+    },
+    "theme_icons": [{
+      "light": "icons/page-d-16.svg",
+      "dark": "icons/page-w-16.svg",
+      "size": 16
+    }, {
+      "light": "icons/page-d-32.svg",
+      "dark": "icons/page-w-32.svg",
+      "size": 32
+    }]
+  },
+
+  "commands": {
+    "open-temporary-container": {
+      "suggested_key": {
+        "default": "Alt+C"
+      },
+      "description": "Open Temporary Container"
+    }
+},
+
   "permissions": [
     "<all_urls>",
     "contextualIdentities",

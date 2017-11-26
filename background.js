@@ -112,6 +112,7 @@ const createTabInTempContainer = async (tab, url) => {
       if (tab) {
         newTabOptions.index = tab.index + 1;
       }
+      debug('creating tab in temporary container', newTabOptions);
       const newTab = await browser.tabs.create(newTabOptions);
       debug('new tab in temp container created', newTab);
       storage.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
@@ -186,7 +187,7 @@ const maybeReloadTabInTempContainer = async (tab) => {
         }
       }
     });
-    
+
     debug('tab already belongs to a container', tab, JSON.stringify(linkClickedState));
     return;
   }
@@ -260,6 +261,11 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     return;
   }
 
+  if (!storage.tempContainers[sender.tab.cookieStoreId]) {
+    debug('click came from a non-temporary container, ignore that', message, sender);
+    return;
+  }
+
   if (!linkClickedState[message.linkClicked.href]) {
     linkClickedState[message.linkClicked.href] = {
       tabs: {},
@@ -320,6 +326,16 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   }, [
     'blocking'
   ]);
+});
+
+
+browser.browserAction.onClicked.addListener(createTabInTempContainer);
+
+
+browser.commands.onCommand.addListener((command) => {
+  if (command == 'open-temporary-container') {
+    createTabInTempContainer();
+  }
 });
 
 
