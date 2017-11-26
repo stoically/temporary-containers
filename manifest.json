@@ -10,10 +10,11 @@
 
   "browser_action": {
     "browser_style": true,
-    "default_title": "Open Temporary Container",
+    "default_area": "tabstrip",
+    "default_title": "Open Temporary Container (Alt+C)",
     "default_icon": {
-      "16": "icons/page-w-16.svg",
-      "32": "icons/page-w-32.svg"
+      "16": "icons/page-d-16.svg",
+      "32": "icons/page-d-32.svg"
     },
     "theme_icons": [{
       "light": "icons/page-d-16.svg",
@@ -27,7 +28,7 @@
   },
 
   "commands": {
-    "open-temporary-container": {
+    "_execute_browser_action": {
       "suggested_key": {
         "default": "Alt+C"
       },

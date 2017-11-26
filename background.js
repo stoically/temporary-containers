@@ -332,13 +332,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 browser.browserAction.onClicked.addListener(createTabInTempContainer);
 
 
-browser.commands.onCommand.addListener((command) => {
-  if (command == 'open-temporary-container') {
-    createTabInTempContainer();
-  }
-});
-
-
 setInterval(() => {
   debug('container removal interval', storage.tempContainers);
   tryToRemoveContainers();
