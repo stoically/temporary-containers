@@ -40,6 +40,11 @@ const browser = global.browser = {
   },
   contextualIdentities: {
     create: sinon.stub()
+  },
+  browserAction: {
+    onClicked: {
+      addListener: sinon.stub()
+    }
   }
 };
 
