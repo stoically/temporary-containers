@@ -19,6 +19,18 @@ document.body.addEventListener('mouseup', async function(event) {
     return;
   }
 
+  // is automatic mode enabled anyway?
+  try {
+    const { preferences } = await browser.storage.local.get('preferences');
+    if (!preferences.automaticMode) {
+      return;
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('something went wrong while loading preferences', error);
+    return;
+  }
+
   // tell background process to handle the clicked url
   await browser.runtime.sendMessage({
     linkClicked: {

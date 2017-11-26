@@ -16,11 +16,16 @@ const loadStorage = async () => {
       storage = {
         tempContainerCounter: 0,
         tempContainers: {},
-        tabContainerMap: {}
+        tabContainerMap: {},
+        preferences: {}
       };
       debug('storage empty, setting defaults', storage);
     } else {
       debug('storage loaded', storage);
+    }
+    if (!storage.preferences) {
+      storage.preferences = {};
+      await persistStorage();
     }
   } catch (error) {
     debug('error while loading local storage', error);
@@ -29,9 +34,23 @@ const loadStorage = async () => {
 };
 
 
+const getPreference = async (preferenceName) => {
+  try {
+    const { preferences } = await browser.storage.local.get('preferences');
+    return preferences[preferenceName];
+  } catch (error) {
+    debug('loading preference failed', error);
+  }
+};
+
+
 const persistStorage = async () => {
   try {
-    await browser.storage.local.set(storage);
+    await browser.storage.local.set({
+      tempContainerCounter: storage.tempContainerCounter,
+      tempContainers: storage.tempContainers,
+      tabContainerMap: storage.tabContainerMap
+    });
     debug('storage persisted');
   } catch (error) {
     debug('something went wrong while trying to persist the storage', error);
@@ -141,6 +160,12 @@ const reloadTabInTempContainer = async (tab, url) => {
 
 
 const maybeReloadTabInTempContainer = async (tab) => {
+  const automaticMode = await getPreference('automaticMode');
+  debug('automaticMode', automaticMode);
+  if (!automaticMode) {
+    return;
+  }
+
   if (tab.incognito) {
     debug('tab is incognito, ignore it', tab);
     return;

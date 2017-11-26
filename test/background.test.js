@@ -7,6 +7,15 @@ chai.use(sinonChai);
 
 const nextTick = () => new Promise(resolve => setTimeout(resolve));
 
+const defaultStorage = {
+  tempContainerCounter: 0,
+  tempContainers: {},
+  tabContainerMap: {},
+  preferences: {
+    automaticMode: true
+  }
+};
+
 const browser = global.browser = {
   runtime: {
     onInstalled: {
@@ -77,15 +86,16 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
     cookieStoreId: 'firefox-default',
     url: 'about:home'
   };
+
   browser.tabs.query = sinon.stub().resolves([fakeAboutHomeTab]);
-  browser.storage.local.get = sinon.stub().resolves({});
+  browser.storage.local.get = sinon.stub().resolves(defaultStorage);
   browser.contextualIdentities.create = sinon.stub().resolves(fakeContainer);
   browser.tabs.create = sinon.stub().resolves({id: 1});
   browser.tabs.remove = sinon.stub();
   browser.runtime.onStartup.addListener.yield();
   await nextTick();
   browser.contextualIdentities.create.should.have.been.calledOnce;
-  browser.storage.local.get.should.have.been.calledOnce;
+  browser.storage.local.get.should.have.been.calledTwice;
   browser.tabs.create.should.have.been.calledOnce;
   browser.tabs.remove.should.have.been.calledOnce;
 
@@ -96,14 +106,14 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
     url: 'about:newtab'
   };
   browser.tabs.query = sinon.stub().resolves([fakeAboutNewTab]);
-  browser.storage.local.get = sinon.stub().resolves({});
+  browser.storage.local.get = sinon.stub().resolves(defaultStorage);
   browser.contextualIdentities.create = sinon.stub().resolves(fakeContainer);
   browser.tabs.create = sinon.stub().resolves({id: 1});
   browser.tabs.remove = sinon.stub();
   browser.runtime.onStartup.addListener.yield();
   await nextTick();
   browser.contextualIdentities.create.should.have.been.calledOnce;
-  browser.storage.local.get.should.have.been.calledOnce;
+  browser.storage.local.get.should.have.been.calledTwice;
   browser.tabs.create.should.have.been.calledOnce;
   browser.tabs.remove.should.have.been.calledOnce;
 
@@ -114,7 +124,7 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
     url: 'http://example.com'
   };
   browser.tabs.query = sinon.stub().resolves([fakeHttpTab]);
-  browser.storage.local.get = sinon.stub().resolves({});
+  browser.storage.local.get = sinon.stub().resolves(defaultStorage);
   browser.contextualIdentities.create = sinon.stub().resolves(fakeContainer);
   browser.tabs.create = sinon.stub().resolves({id: 1});
   browser.tabs.remove = sinon.stub();
@@ -131,7 +141,7 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
     url: 'https://example.com'
   };
   browser.tabs.query = sinon.stub().resolves([fakeHttpsTab]);
-  browser.storage.local.get = sinon.stub().resolves({});
+  browser.storage.local.get = sinon.stub().resolves(defaultStorage);
   browser.contextualIdentities.create = sinon.stub().resolves(fakeContainer);
   browser.tabs.create = sinon.stub().resolves({id: 1});
   browser.tabs.remove = sinon.stub();
@@ -148,7 +158,7 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
     url: 'about:home'
   };
   browser.tabs.query = sinon.stub().resolves([fakeNotDefaultTab]);
-  browser.storage.local.get = sinon.stub().resolves({});
+  browser.storage.local.get = sinon.stub().resolves(defaultStorage);
   browser.contextualIdentities.create = sinon.stub();
   browser.runtime.onStartup.addListener.yield();
   await nextTick();
@@ -156,7 +166,7 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
 
   // two tabs open should not reopen in temporary container
   browser.tabs.query = sinon.stub().resolves([1,2]);
-  browser.storage.local.get = sinon.stub().resolves({});
+  browser.storage.local.get = sinon.stub().resolves(defaultStorage);
   browser.contextualIdentities.create = sinon.stub();
   browser.runtime.onStartup.addListener.yield();
   await nextTick();

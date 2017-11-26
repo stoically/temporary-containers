@@ -2,42 +2,48 @@
 
 [![Build Status](https://travis-ci.org/stoically/firefox-add-on-temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/firefox-add-on-temporary-containers)
 
-Automatically open Tabs in new Temporary Containers when:
-* Pressing the Ctrl+T or Ctrl+N Shortcut
-* Clicking the "New Tab" Symbol (+)
+Open Tabs in new Temporary Containers when:
+* Clicking the "Temporary Containers"-Icon
+* Pressing the Alt+C Shortcut
+
+With "Automatic Mode" active (default):
+* Clicking the "New Tab"-Icon
 * Clicking "New Tab" or "New Window" in the Browser Menu
+* Pressing the Ctrl+T or Ctrl+N Shortcut
 * MiddleMouse Click on a Link on a Website
 * Ctrl+LeftMouse Click on a Link on a Website
 * An external Program opens a http(s) Link in the Browser
 
-Doesn't open Tabs in new Temporary Containers when:
+Never open Tabs in new Temporary Containers when:
 * Regular click on a Link on a Website
 * Website redirects or opens new Tab itself
 * Clicking "New Tab" in the RightClick ContextMenu on a Link on a Website
 * Pressing Shift+LeftMouseClick on a Link on a Website
 
+[Get it here.](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/)
 
 ## Notes
-
-There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think that this Add-on enhances privacy by providing Temporary/Throw-away/Disposable Containers whenever possible, while not breaking navigation (or e.g. OAuth redirects) on a given Website as long as the user just LeftMouseClicks (or chooses on of the other ways that don't open a new Temporary Container).
-
-If you have any Suggestions, Feedback or Bugreports please make sure to leave me an Issue. Preferences to configure some of the Add-ons features coming soon.
+If you have any Suggestions, Feedback or BugReports please make sure to leave me an Issue here on GitHub.
 
 Works together with [Multi-Account Containers](https://github.com/mozilla/multi-account-containers).
 
-The automatically created Temporary Containers get removed after the Last Tab in a given Temporary Container closes.
+The automatically created Temporary Containers get removed 5 seconds after the Last Tab in a given Temporary Container closes. Sometimes removing the Temporary Container doesn't work immediately - but don't worry, not needed Temporary Containers will automatically get removed eventually!
 
 
 ## Limitations
-
-* Opening a "New Window" or starting Firefox, only opens a Temporary Container if you don't set the Preference "When Firefox starts" to "Show a blank page". The reason for this is that new Tabs get (often/sometimes) created as url: "about:blank", title: "New Tab" and status: "complete" although they might start to load additional content - so there's (afaik) no way to differentiate between a Blank Tab on start and a Blank Tab that might load content. You also can't read the setting for "When Firefox start" and handle this case based on the setting, because there's (afaik) no API for that.
-
+* Opening a "New Window" or starting Firefox, only opens a Temporary Container if you <strong>don't</strong> set the Preference "When Firefox starts" to "Show a blank page". Although as soon as you start navigating to a http(s) Website it will convert the Tab to a Temporary Container one.
 * Disabled in "Private Windows" since Firefox doesn't support it
+* MiddleMouse and Ctrl+LeftMouse Click don't work on addons.mozilla.org
 
 
-## Technical Notes
+## Known Bugs
+This Add-on is in rapid development. Expect Bugs. Currently in the Bugfix queue are:
+* Disable/Enable sometimes breaks the Add-on because of local storage problems. Remove/Add as workaround to get it working again.
 
-Since it's not possible to preventDefault a click event when a MiddleMouse Click is happening (mouseup/mousedown) without constantly checking for <a> elements on the page and attaching click events to them, I opted to instead send the clicked link to the background process and then register a webRequest.onBeforeRequest handler for explicitly that link. The handler then creates a new tab and removes the handler after that. The other benefit of that is, that by not calling preventDefault it won't break anything on the originating website.
+
+## Privacy
+There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think that this Add-on enhances privacy by providing Temporary/Throw-away/Disposable Containers whenever possible, while not breaking normal navigation or e.g. OAuth redirects on a given Website.
+
 
 ## License
 

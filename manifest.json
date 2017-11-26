@@ -34,7 +34,11 @@
       },
       "description": "Open a new Tab in a new Temporary Container"
     }
-},
+  },
+
+  "options_ui": {
+    "page": "options.html"
+  },
 
   "permissions": [
     "<all_urls>",
