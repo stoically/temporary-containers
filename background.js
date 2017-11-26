@@ -104,12 +104,15 @@ const createTabInTempContainer = async (tab, url) => {
 
     try {
       const active = url ? false : true;
-      const newTab = await browser.tabs.create({
+      const newTabOptions = {
         url,
         active,
         cookieStoreId: contextualIdentity.cookieStoreId,
-        index: tab.index + 1
-      });
+      };
+      if (tab) {
+        newTabOptions.index = tab.index + 1;
+      }
+      const newTab = await browser.tabs.create(newTabOptions);
       debug('new tab in temp container created', newTab);
       storage.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
       await persistStorage();
@@ -123,8 +126,11 @@ const createTabInTempContainer = async (tab, url) => {
 
 
 const reloadTabInTempContainer = async (tab, url) => {
+  await createTabInTempContainer(tab, url);
+  if (!tab) {
+    return;
+  }
   try {
-    await createTabInTempContainer(tab, url);
     await browser.tabs.remove(tab.id);
     debug('removed old tab', tab.id);
   } catch (error) {
@@ -178,6 +184,7 @@ const maybeReloadTabInTempContainer = async (tab) => {
         }
       }
     });
+
     debug('tab already belongs to a container', tab, JSON.stringify(linkClickedState));
     return;
   }
@@ -240,7 +247,6 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
   }, 5000);
 });
 
-
 browser.runtime.onMessage.addListener(async (message, sender) => {
   if (typeof message !== 'object' || !message.linkClicked) {
     return;
@@ -270,15 +276,20 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 
   const onBeforeRequest = async (request) => {
     debug('onBeforeRequest', request);
-    const tab = await browser.tabs.get(request.tabId);
-    debug('requested tab information', tab);
-    if (!tab) {
-      debug('we have no information for that tab. ff broken?!', request.tabId);
-      return { cancel: true };
+    let tab;
+    try {
+      tab = await browser.tabs.get(request.tabId);
+      debug('requested tab information', tab);
+    } catch (error) {
+      debug('retrieving tab information failed', error);
     }
 
-    if (!linkClickedState[request.url] ||
-        !linkClickedState[request.url].tabs[tab.openerTabId]) {
+    if (!tab) {
+      debug('multi-account-containers mightve removed the tab, continue anyway', request.tabId);
+    }
+
+    if (tab && (!linkClickedState[request.url] ||
+       !linkClickedState[request.url].tabs[tab.openerTabId])) {
       debug('the tab loading the url didnt get opened from any of the message sender tabs ' +
         'we can ignore this silently because it probably just means that someone opened ' +
         'the same link quick in succession', request, tab, linkClickedState);
@@ -296,12 +307,13 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     return { cancel: true };
   };
 
-  let url = message.linkClicked.href;
+  let urls = [message.linkClicked.href];
   if (message.linkClicked.href.includes('#')) {
-    url = message.linkClicked.href.split('#')[0];
+    // seems like ff57 doesnt match hashtags in urls
+    urls.push(message.linkClicked.href.split('#')[0]);
   }
   browser.webRequest.onBeforeRequest.addListener(onBeforeRequest, {
-    urls: [url],
+    urls,
     types: ['main_frame']
   }, [
     'blocking'
