@@ -5,18 +5,22 @@ const savePreferences = async (event) => {
     automaticMode: document.querySelector('#automaticMode').checked
   };
 
+  const messageBox = document.querySelector('#message');
   try {
-    await browser.storage.local.set({
-      preferences
+    await browser.runtime.sendMessage({
+      savePreferences: {
+        preferences
+      }
     });
-    const messageBox = document.querySelector('#message');
+
     messageBox.innerHTML = 'Preferences saved.';
     setTimeout(() => {
       messageBox.innerHTML = '';
     }, 5000);
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.log('browser.storage.local.set error', error);
+    console.log('error while saving preferences', error);
+    messageBox.innerHTML = 'Error while saving preferences!';
   }
 };
 

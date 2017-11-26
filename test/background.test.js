@@ -95,7 +95,7 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
   browser.runtime.onStartup.addListener.yield();
   await nextTick();
   browser.contextualIdentities.create.should.have.been.calledOnce;
-  browser.storage.local.get.should.have.been.calledTwice;
+  browser.storage.local.get.should.have.been.calledOnce;
   browser.tabs.create.should.have.been.calledOnce;
   browser.tabs.remove.should.have.been.calledOnce;
 
@@ -113,7 +113,7 @@ test('runtime.onStartup: loadStorage and maybe reload already open Tab in Tempor
   browser.runtime.onStartup.addListener.yield();
   await nextTick();
   browser.contextualIdentities.create.should.have.been.calledOnce;
-  browser.storage.local.get.should.have.been.calledTwice;
+  browser.storage.local.get.should.have.been.calledOnce;
   browser.tabs.create.should.have.been.calledOnce;
   browser.tabs.remove.should.have.been.calledOnce;
 

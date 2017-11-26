@@ -11,6 +11,7 @@ const linkClickedState = {};
 let storage;
 const loadStorage = async () => {
   try {
+    let storagePersistNeeded = false;
     storage = await browser.storage.local.get();
     if (!Object.keys(storage).length) {
       storage = {
@@ -20,11 +21,21 @@ const loadStorage = async () => {
         preferences: {}
       };
       debug('storage empty, setting defaults', storage);
+      storagePersistNeeded = true;
     } else {
       debug('storage loaded', storage);
     }
+    // set preferences defaults if not present
     if (!storage.preferences) {
       storage.preferences = {};
+      storagePersistNeeded = true;
+    }
+    if (storage.preferences.automaticMode === undefined) {
+      storage.preferences.automaticMode = true;
+      storagePersistNeeded = true;
+    }
+
+    if (storagePersistNeeded) {
       await persistStorage();
     }
   } catch (error) {
@@ -34,23 +45,9 @@ const loadStorage = async () => {
 };
 
 
-const getPreference = async (preferenceName) => {
-  try {
-    const { preferences } = await browser.storage.local.get('preferences');
-    return preferences[preferenceName];
-  } catch (error) {
-    debug('loading preference failed', error);
-  }
-};
-
-
 const persistStorage = async () => {
   try {
-    await browser.storage.local.set({
-      tempContainerCounter: storage.tempContainerCounter,
-      tempContainers: storage.tempContainers,
-      tabContainerMap: storage.tabContainerMap
-    });
+    await browser.storage.local.set(storage);
     debug('storage persisted');
   } catch (error) {
     debug('something went wrong while trying to persist the storage', error);
@@ -160,9 +157,8 @@ const reloadTabInTempContainer = async (tab, url) => {
 
 
 const maybeReloadTabInTempContainer = async (tab) => {
-  const automaticMode = await getPreference('automaticMode');
-  debug('automaticMode', automaticMode);
-  if (!automaticMode) {
+  debug('automaticMode', storage.preferences.automaticMode);
+  if (!storage.preferences.automaticMode) {
     return;
   }
 
@@ -276,7 +272,18 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
 });
 
 browser.runtime.onMessage.addListener(async (message, sender) => {
-  if (typeof message !== 'object' || !message.linkClicked) {
+  if (typeof message !== 'object') {
+    return;
+  }
+
+  if (message.savePreferences) {
+    debug('saving preferences', message, sender);
+    storage.preferences = message.savePreferences.preferences;
+    await persistStorage();
+    return;
+  }
+
+  if (!message.linkClicked) {
     return;
   }
   debug('message from userscript received', message, sender);
