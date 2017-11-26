@@ -5,6 +5,7 @@
 Open Tabs in new Temporary Containers when:
 * Clicking the "Temporary Containers"-Icon
 * Pressing the Alt+C Shortcut
+* Clicking on "Open Link in New Temporary Container Tab" in the RightClick ContextMenu on a Link on a Website
 
 With "Automatic Mode" active (default):
 * Clicking the "New Tab"-Icon
@@ -17,7 +18,7 @@ With "Automatic Mode" active (default):
 Never open Tabs in new Temporary Containers when:
 * Regular click on a Link on a Website
 * Website redirects or opens new Tab itself
-* Clicking "New Tab" in the RightClick ContextMenu on a Link on a Website
+* Clicking "Open Link in New (Container) Tab" in the RightClick ContextMenu on a Link on a Website
 * Pressing Shift+LeftMouseClick on a Link on a Website
 
 [Get it here.](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/)
@@ -38,7 +39,7 @@ The automatically created Temporary Containers get removed 5 seconds after the L
 
 ## Known Bugs
 This Add-on is in rapid development. Expect Bugs. Currently in the Bugfix queue are:
-* Disable/Enable sometimes breaks the Add-on because of local storage problems. Remove/Add as workaround to get it working again.
+* Disable/Enable sometimes breaks the Add-on because of local storage problems. Remove/Add and/or Restart FF as workaround to get it working again.
 
 
 ## Privacy

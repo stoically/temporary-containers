@@ -1,3 +1,4 @@
+const messageBox = document.querySelector('#message');
 const savePreferences = async (event) => {
   event.preventDefault();
 
@@ -5,7 +6,6 @@ const savePreferences = async (event) => {
     automaticMode: document.querySelector('#automaticMode').checked
   };
 
-  const messageBox = document.querySelector('#message');
   try {
     await browser.runtime.sendMessage({
       savePreferences: {
@@ -26,16 +26,14 @@ const savePreferences = async (event) => {
 
 const restorePreferences = async () => {
   const setCurrentPreferences = (preferences) => {
-    if (!preferences) {
-      preferences = {};
-    }
-    if (preferences.automaticMode === undefined) {
-      preferences.automaticMode = true;
-    }
     document.querySelector('#automaticMode').checked = preferences.automaticMode;
   };
 
   const { preferences } = await browser.storage.local.get('preferences');
+  if (!preferences) {
+    messageBox.innerHTML = 'Error while loading preferences.';
+    return;
+  }
   setCurrentPreferences(preferences);
 };
 

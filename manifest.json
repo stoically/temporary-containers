@@ -42,6 +42,7 @@
 
   "permissions": [
     "<all_urls>",
+    "contextMenus",
     "contextualIdentities",
     "cookies",
     "storage",

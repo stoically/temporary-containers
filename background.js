@@ -361,6 +361,26 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 });
 
 
+browser.contextMenus.onClicked.addListener((info, tab) => {
+  switch (info.menuItemId)  {
+  case 'open-link-in-new-temporary-container-tab':
+    createTabInTempContainer(tab, info.linkUrl);
+    break;
+  }
+});
+
+
+browser.contextMenus.create({
+  id: 'open-link-in-new-temporary-container-tab',
+  title: 'Open Link in New Temporary Container Tab',
+  contexts: ['link'],
+  icons: {
+    '16': 'icons/page-w-16.svg',
+    '32': 'icons/page-w-32.svg'
+  }
+});
+
+
 browser.browserAction.onClicked.addListener(createTabInTempContainer);
 
 

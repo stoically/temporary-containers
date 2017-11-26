@@ -54,6 +54,12 @@ const browser = global.browser = {
     onClicked: {
       addListener: sinon.stub()
     }
+  },
+  contextMenus: {
+    create: sinon.stub(),
+    onClicked: {
+      addListener: sinon.stub()
+    }
   }
 };
 
