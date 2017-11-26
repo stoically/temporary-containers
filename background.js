@@ -296,8 +296,12 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     return { cancel: true };
   };
 
+  let url = message.linkClicked.href;
+  if (message.linkClicked.href.includes('#')) {
+    url = message.linkClicked.href.split('#')[0];
+  }
   browser.webRequest.onBeforeRequest.addListener(onBeforeRequest, {
-    urls: [message.linkClicked.href],
+    urls: [url],
     types: ['main_frame']
   }, [
     'blocking'
