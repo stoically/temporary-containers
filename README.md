@@ -1,6 +1,4 @@
-# Temporary Containers Firefox Add-on
-
-[![Build Status](https://travis-ci.org/stoically/firefox-add-on-temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/firefox-add-on-temporary-containers)
+# Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.org/stoically/firefox-add-on-temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/firefox-add-on-temporary-containers)
 
 Open Tabs in new Temporary Containers when:
 * Clicking the "Temporary Containers"-Icon
@@ -11,8 +9,8 @@ With "Automatic Mode" active (default):
 * Clicking the "New Tab"-Icon
 * Clicking "New Tab" or "New Window" in the Browser Menu
 * Pressing the Ctrl+T or Ctrl+N Shortcut
-* MiddleMouse Click on a Link on a Website
-* Ctrl+LeftMouse Click on a Link on a Website
+* MiddleMouse Click on a Link on a Website (only if the click originates from a Temporary Container)
+* Ctrl+LeftMouse Click on a Link on a Website (only if the click originates from a Temporary Container)
 * An external Program opens a http(s) Link in the Browser
 
 Never open Tabs in new Temporary Containers when:
