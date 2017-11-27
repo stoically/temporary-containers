@@ -1,4 +1,24 @@
+let preferences = {};
+const initialize = async () => {
+  try {
+    const storage = await browser.storage.local.get('preferences');
+    preferences = storage.preferences;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('something went wrong while loading preferences', error);
+    // TODO: inform user? retry?
+    return;
+  }
+};
+initialize();
+
 document.body.addEventListener('mouseup', async function(event) {
+  // is automatic mode enabled anyway?
+  if (!preferences.automaticMode) {
+    return;
+  }
+
+  // event valid?
   if (typeof event !== 'object' || typeof event.target !== 'object') {
     return;
   }
@@ -16,18 +36,6 @@ document.body.addEventListener('mouseup', async function(event) {
   // check for a element with href
   const aElement = event.target.closest('a');
   if (typeof aElement !== 'object' || !aElement.href) {
-    return;
-  }
-
-  // is automatic mode enabled anyway?
-  try {
-    const { preferences } = await browser.storage.local.get('preferences');
-    if (!preferences.automaticMode) {
-      return;
-    }
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log('something went wrong while loading preferences', error);
     return;
   }
 
