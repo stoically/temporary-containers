@@ -12,7 +12,7 @@ With "Automatic Mode" active (default):
 * An external Program opens a http(s) Link in the Browser
 * MiddleMouse Click on a Link on a Website*
 * Ctrl+LeftMouse Click on a Link on a Website*
-* \*Only when the target Link has another Domain than the one in the Tab
+  \*Only if the Target Link has another Domain than the Website
 
 Never open Tabs in new Temporary Containers when:
 * Regular click on a Link on a Website
@@ -40,6 +40,10 @@ The automatically created Temporary Containers get removed 5 seconds after the L
 
 ## Privacy
 There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think that this Add-on enhances privacy by providing Temporary/Throw-away/Disposable Containers whenever possible, while not breaking normal navigation or e.g. OAuth redirects on a given Website.
+
+
+## Libraries
+The included [SemanticUI](https://semantic-ui.com/) and its dependency [JQuery](https://jquery.com/) are **only** used to style the Preferences/Options Page.
 
 
 ## License
