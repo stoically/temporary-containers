@@ -166,8 +166,6 @@ const createTabInTempContainer = async (tab, url) => {
     debug('tempContainersNumbers', tempContainersNumbers);
     if (!tempContainersNumbers.length) {
       tempContainerNumber = 1;
-    } else if (tempContainersNumbers.length === 1) {
-      tempContainerNumber = 2;
     } else {
       const maxContainerNumber = Math.max.apply(Math, tempContainersNumbers);
       debug('maxContainerNumber', maxContainerNumber, tempContainersNumbers);
