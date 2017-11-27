@@ -5,6 +5,7 @@
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ add preference for container number (global count vs reusing numbers) @done(2017-11-27 20:38)
   ✔ check tld for clicked links instead of originating container @done(2017-11-27 15:04)
   ✔ remove looking up preferences on click and do it once on page load instead @done(2017-11-27 14:47)
   ✔ make container name & color configurable @done(2017-11-27 12:43)

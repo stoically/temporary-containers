@@ -42,7 +42,8 @@ const preferencesDefault = {
   containerColor: 'red',
   containerColorRandom: false,
   containerIcon: 'circle',
-  containerIconRandom: false
+  containerIconRandom: false,
+  containerNumberMode: 'keep'
 };
 
 const linkClickedState = {};
@@ -99,14 +100,19 @@ const persistStorage = async () => {
 
 
 const tryToRemoveContainer = async (cookieStoreId) => {
-  const tempTabs = await browser.tabs.query({
-    cookieStoreId
-  });
-  if (tempTabs.length > 0) {
-    debug('not removing container because it still has tabs', cookieStoreId, tempTabs.length);
+  try {
+    const tempTabs = await browser.tabs.query({
+      cookieStoreId
+    });
+    if (tempTabs.length > 0) {
+      debug('not removing container because it still has tabs', cookieStoreId, tempTabs.length);
+      return;
+    }
+    debug('no tabs in temp container anymore, deleting container', cookieStoreId);
+  } catch (error) {
+    debug('failed to query tabs', cookieStoreId, error);
     return;
   }
-  debug('no tabs in temp container anymore, deleting container', cookieStoreId);
   try {
     const contextualIdentity = await browser.contextualIdentities.remove(cookieStoreId);
     if (!contextualIdentity) {
@@ -114,7 +120,6 @@ const tryToRemoveContainer = async (cookieStoreId) => {
     } else {
       debug('container removed', cookieStoreId);
     }
-    delete storage.tempContainers[cookieStoreId];
     Object.keys(storage.tabContainerMap).map((tabId) => {
       if (storage.tabContainerMap[tabId] === cookieStoreId) {
         delete storage.tabContainerMap[tabId];
@@ -124,6 +129,7 @@ const tryToRemoveContainer = async (cookieStoreId) => {
   } catch (error) {
     debug('error while removing container', cookieStoreId, error);
   }
+  delete storage.tempContainers[cookieStoreId];
 };
 
 
@@ -150,8 +156,34 @@ browser.runtime.onInstalled.addListener(async (details) => {
 
 
 const createTabInTempContainer = async (tab, url) => {
-  storage.tempContainerCounter++;
-  const containerName = `${storage.preferences.containerNamePrefix}${storage.tempContainerCounter}`;
+  let tempContainerNumber;
+  if (storage.preferences.containerNumberMode === 'keep') {
+    storage.tempContainerCounter++;
+    tempContainerNumber = storage.tempContainerCounter;
+  }
+  if (storage.preferences.containerNumberMode === 'reuse') {
+    const tempContainersNumbers = Object.values(storage.tempContainers).sort();
+    debug('tempContainersNumbers', tempContainersNumbers);
+    if (!tempContainersNumbers.length) {
+      tempContainerNumber = 1;
+    } else if (tempContainersNumbers.length === 1) {
+      tempContainerNumber = 2;
+    } else {
+      const maxContainerNumber = Math.max.apply(Math, tempContainersNumbers);
+      debug('maxContainerNumber', maxContainerNumber, tempContainersNumbers);
+      for (let i = 1; i < maxContainerNumber; i++) {
+        debug('tempContainersNumbers[i]', i, tempContainersNumbers[i]);
+        if (!tempContainersNumbers.includes(i)) {
+          tempContainerNumber = i;
+          break;
+        }
+      }
+      if (!tempContainerNumber) {
+        tempContainerNumber = maxContainerNumber + 1;
+      }
+    }
+  }
+  const containerName = `${storage.preferences.containerNamePrefix}${tempContainerNumber}`;
   try {
     let containerColor = storage.preferences.containerColor;
     if (storage.preferences.containerColorRandom) {
@@ -167,7 +199,7 @@ const createTabInTempContainer = async (tab, url) => {
       icon: containerIcon
     });
     debug('contextualIdentity created', contextualIdentity);
-    storage.tempContainers[contextualIdentity.cookieStoreId] = true;
+    storage.tempContainers[contextualIdentity.cookieStoreId] = tempContainerNumber;
     await persistStorage();
 
     try {
@@ -320,7 +352,7 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
   debug('queuing container removal because of tab removal', cookieStoreId, tabId);
   setTimeout(() => {
     tryToRemoveContainer(cookieStoreId);
-  }, 5000);
+  }, 500);
 });
 
 browser.runtime.onMessage.addListener(async (message, sender) => {

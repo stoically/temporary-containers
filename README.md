@@ -27,7 +27,7 @@ If you have any Suggestions, Feedback or BugReports please make sure to leave me
 
 Works together with [Multi-Account Containers](https://github.com/mozilla/multi-account-containers).
 
-The automatically created Temporary Containers get removed 5 seconds after the Last Tab in a given Temporary Container closes. Sometimes removing the Temporary Container doesn't work immediately - but don't worry, not needed Temporary Containers will automatically get removed eventually!
+The automatically created Temporary Containers get removed 0.5 seconds after the Last Tab in a given Temporary Container closes. Sometimes removing the Temporary Container doesn't work immediately - but don't worry, not needed Temporary Containers will automatically get removed eventually!
 
 [Learn more about Containers](https://addons.mozilla.org/en-US/firefox/addon/multi-account-containers/)
 

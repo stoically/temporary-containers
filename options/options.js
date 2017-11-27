@@ -24,7 +24,8 @@ const savePreferences = async (event) => {
     containerColor: document.querySelector('#containerColor').value,
     containerColorRandom: document.querySelector('#containerColorRandom').checked,
     containerIcon: document.querySelector('#containerIcon').value,
-    containerIconRandom: document.querySelector('#containerIconRandom').checked
+    containerIconRandom: document.querySelector('#containerIconRandom').checked,
+    containerNumberMode: document.querySelector('#containerNumberMode').value
   };
 
   try {
@@ -53,6 +54,7 @@ const restorePreferences = async () => {
     document.querySelector('#containerColorRandom').checked = preferences.containerColorRandom;
     $('#containerIcon').dropdown('set selected', preferences.containerIcon);
     document.querySelector('#containerIconRandom').checked = preferences.containerIconRandom;
+    $('#containerNumberMode').dropdown('set selected', preferences.containerNumberMode);
   };
 
   const { preferences } = await browser.storage.local.get('preferences');
