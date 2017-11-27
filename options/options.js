@@ -1,20 +1,19 @@
 
-const messageBox = document.querySelector('#message');
+const messageBox = $('#message');
 const showMessage = (message) => {
-  messageBox.innerHTML = message;
-  messageBox.classList.add('positive');
-  messageBox.classList.remove('negative');
-  messageBox.classList.remove('hidden');
+  messageBox.html(message);
+  messageBox.addClass('positive');
+  messageBox.removeClass('negative');
+  messageBox.removeClass('hidden');
   setTimeout(() => {
-    messageBox.innerHTML = '';
-    messageBox.classList.add('hidden');
+    messageBox.addClass('hidden');
   }, 3000);
 };
 const showError = (error) => {
-  messageBox.innerHTML = error;
-  messageBox.classList.add('negative');
-  messageBox.classList.remove('positive');
-  messageBox.classList.remove('hidden');
+  messageBox.html(error);
+  messageBox.addClass('negative');
+  messageBox.removeClass('positive');
+  messageBox.removeClass('hidden');
 };
 const savePreferences = async (event) => {
   event.preventDefault();
