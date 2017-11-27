@@ -11,7 +11,7 @@ With "Automatic Mode" active (default):
 * Pressing the Ctrl+T or Ctrl+N Shortcut
 * An external Program opens a http(s) Link in the Browser
 * MiddleMouse Click on a Link on a Website*
-* Ctrl+LeftMouse Click on a Link on a Website*
+* Ctrl+LeftMouse Click on a Link on a Website*  
   \*Only if the Target Link has another Domain than the Website
 
 Never open Tabs in new Temporary Containers when:
