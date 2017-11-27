@@ -135,7 +135,9 @@ const tryToRemoveContainers = () => {
 
 
 const initialize = async () => {
-  await loadStorage();
+  if (!storage) {
+    await loadStorage();
+  }
   tryToRemoveContainers();
 };
 
@@ -282,6 +284,7 @@ const maybeReloadTabInTempContainer = async (tab) => {
 
 
 browser.runtime.onStartup.addListener(async () => {
+  await initialize();
   // extension loads after the first tab opens most of the time
   // lets see if we can reopen the first tab
   const tempTabs = await browser.tabs.query({});
@@ -349,10 +352,9 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     sameTLD = true;
   } else {
     const splittedClickedHostname = parsedClickedURL.hostname.split('.');
-    if (splittedClickedHostname.length > 1) {
-      if (parsedSenderTabURL.hostname.endsWith(splittedClickedHostname.splice(-2).join('.'))) {
-        sameTLD = true;
-      }
+    if (splittedClickedHostname.length > 1 &&
+        parsedSenderTabURL.hostname.endsWith(splittedClickedHostname.splice(-2).join('.'))) {
+      sameTLD = true;
     }
   }
   if (sameTLD) {

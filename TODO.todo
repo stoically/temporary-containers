@@ -1,5 +1,6 @@
 ☐ still opens two tabs when "always open in container" is active
 ☐ links that get replaced by temporary container tab and not intercepted by webrequest.onbefore do probably start a request (e.g. external links)
+☐ refactor tests
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
