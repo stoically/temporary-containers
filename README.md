@@ -33,9 +33,10 @@ The automatically created Temporary Containers get removed 0.5 seconds after the
 
 
 ## Limitations
-* Opening a "New Window" or starting Firefox, only opens a Temporary Container if you <strong>don't</strong> set the Preference "When Firefox starts" to "Show a blank page". Although as soon as you start navigating to a http(s) Website it will convert the Tab to a Temporary Container one.
 * Disabled in "Private Windows" since Firefox doesn't support it
-* MiddleMouse and Ctrl+LeftMouse Click don't work on addons.mozilla.org
+* In Automatic Mode:
+  * Opening a "New Window" or starting Firefox, only opens a Temporary Container if you <strong>don't</strong> set the Preference "When Firefox starts" to "Show a blank page". Although as soon as you start navigating to a http(s) Website it will convert the Tab to a Temporary Container one.
+  * MiddleMouse and Ctrl+LeftMouse Click don't work on addons.mozilla.org
 
 
 ## Privacy
@@ -43,7 +44,7 @@ There's a discussion about [Moving between containers](https://github.com/mozill
 
 
 ## Libraries
-The included [SemanticUI](https://semantic-ui.com/) and its dependency [JQuery](https://jquery.com/) are **only** used to style the Preferences/Options Page.
+The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are **only** used to style the Preferences/Options Page.
 
 
 ## License
