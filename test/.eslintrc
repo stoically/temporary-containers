@@ -2,8 +2,5 @@
     "env": {
         "browser": false,
         "node": true
-    },
-    "globals": {
-        "test": false
     }
 }

@@ -1,4 +1,21 @@
+
 const messageBox = document.querySelector('#message');
+const showMessage = (message) => {
+  messageBox.innerHTML = message;
+  messageBox.classList.add('positive');
+  messageBox.classList.remove('negative');
+  messageBox.classList.remove('hidden');
+  setTimeout(() => {
+    messageBox.innerHTML = '';
+    messageBox.classList.add('hidden');
+  }, 3000);
+};
+const showError = (error) => {
+  messageBox.innerHTML = error;
+  messageBox.classList.add('negative');
+  messageBox.classList.remove('positive');
+  messageBox.classList.remove('hidden');
+};
 const savePreferences = async (event) => {
   event.preventDefault();
 
@@ -18,30 +35,30 @@ const savePreferences = async (event) => {
       }
     });
 
-    messageBox.innerHTML = 'Preferences saved.';
-    setTimeout(() => {
-      messageBox.innerHTML = '';
-    }, 5000);
+    showMessage('Preferences saved.');
+
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('error while saving preferences', error);
-    messageBox.innerHTML = 'Error while saving preferences!';
+    showError('Error while saving preferences!');
   }
 };
 
 const restorePreferences = async () => {
+  $('.ui.dropdown').dropdown();
+  $('.ui.checkbox').checkbox();
   const setCurrentPreferences = (preferences) => {
     document.querySelector('#automaticMode').checked = preferences.automaticMode;
     document.querySelector('#containerNamePrefix').value = preferences.containerNamePrefix;
-    document.querySelector('#containerColor').value = preferences.containerColor;
-    document.querySelector('#containerColorRandom').value = preferences.containerColorRandom;
-    document.querySelector('#containerIcon').value = preferences.containerIcon;
-    document.querySelector('#containerIconRandom').value = preferences.containerIconRandom;
+    $('#containerColor').dropdown('set selected', preferences.containerColor);
+    document.querySelector('#containerColorRandom').checked = preferences.containerColorRandom;
+    $('#containerIcon').dropdown('set selected', preferences.containerIcon);
+    document.querySelector('#containerIconRandom').checked = preferences.containerIconRandom;
   };
 
   const { preferences } = await browser.storage.local.get('preferences');
   if (!preferences) {
-    messageBox.innerHTML = 'Error while loading preferences.';
+    showError('Error while loading preferences.');
     return;
   }
   setCurrentPreferences(preferences);

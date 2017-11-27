@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="semantic/semantic.min.css">
+  </head>
+
+  <body>
+  <div class="ui grid">
+    <form class="ui form four wide column">
+      <div class="field" data-tooltip="Change does not apply to already open Tabs. They need to be reloaded." data-position="right center">
+        <div class="ui checkbox">
+          <input type="checkbox" id="automaticMode">
+          <label>Automatic Mode (<a href="https://github.com/stoically/firefox-add-on-temporary-containers#readme">what's that?</a>)
+          </label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Container Name Prefix</label>
+        <input type="text" id="containerNamePrefix">
+      </div>
+      <div class="field">
+        <label>Container Color</label>
+        <select id="containerColor" class="ui fluid dropdown">
+          <option value="blue">blue</option>
+          <option value="turquoise">turquoise</option>
+          <option value="green">green</option>
+          <option value="yellow">yellow</option>
+          <option value="orange">orange</option>
+          <option value="red">red</option>
+          <option value="pink">pink</option>
+          <option value="purple">purple</option>
+        </select>
+      </div>
+      <div class="field">
+         <div class="ui checkbox">
+           <input type="checkbox" id="containerColorRandom">
+           <label>Random Container Color</label>
+         </div>
+      </div>
+      <div class="field">
+        <label>Container Icon</label>
+        <select id="containerIcon" class="ui fluid dropdown">
+          <option value="fingerprint">fingerprint</option>
+          <option value="briefcase">briefcase</option>
+          <option value="dollar">dollar</option>
+          <option value="cart">cart</option>
+          <option value="circle">circle</option>
+          <option value="gift">gift</option>
+          <option value="vacation">vacation</option>
+          <option value="food">food</option>
+          <option value="fruit">fruit</option>
+          <option value="pet">pet</option>
+          <option value="tree">tree</option>
+          <option value="chill">chill</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="ui checkbox">
+          <input type="checkbox" id="containerIconRandom">
+          <label>Random Container Icon</label>
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="ui button primary">Save</button>
+      </div>
+      <div id="message" class="ui positive message hidden">
+      </div>
+    </form>
+
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="semantic/semantic.min.js"></script>
+    <script src="options.js"></script>
+  </div>
+  </body>
+
+</html>
