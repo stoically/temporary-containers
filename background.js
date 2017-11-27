@@ -6,6 +6,44 @@ const debug = function() {
   // eslint-disable-next-line no-console
   console.log(...arguments);
 };
+debug.info = function() {
+  // eslint-disable-next-line no-console
+  console.info(...arguments);
+};
+
+const containerColors = [
+  'blue',
+  'turquoise',
+  'green',
+  'yellow',
+  'orange',
+  'red',
+  'pink',
+  'purple',
+];
+const containerIcons = [
+  'fingerprint',
+  'briefcase',
+  'dollar',
+  'cart',
+  'circle',
+  'gift',
+  'vacation',
+  'food',
+  'fruit',
+  'pet',
+  'tree',
+  'chill',
+];
+
+const preferencesDefault = {
+  automaticMode: true,
+  containerNamePrefix: 'tmp',
+  containerColor: 'red',
+  containerColorRandom: false,
+  containerIcon: 'circle',
+  containerIconRandom: false
+};
 
 const linkClickedState = {};
 let storage;
@@ -18,28 +56,33 @@ const loadStorage = async () => {
         tempContainerCounter: 0,
         tempContainers: {},
         tabContainerMap: {},
-        preferences: {}
+        preferences: preferencesDefault
       };
-      debug('storage empty, setting defaults', storage);
+      debug.info('storage empty, setting defaults', storage);
       storagePersistNeeded = true;
     } else {
-      debug('storage loaded', storage);
+      debug.info('storage loaded', storage);
     }
     // set preferences defaults if not present
     if (!storage.preferences) {
-      storage.preferences = {};
+      debug.info('no preferences found, setting defaults', preferencesDefault);
+      storage.preferences = preferencesDefault;
       storagePersistNeeded = true;
-    }
-    if (storage.preferences.automaticMode === undefined) {
-      storage.preferences.automaticMode = true;
-      storagePersistNeeded = true;
+    } else {
+      Object.keys(preferencesDefault).map(key => {
+        if (storage.preferences[key] === undefined) {
+          debug.info('preference not found, setting default', key, preferencesDefault[key]);
+          storage.preferences[key] = preferencesDefault[key];
+          storagePersistNeeded = true;
+        }
+      });
     }
 
     if (storagePersistNeeded) {
       await persistStorage();
     }
   } catch (error) {
-    debug('error while loading local storage', error);
+    debug.info('error while loading local storage', error);
     // TODO: stop execution, inform user and/or retry?
   }
 };
@@ -48,9 +91,9 @@ const loadStorage = async () => {
 const persistStorage = async () => {
   try {
     await browser.storage.local.set(storage);
-    debug('storage persisted');
+    debug.info('storage persisted');
   } catch (error) {
-    debug('something went wrong while trying to persist the storage', error);
+    debug.info('something went wrong while trying to persist the storage', error);
   }
 };
 
@@ -101,18 +144,25 @@ browser.runtime.onInstalled.addListener(async (details) => {
   if (details.temporary) {
     DEBUG = true;
   }
-  await initialize();
 });
 
 
 const createTabInTempContainer = async (tab, url) => {
   storage.tempContainerCounter++;
-  const containerName = `TempContainer${storage.tempContainerCounter}`;
+  const containerName = `${storage.preferences.containerNamePrefix}${storage.tempContainerCounter}`;
   try {
+    let containerColor = storage.preferences.containerColor;
+    if (storage.preferences.containerColorRandom) {
+      containerColor = containerColors[Math.floor(Math.random() * containerColors.length)];
+    }
+    let containerIcon = storage.preferences.containerIcon;
+    if (storage.preferences.containerIconRandom) {
+      containerIcon = containerIcons[Math.floor(Math.random() * containerIcons.length)];
+    }
     const contextualIdentity = await browser.contextualIdentities.create({
       name: containerName,
-      color: 'red',
-      icon: 'circle'
+      color: containerColor,
+      icon: containerIcon
     });
     debug('contextualIdentity created', contextualIdentity);
     storage.tempContainers[contextualIdentity.cookieStoreId] = true;
@@ -232,7 +282,6 @@ const maybeReloadTabInTempContainer = async (tab) => {
 
 
 browser.runtime.onStartup.addListener(async () => {
-  await initialize();
   // extension loads after the first tab opens most of the time
   // lets see if we can reopen the first tab
   const tempTabs = await browser.tabs.query({});
@@ -383,6 +432,7 @@ browser.contextMenus.create({
 
 browser.browserAction.onClicked.addListener(createTabInTempContainer);
 
+initialize();
 
 setInterval(() => {
   debug('container removal interval', storage.tempContainers);

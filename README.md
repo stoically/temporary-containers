@@ -28,16 +28,13 @@ Works together with [Multi-Account Containers](https://github.com/mozilla/multi-
 
 The automatically created Temporary Containers get removed 5 seconds after the Last Tab in a given Temporary Container closes. Sometimes removing the Temporary Container doesn't work immediately - but don't worry, not needed Temporary Containers will automatically get removed eventually!
 
+[Learn more about Containers](https://addons.mozilla.org/en-US/firefox/addon/multi-account-containers/)
+
 
 ## Limitations
 * Opening a "New Window" or starting Firefox, only opens a Temporary Container if you <strong>don't</strong> set the Preference "When Firefox starts" to "Show a blank page". Although as soon as you start navigating to a http(s) Website it will convert the Tab to a Temporary Container one.
 * Disabled in "Private Windows" since Firefox doesn't support it
 * MiddleMouse and Ctrl+LeftMouse Click don't work on addons.mozilla.org
-
-
-## Known Bugs
-This Add-on is in rapid development. Expect Bugs. Currently in the Bugfix queue are:
-* Disable/Enable sometimes breaks the Add-on because of local storage problems. Remove/Add and/or Restart FF as workaround to get it working again.
 
 
 ## Privacy

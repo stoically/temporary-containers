@@ -3,7 +3,12 @@ const savePreferences = async (event) => {
   event.preventDefault();
 
   const preferences = {
-    automaticMode: document.querySelector('#automaticMode').checked
+    automaticMode: document.querySelector('#automaticMode').checked,
+    containerNamePrefix: document.querySelector('#containerNamePrefix').value,
+    containerColor: document.querySelector('#containerColor').value,
+    containerColorRandom: document.querySelector('#containerColorRandom').checked,
+    containerIcon: document.querySelector('#containerIcon').value,
+    containerIconRandom: document.querySelector('#containerIconRandom').checked
   };
 
   try {
@@ -27,6 +32,11 @@ const savePreferences = async (event) => {
 const restorePreferences = async () => {
   const setCurrentPreferences = (preferences) => {
     document.querySelector('#automaticMode').checked = preferences.automaticMode;
+    document.querySelector('#containerNamePrefix').value = preferences.containerNamePrefix;
+    document.querySelector('#containerColor').value = preferences.containerColor;
+    document.querySelector('#containerColorRandom').value = preferences.containerColorRandom;
+    document.querySelector('#containerIcon').value = preferences.containerIcon;
+    document.querySelector('#containerIconRandom').value = preferences.containerIconRandom;
   };
 
   const { preferences } = await browser.storage.local.get('preferences');
