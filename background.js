@@ -342,8 +342,21 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     return;
   }
 
-  if (!storage.tempContainers[sender.tab.cookieStoreId]) {
-    debug('click came from a non-temporary container, ignore that', message, sender);
+  let sameTLD = false;
+  const parsedSenderTabURL = new URL(sender.tab.url);
+  const parsedClickedURL = new URL(message.linkClicked.href);
+  if (parsedSenderTabURL.hostname === parsedClickedURL.hostname) {
+    sameTLD = true;
+  } else {
+    const splittedClickedHostname = parsedClickedURL.hostname.split('.');
+    if (splittedClickedHostname.length > 1) {
+      if (parsedSenderTabURL.hostname.endsWith(splittedClickedHostname.splice(-2).join('.'))) {
+        sameTLD = true;
+      }
+    }
+  }
+  if (sameTLD) {
+    debug('clicked link goes to the same tld, ignore that', message, sender);
     return;
   }
 

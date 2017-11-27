@@ -1,12 +1,12 @@
-☐ support shortcut for opening tab in current container?
-
-☐ dont open temporary tabs with middle/ctrl+left click when in a non-temporary container? maybe a whitelist which pages are allowed?
 ☐ still opens two tabs when "always open in container" is active
 ☐ links that get replaced by temporary container tab and not intercepted by webrequest.onbefore do probably start a request (e.g. external links)
-☐ if the click intercepter isnt fast enough to send the link to the background, we have no webrequest.onbefore to intercept the link loading
-  (remove looking up preferences on click and do it once on page load instead)
-☐ check tld for clicked links instead of originating container
-✔ make container name & color configurable @done(2017-11-27 12:43)
-✔ handle ondisabled/onenabled @done(2017-11-27 12:43)
-✔ button to open new temporary container @done(2017-11-26 16:55)
-✔ option to deactivate automatic opening of temporary containers @done(2017-11-26 16:55)
+
+
+＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
+Archive:
+  ✔ check tld for clicked links instead of originating container @done(2017-11-27 15:04)
+  ✔ remove looking up preferences on click and do it once on page load instead @done(2017-11-27 14:47)
+  ✔ make container name & color configurable @done(2017-11-27 12:43)
+  ✔ handle ondisabled/onenabled @done(2017-11-27 12:43)
+  ✔ button to open new temporary container @done(2017-11-26 16:55)
+  ✔ option to deactivate automatic opening of temporary containers @done(2017-11-26 16:55)

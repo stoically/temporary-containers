@@ -9,9 +9,10 @@ With "Automatic Mode" active (default):
 * Clicking the "New Tab"-Icon
 * Clicking "New Tab" or "New Window" in the Browser Menu
 * Pressing the Ctrl+T or Ctrl+N Shortcut
-* MiddleMouse Click on a Link on a Website (only if the click originates from a Temporary Container)
-* Ctrl+LeftMouse Click on a Link on a Website (only if the click originates from a Temporary Container)
 * An external Program opens a http(s) Link in the Browser
+* MiddleMouse Click on a Link on a Website*
+* Ctrl+LeftMouse Click on a Link on a Website*
+* \*Only when the target Link has another Domain than the one in the Tab
 
 Never open Tabs in new Temporary Containers when:
 * Regular click on a Link on a Website
