@@ -10,7 +10,13 @@ const defaultStorage = {
   tempContainers: {},
   tabContainerMap: {},
   preferences: {
-    automaticMode: true
+    automaticMode: true,
+    containerNamePrefix: 'tmp',
+    containerColor: 'red',
+    containerColorRandom: false,
+    containerIcon: 'circle',
+    containerIconRandom: false,
+    containerNumberMode: 'keep'
   }
 };
 
@@ -46,7 +52,8 @@ const injectBrowser = () => {
       },
       create: sinon.stub(),
       remove: sinon.stub(),
-      query: sinon.stub()
+      query: sinon.stub(),
+      get: sinon.stub()
     },
     storage: {
       local: {
@@ -78,8 +85,9 @@ const injectBrowser = () => {
 
 const nextTick = () => new Promise(resolve => setTimeout(resolve));
 const loadBackground = async () => {
-  reload('../background');
+  const background = reload('../background');
   await nextTick();
+  return background;
 };
 
 
@@ -167,5 +175,30 @@ describe('runtime.onStartup should sometimes reload already open Tab in Temporar
     browser.runtime.onStartup.addListener.yield();
     await nextTick();
     browser.contextualIdentities.create.should.not.have.been.called;
+  });
+});
+
+
+describe('tabs loading URLs in default-container', () => {
+  it('should reopen the Tab in temporary container', async () => {
+    const fakeRequest = {
+      tabId: 1
+    };
+    const fakeTab = {
+      tabId: 1,
+      cookieStoreId: 'firefox-default'
+    };
+    const fakeContainer = {
+      cookieStoreId: 'firefox-temp'
+    };
+    browser.tabs.get.resolves(fakeTab);
+    browser.contextualIdentities.create.resolves(fakeContainer);
+    browser.tabs.create.resolves(fakeTab);
+    await loadBackground();
+    browser.webRequest.onBeforeRequest.addListener.yield(fakeRequest);
+    await nextTick();
+    browser.contextualIdentities.create.should.have.been.calledOnce;
+    browser.tabs.create.should.have.been.calledOnce;
+    browser.storage.local.set.should.have.been.calledThrice;
   });
 });
