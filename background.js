@@ -207,7 +207,7 @@ const createTabInTempContainer = async (tab, url) => {
         active,
         cookieStoreId: contextualIdentity.cookieStoreId,
       };
-      if (tab.index) {
+      if (tab && tab.index) {
         newTabOptions.index = tab.index + 1;
       }
       debug('creating tab in temporary container', newTabOptions);
