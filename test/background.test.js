@@ -5,21 +5,6 @@ const sinonChai = require('sinon-chai');
 chai.should();
 chai.use(sinonChai);
 
-const defaultStorage = {
-  tempContainerCounter: 0,
-  tempContainers: {},
-  tabContainerMap: {},
-  preferences: {
-    automaticMode: true,
-    containerNamePrefix: 'tmp',
-    containerColor: 'red',
-    containerColorRandom: false,
-    containerIcon: 'circle',
-    containerIconRandom: false,
-    containerNumberMode: 'keep'
-  }
-};
-
 let browser;
 const injectBrowser = () => {
   browser = global.browser = {
@@ -83,13 +68,11 @@ const injectBrowser = () => {
   };
 };
 
-const nextTick = () => new Promise(resolve => setTimeout(resolve));
 const loadBackground = async () => {
   const background = reload('../background');
-  await nextTick();
+  await background.initialize();
   return background;
 };
-
 
 beforeEach(() => {
   injectBrowser();
@@ -97,13 +80,16 @@ beforeEach(() => {
 
 describe('on require', () => {
   it('should register event listeners', async () => {
-    await loadBackground();
-    browser.runtime.onInstalled.addListener.should.have.been.calledOnce;
-    browser.runtime.onStartup.addListener.should.have.been.calledOnce;
-    browser.runtime.onMessage.addListener.should.have.been.calledOnce;
-    browser.tabs.onCreated.addListener.should.have.been.calledOnce;
-    browser.tabs.onUpdated.addListener.should.have.been.calledOnce;
-    browser.tabs.onRemoved.addListener.should.have.been.calledOnce;
+    const background = await loadBackground();
+    browser.browserAction.onClicked.addListener.should.have.been.calledWith(background.createTabInTempContainer);
+    browser.contextMenus.onClicked.addListener.should.have.been.calledWith(background.contextMenusOnClicked);
+    browser.runtime.onInstalled.addListener.should.have.been.calledWith(background.runtimeOnInstalled);
+    browser.runtime.onStartup.addListener.should.have.been.calledWith(background.runtimeOnStartup);
+    browser.runtime.onMessage.addListener.should.have.been.calledWith(background.runtimeOnMessage);
+    browser.tabs.onCreated.addListener.should.have.been.calledWith(background.tabsOnCreated);
+    browser.tabs.onUpdated.addListener.should.have.been.calledWith(background.tabsOnUpdated);
+    browser.tabs.onRemoved.addListener.should.have.been.calledWith(background.tabsOnRemoved);
+    browser.webRequest.onBeforeRequest.addListener.should.have.been.calledWith(background.webRequestOnBeforeRequest);
   });
 
   it('should loadStorage', async () => {
@@ -111,6 +97,7 @@ describe('on require', () => {
     browser.storage.local.get.should.have.been.calledOnce;
   });
 });
+
 
 describe('runtime.onStartup should sometimes reload already open Tab in Temporary Container', () => {
   const fakeContainer = {
@@ -125,12 +112,11 @@ describe('runtime.onStartup should sometimes reload already open Tab in Temporar
     };
 
     browser.tabs.query.resolves([fakeAboutHomeTab]);
-    browser.storage.local.get.resolves(defaultStorage);
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves({id: 1});
-    await loadBackground();
-    browser.runtime.onStartup.addListener.yield();
-    await nextTick();
+    const background = await loadBackground();
+    await background.runtimeOnStartup();
+
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
     browser.tabs.remove.should.have.been.calledOnce;
@@ -143,12 +129,11 @@ describe('runtime.onStartup should sometimes reload already open Tab in Temporar
       url: 'about:newtab'
     };
     browser.tabs.query.resolves([fakeAboutNewTab]);
-    browser.storage.local.get.resolves(defaultStorage);
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves({id: 1});
-    await loadBackground();
-    browser.runtime.onStartup.addListener.yield();
-    await nextTick();
+    const background = await loadBackground();
+    await background.runtimeOnStartup();
+
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
     browser.tabs.remove.should.have.been.calledOnce;
@@ -161,19 +146,17 @@ describe('runtime.onStartup should sometimes reload already open Tab in Temporar
       url: 'about:home'
     };
     browser.tabs.query.resolves([fakeNotDefaultTab]);
-    browser.storage.local.get.resolves(defaultStorage);
-    await loadBackground();
-    browser.runtime.onStartup.addListener.yield();
-    await nextTick();
+    const background = await loadBackground();
+    await background.runtimeOnStartup();
+
     browser.contextualIdentities.create.should.not.have.been.called;
   });
 
   it('two open tabs should not reopen in temporary container', async () => {
     browser.tabs.query.resolves([1,2]);
-    browser.storage.local.get.resolves(defaultStorage);
-    await loadBackground();
-    browser.runtime.onStartup.addListener.yield();
-    await nextTick();
+    const background = await loadBackground();
+    await background.runtimeOnStartup();
+
     browser.contextualIdentities.create.should.not.have.been.called;
   });
 });
@@ -194,11 +177,30 @@ describe('tabs loading URLs in default-container', () => {
     browser.tabs.get.resolves(fakeTab);
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves(fakeTab);
-    await loadBackground();
-    browser.webRequest.onBeforeRequest.addListener.yield(fakeRequest);
-    await nextTick();
+    const background = await loadBackground();
+    await background.webRequestOnBeforeRequest(fakeRequest);
+
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
     browser.storage.local.set.should.have.been.calledThrice;
+  });
+});
+
+
+describe('tabs loading about:home or about:newtab in the default container', () => {
+  it('about:home should reopen in temporary container', async () => {
+    const fakeTab = {
+      url: 'about:home',
+      cookieStoreId: 'firefox-default'
+    };
+    const fakeContainer = {
+      cookieStoreId: 'firefox-temp'
+    };
+    browser.contextualIdentities.create.resolves(fakeContainer);
+    browser.tabs.create.resolves({id: 1});
+    const background = await loadBackground();
+    await background.maybeReloadTabInTempContainer(fakeTab);
+
+    browser.tabs.create.should.have.been.calledOnce;
   });
 });
