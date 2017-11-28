@@ -1,9 +1,9 @@
-☐ refactor tests
 ☐ add alt+n shortcut to open no container tab in automatic mode
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ refactor tests @done(2017-11-28 20:01)
   ✔ links that get replaced by temporary container tab and not intercepted by webrequest.onbefore do maybe start a request (e.g. external links) @done(2017-11-28 02:35)
   ✔ add preference for container number (global count vs reusing numbers) @done(2017-11-27 20:38)
   ✔ check tld for clicked links instead of originating container @done(2017-11-27 15:04)
