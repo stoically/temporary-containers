@@ -1,10 +1,9 @@
-☐ still opens two tabs when "always open in container" is active
-☐ links that get replaced by temporary container tab and not intercepted by webrequest.onbefore do probably start a request (e.g. external links)
 ☐ refactor tests
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ links that get replaced by temporary container tab and not intercepted by webrequest.onbefore do maybe start a request (e.g. external links) @done(2017-11-28 02:35)
   ✔ add preference for container number (global count vs reusing numbers) @done(2017-11-27 20:38)
   ✔ check tld for clicked links instead of originating container @done(2017-11-27 15:04)
   ✔ remove looking up preferences on click and do it once on page load instead @done(2017-11-27 14:47)

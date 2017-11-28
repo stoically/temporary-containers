@@ -304,8 +304,12 @@ const maybeReloadTabInTempContainer = async (tab) => {
 
   if (tab.url.startsWith('https://') ||
       tab.url.startsWith('http://')) {
-    debug('https(s) tab in firefox-default container, reload in temp container', tab);
-    await reloadTabInTempContainer(tab, tab.url);
+    if (tab.openerTabId) {
+      debug('https(s) tab in firefox-default container, reload in temp container', tab);
+      await reloadTabInTempContainer(tab, tab.url);
+    } else {
+      debug('http(s) tab has no openerTabId, probably external, ignoring', tab);
+    }
     return;
   }
 
@@ -352,6 +356,7 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
     tryToRemoveContainer(cookieStoreId);
   }, 500);
 });
+
 
 browser.runtime.onMessage.addListener(async (message, sender) => {
   if (typeof message !== 'object') {
@@ -478,6 +483,46 @@ browser.contextMenus.create({
     '32': 'icons/page-w-32.svg'
   }
 });
+
+
+browser.webRequest.onBeforeRequest.addListener(async (request) => {
+  if (!storage.preferences.automaticMode) {
+    debug('got request but automatic mode is off, ignoring', request);
+    return;
+  }
+
+  if (request.tabId === -1) {
+    debug('onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
+    return;
+  }
+
+  let tab;
+  try {
+    tab = await browser.tabs.get(request.tabId);
+    debug('onbeforeRequest requested tab information', tab);
+  } catch (error) {
+    debug('onbeforeRequest retrieving tab information failed', error);
+    return;
+  }
+
+  if (tab.cookieStoreId !== 'firefox-default') {
+    debug('onBeforeRequest tab belongs to a non-default container, ignoring', tab, request);
+    return;
+  }
+
+  if (tab.openerTabId) {
+    debug('onBeforeRequest tab has openerTabId so this is handled otherwise', tab, request);
+    return;
+  }
+
+  debug('onBeforeRequest this is probably an external link, reload in temp tab', tab, request);
+  await reloadTabInTempContainer(tab, request.url);
+}, {
+  urls: ['<all_urls>'],
+  types: ['main_frame']
+}, [
+  'blocking'
+]);
 
 
 browser.browserAction.onClicked.addListener(createTabInTempContainer);
