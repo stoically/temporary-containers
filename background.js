@@ -240,6 +240,7 @@ const reloadTabInTempContainer = async (tab, url) => {
 };
 
 
+const multiAccountConfirmPage = {};
 const maybeReloadTabInTempContainer = async (tab) => {
   if (!storage.preferences.automaticMode) {
     debug('automatic mode not active, we ignore that', tab);
@@ -256,15 +257,26 @@ const maybeReloadTabInTempContainer = async (tab) => {
   // to handle this in a cleaner fashion
   const multiAccountMatch = tab.url.match(/moz-extension:\/\/[^/]*\/confirm-page.html\?url=/);
   if (multiAccountMatch) {
+    debug('multi-account-containers is intervening', tab);
     const parsedURL = new URL(tab.url);
-    debug('multi-account-containers is intervening', tab, parsedURL);
+    debug('multi-account-containers parsed url', parsedURL);
     const queryParams = parsedURL.search.split('&').map(param => param.split('='));
+    debug('multi-account-containers query params', queryParams);
     const multiAccountTargetURL = decodeURIComponent(queryParams[0][1]);
-    const multiAccountOriginContainer = queryParams[2][1];
+    debug('multi-account-containers target url', multiAccountTargetURL);
+    let multiAccountOriginContainer;
+    if (queryParams[2]) {
+      multiAccountOriginContainer = queryParams[2][1];
+      debug('multi-account-containers origin container', multiAccountOriginContainer);
+    }
+    multiAccountConfirmPage[multiAccountTargetURL] = true;
 
     debug('multi-account-containers debug',
       multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(linkClickedState), tab);
-    if (linkClickedState[multiAccountTargetURL].containers[multiAccountOriginContainer]) {
+    if ((multiAccountOriginContainer &&
+         linkClickedState[multiAccountTargetURL].containers[multiAccountOriginContainer])
+        ||
+        (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')) {
       debug('we can remove this tab, i guess - and yes this is a bit hacky', tab);
       await browser.tabs.remove(tab.id);
       debug('removed multi-account-containers tab', tab.id);
@@ -481,6 +493,7 @@ const handClickedLink = async (request, tab) => {
 };
 
 
+const externalLinksOpenedInMultiAccount = {};
 browser.webRequest.onBeforeRequest.addListener(async (request) => {
   if (!storage.preferences.automaticMode) {
     debug('got request but automatic mode is off, ignoring', request);
@@ -506,7 +519,29 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
   }
 
   if (tab.cookieStoreId !== 'firefox-default') {
-    debug('onBeforeRequest tab belongs to a non-default container, ignoring', tab, request);
+    debug('onBeforeRequest tab belongs to a non-default container', tab, request,
+      JSON.stringify(multiAccountConfirmPage), JSON.stringify(externalLinksOpenedInMultiAccount));
+    if (multiAccountConfirmPage[request.url]) {
+      debug('we saw a multi account confirm page for that url', request.url);
+      delete multiAccountConfirmPage[request.url];
+      return;
+    } else {
+      if (externalLinksOpenedInMultiAccount[request.url]) {
+        if (!storage.tempContainers[tab.cookieStoreId]) {
+          debug('we saw that external link before, probably multi-account stuff, close tab', request.url);
+          try {
+            await browser.tabs.remove(request.tabId);
+          } catch (error) {
+            debug('removing tab failed', request.tabId, error);
+          }
+          delete externalLinksOpenedInMultiAccount[request.url];
+          return { cancel: true };
+        } else {
+          delete externalLinksOpenedInMultiAccount[request.url];
+        }
+      }
+    }
+
     return;
   }
 
@@ -516,6 +551,7 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
   }
 
   debug('onBeforeRequest this is probably an external link, reload in temp tab', tab, request);
+  externalLinksOpenedInMultiAccount[request.url] = true;
   await reloadTabInTempContainer(tab, request.url);
 
   return { cancel: true };
