@@ -16,7 +16,7 @@ document.body.addEventListener('mouseup', async function(event) {
 
   // check for a element with href
   const aElement = event.target.closest('a');
-  if (typeof aElement !== 'object' || !aElement.href) {
+  if (aElement === null || typeof aElement !== 'object' || !aElement.href) {
     return;
   }
 
