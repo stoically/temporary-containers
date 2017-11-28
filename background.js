@@ -207,7 +207,7 @@ const createTabInTempContainer = async (tab, url) => {
         active,
         cookieStoreId: contextualIdentity.cookieStoreId,
       };
-      if (tab) {
+      if (tab.index) {
         newTabOptions.index = tab.index + 1;
       }
       debug('creating tab in temporary container', newTabOptions);
@@ -511,7 +511,12 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
     debug('onbeforeRequest requested tab information', tab);
   } catch (error) {
     debug('onbeforeRequest retrieving tab information failed', error);
-    return;
+    // this should only happen if multi-account-containers was fast and removed the tab already
+    tab = {
+      id: request.tabId,
+      openerTabId: 1,
+      cookieStoreId: 'firefox-default'
+    };
   }
 
   if (linkClickedState[request.url]) {
