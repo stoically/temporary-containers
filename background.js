@@ -416,113 +416,69 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   linkClickedState[message.linkClicked.href].tabs[sender.tab.id] = true;
   linkClickedState[message.linkClicked.href].containers[sender.tab.cookieStoreId] = true;
   linkClickedState[message.linkClicked.href].count++;
-  if (linkClickedState[message.linkClicked.href].count > 1) {
-    debug('we already have a listener for that, just let em handle it',
-      sender.tab.id, message.linkClicked.href, linkClickedState);
+});
+
+
+const maybeRemoveClickState = (request) => {
+  linkClickedState[request.url].count--;
+  if (!linkClickedState[request.url].count) {
+    delete linkClickedState[request.url];
+    delete linkClickCreatedTabs[request.url];
+  }
+};
+
+const handClickedLink = async (request, tab) => {
+  debug('linkClicked onBeforeRequest', request);
+
+  if (!tab) {
+    debug('linkClicked multi-account-containers mightve removed the tab, continue', request.tabId);
+  }
+
+  if (!tab.openerTabId && !storage.tabContainerMap[tab.id]) {
+    debug('linkClicked no openerTabId and not in the tabContainerMap means probably ' +
+      'multi-account reloaded the url ' +
+      'in another tab, so were going either to close the tabs weve opened for that ' +
+      'link so far or inform our future self', JSON.stringify(linkClickCreatedTabs));
+
+    if (!linkClickCreatedTabs[request.url]) {
+      debug('informing future self');
+      multiAccountWasFaster[request.url] = tab.id;
+    } else {
+      const clickCreatedTabId = linkClickCreatedTabs[request.url];
+      debug('removing tab', clickCreatedTabId);
+      try {
+        await browser.tabs.remove(clickCreatedTabId);
+        debug('removed tab', clickCreatedTabId);
+        delete linkClickCreatedTabs[request.url];
+      } catch (error) {
+        debug('something went wrong while removing tab', clickCreatedTabId, error);
+      }
+    }
+    maybeRemoveClickState(request);
     return;
   }
 
-  const maybeRemoveListener = (request, onBeforeRequest) => {
-    linkClickedState[request.url].count--;
-    if (!linkClickedState[request.url].count) {
-      browser.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
-      delete linkClickedState[request.url];
-      delete linkClickCreatedTabs[request.url];
-    }
-  };
-
-  const onBeforeRequest = async (request) => {
-    debug('linkClicked onBeforeRequest', request);
-    let tab;
+  const newTab = await reloadTabInTempContainer(tab, request.url);
+  debug('created new tab', newTab);
+  if (multiAccountWasFaster[request.url]) {
+    const multiAccountTabId = multiAccountWasFaster[request.url];
+    debug('multi-account was faster and created a tab, remove the tab again', multiAccountTabId);
     try {
-      tab = await browser.tabs.get(request.tabId);
-      debug('linkClicked requested tab information', tab);
+      await browser.tabs.remove(multiAccountTabId);
+      debug('removed tab', multiAccountTabId);
     } catch (error) {
-      debug('linkClicked retrieving tab information failed', error);
+      debug('something went wrong while removing tab', multiAccountTabId, error);
     }
-
-    if (!tab) {
-      debug('linkClicked multi-account-containers mightve removed the tab, continue', request.tabId);
-    }
-
-    if (!tab.openerTabId && !storage.tabContainerMap[tab.id]) {
-      debug('linkClicked no openerTabId and not in the tabContainerMap means probably ' +
-        'multi-account reloaded the url ' +
-        'in another tab, so were going either to close the tabs weve opened for that ' +
-        'link so far or inform our future self', JSON.stringify(linkClickCreatedTabs));
-
-      if (!linkClickCreatedTabs[request.url]) {
-        debug('informing future self');
-        multiAccountWasFaster[request.url] = tab.id;
-      } else {
-        const clickCreatedTabId = linkClickCreatedTabs[request.url];
-        debug('removing tab', clickCreatedTabId);
-        try {
-          await browser.tabs.remove(clickCreatedTabId);
-          debug('removed tab', clickCreatedTabId);
-          delete linkClickCreatedTabs[request.url];
-        } catch (error) {
-          debug('something went wrong while removing tab', clickCreatedTabId, error);
-        }
-      }
-      maybeRemoveListener(request, onBeforeRequest);
-      return;
-    }
-
-    const newTab = await reloadTabInTempContainer(tab, request.url);
-    debug('created new tab', newTab);
-    if (multiAccountWasFaster[request.url]) {
-      const multiAccountTabId = multiAccountWasFaster[request.url];
-      debug('multi-account was faster and created a tab, remove the tab again', multiAccountTabId);
-      try {
-        await browser.tabs.remove(multiAccountTabId);
-        debug('removed tab', multiAccountTabId);
-      } catch (error) {
-        debug('something went wrong while removing tab', multiAccountTabId, error);
-      }
-      delete multiAccountWasFaster[request.url];
-    } else {
-      linkClickCreatedTabs[request.url] = newTab.id;
-      debug('linkClickCreatedTabs', JSON.stringify(linkClickCreatedTabs));
-    }
-
-    maybeRemoveListener(request, onBeforeRequest);
-
-    return { cancel: true };
-  };
-
-  let urls = [message.linkClicked.href];
-  if (message.linkClicked.href.includes('#')) {
-    // seems like ff57 doesnt match hashtags in urls
-    urls.push(message.linkClicked.href.split('#')[0]);
+    delete multiAccountWasFaster[request.url];
+  } else {
+    linkClickCreatedTabs[request.url] = newTab.id;
+    debug('linkClickCreatedTabs', JSON.stringify(linkClickCreatedTabs));
   }
-  browser.webRequest.onBeforeRequest.addListener(onBeforeRequest, {
-    urls,
-    types: ['main_frame']
-  }, [
-    'blocking'
-  ]);
-});
 
+  maybeRemoveClickState(request);
 
-browser.contextMenus.onClicked.addListener((info, tab) => {
-  switch (info.menuItemId)  {
-  case 'open-link-in-new-temporary-container-tab':
-    createTabInTempContainer(tab, info.linkUrl);
-    break;
-  }
-});
-
-
-browser.contextMenus.create({
-  id: 'open-link-in-new-temporary-container-tab',
-  title: 'Open Link in New Temporary Container Tab',
-  contexts: ['link'],
-  icons: {
-    '16': 'icons/page-w-16.svg',
-    '32': 'icons/page-w-32.svg'
-  }
-});
+  return { cancel: true };
+};
 
 
 browser.webRequest.onBeforeRequest.addListener(async (request) => {
@@ -543,6 +499,10 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
   } catch (error) {
     debug('onbeforeRequest retrieving tab information failed', error);
     return;
+  }
+
+  if (linkClickedState[request.url]) {
+    return await handClickedLink(request, tab);
   }
 
   if (tab.cookieStoreId !== 'firefox-default') {
@@ -567,9 +527,31 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
 ]);
 
 
+browser.contextMenus.onClicked.addListener((info, tab) => {
+  switch (info.menuItemId)  {
+  case 'open-link-in-new-temporary-container-tab':
+    createTabInTempContainer(tab, info.linkUrl);
+    break;
+  }
+});
+
+
+browser.contextMenus.create({
+  id: 'open-link-in-new-temporary-container-tab',
+  title: 'Open Link in New Temporary Container Tab',
+  contexts: ['link'],
+  icons: {
+    '16': 'icons/page-w-16.svg',
+    '32': 'icons/page-w-32.svg'
+  }
+});
+
+
 browser.browserAction.onClicked.addListener(createTabInTempContainer);
 
+
 initialize();
+
 
 setInterval(() => {
   debug('container removal interval', storage.tempContainers);
