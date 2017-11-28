@@ -239,8 +239,8 @@ const reloadTabInTempContainer = async (tab, url) => {
 
 
 const maybeReloadTabInTempContainer = async (tab) => {
-  debug('automaticMode', storage.preferences.automaticMode);
   if (!storage.preferences.automaticMode) {
+    debug('automatic mode not active, we ignore that', tab);
     return;
   }
 
@@ -369,6 +369,11 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     return;
   }
   debug('message from userscript received', message, sender);
+
+  if (!storage.preferences.automaticMode) {
+    debug('automatic mode not active, skipping', message, sender);
+    return;
+  }
 
   if (sender.tab.incognito) {
     debug('message came from an incognito tab, we dont handle that', message, sender);
