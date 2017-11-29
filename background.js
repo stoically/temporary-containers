@@ -87,6 +87,11 @@ class TemporaryContainers {
     ]);
 
     this.tryToRemoveContainers();
+
+    setInterval(() => {
+      debug('[interval] contstartsWithainer removal interval', this.storage.tempContainers);
+      this.tryToRemoveContainers();
+    }, 60000);
   }
 
 
@@ -633,11 +638,6 @@ const tmp = new TemporaryContainers();
 
 if (!browser.mochaTest) {
   tmp.initialize();
-
-  setInterval(() => {
-    debug('[interval] contstartsWithainer removal interval', tmp.storage.tempContainers);
-    tmp.tryToRemoveContainers();
-  }, 60000);
 }
 
 if (browser.mochaTest) {

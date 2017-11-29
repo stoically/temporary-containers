@@ -127,6 +127,14 @@ describe('on require', () => {
     await loadBackground();
     browser.storage.local.get.should.have.been.calledOnce;
   });
+
+  it('should have registered a container cleanup interval', async () => {
+    const background = reload('../background');
+    sinon.stub(background, 'tryToRemoveContainers');
+    await background.initialize();
+    clock.tick(60000);
+    background.tryToRemoveContainers.should.have.been.calledTwice;
+  });
 });
 
 
@@ -241,7 +249,7 @@ describe('tabs loading URLs in default-container', () => {
   });
 
   it('should cleanup the alreadysawlink state', async () => {
-    clock.runAll();
+    clock.tick(3000);
     background.automaticModeState.alreadySawThatLink.should.deep.equal({});
   });
 });
@@ -285,7 +293,7 @@ describe('state for clicked links', async () => {
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
 
-    clock.runAll();
+    clock.tick(3000);
     background.automaticModeState.linkClicked.should.deep.equal({});
   });
 });
