@@ -3,5 +3,15 @@
         "browser": false,
         "node": true,
         "mocha": true
+    },
+    globals: {
+        "reload": false,
+        "chai": false,
+        "sinon": false,
+        "clock": false,
+        "expect": false,
+        "sinonChai": false,
+        "loadBackground": false,
+        "injectBrowser": false
     }
 }

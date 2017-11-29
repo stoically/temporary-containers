@@ -24,7 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // tell background process to handle the clicked url
     await browser.runtime.sendMessage({
       linkClicked: {
-        href: aElement.href
+        href: aElement.href,
+        event: {
+          button: event.button,
+          ctrlKey: event.ctrlKey
+        }
       }
     });
 

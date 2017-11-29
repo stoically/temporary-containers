@@ -39,6 +39,21 @@ class TemporaryContainers {
 
     this.preferencesDefault = {
       automaticMode: true,
+      linkClickGlobal: {
+        middle: {
+          action: 'always',
+          overwriteAutomaticMode: false
+        },
+        ctrlleft: {
+          action: 'always',
+          overwriteAutomaticMode: false
+        },
+        left: {
+          action: 'never',
+          overwriteAutomaticMode: false
+        }
+      },
+      linkClickDomain: {},
       containerNamePrefix: 'tmp',
       containerColor: 'red',
       containerColorRandom: false,
@@ -73,7 +88,6 @@ class TemporaryContainers {
     });
     browser.browserAction.onClicked.addListener(this.createTabInTempContainer.bind(this));
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
-    browser.runtime.onInstalled.addListener(this.runtimeOnInstalled.bind(this));
     browser.runtime.onStartup.addListener(this.runtimeOnStartup.bind(this));
     browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
@@ -89,7 +103,7 @@ class TemporaryContainers {
     this.tryToRemoveContainers();
 
     setInterval(() => {
-      debug('[interval] contstartsWithainer removal interval', this.storage.tempContainers);
+      debug('[interval] container removal interval', this.storage.tempContainers);
       this.tryToRemoveContainers();
     }, 60000);
   }
@@ -419,21 +433,77 @@ class TemporaryContainers {
       return;
     }
 
-    let sameTLD = false;
-    const parsedSenderTabURL = new URL(sender.tab.url);
-    const parsedClickedURL = new URL(message.linkClicked.href);
-    if (parsedSenderTabURL.hostname === parsedClickedURL.hostname) {
-      sameTLD = true;
-    } else {
-      const splittedClickedHostname = parsedClickedURL.hostname.split('.');
-      if (splittedClickedHostname.length > 1 &&
-          parsedSenderTabURL.hostname.endsWith('.' + splittedClickedHostname.splice(-2).join('.'))) {
-        sameTLD = true;
+    if (message.linkClicked.event.button === 1) {
+      const parsedSenderTabURL = new URL(sender.tab.url);
+      const parsedClickedURL = new URL(message.linkClicked.href);
+
+      /*
+      let allowed = true;
+      const domainPatterns = Object.keys(this.storage.preferences.linkClickDomain);
+      domainPatterns.map((domainPattern) => {
+        console.log(domainPattern);
+      });
+      */
+
+      // middle mouse click
+      if (this.storage.preferences.linkClickGlobal.middle.action === 'never') {
+        debug('[browser.runtime.onMessage] middle mouse prevented from global preference "never"');
+        return;
+      }
+
+      if (this.storage.preferences.linkClickGlobal.middle.action === 'notsamedomainexact') {
+        if (parsedSenderTabURL.hostname === parsedClickedURL.hostname) {
+          debug('[browser.runtime.onMessage] middle mouse not prevented based on global preference "notsamedomainexact"');
+        } else {
+          debug('[browser.runtime.onMessage] middle mouse prevented based on global preference "notsamedomainexact"');
+          return;
+        }
+      }
+
+      if (this.storage.preferences.linkClickGlobal.middle.action === 'notsamedomain') {
+        const splittedClickedHostname = parsedClickedURL.hostname.split('.');
+        const checkHostname = '.' + (splittedClickedHostname.splice(-2).join('.'));
+        if (parsedClickedURL.hostname.length > 1 &&
+            (parsedSenderTabURL.hostname.endsWith(checkHostname) ||
+             checkHostname.endsWith(parsedSenderTabURL.hostname))) {
+          debug('[browser.runtime.onMessage] middle mouse not prevented from global preference "notsamedomain"');
+        } else {
+          debug('[browser.runtime.onMessage] middle mouse prevented from global preference "notsamedomain"');
+          return;
+        }
       }
     }
-    if (sameTLD) {
-      debug('[browser.runtime.onMessage] clicked link goes to the same tld, ignore that', message, sender);
-      return;
+
+    if (message.linkClicked.event.button === 0 && message.linkClicked.event.ctrlKey) {
+      // ctrl+left mouse click
+      if (this.storage.preferences.linkClickGlobal.ctrlleft.action === 'never') {
+        debug('[browser.runtime.onMessage] ctrl+left mouse prevented from global preference "never"');
+        return;
+      }
+
+      const parsedSenderTabURL = new URL(sender.tab.url);
+      const parsedClickedURL = new URL(message.linkClicked.href);
+      if (this.storage.preferences.linkClickGlobal.ctrlleft.action === 'notsamedomainexact') {
+        if (parsedSenderTabURL.hostname === parsedClickedURL.hostname) {
+          debug('[browser.runtime.onMessage] ctrl+left mouse not prevented based on global preference "notsamedomainexact"');
+        } else {
+          debug('[browser.runtime.onMessage] ctrl+left mouse prevented based on global preference "notsamedomainexact"');
+          return;
+        }
+      }
+
+      if (this.storage.preferences.linkClickGlobal.ctrlleft.action === 'notsamedomain') {
+        const splittedClickedHostname = parsedClickedURL.hostname.split('.');
+        const checkHostname = '.' + splittedClickedHostname.splice(-2).join('.');
+        if (parsedClickedURL.hostname.length > 1 &&
+            (parsedSenderTabURL.hostname.endsWith(checkHostname) ||
+             checkHostname.endsWith(parsedSenderTabURL.hostname))) {
+          debug('[browser.runtime.onMessage] ctrl+left mouse not prevented from global preference "notsamedomain"');
+        } else {
+          debug('[browser.runtime.onMessage] ctrl+left mouse prevented from global preference "notsamedomain"');
+          return;
+        }
+      }
     }
 
     if (!this.automaticModeState.linkClicked[message.linkClicked.href]) {
@@ -634,6 +704,7 @@ class TemporaryContainers {
 
 
 const tmp = new TemporaryContainers();
+browser.runtime.onInstalled.addListener(tmp.runtimeOnInstalled.bind(tmp));
 
 
 if (!browser.mochaTest) {

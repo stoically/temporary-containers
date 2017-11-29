@@ -4,77 +4,209 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="semantic/semantic.min.css">
+    <style>
+      body { padding: 5px; }
+      .hidden { display: none; }
+    </style>
   </head>
 
   <body>
   <div class="ui grid">
-    <form class="ui form four wide column">
-      <div class="field">
-        <div class="ui checkbox">
-          <input type="checkbox" id="automaticMode">
-          <label>Automatic Mode (<a href="https://github.com/stoically/firefox-add-on-temporary-containers#readme">what's that?</a>)
-          </label>
-        </div>
+    <div class="ui eight wide column">
+      <div class="ui top attached tabular menu">
+        <a class="active item" data-tab="general">General</a>
+        <a class="item" data-tab="mouseclicksglobal">Mouse Clicks Global</a>
+        <a class="item" data-tab="moo">Mouse Clicks per Website</a>
       </div>
-      <div class="field">
-        <label>Container Name Prefix</label>
-        <input type="text" id="containerNamePrefix">
+      <div class="ui bottom attached active tab segment" data-tab="general">
+        <form class="ui form">
+          <div id="containerPreferences">
+            <div class="field">
+              <div class="ui checkbox">
+                <input type="checkbox" id="automaticMode">
+                <label>Automatic Mode
+                  (<a href="https://github.com/stoically/firefox-add-on-temporary-containers#readme">what's that?</a>)
+                </label>
+              </div>
+            </div>
+            <div class="field">
+              <label>Container Name Prefix</label>
+              <input type="text" id="containerNamePrefix">
+            </div>
+            <div class="field">
+              <label>Container Color</label>
+              <select id="containerColor" class="ui fluid dropdown">
+                <option value="blue">blue</option>
+                <option value="turquoise">turquoise</option>
+                <option value="green">green</option>
+                <option value="yellow">yellow</option>
+                <option value="orange">orange</option>
+                <option value="red">red</option>
+                <option value="pink">pink</option>
+                <option value="purple">purple</option>
+              </select>
+            </div>
+            <div class="field">
+               <div class="ui checkbox">
+                 <input type="checkbox" id="containerColorRandom">
+                 <label>Random Container Color</label>
+               </div>
+            </div>
+            <div class="field">
+              <label>Container Icon</label>
+              <select id="containerIcon" class="ui fluid dropdown">
+                <option value="fingerprint">fingerprint</option>
+                <option value="briefcase">briefcase</option>
+                <option value="dollar">dollar</option>
+                <option value="cart">cart</option>
+                <option value="circle">circle</option>
+                <option value="gift">gift</option>
+                <option value="vacation">vacation</option>
+                <option value="food">food</option>
+                <option value="fruit">fruit</option>
+                <option value="pet">pet</option>
+                <option value="tree">tree</option>
+                <option value="chill">chill</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="ui checkbox">
+                <input type="checkbox" id="containerIconRandom">
+                <label>Random Container Icon</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>Container Number</label>
+              <select id="containerNumberMode" class="ui fluid dropdown">
+                <option value="keep">Keep counting</option>
+                <option value="reuse">Reuse available Numbers</option>
+              </select>
+            </div>
+            <div class="field">
+              <button id="saveContainerPreferences" class="ui button primary">Save</button>
+            </div>
+          </div>
+        </form>
       </div>
-      <div class="field">
-        <label>Container Color</label>
-        <select id="containerColor" class="ui fluid dropdown">
-          <option value="blue">blue</option>
-          <option value="turquoise">turquoise</option>
-          <option value="green">green</option>
-          <option value="yellow">yellow</option>
-          <option value="orange">orange</option>
-          <option value="red">red</option>
-          <option value="pink">pink</option>
-          <option value="purple">purple</option>
-        </select>
+      <div class="ui bottom attached tab segment" data-tab="mouseclicksglobal">
+        <form class="ui form">
+          <h4>When Mouse Clicks should open Temporary Containers</h4>
+          <div class="field">
+            <label>Middle Mouse</label>
+            <select id="linkClickGlobalMiddle" class="ui fluid dropdown">
+              <option value="always">Always</option>
+              <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
+              <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+          <div class="field">
+             <div class="ui checkbox">
+               <input type="checkbox" id="linkClickGlobalMiddleOverwritesAutomaticMode">
+               <label>Even when Automatic Mode is not active</label>
+             </div>
+          </div>
+          <div class="field" class="hidden">
+            <label>Ctrl+Left Mouse</label>
+            <select id="linkClickGlobalCtrlLeft" class="ui fluid dropdown">
+              <option value="always">Always</option>
+              <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
+              <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+          <div class="field">
+             <div class="ui checkbox">
+               <input type="checkbox" id="linkClickGlobalCtrlLeftOverwritesAutomaticMode">
+               <label>Even when Automatic Mode is not active</label>
+             </div>
+          </div>
+          <div class="hidden">
+            <label>Left Mouse</label>
+            <select id="linkClickGlobalLeft" class="ui fluid dropdown">
+              <option value="always">Always</option>
+              <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
+              <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+          <div class="hidden">
+             <div class="ui checkbox">
+               <input type="checkbox" id="linkClickGlobalLeftOverwritesAutomaticMode">
+               <label>Even when Automatic Mode is not active</label>
+             </div>
+          </div>
+          <div class="field">
+            <button id="saveLinkClickGlobalPreferences" class="ui button primary">Save</button>
+          </div>
+        </form>
       </div>
-      <div class="field">
-         <div class="ui checkbox">
-           <input type="checkbox" id="containerColorRandom">
-           <label>Random Container Color</label>
-         </div>
+      <div class="ui bottom attached tab segment" data-tab="moo">
+        <form class="ui form" id="linkClickDomainForm">
+          <h4 data-tooltip="Website Rules overwrite Global Preferences" data-position="right center">
+            On which Websites should Mouse Clicks open Temporary Containers 🛈
+          </h4>
+          <div id="linkClickDomainPatternDiv" class="field">
+            <label>Website Pattern</label>
+            <input id="linkClickDomainPattern" type="text">
+          </div>
+          <div class="field">
+            <label>Middle Mouse</label>
+            <select id="linkClickDomainMiddle" class="ui fluid dropdown">
+              <option value="always">Always</option>
+              <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
+              <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+          <div class="field">
+             <div class="ui checkbox">
+               <input type="checkbox" id="linkClickDomainMiddleOverwritesAutomaticMode">
+               <label>Even when Automatic Mode is not active</label>
+             </div>
+          </div>
+          <div class="field">
+            <label>Ctrl+Left Mouse</label>
+            <select id="linkClickDomainCtrlLeft" class="ui fluid dropdown">
+              <option value="always">Always</option>
+              <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
+              <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+          <div class="field">
+             <div class="ui checkbox">
+               <input type="checkbox" id="linkClickDomainCtrlLeftOverwritesAutomaticMode">
+               <label>Even when Automatic Mode is not active</label>
+             </div>
+          </div>
+          <div class="hidden">
+            <label>Left Mouse</label>
+            <select id="linkClickDomainLeft" class="ui fluid dropdown">
+              <option value="always">Always</option>
+              <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
+              <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+          <div class="hidden">
+             <div class="ui checkbox">
+               <input type="checkbox" id="linkClickDomainLeftOverwritesAutomaticMode">
+               <label>Even when Automatic Mode is not active</label>
+             </div>
+          </div>
+          <div class="field">
+            <button id="linkClickDomainAddRule" class="ui button primary">Add Rule</button>
+          </div>
+          <div>
+            <h3>Website Rules</h3>
+            <div class="ui bulleted list" id="linkClickDomainRules">
+            </div>
+          </div>
+        </form>
       </div>
-      <div class="field">
-        <label>Container Icon</label>
-        <select id="containerIcon" class="ui fluid dropdown">
-          <option value="fingerprint">fingerprint</option>
-          <option value="briefcase">briefcase</option>
-          <option value="dollar">dollar</option>
-          <option value="cart">cart</option>
-          <option value="circle">circle</option>
-          <option value="gift">gift</option>
-          <option value="vacation">vacation</option>
-          <option value="food">food</option>
-          <option value="fruit">fruit</option>
-          <option value="pet">pet</option>
-          <option value="tree">tree</option>
-          <option value="chill">chill</option>
-        </select>
-      </div>
-      <div class="field">
-        <div class="ui checkbox">
-          <input type="checkbox" id="containerIconRandom">
-          <label>Random Container Icon</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Container Number</label>
-        <select id="containerNumberMode" class="ui fluid dropdown">
-          <option value="keep">Keep counting</option>
-          <option value="reuse">Reuse available Numbers</option>
-        </select>
-      </div>
-      <div>
-        <button type="submit" class="ui button primary">Save</button>
-      </div>
-      <div id="message" class="ui positive message hidden">
-      </div>
-    </form>
+      <div id="message" class="ui positive message hidden"></div>
+    </div>
 
     <script src="jquery-3.2.1.min.js"></script>
     <script src="semantic/semantic.min.js"></script>

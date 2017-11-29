@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "description": "Temporary Containers",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha -r ./test/setup.js test/*.test.js",
+    "test-watch": "mocha -r ./test/setup.js test/*.test.js --watch",
     "lint": "eslint .",
-    "build": "web-ext build --ignore-files test/**/* package* README.md TODO.todo && addons-linter web-ext-artifacts/temporary_containers-*.zip"
+    "build": "web-ext build --overwrite-dest --ignore-files test/**/* package* README.md TODO.todo && addons-linter web-ext-artifacts/temporary_containers-*.zip"
   },
   "repository": {
     "type": "git",
