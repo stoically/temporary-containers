@@ -61,14 +61,13 @@ class TemporaryContainers {
     this.runtimeOnStartup = this.runtimeOnStartup.bind(this);
     this.runtimeOnMessage = this.runtimeOnMessage.bind(this);
     this.tabsOnCreated = this.tabsOnCreated.bind(this);
-    this.tabsOnUpdate = this.tabsOnUpdated.bind(this);
+    this.tabsOnUpdated = this.tabsOnUpdated.bind(this);
     this.tabsOnRemoved = this.tabsOnRemoved.bind(this);
     this.webRequestOnBeforeRequest = this.webRequestOnBeforeRequest.bind(this);
   }
 
 
   async initialize() {
-    //console.log('Hi')
     if (!this.storage) {
       await this.loadStorage();
     }
@@ -166,6 +165,7 @@ class TemporaryContainers {
       this.tryToRemoveContainer(cookieStoreId);
     });
   }
+
 
   async runtimeOnInstalled(details) {
     if (details.temporary) {
@@ -266,7 +266,7 @@ class TemporaryContainers {
 
       debug('[handleMultiAccountContainersConfirmPage] debug',
         multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(this.automaticModeState.linkClicked), tab);
-      if ((multiAccountOriginContainer &&
+      if ((multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
            this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer])
           ||
           (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')) {
@@ -354,6 +354,7 @@ class TemporaryContainers {
       debug('[browser.tabs.onUpdated] url didnt change, not relevant', tabId, changeInfo, tab);
       return;
     }
+    debug('[tabsOnUpdated] url changed', changeInfo, tab);
     await this.maybeReloadTabInTempContainer(tab);
   }
 
@@ -406,7 +407,7 @@ class TemporaryContainers {
     } else {
       const splittedClickedHostname = parsedClickedURL.hostname.split('.');
       if (splittedClickedHostname.length > 1 &&
-          parsedSenderTabURL.hostname.endsWith(splittedClickedHostname.splice(-2).join('.'))) {
+          parsedSenderTabURL.hostname.endsWith('.' + splittedClickedHostname.splice(-2).join('.'))) {
         sameTLD = true;
       }
     }
@@ -425,6 +426,15 @@ class TemporaryContainers {
     this.automaticModeState.linkClicked[message.linkClicked.href].tabs[sender.tab.id] = true;
     this.automaticModeState.linkClicked[message.linkClicked.href].containers[sender.tab.cookieStoreId] = true;
     this.automaticModeState.linkClicked[message.linkClicked.href].count++;
+
+    setTimeout(() => {
+      // emergency cleanup timer
+      debug('[runtimeOnMessage] cleaning up, just to be sure', message.linkClicked.href);
+      delete this.automaticModeState.linkClicked[message.linkClicked.href];
+      delete this.automaticModeState.linkClickCreatedTabs[message.linkClicked.href];
+      delete this.automaticModeState.alreadySawThatLink[message.linkClicked.href];
+      delete this.automaticModeState.alreadySawThatLinkInNonDefault[message.linkClicked.href];
+    }, 3000);
   }
 
 
@@ -437,7 +447,7 @@ class TemporaryContainers {
   }
 
 
-  async handClickedLink(request, tab) {
+  async handleClickedLink(request, tab) {
     debug('[handClickedLink] onBeforeRequest', request);
 
     if (!tab) {
@@ -562,7 +572,9 @@ class TemporaryContainers {
       debug('[browser.webRequest.onBeforeRequest] tab is loading an url that we saw before in non-default container',
         tab, JSON.stringify(this.automaticModeState));
       if (!this.storage.tempContainers[tab.cookieStoreId] &&
-          !this.automaticModeState.linkClicked[request.url].containers[tab.cookieStoreId]) {
+          (!this.automaticModeState.linkClicked[request.url] ||
+          !this.automaticModeState.linkClicked[request.url].containers[tab.cookieStoreId]) &&
+          !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url]) {
         debug('[browser.webRequest.onBeforeRequest] tab is loading the before clicked url in unknown container, just close it?', tab);
         try {
           await browser.tabs.remove(tab.id);
@@ -576,8 +588,15 @@ class TemporaryContainers {
     }
     this.automaticModeState.alreadySawThatLink[request.url] = true;
 
+    setTimeout(() => {
+      // we need to cleanup in case multi-account is not intervening
+      debug('[webRequestOnBeforeRequest] cleaning up', request.url);
+      delete this.automaticModeState.alreadySawThatLink[request.url];
+      delete this.automaticModeState.alreadySawThatLinkInNonDefault[request.url];
+    }, 3000);
+
     if (this.automaticModeState.linkClicked[request.url]) {
-      return await this.handClickedLink(request, tab);
+      return await this.handleClickedLink(request, tab);
     } else {
       return await this.handleNotClickedLink(request, tab);
     }
