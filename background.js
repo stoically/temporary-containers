@@ -21,6 +21,7 @@ class TemporaryContainers {
       'pink',
       'purple',
     ];
+
     this.containerIcons = [
       'fingerprint',
       'briefcase',
@@ -54,16 +55,6 @@ class TemporaryContainers {
       multiAccountWasFaster: {},
       multiAccountConfirmPage: {}
     };
-
-    this.createTabInTempContainer = this.createTabInTempContainer.bind(this);
-    this.contextMenusOnClicked = this.contextMenusOnClicked.bind(this);
-    this.runtimeOnInstalled = this.runtimeOnInstalled.bind(this);
-    this.runtimeOnStartup = this.runtimeOnStartup.bind(this);
-    this.runtimeOnMessage = this.runtimeOnMessage.bind(this);
-    this.tabsOnCreated = this.tabsOnCreated.bind(this);
-    this.tabsOnUpdated = this.tabsOnUpdated.bind(this);
-    this.tabsOnRemoved = this.tabsOnRemoved.bind(this);
-    this.webRequestOnBeforeRequest = this.webRequestOnBeforeRequest.bind(this);
   }
 
 
@@ -71,6 +62,30 @@ class TemporaryContainers {
     if (!this.storage) {
       await this.loadStorage();
     }
+    browser.contextMenus.create({
+      id: 'open-link-in-new-temporary-container-tab',
+      title: 'Open Link in New Temporary Container Tab',
+      contexts: ['link'],
+      icons: {
+        '16': 'icons/page-w-16.svg',
+        '32': 'icons/page-w-32.svg'
+      }
+    });
+    browser.browserAction.onClicked.addListener(this.createTabInTempContainer.bind(this));
+    browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
+    browser.runtime.onInstalled.addListener(this.runtimeOnInstalled.bind(this));
+    browser.runtime.onStartup.addListener(this.runtimeOnStartup.bind(this));
+    browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
+    browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
+    browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
+    browser.tabs.onRemoved.addListener(this.tabsOnRemoved.bind(this));
+    browser.webRequest.onBeforeRequest.addListener(this.webRequestOnBeforeRequest.bind(this),  {
+      urls: ['<all_urls>'],
+      types: ['main_frame']
+    }, [
+      'blocking'
+    ]);
+
     this.tryToRemoveContainers();
   }
 
@@ -612,30 +627,9 @@ class TemporaryContainers {
   }
 }
 
-browser.contextMenus.create({
-  id: 'open-link-in-new-temporary-container-tab',
-  title: 'Open Link in New Temporary Container Tab',
-  contexts: ['link'],
-  icons: {
-    '16': 'icons/page-w-16.svg',
-    '32': 'icons/page-w-32.svg'
-  }
-});
+
 const tmp = new TemporaryContainers();
-browser.browserAction.onClicked.addListener(tmp.createTabInTempContainer);
-browser.contextMenus.onClicked.addListener(tmp.contextMenusOnClicked);
-browser.runtime.onInstalled.addListener(tmp.runtimeOnInstalled);
-browser.runtime.onStartup.addListener(tmp.runtimeOnStartup);
-browser.runtime.onMessage.addListener(tmp.runtimeOnMessage);
-browser.tabs.onCreated.addListener(tmp.tabsOnCreated);
-browser.tabs.onUpdated.addListener(tmp.tabsOnUpdated);
-browser.tabs.onRemoved.addListener(tmp.tabsOnRemoved);
-browser.webRequest.onBeforeRequest.addListener(tmp.webRequestOnBeforeRequest,  {
-  urls: ['<all_urls>'],
-  types: ['main_frame']
-}, [
-  'blocking'
-]);
+
 
 if (!browser.mochaTest) {
   tmp.initialize();

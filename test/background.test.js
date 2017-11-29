@@ -83,16 +83,44 @@ beforeEach(() => {
 
 describe('on require', () => {
   it('should register event listeners', async () => {
-    const background = await loadBackground();
-    browser.browserAction.onClicked.addListener.should.have.been.calledWith(background.createTabInTempContainer);
-    browser.contextMenus.onClicked.addListener.should.have.been.calledWith(background.contextMenusOnClicked);
-    browser.runtime.onInstalled.addListener.should.have.been.calledWith(background.runtimeOnInstalled);
-    browser.runtime.onStartup.addListener.should.have.been.calledWith(background.runtimeOnStartup);
-    browser.runtime.onMessage.addListener.should.have.been.calledWith(background.runtimeOnMessage);
-    browser.tabs.onCreated.addListener.should.have.been.calledWith(background.tabsOnCreated);
-    browser.tabs.onUpdated.addListener.should.have.been.calledWith(background.tabsOnUpdated);
-    browser.tabs.onRemoved.addListener.should.have.been.calledWith(background.tabsOnRemoved);
-    browser.webRequest.onBeforeRequest.addListener.should.have.been.calledWith(background.webRequestOnBeforeRequest);
+    const background = reload('../background');
+    sinon.stub(background, 'createTabInTempContainer');
+    sinon.stub(background, 'contextMenusOnClicked');
+    sinon.stub(background, 'runtimeOnInstalled');
+    sinon.stub(background, 'runtimeOnStartup');
+    sinon.stub(background, 'runtimeOnMessage');
+    sinon.stub(background, 'tabsOnCreated');
+    sinon.stub(background, 'tabsOnUpdated');
+    sinon.stub(background, 'tabsOnRemoved');
+    sinon.stub(background, 'webRequestOnBeforeRequest');
+    await background.initialize();
+
+    browser.browserAction.onClicked.addListener.yield();
+    background.createTabInTempContainer.should.have.been.calledOnce;
+
+    browser.contextMenus.onClicked.addListener.yield();
+    background.contextMenusOnClicked.should.have.been.calledOnce;
+
+    browser.runtime.onInstalled.addListener.yield();
+    background.runtimeOnInstalled.should.have.been.calledOnce;
+
+    browser.runtime.onStartup.addListener.yield();
+    background.runtimeOnStartup.should.have.been.calledOnce;
+
+    browser.runtime.onMessage.addListener.yield();
+    background.runtimeOnMessage.should.have.been.calledOnce;
+
+    browser.tabs.onCreated.addListener.yield();
+    background.tabsOnCreated.should.have.been.calledOnce;
+
+    browser.tabs.onUpdated.addListener.yield();
+    background.tabsOnUpdated.should.have.been.calledOnce;
+
+    browser.tabs.onRemoved.addListener.yield();
+    background.tabsOnRemoved.should.have.been.calledOnce;
+
+    browser.webRequest.onBeforeRequest.addListener.yield();
+    background.webRequestOnBeforeRequest.should.have.been.calledOnce;
   });
 
   it('should loadStorage', async () => {
