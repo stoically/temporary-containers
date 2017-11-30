@@ -75,3 +75,7 @@ global.loadBackground = async () => {
   await background.initialize();
   return background;
 };
+
+beforeEach(() => {
+  injectBrowser();
+});

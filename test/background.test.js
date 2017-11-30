@@ -1,7 +1,3 @@
-beforeEach(() => {
-  injectBrowser();
-});
-
 describe('on require', () => {
   it('should register event listeners', async () => {
     const background = reload('../background');

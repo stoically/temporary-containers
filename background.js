@@ -186,11 +186,11 @@ class TemporaryContainers {
           delete this.storage.tabContainerMap[tabId];
         }
       });
-      await this.persistStorage();
     } catch (error) {
       debug('[tryToRemoveContainer] error while removing container', cookieStoreId, error);
     }
     delete this.storage.tempContainers[cookieStoreId];
+    await this.persistStorage();
   }
 
 
@@ -263,11 +263,13 @@ class TemporaryContainers {
         if (tab && tab.index) {
           newTabOptions.index = tab.index + 1;
         }
+
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);
         const newTab = await browser.tabs.create(newTabOptions);
         debug('[createTabInTempContainer] new tab in temp container created', newTab);
         this.storage.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
         await this.persistStorage();
+
         return newTab;
       } catch (error) {
         debug('[createTabInTempContainer] error while creating new tab', error);
@@ -544,11 +546,12 @@ class TemporaryContainers {
       debug('[handClickedLink] multi-account-containers mightve removed the tab, continue', request.tabId);
     }
 
-    if (!tab.openerTabId && !this.storage.tabContainerMap[tab.id]) {
+    if (!tab.openerTabId && !this.storage.tabContainerMap[tab.id] &&
+        !this.automaticModeState.multiAccountConfirmPage[request.url]) {
       debug('[handClickedLink] no openerTabId and not in the tabContainerMap means probably ' +
         'multi-account reloaded the url ' +
         'in another tab, so were going either to close the tabs weve opened for that ' +
-        'link so far or inform our future self', JSON.stringify(this.automaticModeState.linkClickCreatedTabs));
+        'link so far or inform our future self', JSON.stringify(this.automaticModeState));
 
       if (!this.automaticModeState.linkClickCreatedTabs[request.url]) {
         debug('[handClickedLink] informing future self');
@@ -593,6 +596,12 @@ class TemporaryContainers {
 
 
   async handleNotClickedLink(request, tab) {
+    if (tab.cookieStoreId === 'firefox-default'
+        && this.automaticModeState.multiAccountConfirmPage[request.url]
+        && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
+      debug('[handleNotClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
+      return;
+    }
     if (tab.cookieStoreId !== 'firefox-default') {
       debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request,
         JSON.stringify(this.automaticModeState.multiAccountConfirmPage), JSON.stringify(this.automaticModeState.alreadySawThatLink));
@@ -648,7 +657,6 @@ class TemporaryContainers {
       // this should only happen if multi-account-containers was fast and removed the tab already
       tab = {
         id: request.tabId,
-        openerTabId: 1,
         cookieStoreId: 'firefox-default'
       };
     }
@@ -660,11 +668,12 @@ class TemporaryContainers {
 
     if (tab.cookieStoreId !== 'firefox-default' && this.automaticModeState.alreadySawThatLink[request.url]) {
       debug('[browser.webRequest.onBeforeRequest] tab is loading an url that we saw before in non-default container',
-        tab, JSON.stringify(this.automaticModeState));
+        tab, JSON.stringify(this.automaticModeState), JSON.stringify(this.storage.tempContainers));
       if (!this.storage.tempContainers[tab.cookieStoreId] &&
           (!this.automaticModeState.linkClicked[request.url] ||
           !this.automaticModeState.linkClicked[request.url].containers[tab.cookieStoreId]) &&
-          !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url]) {
+          !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
+          !this.automaticModeState.multiAccountWasFaster[request.url]) {
         debug('[browser.webRequest.onBeforeRequest] tab is loading the before clicked url in unknown container, just close it?', tab);
         try {
           await browser.tabs.remove(tab.id);
@@ -676,16 +685,31 @@ class TemporaryContainers {
       delete this.automaticModeState.alreadySawThatLink[request.url];
       return;
     }
-    this.automaticModeState.alreadySawThatLink[request.url] = true;
+    if (!this.automaticModeState.alreadySawThatLink[request.url]) {
+      this.automaticModeState.alreadySawThatLink[request.url] = 0;
+    }
+    this.automaticModeState.alreadySawThatLink[request.url]++;
 
     setTimeout(() => {
       // we need to cleanup in case multi-account is not intervening
+      // this also means that there might be unexpected behavior when
+      // someone clicks the same link while this hasn't run
       debug('[webRequestOnBeforeRequest] cleaning up', request.url);
       delete this.automaticModeState.alreadySawThatLink[request.url];
       delete this.automaticModeState.alreadySawThatLinkInNonDefault[request.url];
     }, 3000);
 
+    if (this.automaticModeState.alreadySawThatLink[request.url] > 6) {
+      debug('[webRequestOnBeforeRequest] failsafe. we saw the link more than 6 times, stop it.', this.automaticModeState);
+      return {cancel: true};
+    }
+
     if (this.automaticModeState.linkClicked[request.url]) {
+      // when someone clicks links fast in succession not clicked links
+      // might get confused with clicked links :C
+      if (!this.automaticModeState.linkClicked[request.url].tabs[tab.openerTabId]) {
+        debug('[webRequestOnBeforeRequest] warning, linked clicked but we dont know the opener', tab, request);
+      }
       return await this.handleClickedLink(request, tab);
     } else {
       return await this.handleNotClickedLink(request, tab);

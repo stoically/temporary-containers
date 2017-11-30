@@ -1,3 +1,14 @@
+// when we open a tab with a mouseclick and that url is registered with MAC
+// it will cancel our request, close the tab and reopen in the container
+// that the tab was. thing is, we don't want that MAC opens the URL in that
+// container, we want it to open in a new temporary container
+// the way this works its not possible that we wait for MAC to eventually
+// make a request before doing our temporary container thing
+// this makes the whole thing somewhat complicated, because requests
+// can come in in the funniest of variantions
+// only way to handle this in a sane way would be to include directly into MAC
+// interfacing with MAC might work too
+
 describe('raceconditions with multi-account-containers', () => {
   describe('when not previously clicked url loads thats set to "always open in $container" but not "remember my choice"', () => {
     it('should close first confirm page and leave the second open', async () => {
@@ -204,6 +215,249 @@ describe('raceconditions with multi-account-containers', () => {
       expect(result4).to.be.undefined;
       browser.tabs.remove.should.not.have.been.called;
     });
+
+    it('should close first confirm page and leave the second open even when MAC is *really* fast', async () => {
+      // simulate click
+      const fakeSender = {
+        tab: {
+          id: 123,
+          cookieStoreId: 'firefox-tmp-container-1',
+          url: 'https://notexample.com'
+        }
+      };
+      const fakeMessage = {
+        linkClicked: {
+          href: 'https://example.com',
+          event: {
+            button: 1,
+            ctrlKey: false
+          }
+        }
+      };
+      const background = await loadBackground();
+      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
+
+
+      // the first request already triggered multi-account-containers
+      // it opened another tab that updates its url to moz-extension:// eventually
+      // it also already removed our tab2
+      // so we're now going to remove it
+      const fakeMATabId = 3;
+      const fakeMAUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-container-1&currentCookieStoreId=firefox-tmp-container-1';
+      const fakeMAChangeInfo = {
+        url: fakeMAUrl
+      };
+      const fakeMATab = {
+        id: fakeMATabId,
+        cookieStoreId: 'firefox-tmp-container-1',
+        url: fakeMAUrl
+      };
+
+      browser.tabs.remove.reset();
+      const result3 = await background.tabsOnUpdated(fakeMATabId, fakeMAChangeInfo, fakeMATab);
+
+      expect(result3).to.be.undefined;
+      browser.tabs.remove.should.have.been.calledWith(3);
+
+
+      // request comes in, MAC closed the related tab already
+      const fakeRequest = {
+        tabId: 1,
+        url: 'https://example.com'
+      };
+      const fakeCreatedTab = {
+        id: 2,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      const fakeContainer = {
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.tabs.get.rejects({mac: 'was faster'});
+      browser.contextualIdentities.create.resolves(fakeContainer);
+      browser.tabs.create.resolves(fakeCreatedTab);
+      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+
+      result1.should.deep.equal({cancel: true});
+      browser.tabs.remove.should.have.been.calledWith(1);
+      browser.contextualIdentities.create.should.have.been.calledOnce;
+      browser.tabs.create.should.have.been.calledOnce;
+
+      // the tab 2 we opened now makes its request
+      // should normally go through (hence we do nothing)
+      const fakeRequest2 = {
+        tabId: 2,
+        url: 'https://example.com'
+      };
+      const fakeTab2 = {
+        id: 2,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.contextualIdentities.create.reset();
+      browser.tabs.create.reset();
+      browser.tabs.get.resolves(fakeTab2);
+      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+
+      expect(result2).to.be.undefined;
+      browser.contextualIdentities.create.should.not.have.been.called;
+      browser.tabs.create.should.not.have.been.called;
+
+      // tab 2 opening the url in another container triggered multi-account-containers again
+      // but this time its ok and we should leave the confirm page open
+      const fakeMATabId2 = 3;
+      const fakeMAUrl2 = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-container-1' +
+        '&currentCookieStoreId=firefox-tmp-container-1';
+      const fakeMAChangeInfo2 = {
+        url: fakeMAUrl2
+      };
+      const fakeMATab2 = {
+        id: fakeMATabId2,
+        cookieStoreId: 'firefox-default',
+        url: fakeMAUrl2
+      };
+
+      browser.tabs.remove.reset();
+      const result4 = await background.tabsOnUpdated(fakeMATabId2, fakeMAChangeInfo2, fakeMATab2);
+
+      expect(result4).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+    });
+
+    it('should handle situations were mac is even faster than fast', async () => {
+      // simulate click
+      const fakeSender = {
+        tab: {
+          id: 3,
+          cookieStoreId: 'firefox-tmp-container-6',
+          url: 'https://notexample.com'
+        }
+      };
+      const fakeMessage = {
+        linkClicked: {
+          href: 'https://example.com',
+          event: {
+            button: 1,
+            ctrlKey: false
+          }
+        }
+      };
+      const background = await loadBackground();
+      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
+
+
+      // the first request already triggered multi-account-containers
+      // it opened another tab that updates its url to moz-extension:// eventually
+      // it also already removed our tab2
+      // so we're now going to remove it
+      const fakeMATabId = 5;
+      const fakeMAUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-ma-container-1&currentCookieStoreId=firefox-tmp-container-6';
+      const fakeMAChangeInfo = {
+        url: fakeMAUrl
+      };
+      const fakeMATab = {
+        id: fakeMATabId,
+        cookieStoreId: 'firefox-tmp-container-6',
+        url: fakeMAUrl
+      };
+
+      browser.tabs.remove.reset();
+      const result3 = await background.tabsOnUpdated(fakeMATabId, fakeMAChangeInfo, fakeMATab);
+
+      expect(result3).to.be.undefined;
+      browser.tabs.remove.should.have.been.calledWith(5);
+
+
+      // request comes in, MAC closed the related tab already
+      // this is was probably created in firefox-tmp-container-6, hence we want to close it
+      const fakeRequest = {
+        tabId: 4,
+        url: 'https://example.com'
+      };
+      const fakeCreatedTab = {
+        id: 6,
+        cookieStoreId: 'firefox-tmp-container-7'
+      };
+      const fakeContainer = {
+        cookieStoreId: 'firefox-tmp-container-7'
+      };
+      browser.tabs.get.rejects({mac: 'was faster'});
+      browser.contextualIdentities.create.resolves(fakeContainer);
+      browser.tabs.create.resolves(fakeCreatedTab);
+      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+
+      result1.should.deep.equal({cancel: true});
+      browser.tabs.remove.should.have.been.calledWith(4);
+      browser.contextualIdentities.create.should.have.been.calledOnce;
+      browser.tabs.create.should.have.been.calledOnce;
+
+      // the tab 2 we opened now makes its request
+      // should normally go through (hence we do nothing)
+      const fakeRequest2 = {
+        tabId: 2,
+        url: 'https://example.com'
+      };
+      const fakeTab2 = {
+        id: 2,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.contextualIdentities.create.reset();
+      browser.tabs.create.reset();
+      browser.tabs.get.resolves(fakeTab2);
+      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+
+      expect(result2).to.be.undefined;
+      browser.contextualIdentities.create.should.not.have.been.called;
+      browser.tabs.create.should.not.have.been.called;
+
+      // tab 2 opening the url in another container triggered multi-account-containers again
+      // but this time its ok and we should leave the confirm page open
+      const fakeMATabId2 = 7;
+      const fakeMAUrl2 = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-ma-container-1' +
+        '&currentCookieStoreId=firefox-tmp-container-7';
+      const fakeMAChangeInfo2 = {
+        url: fakeMAUrl2
+      };
+      const fakeMATab2 = {
+        id: fakeMATabId2,
+        cookieStoreId: 'firefox-tmp-container-7',
+        url: fakeMAUrl2
+      };
+
+      browser.tabs.remove.reset();
+      const result4 = await background.tabsOnUpdated(fakeMATabId2, fakeMAChangeInfo2, fakeMATab2);
+
+      expect(result4).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+
+      // now comes request from tab 6 that was already closed from MAC
+      // we should open another tab so that the confirm page gives choice
+      // between the new temporary container or the "always open target"
+      const fakeRequest3 = {
+        tabId: 6,
+        url: 'https://example.com'
+      };
+      const fakeCreatedTab3 = {
+        id: 7,
+        cookieStoreId: 'firefox-tmp-container-8'
+      };
+      const fakeContainer3 = {
+        cookieStoreId: 'firefox-tmp-container-8'
+      };
+      browser.tabs.get.rejects({mac: 'was faster'});
+      browser.contextualIdentities.create.resolves(fakeContainer3);
+      browser.tabs.create.resolves(fakeCreatedTab3);
+      const result5 = await background.webRequestOnBeforeRequest(fakeRequest3);
+
+      result5.should.deep.equal({cancel: true});
+      browser.tabs.remove.should.have.been.calledWith(6);
+      browser.contextualIdentities.create.should.have.been.calledOnce;
+      browser.tabs.create.should.have.been.calledOnce;
+    });
   });
 
   describe('when url loads thats set to "always open in $container" and "remember my choice"', () => {
@@ -287,7 +541,7 @@ describe('raceconditions with multi-account-containers', () => {
       const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
-      browser.tabs.remove.should.not.have.been.calledOnce;
+      browser.tabs.remove.should.not.have.been.called;
 
       // the tab 4 request triggered MA and here's that request
       // it should go through and not be closed
@@ -297,6 +551,110 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const fakeMultiAccountTab2 = {
         id: 5,
+        cookieStoreId: 'firefox-ma-container-1'
+      };
+      browser.tabs.get.resolves(fakeMultiAccountTab2);
+      browser.tabs.remove.reset();
+      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
+
+      browser.tabs.remove.should.not.have.been.called;
+    });
+
+    it('should not keep opening tabs', async () => {
+      // simulate click
+      const fakeSender = {
+        tab: {
+          id: 40,
+          cookieStoreId: 'firefox-tmp-container-7',
+          url: 'https://notexample.com'
+        }
+      };
+      const fakeMessage = {
+        linkClicked: {
+          href: 'https://example.com',
+          event: {
+            button: 1,
+            ctrlKey: false
+          }
+        }
+      };
+      const background = await loadBackground();
+      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
+
+      // click created tab 41 which results in this request
+      // MAC was really fast and removed the tab already
+      // so we can't get informations for tab41
+      // means there's no need to cancel the request
+      // we also don't want to create a new tab, MAC is already doing that
+      // TODO: why do we try to remove it anyway?
+      const fakeRequest = {
+        tabId: 41,
+        url: 'https://example.com'
+      };
+      const fakeTab = {
+        id: 43,
+        cookieStoreId: 'firefox-tmp-container-7'
+      };
+      const fakeContainer = {
+        cookieStoreId: 'firefox-tmp-container-7'
+      };
+      browser.tabs.get.rejects({mac: 'was faster'});
+      browser.contextualIdentities.create.resolves(fakeContainer);
+      browser.tabs.create.resolves(fakeTab);
+      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+
+      expect(result1).to.be.undefined;
+      browser.contextualIdentities.create.should.not.have.been.calledOnce;
+      browser.tabs.create.should.not.have.been.called;
+
+
+      // this time we're faster than mac, the tab 43 already comes through with its request
+      // this should go through even though its gonna be intercepted by MA again
+      const fakeRequest2 = {
+        tabId: 43,
+        url: 'https://example.com'
+      };
+      const fakeTab2 = {
+        id: 43,
+        cookieStoreId: 'firefox-tmp-container-7'
+      };
+      browser.tabs.get.resolves(fakeTab2);
+      browser.tabs.remove.reset();
+      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+
+      expect(result2).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+
+
+      // multi-account-containers saw the request from tab 41 and 43 and does two requests now
+      // canceled the request, closed tab 41, created its own tabs 44 and 42
+      // and that results in this request for tab 44 before tab 42, which isnt too bad because
+      // it doesnt really matter which one we close
+      // it should get detected as MA request anyhow, canceled and tab closed
+      const fakeMultiAccountRequest = {
+        tabId: 44,
+        url: 'https://example.com'
+      };
+      const fakeMultiAccountTab = {
+        id: 44,
+        cookieStoreId: 'firefox-ma-container-1'
+      };
+      browser.tabs.get.resolves(fakeMultiAccountTab);
+      browser.tabs.remove.reset();
+      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest);
+
+      browser.tabs.remove.should.not.have.been.calledWith(44);
+
+
+      // the tab 43 request triggered MA and here's that request
+      // it should go through and not be closed
+      const fakeMultiAccountRequest2 = {
+        tabId: 42,
+        url: 'https://example.com'
+      };
+      const fakeMultiAccountTab2 = {
+        id: 42,
         cookieStoreId: 'firefox-ma-container-1'
       };
       browser.tabs.get.resolves(fakeMultiAccountTab2);
