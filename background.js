@@ -455,7 +455,7 @@ class TemporaryContainers {
       }
 
       if (this.storage.preferences.linkClickGlobal.middle.action === 'notsamedomainexact') {
-        if (parsedSenderTabURL.hostname === parsedClickedURL.hostname) {
+        if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
           debug('[browser.runtime.onMessage] middle mouse not prevented based on global preference "notsamedomainexact"');
         } else {
           debug('[browser.runtime.onMessage] middle mouse prevented based on global preference "notsamedomainexact"');
@@ -467,8 +467,8 @@ class TemporaryContainers {
         const splittedClickedHostname = parsedClickedURL.hostname.split('.');
         const checkHostname = '.' + (splittedClickedHostname.splice(-2).join('.'));
         if (parsedClickedURL.hostname.length > 1 &&
-            (parsedSenderTabURL.hostname.endsWith(checkHostname) ||
-             checkHostname.endsWith(parsedSenderTabURL.hostname))) {
+            (!parsedSenderTabURL.hostname.endsWith(checkHostname) &&
+             !checkHostname.endsWith(parsedSenderTabURL.hostname))) {
           debug('[browser.runtime.onMessage] middle mouse not prevented from global preference "notsamedomain"');
         } else {
           debug('[browser.runtime.onMessage] middle mouse prevented from global preference "notsamedomain"');
@@ -487,7 +487,7 @@ class TemporaryContainers {
       const parsedSenderTabURL = new URL(sender.tab.url);
       const parsedClickedURL = new URL(message.linkClicked.href);
       if (this.storage.preferences.linkClickGlobal.ctrlleft.action === 'notsamedomainexact') {
-        if (parsedSenderTabURL.hostname === parsedClickedURL.hostname) {
+        if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
           debug('[browser.runtime.onMessage] ctrl+left mouse not prevented based on global preference "notsamedomainexact"');
         } else {
           debug('[browser.runtime.onMessage] ctrl+left mouse prevented based on global preference "notsamedomainexact"');
@@ -499,8 +499,8 @@ class TemporaryContainers {
         const splittedClickedHostname = parsedClickedURL.hostname.split('.');
         const checkHostname = '.' + splittedClickedHostname.splice(-2).join('.');
         if (parsedClickedURL.hostname.length > 1 &&
-            (parsedSenderTabURL.hostname.endsWith(checkHostname) ||
-             checkHostname.endsWith(parsedSenderTabURL.hostname))) {
+            (!parsedSenderTabURL.hostname.endsWith(checkHostname) &&
+             !checkHostname.endsWith(parsedSenderTabURL.hostname))) {
           debug('[browser.runtime.onMessage] ctrl+left mouse not prevented from global preference "notsamedomain"');
         } else {
           debug('[browser.runtime.onMessage] ctrl+left mouse prevented from global preference "notsamedomain"');

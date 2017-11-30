@@ -40,7 +40,7 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
 
   it('global middle mouse same domain (handle)', async () => {
@@ -63,7 +63,7 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.not.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
 
   it('global middle mouse exact same domain (fail)', async () => {
@@ -86,7 +86,7 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
 
   it('global middle mouse exact same domain (handle)', async () => {
@@ -109,7 +109,7 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.not.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
 
   it('global ctrl+left mouse allowed', async () => {
@@ -131,7 +131,7 @@ describe('preferences for mouse clicks per domain', () => {
     };
     const background = await loadBackground();
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
 
   it('global ctrl+left mouse same domain (ignore)', async () => {
@@ -155,7 +155,7 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
 
   it('global ctrl+left mouse same domain (handle)', async () => {
@@ -179,7 +179,7 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.not.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
 
   it('global ctrl+left mouse exact same domain (fail)', async () => {
@@ -203,7 +203,7 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
 
   it('global ctrl+left mouse exact same domain (handle)', async () => {
@@ -227,6 +227,6 @@ describe('preferences for mouse clicks per domain', () => {
     const background = await loadBackground();
     background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.not.be.undefined;
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
 });
