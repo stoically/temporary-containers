@@ -408,6 +408,70 @@ class TemporaryContainers {
     }, 500);
   }
 
+  checkClickPreferences(preferences, parsedClickedURL, parsedSenderTabURL) {
+    if (preferences.action === 'never') {
+      return false;
+    }
+
+    if (preferences.action === 'notsamedomainexact') {
+      if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
+        debug('[browser.runtime.onMessage] click not handled based on global preference "notsamedomainexact"');
+        return true;
+      } else {
+        debug('[browser.runtime.onMessage] click handled based on global preference "notsamedomainexact"');
+        return false;
+      }
+    }
+
+    if (preferences.action === 'notsamedomain') {
+      const splittedClickedHostname = parsedClickedURL.hostname.split('.');
+      const checkHostname = '.' + (splittedClickedHostname.splice(-2).join('.'));
+      const dottedParsedSenderTabURL = '.' + parsedSenderTabURL.hostname;
+
+      if (parsedClickedURL.hostname.length > 1 &&
+          (dottedParsedSenderTabURL.endsWith(checkHostname) ||
+           checkHostname.endsWith(dottedParsedSenderTabURL))) {
+        debug('[browser.runtime.onMessage] click handled from global preference "notsamedomain"');
+        return false;
+      } else {
+        debug('[browser.runtime.onMessage] click not handled from global preference "notsamedomain"');
+        return true;
+      }
+    }
+
+    return true;
+  }
+
+  checkClick(type, message, sender) {
+    const parsedSenderTabURL = new URL(sender.tab.url);
+    const parsedClickedURL = new URL(message.linkClicked.href);
+
+    for (let domainPattern in this.storage.preferences.linkClickDomain) {
+      if (parsedSenderTabURL.hostname !== domainPattern &&
+          !parsedSenderTabURL.hostname.match(globToRegexp(domainPattern))) {
+        continue;
+      }
+      const domainPatternPreferences = this.storage.preferences.linkClickDomain[domainPattern];
+      if (!domainPatternPreferences[type]) {
+        continue;
+      }
+      return this.checkClickPreferences(domainPatternPreferences[type],
+        parsedClickedURL, parsedSenderTabURL);
+    }
+
+    return this.checkClickPreferences(this.storage.preferences.linkClickGlobal[type],
+      parsedClickedURL, parsedSenderTabURL);
+  }
+
+  isClickAllowed(message, sender) {
+    if (message.linkClicked.event.button === 1) {
+      return this.checkClick('middle', message, sender);
+    }
+
+    if (message.linkClicked.event.button === 0 && message.linkClicked.event.ctrlKey) {
+      return this.checkClick('ctrlleft', message, sender);
+    }
+  }
 
   async runtimeOnMessage(message, sender) {
     if (typeof message !== 'object') {
@@ -436,77 +500,8 @@ class TemporaryContainers {
       return;
     }
 
-    if (message.linkClicked.event.button === 1) {
-      const parsedSenderTabURL = new URL(sender.tab.url);
-      const parsedClickedURL = new URL(message.linkClicked.href);
-
-      /*
-      let allowed = true;
-      const domainPatterns = Object.keys(this.storage.preferences.linkClickDomain);
-      domainPatterns.map((domainPattern) => {
-        console.log(domainPattern);
-      });
-      */
-
-      // middle mouse click
-      if (this.storage.preferences.linkClickGlobal.middle.action === 'never') {
-        debug('[browser.runtime.onMessage] middle mouse prevented from global preference "never"');
-        return;
-      }
-
-      if (this.storage.preferences.linkClickGlobal.middle.action === 'notsamedomainexact') {
-        if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
-          debug('[browser.runtime.onMessage] middle mouse not prevented based on global preference "notsamedomainexact"');
-        } else {
-          debug('[browser.runtime.onMessage] middle mouse prevented based on global preference "notsamedomainexact"');
-          return;
-        }
-      }
-
-      if (this.storage.preferences.linkClickGlobal.middle.action === 'notsamedomain') {
-        const splittedClickedHostname = parsedClickedURL.hostname.split('.');
-        const checkHostname = '.' + (splittedClickedHostname.splice(-2).join('.'));
-        if (parsedClickedURL.hostname.length > 1 &&
-            (!parsedSenderTabURL.hostname.endsWith(checkHostname) &&
-             !checkHostname.endsWith(parsedSenderTabURL.hostname))) {
-          debug('[browser.runtime.onMessage] middle mouse not prevented from global preference "notsamedomain"');
-        } else {
-          debug('[browser.runtime.onMessage] middle mouse prevented from global preference "notsamedomain"');
-          return;
-        }
-      }
-    }
-
-    if (message.linkClicked.event.button === 0 && message.linkClicked.event.ctrlKey) {
-      // ctrl+left mouse click
-      if (this.storage.preferences.linkClickGlobal.ctrlleft.action === 'never') {
-        debug('[browser.runtime.onMessage] ctrl+left mouse prevented from global preference "never"');
-        return;
-      }
-
-      const parsedSenderTabURL = new URL(sender.tab.url);
-      const parsedClickedURL = new URL(message.linkClicked.href);
-      if (this.storage.preferences.linkClickGlobal.ctrlleft.action === 'notsamedomainexact') {
-        if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
-          debug('[browser.runtime.onMessage] ctrl+left mouse not prevented based on global preference "notsamedomainexact"');
-        } else {
-          debug('[browser.runtime.onMessage] ctrl+left mouse prevented based on global preference "notsamedomainexact"');
-          return;
-        }
-      }
-
-      if (this.storage.preferences.linkClickGlobal.ctrlleft.action === 'notsamedomain') {
-        const splittedClickedHostname = parsedClickedURL.hostname.split('.');
-        const checkHostname = '.' + splittedClickedHostname.splice(-2).join('.');
-        if (parsedClickedURL.hostname.length > 1 &&
-            (!parsedSenderTabURL.hostname.endsWith(checkHostname) &&
-             !checkHostname.endsWith(parsedSenderTabURL.hostname))) {
-          debug('[browser.runtime.onMessage] ctrl+left mouse not prevented from global preference "notsamedomain"');
-        } else {
-          debug('[browser.runtime.onMessage] ctrl+left mouse prevented from global preference "notsamedomain"');
-          return;
-        }
-      }
+    if (!this.isClickAllowed(message, sender)) {
+      return;
     }
 
     if (!this.automaticModeState.linkClicked[message.linkClicked.href]) {
@@ -756,3 +751,68 @@ if (!browser.mochaTest) {
   }
   module.exports = tmp;
 }
+
+
+/* eslint-disable */
+// simplified version of https://github.com/fitzgen/glob-to-regexp
+const globToRegexp = (glob, opts) => {
+  if (typeof glob !== 'string') {
+    throw new TypeError('Expected a string');
+  }
+
+  var str = String(glob);
+
+  // The regexp we are building, as a string.
+  var reStr = "";
+
+  // RegExp flags (eg "i" ) to pass in to RegExp constructor.
+  var flags = "i";
+
+  var c;
+  for (var i = 0, len = str.length; i < len; i++) {
+    c = str[i];
+
+    switch (c) {
+    case "\\":
+    case "/":
+    case "$":
+    case "^":
+    case "+":
+    case ".":
+    case "(":
+    case ")":
+    case "=":
+    case "!":
+    case "|":
+    case ",":
+      reStr += "\\" + c;
+      break;
+
+    case "*":
+      // Move over all consecutive "*"'s.
+      // Also store the previous and next characters
+      var prevChar = str[i - 1];
+      var starCount = 1;
+      while(str[i + 1] === "*") {
+        starCount++;
+        i++;
+      }
+      var nextChar = str[i + 1];
+
+      // globstar is disabled, so treat any number of "*" as one
+      reStr += ".*";
+      break;
+
+    default:
+      reStr += c;
+    }
+  }
+
+  // When regexp 'g' flag is specified don't
+  // constrain the regular expression with ^ & $
+  if (!flags || !~flags.indexOf('g')) {
+    reStr = "^" + reStr + "$";
+  }
+
+  return new RegExp(reStr, flags);
+};

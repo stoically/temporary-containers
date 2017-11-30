@@ -99,8 +99,7 @@ const updateLinkClickDomainRules = () => {
     domainRules.map((domainPattern) => {
       const domainRuleTooltip =
         `Middle Mouse: ${preferences.linkClickDomain[domainPattern].middle.action} / ` +
-        `Ctrl+Left Mouse: ${preferences.linkClickDomain[domainPattern].ctrlleft.action} / ` +
-        `Left Mouse: ${preferences.linkClickDomain[domainPattern].left.action}`;
+        `Ctrl+Left Mouse: ${preferences.linkClickDomain[domainPattern].ctrlleft.action}`;
       linkClickDomainRules.append(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
         `<span href="#" data-tooltip="${domainRuleTooltip}" data-position="right center">🛈</span> ` +
         '<a href="#" id="linkClickRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
@@ -172,7 +171,6 @@ const initialize = async () => {
           'Glob Match: <strong>*.example.com</strong><br>' +
           'Note: *.example.com would not match example.com, ' +
           'so you might need two rules</div>',
-    position : 'right center',
     inline: true
   });
 };

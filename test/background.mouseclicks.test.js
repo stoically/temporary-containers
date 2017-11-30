@@ -1,9 +1,8 @@
-describe('preferences for mouse clicks per domain', () => {
+describe('preferences for global mouse clicks', () => {
   it('global middle mouse allowed by default', async () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://notexample.com'
       }
     };
@@ -24,7 +23,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://notexample.com'
       }
     };
@@ -47,7 +45,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://example.com'
       }
     };
@@ -70,7 +67,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://not.example.com'
       }
     };
@@ -93,7 +89,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://example.com'
       }
     };
@@ -116,7 +111,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://notexample.com'
       }
     };
@@ -138,7 +132,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://notexample.com'
       }
     };
@@ -162,7 +155,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://not.example.com'
       }
     };
@@ -186,7 +178,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://not.example.com'
       }
     };
@@ -210,7 +201,6 @@ describe('preferences for mouse clicks per domain', () => {
     const fakeSender = {
       tab: {
         id: 1,
-        cookieStoreId: 'firefox-tmp-container-1',
         url: 'https://example.com'
       }
     };
@@ -229,4 +219,217 @@ describe('preferences for mouse clicks per domain', () => {
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
+});
+
+describe('preferences for mouse clicks per domain', () => {
+  it('middle mouse per domain: never', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://not.example.com',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickDomain['example.com'] = {
+      middle: {
+        action: 'never'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+  });
+
+  it('middle mouse per domain: notsamedomainexact (handle)', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://not.example.com',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickDomain['example.com'] = {
+      middle: {
+        action: 'notsamedomainexact'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
+  });
+
+  it('middle mouse per domain: notsamedomainexact (ignore)', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://example.com/whatever',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickDomain['example.com'] = {
+      middle: {
+        action: 'notsamedomainexact'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+  });
+
+  it('middle mouse per domain: notsamedomain (handle)', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://not.example.com',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickDomain['example.com'] = {
+      middle: {
+        action: 'notsamedomain'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+  });
+
+  it('middle mouse per domain: notsamedomain (handle)', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://notexample.com',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickDomain['example.com'] = {
+      middle: {
+        action: 'notsamedomain'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
+  });
+
+  it('per domain should only handle the relevant domain (exact)', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://notexample.com',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickGlobal.middle.action = 'never';
+    background.storage.preferences.linkClickDomain['whynotexample.com'] = {
+      middle: {
+        action: 'always'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+  });
+
+  it('per domain should overwrite global', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://notexample.com',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickGlobal.middle.action = 'never';
+    background.storage.preferences.linkClickDomain['example.com'] = {
+      middle: {
+        action: 'always'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
+  });
+
+  it('per domain should handle the relevant domain (glob)', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://www.example.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://not.example.com',
+        event: {
+          button: 1
+        }
+      }
+    };
+
+    const background = await loadBackground();
+    background.storage.preferences.linkClickDomain['*.example.com'] = {
+      middle: {
+        action: 'never'
+      }
+    };
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
+  });
+
 });
