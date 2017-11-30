@@ -4,7 +4,7 @@
   "description": "Temporary Containers",
   "scripts": {
     "test": "mocha ./test/setup.js test/*.test.js",
-    "test-watch": "mocha ./test/setup.js test/*.test.js --watch",
+    "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
     "lint": "eslint .",
     "build": "web-ext build --overwrite-dest --ignore-files test/**/* package* README.md TODO.todo && addons-linter web-ext-artifacts/temporary_containers-*.zip"
   },

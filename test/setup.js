@@ -1,9 +1,8 @@
+const chai = require('chai');
+const sinonChai = require('sinon-chai');
 global.reload = require('require-reload')(require);
-global.chai = require('chai');
 global.sinon = require('sinon');
-global.clock = sinon.useFakeTimers();
 global.expect = chai.expect;
-global.sinonChai = require('sinon-chai');
 chai.should();
 chai.use(sinonChai);
 
@@ -77,5 +76,10 @@ global.loadBackground = async () => {
 };
 
 beforeEach(() => {
+  global.clock = sinon.useFakeTimers();
   injectBrowser();
+});
+
+afterEach(() => {
+  clock.reset();
 });

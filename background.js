@@ -68,7 +68,8 @@ class TemporaryContainers {
       alreadySawThatLink: {},
       alreadySawThatLinkInNonDefault: {},
       multiAccountWasFaster: {},
-      multiAccountConfirmPage: {}
+      multiAccountConfirmPage: {},
+      multiAccountRemovedTab: {}
     };
   }
 
@@ -526,7 +527,7 @@ class TemporaryContainers {
       delete this.automaticModeState.linkClickCreatedTabs[message.linkClicked.href];
       delete this.automaticModeState.alreadySawThatLink[message.linkClicked.href];
       delete this.automaticModeState.alreadySawThatLinkInNonDefault[message.linkClicked.href];
-    }, 3000);
+    }, 1000);
   }
 
 
@@ -610,9 +611,11 @@ class TemporaryContainers {
         delete this.automaticModeState.multiAccountConfirmPage[request.url];
         return;
       } else {
-        if (this.automaticModeState.alreadySawThatLinkInNonDefault[request.url]) {
+        if (this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
+           !this.automaticModeState.alreadySawThatLink[request.url]) {
           if (!this.storage.tempContainers[tab.cookieStoreId]) {
-            debug('[handleNotClickedLink] we saw that external link before, probably multi-account stuff, close tab', request.url);
+            debug('[handleNotClickedLink] we saw that non-default link before, probably multi-account stuff, close tab',
+              request.url, JSON.stringify(this.automaticModeState));
             try {
               await browser.tabs.remove(request.tabId);
             } catch (error) {
@@ -626,6 +629,14 @@ class TemporaryContainers {
         }
       }
       this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
+      return;
+    }
+
+    if (this.automaticModeState.multiAccountRemovedTab[request.url] > 1 &&
+        !this.automaticModeState.multiAccountConfirmPage[request.url]) {
+      debug('[handleNotClickedLink] multi-account-containers already removed a tab before, stop now',
+        tab, request, JSON.stringify(this.automaticModeState));
+      delete this.automaticModeState.multiAccountRemovedTab[request.url];
       return;
     }
 
@@ -655,6 +666,10 @@ class TemporaryContainers {
     } catch (error) {
       debug('[browser.webRequest.onBeforeRequest] onbeforeRequest retrieving tab information failed', error);
       // this should only happen if multi-account-containers was fast and removed the tab already
+      if (!this.automaticModeState.multiAccountRemovedTab[request.url]) {
+        this.automaticModeState.multiAccountRemovedTab[request.url] = 0;
+      }
+      this.automaticModeState.multiAccountRemovedTab[request.url]++;
       tab = {
         id: request.tabId,
         cookieStoreId: 'firefox-default'
@@ -681,6 +696,7 @@ class TemporaryContainers {
         } catch (error) {
           debug('[browser.webRequest.onBeforeRequest] couldnt remove tab', tab.id, error);
         }
+        this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
       }
       delete this.automaticModeState.alreadySawThatLink[request.url];
       return;
@@ -697,7 +713,7 @@ class TemporaryContainers {
       debug('[webRequestOnBeforeRequest] cleaning up', request.url);
       delete this.automaticModeState.alreadySawThatLink[request.url];
       delete this.automaticModeState.alreadySawThatLinkInNonDefault[request.url];
-    }, 3000);
+    }, 1000);
 
     if (this.automaticModeState.alreadySawThatLink[request.url] > 6) {
       debug('[webRequestOnBeforeRequest] failsafe. we saw the link more than 6 times, stop it.', this.automaticModeState);
@@ -733,10 +749,10 @@ browser.runtime.onInstalled.addListener(tmp.runtimeOnInstalled.bind(tmp));
 
 if (!browser.mochaTest) {
   tmp.initialize();
-}
-
-if (browser.mochaTest) {
-  DEBUG = false;
-  // eslint-disable-next-line no-undef
+} else {
+  /* eslint-disable no-undef */
+  if (process.argv[process.argv.length-1] === '--tmp-debug') {
+    DEBUG = true;
+  }
   module.exports = tmp;
 }

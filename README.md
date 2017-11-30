@@ -20,7 +20,7 @@ Never open Tabs in new Temporary Containers when:
 * Clicking "Open Link in New (Container) Tab" in the RightClick ContextMenu on a Link on a Website
 * Pressing Shift+LeftMouseClick on a Link on a Website
 
-[Get it here.](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/)
+[Get the Add-on here.](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/)
 
 ## Notes
 If you have any Suggestions, Feedback or BugReports please make sure to leave me an Issue here on GitHub.
@@ -35,8 +35,9 @@ The automatically created Temporary Containers get removed 0.5 seconds after the
 ## Limitations
 * Disabled in "Private Windows" since Firefox doesn't support it
 * In Automatic Mode:
+  * In Combination with [Multi-Account Containers](https://github.com/mozilla/multi-account-containers): Opening the same link in quick succession when it's set to "Always open in $Container" will probably not work as expected.
   * Opening a "New Window" or starting Firefox, only opens a Temporary Container if you <strong>don't</strong> set the Preference "When Firefox starts" to "Show a blank page". Although as soon as you start navigating to a http(s) Website it will convert the Tab to a Temporary Container one.
-  * MiddleMouse and Ctrl+LeftMouse Click don't work on addons.mozilla.org
+  * MiddleMouse and Ctrl+LeftMouse Click don't work on addons.mozilla.org (Firefox prevents user scripts there)
 
 
 ## Privacy

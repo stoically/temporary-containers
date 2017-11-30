@@ -6,11 +6,9 @@
     },
     globals: {
         "reload": false,
-        "chai": false,
         "sinon": false,
         "clock": false,
         "expect": false,
-        "sinonChai": false,
         "loadBackground": false,
         "injectBrowser": false
     }

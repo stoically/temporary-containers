@@ -170,7 +170,8 @@ const initialize = async () => {
     html: '<div style="width:400px;">' +
           'Exact Match: <strong>example.com</strong><br>' +
           'Glob Match: <strong>*.example.com</strong><br>' +
-          'Note: *.example.com would not match example.com</div>',
+          'Note: *.example.com would not match example.com, ' +
+          'so you might need two rules</div>',
     position : 'right center',
     inline: true
   });
