@@ -163,7 +163,8 @@ class TemporaryContainers {
 
 
   async commandsOnCommand(name) {
-    if (name === 'new_no_container_tab') {
+    switch(name) {
+    case 'new_no_container_tab':
       try {
         const tab = await browser.tabs.create({
           active: true,
@@ -174,6 +175,20 @@ class TemporaryContainers {
       } catch (error) {
         debug('[commandsOnCommand] couldnt create tab', error);
       }
+      break;
+
+    case 'new_no_container_window_tab':
+      try {
+        const window = await browser.windows.create({
+          url: 'about:blank'
+        });
+        this.automaticModeState.noContainerTab[window.tabs[0].id] = true;
+        debug('[commandsOnCommand] new no container tab created in window', window, this.automaticModeState.noContainerTab);
+      } catch (error) {
+        debug('[commandsOnCommand] couldnt create tab in window', error);
+      }
+      break;
+
     }
   }
 
@@ -618,9 +633,16 @@ class TemporaryContainers {
       debug('[handleNotClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
       return;
     }
-    if (tab.cookieStoreId !== 'firefox-default') {
+    let containerExists = false;
+    try {
+      containerExists = await browser.contextualIdentities.get(tab.cookieStoreId);
+    } catch (error) {
+      debug('container doesnt exist anymore, probably undo close tab', tab);
+    }
+    if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
       debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request,
         JSON.stringify(this.automaticModeState.multiAccountConfirmPage), JSON.stringify(this.automaticModeState.alreadySawThatLink));
+
       if (this.automaticModeState.multiAccountConfirmPage[request.url]) {
         debug('[handleNotClickedLink] we saw a multi account confirm page for that url', request.url);
         delete this.automaticModeState.multiAccountConfirmPage[request.url];

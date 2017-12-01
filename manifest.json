@@ -39,6 +39,12 @@
         "default": "Alt+N"
       },
       "description": "Open a new 'No Container' Tab"
+    },
+    "new_no_container_window_tab": {
+      "suggested_key": {
+        "default": "Alt+Shift+N"
+      },
+      "description": "Open a new 'No Container' Tab in a new Window"
     }
   },
 

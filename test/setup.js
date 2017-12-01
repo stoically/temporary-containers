@@ -48,7 +48,8 @@ global.injectBrowser = () => {
       }
     },
     contextualIdentities: {
-      create: sinon.stub()
+      create: sinon.stub(),
+      get: sinon.stub().resolves({})
     },
     browserAction: {
       onClicked: {
