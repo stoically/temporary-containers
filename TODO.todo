@@ -1,5 +1,3 @@
-☐ add alt+n shortcut to open no container tab in automatic mode
-☐ check if it's possible to support the "no container" option from multi-account-containers
 ☐ since the codebase is growing it might be a good time to split up and package with webpack
 ☐ support "undo close tab"
 ☐ disable icon/contextmenu and prevent alt+c creating container in private mode
@@ -7,6 +5,8 @@
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ add alt+n shortcut to open no container tab in automatic mode @done(2017-12-02 00:25)
+  ✔ check if it's possible to support the "no container" option from multi-account-containers @done(2017-12-02 00:25)
   ✔ add preference to enable/disable temp container for mouse clicks global and per website @done(2017-12-01 00:38)
   ✔ prevent scenario were we keep opening new tabs in race with multi-account-containers @done(2017-12-01 00:38)
   ✔ opening an external url in firefox-dev (58) thats set to "already open in container" with "remember choice" opens multiple tabs @done(2017-12-01 00:38)

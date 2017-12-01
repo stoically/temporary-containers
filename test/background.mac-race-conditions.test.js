@@ -8,6 +8,10 @@
 // can come in in the funniest of variations
 // only way to handle this in a sane way would be to include directly into MAC
 // interfacing with MAC might work too
+//
+// side-note: preventDetault of middlemouse click does not work in firefox
+// > https://jsfiddle.net/3fjqr43v/
+// > https://bugzilla.mozilla.org/show_bug.cgi?id=1374096
 
 describe('raceconditions with multi-account-containers', () => {
   describe('when not previously clicked url loads thats set to "always open in $container" but not "remember my choice"', () => {

@@ -3,6 +3,7 @@ describe('on require', () => {
     const background = reload('../background');
     sinon.stub(background, 'createTabInTempContainer');
     sinon.stub(background, 'contextMenusOnClicked');
+    sinon.stub(background, 'commandsOnCommand');
     sinon.stub(background, 'runtimeOnInstalled');
     sinon.stub(background, 'runtimeOnStartup');
     sinon.stub(background, 'runtimeOnMessage');
@@ -17,6 +18,9 @@ describe('on require', () => {
 
     browser.contextMenus.onClicked.addListener.yield();
     background.contextMenusOnClicked.should.have.been.calledOnce;
+
+    browser.commands.onCommand.addListener.yield();
+    background.commandsOnCommand.should.have.been.calledOnce;
 
     browser.runtime.onInstalled.addListener.should.have.been.calledOnce;
     browser.runtime.onStartup.addListener.should.have.been.calledOnce;

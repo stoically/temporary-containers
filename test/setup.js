@@ -61,8 +61,8 @@ global.injectBrowser = () => {
         addListener: sinon.stub()
       }
     },
-    management: {
-      onEnabled: {
+    commands: {
+      onCommand: {
         addListener: sinon.stub()
       }
     }

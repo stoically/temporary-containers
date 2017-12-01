@@ -69,7 +69,8 @@ class TemporaryContainers {
       alreadySawThatLinkInNonDefault: {},
       multiAccountWasFaster: {},
       multiAccountConfirmPage: {},
-      multiAccountRemovedTab: {}
+      multiAccountRemovedTab: {},
+      noContainerTab: {}
     };
   }
 
@@ -89,6 +90,7 @@ class TemporaryContainers {
     });
     browser.browserAction.onClicked.addListener(this.createTabInTempContainer.bind(this));
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
+    browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
     browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
@@ -120,7 +122,7 @@ class TemporaryContainers {
           tabContainerMap: {},
           preferences: this.preferencesDefault
         };
-        debug('storage empty, setting defaults', this.storage);
+        debug('storage empty, setting defaults');
         storagePersistNeeded = true;
       } else {
         debug('storage loaded', this.storage);
@@ -156,6 +158,22 @@ class TemporaryContainers {
       debug('storage persisted');
     } catch (error) {
       debug('something went wrong while trying to persist the storage', error);
+    }
+  }
+
+
+  async commandsOnCommand(name) {
+    if (name === 'new_no_container_tab') {
+      try {
+        const tab = await browser.tabs.create({
+          active: true,
+          url: 'about:blank'
+        });
+        this.automaticModeState.noContainerTab[tab.id] = true;
+        debug('[commandsOnCommand] new no container tab created', this.automaticModeState.noContainerTab);
+      } catch (error) {
+        debug('[commandsOnCommand] couldnt create tab', error);
+      }
     }
   }
 
@@ -396,6 +414,9 @@ class TemporaryContainers {
 
 
   async tabsOnRemoved(tabId) {
+    if (this.automaticModeState.noContainerTab[tabId]) {
+      delete this.automaticModeState.noContainerTab[tabId];
+    }
     if (!this.storage.tabContainerMap[tabId]) {
       debug('[browser.tabs.onRemoved] removed tab that isnt in the tabContainerMap', tabId, this.storage.tabContainerMap);
       return;
@@ -433,7 +454,7 @@ class TemporaryContainers {
         debug('[browser.runtime.onMessage] click handled from global preference "notsamedomain"');
         return false;
       } else {
-        debug('[browser.runtime.onMessage] click not handled from global preference "notsamedomain"');
+        debug('[browser.runtime.onMesbrowser.commands.onCommand.addListenersage] click not handled from global preference "notsamedomain"');
         return true;
       }
     }
@@ -675,6 +696,11 @@ class TemporaryContainers {
       return;
     }
 
+    if (this.automaticModeState.noContainerTab[tab.id]) {
+      debug('[maybeReloadTabInTempContainer] no container tab, we ignore that', tab);
+      return;
+    }
+
     if (tab.cookieStoreId !== 'firefox-default' && this.automaticModeState.alreadySawThatLink[request.url]) {
       debug('[browser.webRequest.onBeforeRequest] tab is loading an url that we saw before in non-default container',
         tab, JSON.stringify(this.automaticModeState), JSON.stringify(this.storage.tempContainers));
@@ -722,6 +748,9 @@ class TemporaryContainers {
       }
       return await this.handleClickedLink(request, tab);
     } else {
+      if (tab.cookieStoreId === 'firefox-default' && tab.openerTabId) {
+        return;
+      }
       return await this.handleNotClickedLink(request, tab);
     }
   }

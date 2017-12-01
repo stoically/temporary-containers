@@ -33,6 +33,12 @@
         "default": "Alt+C"
       },
       "description": "Open a new Tab in a new Temporary Container"
+    },
+    "new_no_container_tab": {
+      "suggested_key": {
+        "default": "Alt+N"
+      },
+      "description": "Open a new 'No Container' Tab"
     }
   },
 
