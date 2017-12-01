@@ -89,7 +89,6 @@ class TemporaryContainers {
     });
     browser.browserAction.onClicked.addListener(this.createTabInTempContainer.bind(this));
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
-    browser.runtime.onStartup.addListener(this.runtimeOnStartup.bind(this));
     browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
@@ -740,6 +739,7 @@ class TemporaryContainers {
 
 const tmp = new TemporaryContainers();
 browser.runtime.onInstalled.addListener(tmp.runtimeOnInstalled.bind(tmp));
+browser.runtime.onStartup.addListener(tmp.runtimeOnStartup.bind(tmp));
 
 
 if (!browser.mochaTest) {

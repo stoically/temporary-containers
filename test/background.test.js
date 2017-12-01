@@ -19,9 +19,7 @@ describe('on require', () => {
     background.contextMenusOnClicked.should.have.been.calledOnce;
 
     browser.runtime.onInstalled.addListener.should.have.been.calledOnce;
-
-    browser.runtime.onStartup.addListener.yield();
-    background.runtimeOnStartup.should.have.been.calledOnce;
+    browser.runtime.onStartup.addListener.should.have.been.calledOnce;
 
     browser.runtime.onMessage.addListener.yield();
     background.runtimeOnMessage.should.have.been.calledOnce;
