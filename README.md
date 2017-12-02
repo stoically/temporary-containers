@@ -21,7 +21,7 @@ Never open Tabs in new Temporary Containers when:
 * Shift+LeftMouse Click on a Link on a Website
 
 Open Tabs in "No Container":
-* Pressing Alt+N (Tab) or Shift+Alt+N (Window)
+* Pressing Alt+N (Tab) or Shift+Alt+C (Window)
 * RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
 
 [Get the Add-on here.](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/)
