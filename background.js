@@ -405,7 +405,10 @@ class TemporaryContainers {
 
 
   async runtimeOnStartup() {
-    await this.initialize();
+    if (!this.storage) {
+      await this.loadStorage();
+    }
+
     // extension loads after the first tab opens most of the time
     // lets see if we can reopen the first tab
     const tempTabs = await browser.tabs.query({});
