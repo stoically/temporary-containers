@@ -7,9 +7,11 @@ describe('on require', () => {
     sinon.stub(background, 'runtimeOnInstalled');
     sinon.stub(background, 'runtimeOnStartup');
     sinon.stub(background, 'runtimeOnMessage');
+    sinon.stub(background, 'windowsOnFocusChanged');
     sinon.stub(background, 'tabsOnCreated');
     sinon.stub(background, 'tabsOnUpdated');
     sinon.stub(background, 'tabsOnRemoved');
+    sinon.stub(background, 'tabsOnActivated');
     sinon.stub(background, 'webRequestOnBeforeRequest');
     await background.initialize();
 
@@ -28,6 +30,9 @@ describe('on require', () => {
     browser.runtime.onMessage.addListener.yield();
     background.runtimeOnMessage.should.have.been.calledOnce;
 
+    browser.windows.onFocusChanged.addListener.yield();
+    background.windowsOnFocusChanged.should.have.been.calledOnce;
+
     browser.tabs.onCreated.addListener.yield();
     background.tabsOnCreated.should.have.been.calledOnce;
 
@@ -36,6 +41,9 @@ describe('on require', () => {
 
     browser.tabs.onRemoved.addListener.yield();
     background.tabsOnRemoved.should.have.been.calledOnce;
+
+    browser.tabs.onActivated.addListener.yield();
+    background.tabsOnActivated.should.have.been.calledOnce;
 
     browser.webRequest.onBeforeRequest.addListener.yield();
     background.webRequestOnBeforeRequest.should.have.been.calledOnce;

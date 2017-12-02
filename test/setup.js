@@ -26,7 +26,15 @@ global.injectBrowser = () => {
         addListener: sinon.stub()
       }
     },
+    windows: {
+      onFocusChanged: {
+        addListener: sinon.stub(),
+      }
+    },
     tabs: {
+      onActivated: {
+        addListener: sinon.stub()
+      },
       onCreated: {
         addListener: sinon.stub()
       },
@@ -58,6 +66,7 @@ global.injectBrowser = () => {
     },
     contextMenus: {
       create: sinon.stub(),
+      removeAll: sinon.stub(),
       onClicked: {
         addListener: sinon.stub()
       }

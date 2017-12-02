@@ -79,18 +79,12 @@ class TemporaryContainers {
     if (!this.storage) {
       await this.loadStorage();
     }
-    browser.contextMenus.create({
-      id: 'open-link-in-new-temporary-container-tab',
-      title: 'Open Link in New Temporary Container Tab',
-      contexts: ['link'],
-      icons: {
-        '16': 'icons/page-w-16.svg',
-        '32': 'icons/page-w-32.svg'
-      }
-    });
+
     browser.browserAction.onClicked.addListener(this.createTabInTempContainer.bind(this));
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
     browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
+    browser.tabs.onActivated.addListener(this.tabsOnActivated.bind(this));
+    browser.windows.onFocusChanged.addListener(this.windowsOnFocusChanged.bind(this));
     browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
@@ -101,7 +95,7 @@ class TemporaryContainers {
     }, [
       'blocking'
     ]);
-
+    this.addContextMenu();
     this.tryToRemoveContainers();
 
     setInterval(() => {
@@ -190,6 +184,24 @@ class TemporaryContainers {
       break;
 
     }
+  }
+
+
+  async addContextMenu() {
+    browser.contextMenus.create({
+      id: 'open-link-in-new-temporary-container-tab',
+      title: 'Open Link in New Temporary Container Tab',
+      contexts: ['link'],
+      icons: {
+        '16': 'icons/page-w-16.svg',
+        '32': 'icons/page-w-32.svg'
+      }
+    });
+  }
+
+
+  async removeContextMenu() {
+    browser.contextMenus.removeAll();
   }
 
 
@@ -448,6 +460,35 @@ class TemporaryContainers {
       this.tryToRemoveContainer(cookieStoreId);
     }, 500);
   }
+
+
+  async tabsOnActivated(activeInfo) {
+    this.removeContextMenu();
+    const activatedTab = await browser.tabs.get(activeInfo.tabId);
+    if (!activatedTab.incognito) {
+      this.addContextMenu();
+    }
+  }
+
+
+  async windowsOnFocusChanged(windowId) {
+    if (windowId === browser.windows.WINDOW_ID_NONE) {
+      return;
+    }
+    this.removeContextMenu();
+    try {
+      const activeTab = await browser.tabs.query({
+        active: true,
+        windowId: windowId
+      });
+      if (!activeTab[0].incognito) {
+        this.addContextMenu();
+      }
+    } catch (error) {
+      debug('failed to get the active tab from window');
+    }
+  }
+
 
   checkClickPreferences(preferences, parsedClickedURL, parsedSenderTabURL) {
     if (preferences.action === 'never') {
@@ -812,7 +853,7 @@ if (!browser.mochaTest) {
 
 /* eslint-disable */
 // simplified version of https://github.com/fitzgen/glob-to-regexp
-const globToRegexp = (glob, opts) => {
+const globToRegexp = (glob) => {
   if (typeof glob !== 'string') {
     throw new TypeError('Expected a string');
   }
@@ -846,29 +887,12 @@ const globToRegexp = (glob, opts) => {
       break;
 
     case "*":
-      // Move over all consecutive "*"'s.
-      // Also store the previous and next characters
-      var prevChar = str[i - 1];
-      var starCount = 1;
-      while(str[i + 1] === "*") {
-        starCount++;
-        i++;
-      }
-      var nextChar = str[i + 1];
-
-      // globstar is disabled, so treat any number of "*" as one
       reStr += ".*";
       break;
 
     default:
       reStr += c;
     }
-  }
-
-  // When regexp 'g' flag is specified don't
-  // constrain the regular expression with ^ & $
-  if (!flags || !~flags.indexOf('g')) {
-    reStr = "^" + reStr + "$";
   }
 
   return new RegExp(reStr, flags);
