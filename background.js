@@ -406,6 +406,12 @@ class TemporaryContainers {
 
   async tabsOnCreated(tab) {
     debug('[browser.tabs.onCreated] tab created', tab);
+    if (tab.incognito) {
+      browser.browserAction.disable(tab.id);
+      debug('[browser.tabs.onCreated] tab is incognito, disabling browseraction', tab);
+      return;
+    }
+
     await this.maybeReloadTabInTempContainer(tab);
   }
 

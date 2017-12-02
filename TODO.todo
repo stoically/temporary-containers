@@ -1,10 +1,10 @@
-☐ since the codebase is growing it might be a good time to split up and package with webpack
-☐ disable icon/contextmenu and prevent alt+c creating container in private mode
+☐ since the codebase is growing it might be a good time to split up (and maybe package with webpack)
 ☐ support leftclick for new temporary containers
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ disable icon/contextmenu and prevent alt+c creating container in private mode @done(2017-12-02 01:15)
   ✔ support "undo close tab" @done(2017-12-02 00:36)
   ✔ add alt+n shortcut to open no container tab in automatic mode @done(2017-12-02 00:25)
   ✔ check if it's possible to support the "no container" option from multi-account-containers @done(2017-12-02 00:25)
