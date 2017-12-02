@@ -1,7 +1,7 @@
 ☐ since the codebase is growing it might be a good time to split up into files (and maybe package with webpack)
 ☐ support leftclick for new temporary containers
 ☐ separate mouse clicks from automatic mode?
-☐ make sure that we reload every about: besides newtab/blank/home in default container
+☐ make sure that we reload every about:* tab besides newtab/blank/home in default container? (else if only temp containers are open and add-on is removed, browser closes)
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
