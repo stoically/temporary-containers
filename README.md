@@ -9,9 +9,10 @@ With "Automatic Mode" active (default):
 * Clicking the "New Tab"-Icon
 * Clicking "New Tab" or "New Window" in the Browser Menu
 * Pressing the Ctrl+T or Ctrl+N Shortcut
-* An external Program opens a http(s) Link in the Browser
-* MiddleMouse Click on a Link on a Website
-* Ctrl+LeftMouse Click on a Link on a Website
+* An external Program opens a Link in the Browser
+* MiddleMouse Click on a Link on a Website*
+* Ctrl+LeftMouse Click on a Link on a Website*
+  \* Configurable in the Preferences Globally and per Website
 
 Never open Tabs in new Temporary Containers when:
 * Regular click on a Link on a Website
@@ -21,7 +22,7 @@ Never open Tabs in new Temporary Containers when:
 
 Open Tabs in "No Container":
 * Pressing Alt+N (Tab) or Shift+Alt+N (Window)
-* With Multi-Account-Containers: RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
+* RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
 
 [Get the Add-on here.](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/)
 
