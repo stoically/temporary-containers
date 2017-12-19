@@ -96,7 +96,6 @@ class TemporaryContainers {
       'blocking'
     ]);
     this.addContextMenu();
-    this.tryToRemoveContainers();
 
     setInterval(() => {
       debug('[interval] container removal interval', this.storage.tempContainers);
