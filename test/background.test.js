@@ -59,7 +59,7 @@ describe('on require', () => {
     sinon.stub(background, 'tryToRemoveContainers');
     await background.initialize();
     clock.tick(60000);
-    background.tryToRemoveContainers.should.have.been.calledTwice;
+    background.tryToRemoveContainers.should.have.been.calledOnce;
   });
 });
 
