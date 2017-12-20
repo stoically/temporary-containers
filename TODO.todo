@@ -18,11 +18,10 @@ Bugs:
   ☐ opening files from the host os in ff doesn't open a new tmp container
   ☐ opening a url thats set to "always open in" from "last closed windows" closes MAC confirm
 
-Chores:
-  ☐ since the codebase is growing it might be a good time to split up into files
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ since the codebase is growing it might be a good time to split up into files @done(2017-12-20 19:40) @project(Chores)
   ✔ introduce webpack @done(2017-12-20 18:42)
   ✔ dont remove orphaned containers directly on initialize, leads to timing problems where containers get removed before tabs get restored on startup @done(2017-12-06 19:10)
   ✘ change icon color based on location (tabstrip etc) (not possible due to api limitations) @cancelled(2017-12-05 06:07)

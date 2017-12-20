@@ -1,7 +1,7 @@
 describe('on require', () => {
   it('should register event listeners', async () => {
     const background = reload('../src/background');
-    sinon.stub(background, 'createTabInTempContainer');
+    sinon.stub(background.container, 'createTabInTempContainer');
     sinon.stub(background, 'contextMenusOnClicked');
     sinon.stub(background, 'commandsOnCommand');
     sinon.stub(background, 'runtimeOnInstalled');
@@ -12,11 +12,11 @@ describe('on require', () => {
     sinon.stub(background, 'tabsOnUpdated');
     sinon.stub(background, 'tabsOnRemoved');
     sinon.stub(background, 'tabsOnActivated');
-    sinon.stub(background, 'webRequestOnBeforeRequest');
+    sinon.stub(background.request, 'webRequestOnBeforeRequest');
     await background.initialize();
 
     browser.browserAction.onClicked.addListener.yield();
-    background.createTabInTempContainer.should.have.been.calledOnce;
+    background.container.createTabInTempContainer.should.have.been.calledOnce;
 
     browser.contextMenus.onClicked.addListener.yield();
     background.contextMenusOnClicked.should.have.been.calledOnce;
@@ -46,7 +46,7 @@ describe('on require', () => {
     background.tabsOnActivated.should.have.been.calledOnce;
 
     browser.webRequest.onBeforeRequest.addListener.yield();
-    background.webRequestOnBeforeRequest.should.have.been.calledOnce;
+    background.request.webRequestOnBeforeRequest.should.have.been.calledOnce;
   });
 
   it('should loadStorage', async () => {
@@ -56,10 +56,10 @@ describe('on require', () => {
 
   it('should have registered a container cleanup interval', async () => {
     const background = reload('../src/background');
-    sinon.stub(background, 'tryToRemoveContainers');
+    sinon.stub(background.container, 'cleanup');
     await background.initialize();
     clock.tick(60000);
-    background.tryToRemoveContainers.should.have.been.calledOnce;
+    background.container.cleanup.should.have.been.calledOnce;
   });
 });
 
@@ -139,7 +139,7 @@ describe('tabs loading about:home or about:newtab in the default container', () 
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves({id: 1});
     const background = await loadBackground();
-    await background.maybeReloadTabInTempContainer(fakeTab);
+    await background.container.maybeReloadTabInTempContainer(fakeTab);
 
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
@@ -165,7 +165,7 @@ describe('tabs loading URLs in default-container', () => {
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves(fakeTab);
     background = await loadBackground();
-    await background.webRequestOnBeforeRequest(fakeRequest);
+    await background.request.webRequestOnBeforeRequest(fakeRequest);
   });
 
   it('should reopen the Tab in temporary container', async () => {
@@ -192,7 +192,7 @@ describe('tabs requesting something in non-default and non-temporary containers'
     };
     browser.tabs.get.resolves(fakeTab);
     const background = await loadBackground();
-    await background.webRequestOnBeforeRequest(fakeRequest);
+    await background.request.webRequestOnBeforeRequest(fakeRequest);
 
     browser.contextualIdentities.create.should.not.have.been.calledOnce;
     browser.tabs.create.should.not.have.been.calledOnce;
@@ -245,7 +245,7 @@ describe('tabs requesting a previously clicked url in a temporary container', ()
     browser.tabs.get.resolves(fakeTab);
     browser.tabs.create.resolves(fakeCreatedTab);
     browser.contextualIdentities.create.resolves(fakeCreatedContainer);
-    await background.webRequestOnBeforeRequest(fakeRequest);
+    await background.request.webRequestOnBeforeRequest(fakeRequest);
 
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;

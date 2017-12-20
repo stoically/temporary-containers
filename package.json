@@ -7,7 +7,7 @@
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
     "lint": "eslint src",
     "build": "web-ext build --overwrite-dest --ignore-files src/**/* test/**/* package* webpack* README.md TODO.todo && addons-linter web-ext-artifacts/temporary_containers-*.zip",
-    "dev-webpack": "webpack --config webpack.config.js --watch"
+    "dev-webpack": "webpack --watch"
   },
   "repository": {
     "type": "git",

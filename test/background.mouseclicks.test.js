@@ -36,7 +36,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomain';
+    background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
@@ -58,7 +58,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomain';
+    background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
@@ -80,7 +80,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
+    background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
@@ -102,7 +102,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
+    background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
@@ -146,7 +146,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
+    background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
@@ -169,7 +169,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
+    background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
@@ -192,7 +192,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
+    background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
@@ -215,7 +215,7 @@ describe('preferences for global mouse clicks', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
+    background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
     await background.runtimeOnMessage(fakeMessage, fakeSender);
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).to.be.undefined;
   });
@@ -239,7 +239,7 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickDomain['example.com'] = {
+    background.storage.local.preferences.linkClickDomain['example.com'] = {
       middle: {
         action: 'never'
       }
@@ -265,7 +265,7 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickDomain['example.com'] = {
+    background.storage.local.preferences.linkClickDomain['example.com'] = {
       middle: {
         action: 'notsamedomainexact'
       }
@@ -291,7 +291,7 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickDomain['example.com'] = {
+    background.storage.local.preferences.linkClickDomain['example.com'] = {
       middle: {
         action: 'notsamedomainexact'
       }
@@ -317,7 +317,7 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickDomain['example.com'] = {
+    background.storage.local.preferences.linkClickDomain['example.com'] = {
       middle: {
         action: 'notsamedomain'
       }
@@ -343,7 +343,7 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickDomain['example.com'] = {
+    background.storage.local.preferences.linkClickDomain['example.com'] = {
       middle: {
         action: 'notsamedomain'
       }
@@ -369,8 +369,8 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.middle.action = 'never';
-    background.storage.preferences.linkClickDomain['whynotexample.com'] = {
+    background.storage.local.preferences.linkClickGlobal.middle.action = 'never';
+    background.storage.local.preferences.linkClickDomain['whynotexample.com'] = {
       middle: {
         action: 'always'
       }
@@ -396,8 +396,8 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickGlobal.middle.action = 'never';
-    background.storage.preferences.linkClickDomain['example.com'] = {
+    background.storage.local.preferences.linkClickGlobal.middle.action = 'never';
+    background.storage.local.preferences.linkClickDomain['example.com'] = {
       middle: {
         action: 'always'
       }
@@ -423,7 +423,7 @@ describe('preferences for mouse clicks per domain', () => {
     };
 
     const background = await loadBackground();
-    background.storage.preferences.linkClickDomain['*.example.com'] = {
+    background.storage.local.preferences.linkClickDomain['*.example.com'] = {
       middle: {
         action: 'never'
       }

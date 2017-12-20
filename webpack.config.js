@@ -4,10 +4,13 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   entry: './src/background.js',
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, './tmpcontainer'),
     filename: 'background.js'
   },
   plugins: [
-    new CopyWebpackPlugin(['src/tmpcontainer.js'])
-  ]
+    new CopyWebpackPlugin(['src/userscript.js'])
+  ],
+  node: {
+    process: false
+  }
 };

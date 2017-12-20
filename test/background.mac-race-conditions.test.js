@@ -36,7 +36,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeCreatedTab);
       const background = await loadBackground();
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       result1.should.deep.equal({cancel: true});
       browser.tabs.remove.should.have.been.calledWith(1);
@@ -56,7 +56,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.contextualIdentities.create.reset();
       browser.tabs.create.reset();
       browser.tabs.get.resolves(fakeTab2);
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.contextualIdentities.create.should.not.have.been.called;
@@ -150,7 +150,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.resolves(fakeTab);
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeCreatedTab);
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       result1.should.deep.equal({cancel: true});
       browser.tabs.remove.should.have.been.calledWith(1);
@@ -170,7 +170,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.contextualIdentities.create.reset();
       browser.tabs.create.reset();
       browser.tabs.get.resolves(fakeTab2);
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.contextualIdentities.create.should.not.have.been.called;
@@ -281,7 +281,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.rejects({mac: 'was faster'});
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeCreatedTab);
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       result1.should.deep.equal({cancel: true});
       browser.tabs.remove.should.have.been.calledWith(1);
@@ -301,7 +301,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.contextualIdentities.create.reset();
       browser.tabs.create.reset();
       browser.tabs.get.resolves(fakeTab2);
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.contextualIdentities.create.should.not.have.been.called;
@@ -391,7 +391,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.rejects({mac: 'was faster'});
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeCreatedTab);
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       result1.should.deep.equal({cancel: true});
       browser.tabs.remove.should.have.been.calledWith(4);
@@ -411,7 +411,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.contextualIdentities.create.reset();
       browser.tabs.create.reset();
       browser.tabs.get.resolves(fakeTab2);
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.contextualIdentities.create.should.not.have.been.called;
@@ -455,7 +455,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.rejects({mac: 'was faster'});
       browser.contextualIdentities.create.resolves(fakeContainer3);
       browser.tabs.create.resolves(fakeCreatedTab3);
-      const result5 = await background.webRequestOnBeforeRequest(fakeRequest3);
+      const result5 = await background.request.webRequestOnBeforeRequest(fakeRequest3);
 
       result5.should.deep.equal({cancel: true});
       browser.tabs.remove.should.have.been.calledWith(6);
@@ -504,7 +504,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.resolves(fakeTab);
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeTab);
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       result1.should.deep.equal({cancel: true});
       browser.contextualIdentities.create.should.have.been.calledOnce;
@@ -525,7 +525,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest);
 
       browser.tabs.remove.should.have.been.calledOnce;
       browser.tabs.remove.should.have.been.calledWith(3);
@@ -542,7 +542,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeTab2);
       browser.tabs.remove.reset();
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.tabs.remove.should.not.have.been.called;
@@ -559,7 +559,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab2);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
 
       browser.tabs.remove.should.not.have.been.called;
     });
@@ -606,7 +606,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.rejects({mac: 'was faster'});
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeTab);
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       expect(result1).to.be.undefined;
       browser.contextualIdentities.create.should.not.have.been.calledOnce;
@@ -625,7 +625,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeTab2);
       browser.tabs.remove.reset();
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.tabs.remove.should.not.have.been.called;
@@ -646,7 +646,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest);
 
       browser.tabs.remove.should.not.have.been.calledWith(44);
 
@@ -663,7 +663,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab2);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
 
       browser.tabs.remove.should.not.have.been.called;
     });
@@ -691,7 +691,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeTab);
       const background = await loadBackground();
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       result1.should.deep.equal({cancel: true});
       browser.contextualIdentities.create.should.have.been.calledOnce;
@@ -709,7 +709,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.rejects({mac: 'was faster'});
       browser.tabs.remove.reset();
       browser.tabs.create.reset();
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.tabs.create.should.have.not.been.calledOnce;
@@ -730,7 +730,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest);
 
       browser.tabs.remove.should.have.been.calledOnce;
       browser.tabs.remove.should.have.been.calledWith(3);
@@ -747,7 +747,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab2);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
 
       browser.tabs.remove.should.not.have.been.called;
     });
@@ -770,7 +770,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeTab);
       const background = await loadBackground();
-      const result1 = await background.webRequestOnBeforeRequest(fakeRequest);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       result1.should.deep.equal({cancel: true});
       browser.contextualIdentities.create.should.have.been.calledOnce;
@@ -792,7 +792,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest);
 
       browser.tabs.remove.should.have.been.calledOnce;
       browser.tabs.remove.should.have.been.calledWith(3);
@@ -808,7 +808,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.get.rejects({mac: 'was faster'});
       browser.tabs.remove.reset();
       browser.tabs.create.reset();
-      const result2 = await background.webRequestOnBeforeRequest(fakeRequest2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       expect(result2).to.be.undefined;
       browser.tabs.create.should.have.not.been.calledOnce;
@@ -827,7 +827,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab2);
       browser.tabs.remove.reset();
-      await background.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
 
       browser.tabs.remove.should.not.have.been.called;
     });
