@@ -121,6 +121,40 @@ const updateLinkClickDomainRules = () => {
   }
 };
 
+const alwaysOpenInDomainAddRule = async () => {
+  const domainPattern = document.querySelector('#alwaysOpenInDomainPattern').value;
+
+  preferences.alwaysOpenInDomain[domainPattern] = true;
+  await savePreferences();
+  updateAlwaysOpenInDomainRules();
+};
+
+const updateAlwaysOpenInDomainRules = () => {
+  const alwaysOpenInDomainRules = $('#alwaysOpenInDomainRules');
+  const domainRules = Object.keys(preferences.alwaysOpenInDomain);
+  if (domainRules.length) {
+    alwaysOpenInDomainRules.html('');
+    domainRules.map((domainPattern) => {
+      alwaysOpenInDomainRules.append(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
+        '<a href="#" id="alwaysOpenInRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
+        'data-position="right center">❌</a></div>');
+    });
+
+    alwaysOpenInDomainRules.on('click', async (event) => {
+      event.preventDefault();
+      const domainPattern = $(event.target).parent().attr('id');
+      if (domainPattern === 'alwaysOpenInDomainRules') {
+        return;
+      }
+      delete preferences.alwaysOpenInDomain[decodeURIComponent(domainPattern)];
+      await savePreferences();
+      updateAlwaysOpenInDomainRules();
+    });
+  } else {
+    alwaysOpenInDomainRules.html('No Rules added');
+  }
+};
+
 const initialize = async () => {
   $('.menu .item').tab();
   $('.ui.dropdown').dropdown();
@@ -145,6 +179,7 @@ const initialize = async () => {
       preferences.linkClickGlobal.left.overwriteAutomaticMode;
 
     updateLinkClickDomainRules();
+    updateAlwaysOpenInDomainRules();
   };
 
   const storage = await browser.storage.local.get('preferences');
@@ -165,12 +200,43 @@ const initialize = async () => {
     }
   });
 
+  $('#alwaysOpenInDomainForm').form({
+    fields: {
+      alwaysOpenInDomainPattern: 'empty'
+    },
+    onSuccess: (event) => {
+      event.preventDefault();
+      alwaysOpenInDomainAddRule();
+    }
+  });
+
+  const domainPatternToolTip =
+    '<div style="width:400px;">' +
+    'Exact Match: <strong>example.com</strong><br>' +
+    'Glob Match: <strong>*.example.com</strong><br>' +
+    'Note: *.example.com would not match example.com, ' +
+    'so you might need two rules</div>';
+
   $('#linkClickDomainPatternDiv').popup({
-    html: '<div style="width:400px;">' +
-          'Exact Match: <strong>example.com</strong><br>' +
-          'Glob Match: <strong>*.example.com</strong><br>' +
-          'Note: *.example.com would not match example.com, ' +
-          'so you might need two rules</div>',
+    html: domainPatternToolTip,
+    inline: true
+  });
+
+  $('#alwaysOpenInDomainPatternDiv').popup({
+    html: domainPatternToolTip,
+    inline: true
+  });
+
+  const automaticModeToolTip =
+    '<div style="width:500px;">' +
+    'Automatically open Tabs in new Temporary Containers when<ul>' +
+    '<li> Clicking the "New Tab"-Icon' +
+    '<li> Clicking "New Tab" or "New Window" in the Browser Menu' +
+    '<li> Pressing the Ctrl+T or Ctrl+N Shortcut' +
+    '<li> An external Program opens a Link in the Browser</ul>';
+
+  $('#automaticModeField').popup({
+    html: automaticModeToolTip,
     inline: true
   });
 };

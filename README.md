@@ -4,15 +4,15 @@ Open Tabs in new Temporary Containers when:
 * Clicking the "Temporary Containers"-Icon
 * Pressing the Alt+C Shortcut
 * Clicking on "Open Link in New Temporary Container Tab" in the RightClick ContextMenu on a Link on a Website
+* MiddleMouse Click on a Link on a Website*
+* Ctrl+LeftMouse Click on a Link on a Website*  
+  \* Configurable in the Preferences Globally and per Website
 
 With "Automatic Mode" active (default):
 * Clicking the "New Tab"-Icon
 * Clicking "New Tab" or "New Window" in the Browser Menu
 * Pressing the Ctrl+T or Ctrl+N Shortcut
 * An external Program opens a Link in the Browser
-* MiddleMouse Click on a Link on a Website*
-* Ctrl+LeftMouse Click on a Link on a Website*  
-  \* Configurable in the Preferences Globally and per Website
 
 Never open Tabs in new Temporary Containers when:
 * Regular click on a Link on a Website

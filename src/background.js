@@ -1,6 +1,7 @@
 const Storage = require('./background/storage');
 const Container = require('./background/container');
 const Request = require('./background/request');
+const { versionCompare } = require('./background/utils');
 const {
   log,
   debug
@@ -9,8 +10,6 @@ const {
 
 class TemporaryContainers {
   constructor() {
-    this.storage = new Storage;
-
     this.automaticModeState = {
       linkClicked: {},
       linkClickCreatedTabs: {},
@@ -22,12 +21,15 @@ class TemporaryContainers {
       noContainerTab: {}
     };
 
-    this.container = new Container(this);
-    this.request = new Request(this);
+    this.storage = new Storage;
+    this.request = new Request;
+    this.container = new Container;
   }
 
 
   async initialize() {
+    this.request.initialize(this);
+    this.container.initialize(this);
     if (!this.storage.local) {
       await this.storage.load();
     }
@@ -73,11 +75,6 @@ class TemporaryContainers {
     }
     debug('[browser.runtime.onMessage] message from userscript received', message, sender);
 
-    if (!this.storage.local.preferences.automaticMode) {
-      debug('[browser.runtime.onMessage] automatic mode not active, skipping', message, sender);
-      return;
-    }
-
     if (sender.tab.incognito) {
       debug('[browser.runtime.onMessage] message came from an incognito tab, we dont handle that', message, sender);
       return;
@@ -87,25 +84,7 @@ class TemporaryContainers {
       return;
     }
 
-    if (!this.automaticModeState.linkClicked[message.linkClicked.href]) {
-      this.automaticModeState.linkClicked[message.linkClicked.href] = {
-        tabs: {},
-        containers: {},
-        count: 0
-      };
-    }
-    this.automaticModeState.linkClicked[message.linkClicked.href].tabs[sender.tab.id] = true;
-    this.automaticModeState.linkClicked[message.linkClicked.href].containers[sender.tab.cookieStoreId] = true;
-    this.automaticModeState.linkClicked[message.linkClicked.href].count++;
-
-    setTimeout(() => {
-      // emergency cleanup timer
-      debug('[runtimeOnMessage] cleaning up, just to be sure', message.linkClicked.href);
-      delete this.automaticModeState.linkClicked[message.linkClicked.href];
-      delete this.automaticModeState.linkClickCreatedTabs[message.linkClicked.href];
-      delete this.automaticModeState.alreadySawThatLink[message.linkClicked.href];
-      delete this.automaticModeState.alreadySawThatLinkInNonDefault[message.linkClicked.href];
-    }, 1000);
+    this.request.linkClicked(message.linkClicked.href, sender.tab);
   }
 
 
@@ -245,13 +224,29 @@ class TemporaryContainers {
   async runtimeOnInstalled(details) {
     if (details.temporary) {
       log.DEBUG = true;
+      return; // prevent update logic
+    }
+
+    if (details.reason === 'update') {
+      debug('updated from version', details.previousVersion);
+      if (versionCompare('0.16', details.previousVersion) >= 0) {
+        // updated from version <= 0.16, adapt old automaticmode behaviour if necessary
+        if (!this.storage.local) {
+          await this.storage.load();
+        }
+        if (!this.storage.local.preferences.automaticMode) {
+          this.storage.local.preferences.linkClickGlobal.middle.action = 'never';
+          this.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'never';
+          await this.storage.persist();
+        }
+      }
     }
   }
 
 
   async runtimeOnStartup() {
     if (!this.storage.local) {
-      await this.loadStorage();
+      await this.storage.load();
     }
 
     // extension loads after the first tab opens most of the time
@@ -271,6 +266,8 @@ browser.runtime.onStartup.addListener(tmp.runtimeOnStartup.bind(tmp));
 
 
 if (!browser.mochaTest) {
+  window.log = log;
+  window.tmp = tmp;
   tmp.initialize();
 } else {
   /* eslint-disable no-undef */

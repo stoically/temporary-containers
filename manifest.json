@@ -66,7 +66,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["tmpcontainer/userscript.js"],
+      "js": ["tmpcontainer/contentscript.js"],
       "run_at": "document_end",
       "all_frames": true
     }

@@ -1,8 +1,8 @@
-const globToRegexp = require('./globtoregexp');
+const { globToRegexp } = require('./utils');
 const { debug } = require('./log');
 
 class Request {
-  constructor(background) {
+  initialize(background) {
     this.storage = background.storage;
     this.container = background.container;
     this.automaticModeState = background.automaticModeState;
@@ -11,13 +11,17 @@ class Request {
 
   async webRequestOnBeforeRequest(request) {
     debug('[browser.webRequest.onBeforeRequest] incoming request', request);
-    if (!this.storage.local.preferences.automaticMode) {
-      debug('[browser.webRequest.onBeforeRequest] got request but automatic mode is off, ignoring', request);
-      return;
-    }
-
     if (request.tabId === -1) {
       debug('[browser.webRequest.onBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
+      return;
+    }
+    let alwaysOpenIn = false;
+    if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
+      debug('[browser.webRequest.onBeforeRequest] always open in tmpcontainer request', request);
+      alwaysOpenIn = true;
+    } else if (!this.storage.local.preferences.automaticMode &&
+      !this.automaticModeState.linkClicked[request.url]) {
+      debug('[browser.webRequest.onBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
     }
 
@@ -38,13 +42,21 @@ class Request {
       };
     }
 
+    if (alwaysOpenIn && !this.automaticModeState.linkClicked[request.url] && tab.openerTabId) {
+      debug('[browser.webRequest.onBeforeRequest] always open in tmpcontainer request, simulating click', request);
+      this.linkClicked(request.url, {
+        id: tab.openerTabId,
+        cookieStoreId: tab.cookieStoreId
+      });
+    }
+
     if (tab.incognito) {
       debug('[browser.webRequest.onBeforeRequest] tab is incognito, ignore it', tab);
       return;
     }
 
     if (this.automaticModeState.noContainerTab[tab.id]) {
-      debug('[maybeReloadTabInTempContainer] no container tab, we ignore that', tab);
+      debug('[browser.webRequest.onBeforeRequest] no container tab, we ignore that', tab);
       return;
     }
 
@@ -93,13 +105,42 @@ class Request {
       if (!this.automaticModeState.linkClicked[request.url].tabs[tab.openerTabId]) {
         debug('[webRequestOnBeforeRequest] warning, linked clicked but we dont know the opener', tab, request);
       }
-      return await this.handleClickedLink(request, tab);
+      return await this.handleClickedLink(request, tab, alwaysOpenIn);
     } else {
-      if (tab.cookieStoreId === 'firefox-default' && tab.openerTabId) {
+      if (tab.cookieStoreId === 'firefox-default' && tab.openerTabId && !alwaysOpenIn) {
         return;
       }
-      return await this.handleNotClickedLink(request, tab);
+      if (!this.storage.local.preferences.automaticMode && !alwaysOpenIn) {
+        debug('[browser.webRequest.onBeforeRequest] got not clicked request but automatic mode is off, ignoring', request);
+        return;
+      }
+      return await this.handleNotClickedLink(request, tab, alwaysOpenIn);
     }
+  }
+
+
+  linkClicked(url, tab) {
+    if (!this.automaticModeState.linkClicked[url]) {
+      this.automaticModeState.linkClicked[url] = {
+        tabs: {},
+        containers: {},
+        count: 0
+      };
+    }
+    this.automaticModeState.linkClicked[url].tabs[tab.id] = true;
+    this.automaticModeState.linkClicked[url].containers[tab.cookieStoreId] = true;
+    this.automaticModeState.linkClicked[url].count++;
+
+    setTimeout(() => {
+      debug('[runtimeOnMessage] cleaning up', url);
+      delete this.automaticModeState.linkClicked[url];
+      delete this.automaticModeState.linkClickCreatedTabs[url];
+      delete this.automaticModeState.alreadySawThatLink[url];
+      delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];
+      delete this.automaticModeState.multiAccountConfirmPage[url];
+      delete this.automaticModeState.multiAccountWasFaster[url];
+      delete this.automaticModeState.multiAccountRemovedTab[url];
+    }, 1000);
   }
 
 
@@ -135,7 +176,8 @@ class Request {
       return;
     }
 
-    const newTab = await this.container.reloadTabInTempContainer(tab, request.url);
+    let newTab;
+    newTab = await this.container.reloadTabInTempContainer(tab, request.url);
     debug('[handClickedLink] created new tab', newTab);
     if (this.automaticModeState.multiAccountWasFaster[request.url]) {
       const multiAccountTabId = this.automaticModeState.multiAccountWasFaster[request.url];
@@ -296,6 +338,20 @@ class Request {
       delete this.automaticModeState.linkClicked[request.url];
       delete this.automaticModeState.linkClickCreatedTabs[request.url];
     }
+  }
+
+
+  shouldAlwaysOpenInTemporaryContainer(request) {
+    const parsedRequestURL = new URL(request.url);
+
+    for (let domainPattern in this.storage.local.preferences.alwaysOpenInDomain) {
+      if (parsedRequestURL.hostname === domainPattern ||
+          parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
 

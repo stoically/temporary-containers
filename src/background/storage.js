@@ -3,7 +3,6 @@ const { debug } = require('./log');
 class Storage {
   constructor() {
     this.local = null;
-
     this.preferencesDefault = {
       automaticMode: true,
       linkClickGlobal: {
@@ -21,6 +20,7 @@ class Storage {
         }
       },
       linkClickDomain: {},
+      alwaysOpenInDomain: {},
       containerNamePrefix: 'tmp',
       containerColor: 'red',
       containerColorRandom: false,

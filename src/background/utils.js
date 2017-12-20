@@ -1,6 +1,6 @@
 /* eslint-disable */
 // simplified version of https://github.com/fitzgen/glob-to-regexp
-module.exports = (glob) => {
+const globToRegexp = (glob) => {
   if (typeof glob !== 'string') {
     throw new TypeError('Expected a string');
   }
@@ -44,3 +44,25 @@ module.exports = (glob) => {
 
   return new RegExp(reStr, flags);
 };
+
+
+// https://github.com/substack/semver-compare/pull/4
+const versionCompare = function cmp (a, b) {
+    var pa = a.split('.');
+    var pb = b.split('.');
+    for (var i = 0; i < Math.min(pa.length, pb.length); i++) {
+        var na = Number(pa[i]);
+        var nb = Number(pb[i]);
+        if (na > nb) return 1;
+        if (nb > na) return -1;
+        if (!isNaN(na) && isNaN(nb)) return 1;
+        if (isNaN(na) && !isNaN(nb)) return -1;
+    }
+    return 0;
+};
+
+
+module.exports = {
+  globToRegexp,
+  versionCompare
+}

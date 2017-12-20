@@ -184,7 +184,8 @@ describe('tabs loading URLs in default-container', () => {
 describe('tabs requesting something in non-default and non-temporary containers', () => {
   it('should not be interrupted', async () => {
     const fakeRequest = {
-      tabId: 1
+      tabId: 1,
+      url: 'https://example.com'
     };
     const fakeTab = {
       tabId: 1,

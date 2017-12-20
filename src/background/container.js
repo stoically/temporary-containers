@@ -1,10 +1,7 @@
 const { debug } = require('./log');
 
 class Container {
-  constructor(background) {
-    this.storage = background.storage;
-    this.automaticModeState = background.automaticModeState;
-
+  constructor() {
     this.containerColors = [
       'blue',
       'turquoise',
@@ -33,7 +30,14 @@ class Container {
   }
 
 
-  async createTabInTempContainer(tab, url) {
+  initialize(background) {
+    this.storage = background.storage;
+    this.request = background.request;
+    this.automaticModeState = background.automaticModeState;
+  }
+
+
+  async createTabInTempContainer(tab, url, alwaysOpenIn) {
     let tempContainerNumber;
     if (this.storage.local.preferences.containerNumberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
@@ -79,7 +83,7 @@ class Container {
       await this.storage.persist();
 
       try {
-        const active = url ? false : true;
+        const active = !url || alwaysOpenIn ? true : false;
         const newTabOptions = {
           url,
           active,
@@ -121,13 +125,19 @@ class Container {
 
 
   async maybeReloadTabInTempContainer(tab) {
-    if (!this.storage.local.preferences.automaticMode) {
-      debug('[maybeReloadTabInTempContainer] automatic mode not active, we ignore that', tab);
+    if (tab.incognito) {
+      debug('[maybeReloadTabInTempContainer] tab is incognito, ignore it', tab);
       return;
     }
 
-    if (tab.incognito) {
-      debug('[maybeReloadTabInTempContainer] tab is incognito, ignore it', tab);
+    if (tab.url.startsWith('moz-extension://')) {
+      debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
+      await this.handleMultiAccountContainersConfirmPage(tab);
+      return;
+    }
+
+    if (!this.storage.local.preferences.automaticMode) {
+      debug('[maybeReloadTabInTempContainer] automatic mode not active and not a moz page, we ignore that', tab);
       return;
     }
 
@@ -136,12 +146,6 @@ class Container {
         tab.url === 'about:newtab')) {
       debug('[maybeReloadTabInTempContainer] about:home/new tab in firefox-default container, reload in temp container', tab);
       await this.reloadTabInTempContainer(tab);
-      return;
-    }
-
-    if (tab.url.startsWith('moz-extension://')) {
-      debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
-      await this.handleMultiAccountContainersConfirmPage(tab);
       return;
     }
 
@@ -166,6 +170,11 @@ class Container {
       if (queryParams[2]) {
         multiAccountOriginContainer = queryParams[2][1];
         debug('[handleMultiAccountContainersConfirmPage] origin container', multiAccountOriginContainer);
+      }
+
+      if (!this.storage.local.preferences.automaticMode &&
+          !this.request.shouldAlwaysOpenInTemporaryContainer({url: multiAccountTargetURL})) {
+        return;
       }
       this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = true;
 

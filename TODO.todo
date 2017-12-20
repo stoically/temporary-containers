@@ -1,7 +1,5 @@
 Features:
   ☐ support leftclick for new temporary containers (make sure to check for version on install and set left to "never")
-  ☐ separate mouse clicks from automatic mode?
-  ☐ always open in temporary container per website
   ☐ even out container colors in random mode
 
 Bugs:
@@ -9,7 +7,6 @@ Bugs:
   ☐ dont unpin "no container" tabs when installing addon or activating automatic mode
   ☐ opening an url with mac-"remember my choice" in "no container" closes the tab
   ☐ ctrl(shift?)+left mouse click on an url with mac-"remember my choice" closes the window
-  ☐ automaticModeState.multiAccount* is not properly cleaned up
   ☐ what's up with shift+left mouse click on links?
   ☐ disable browser action when firefox is started with --private-window
   ☐ external link opens in "no container" when firefox starts with already open tabs
@@ -18,9 +15,11 @@ Bugs:
   ☐ opening files from the host os in ff doesn't open a new tmp container
   ☐ opening a url thats set to "always open in" from "last closed windows" closes MAC confirm
 
-
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ automaticModeState.multiAccount* is not properly cleaned up @done(2017-12-21 11:35) @project(Bugs)
+  ✔ separate mouse clicks from automatic mode @done(2017-12-21 11:21) @project(Features)
+  ✔ always open in temporary container per website @done(2017-12-21 09:44) @project(Features)
   ✔ since the codebase is growing it might be a good time to split up into files @done(2017-12-20 19:40) @project(Chores)
   ✔ introduce webpack @done(2017-12-20 18:42)
   ✔ dont remove orphaned containers directly on initialize, leads to timing problems where containers get removed before tabs get restored on startup @done(2017-12-06 19:10)
