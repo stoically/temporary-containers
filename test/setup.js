@@ -80,7 +80,7 @@ global.injectBrowser = () => {
 };
 
 global.loadBackground = async () => {
-  const background = reload('../background');
+  const background = reload('../src/background');
   await background.initialize();
   return background;
 };

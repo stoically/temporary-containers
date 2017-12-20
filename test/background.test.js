@@ -1,6 +1,6 @@
 describe('on require', () => {
   it('should register event listeners', async () => {
-    const background = reload('../background');
+    const background = reload('../src/background');
     sinon.stub(background, 'createTabInTempContainer');
     sinon.stub(background, 'contextMenusOnClicked');
     sinon.stub(background, 'commandsOnCommand');
@@ -55,7 +55,7 @@ describe('on require', () => {
   });
 
   it('should have registered a container cleanup interval', async () => {
-    const background = reload('../background');
+    const background = reload('../src/background');
     sinon.stub(background, 'tryToRemoveContainers');
     await background.initialize();
     clock.tick(60000);

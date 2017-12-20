@@ -14,6 +14,7 @@ document.body.addEventListener('mouseup', async (event) => {
     return;
   }
 
+
   // check for a element with href
   const aElement = event.target.closest('a');
   if (aElement === null || typeof aElement !== 'object' || !aElement.href) {
@@ -30,5 +31,4 @@ document.body.addEventListener('mouseup', async (event) => {
       }
     }
   });
-
 }, false);

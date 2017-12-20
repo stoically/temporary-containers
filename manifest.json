@@ -66,14 +66,14 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["tmpcontainer.js"],
+      "js": ["dist/tmpcontainer.js"],
       "run_at": "document_end",
       "all_frames": true
     }
   ],
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["dist/background.js"]
   },
 
   "applications": {

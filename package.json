@@ -5,8 +5,9 @@
   "scripts": {
     "test": "mocha ./test/setup.js test/*.test.js",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
-    "lint": "eslint .",
-    "build": "web-ext build --overwrite-dest --ignore-files test/**/* package* README.md TODO.todo && addons-linter web-ext-artifacts/temporary_containers-*.zip"
+    "lint": "eslint src",
+    "build": "web-ext build --overwrite-dest --ignore-files src/**/* test/**/* package* webpack* README.md TODO.todo && addons-linter web-ext-artifacts/temporary_containers-*.zip",
+    "dev-webpack": "webpack --config webpack.config.js --watch"
   },
   "repository": {
     "type": "git",
@@ -21,12 +22,14 @@
   "devDependencies": {
     "addons-linter": "^0.29.0",
     "chai": "^4.1.2",
+    "copy-webpack-plugin": "^4.3.0",
     "eslint": "^4.11.0",
     "mocha": "^4.0.1",
     "require-reload": "^0.2.2",
     "sinon": "^4.1.2",
     "sinon-chai": "^2.14.0",
-    "web-ext": "^2.2.2"
+    "web-ext": "^2.2.2",
+    "webpack": "^3.10.0"
   },
   "private": true
 }

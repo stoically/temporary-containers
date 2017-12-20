@@ -1,3 +1,5 @@
+const globToRegexp = require('./background/globtoregexp');
+
 let DEBUG = false;
 const debug = function() {
   if (!DEBUG) {
@@ -683,11 +685,16 @@ class TemporaryContainers {
       return;
     }
     let containerExists = false;
-    try {
-      containerExists = await browser.contextualIdentities.get(tab.cookieStoreId);
-    } catch (error) {
-      debug('container doesnt exist anymore, probably undo close tab', tab);
+    if (tab.cookieStoreId === 'firefox-default') {
+      containerExists = true;
+    } else {
+      try {
+        containerExists = await browser.contextualIdentities.get(tab.cookieStoreId);
+      } catch (error) {
+        debug('container doesnt exist anymore, probably undo close tab', tab);
+      }
     }
+
     if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
       debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request,
         JSON.stringify(this.automaticModeState.multiAccountConfirmPage), JSON.stringify(this.automaticModeState.alreadySawThatLink));
@@ -851,51 +858,3 @@ if (!browser.mochaTest) {
   }
   module.exports = tmp;
 }
-
-
-/* eslint-disable */
-// simplified version of https://github.com/fitzgen/glob-to-regexp
-const globToRegexp = (glob) => {
-  if (typeof glob !== 'string') {
-    throw new TypeError('Expected a string');
-  }
-
-  var str = String(glob);
-
-  // The regexp we are building, as a string.
-  var reStr = "";
-
-  // RegExp flags (eg "i" ) to pass in to RegExp constructor.
-  var flags = "i";
-
-  var c;
-  for (var i = 0, len = str.length; i < len; i++) {
-    c = str[i];
-
-    switch (c) {
-    case "\\":
-    case "/":
-    case "$":
-    case "^":
-    case "+":
-    case ".":
-    case "(":
-    case ")":
-    case "=":
-    case "!":
-    case "|":
-    case ",":
-      reStr += "\\" + c;
-      break;
-
-    case "*":
-      reStr += ".*";
-      break;
-
-    default:
-      reStr += c;
-    }
-  }
-
-  return new RegExp(reStr, flags);
-};
