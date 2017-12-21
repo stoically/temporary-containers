@@ -44,42 +44,28 @@ class Container {
       tempContainerNumber = this.storage.local.tempContainerCounter;
     }
     if (this.storage.local.preferences.containerNumberMode === 'reuse') {
-      const tempContainersNumbers = Object.values(this.storage.local.tempContainers).sort();
-      debug('[createTabInTempContainer] tempContainersNumbers', tempContainersNumbers);
-      if (!tempContainersNumbers.length) {
-        tempContainerNumber = 1;
-      } else {
-        const maxContainerNumber = Math.max.apply(Math, tempContainersNumbers);
-        debug('[createTabInTempContainer] maxContainerNumber', maxContainerNumber, tempContainersNumbers);
-        for (let i = 1; i < maxContainerNumber; i++) {
-          debug('[createTabInTempContainer] tempContainersNumbers[i]', i, tempContainersNumbers[i]);
-          if (!tempContainersNumbers.includes(i)) {
-            tempContainerNumber = i;
-            break;
-          }
-        }
-        if (!tempContainerNumber) {
-          tempContainerNumber = maxContainerNumber + 1;
-        }
-      }
+      tempContainerNumber = this.getReusedContainerNumber();
     }
     const containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
     try {
       let containerColor = this.storage.local.preferences.containerColor;
       if (this.storage.local.preferences.containerColorRandom) {
-        containerColor = this.containerColors[Math.floor(Math.random() * this.containerColors.length)];
+        const containerColors = this.getAvailableContainerColors();
+        containerColor = containerColors[Math.floor(Math.random() * containerColors.length)];
       }
       let containerIcon = this.storage.local.preferences.containerIcon;
       if (this.storage.local.preferences.containerIconRandom) {
         containerIcon = this.containerIcons[Math.floor(Math.random() * this.containerIcons.length)];
       }
-      const contextualIdentity = await browser.contextualIdentities.create({
+      const containerOptions = {
         name: containerName,
         color: containerColor,
         icon: containerIcon
-      });
+      };
+      const contextualIdentity = await browser.contextualIdentities.create(containerOptions);
       debug('[createTabInTempContainer] contextualIdentity created', contextualIdentity);
-      this.storage.local.tempContainers[contextualIdentity.cookieStoreId] = tempContainerNumber;
+      containerOptions.number = tempContainerNumber;
+      this.storage.local.tempContainers[contextualIdentity.cookieStoreId] = containerOptions;
       await this.storage.persist();
 
       try {
@@ -231,6 +217,63 @@ class Container {
     Object.keys(this.storage.local.tempContainers).map((cookieStoreId) => {
       this.tryToRemove(cookieStoreId);
     });
+  }
+
+
+  getReusedContainerNumber() {
+    const tempContainersNumbers = Object.values(this.storage.local.tempContainers)
+      .reduce((accumulator, containerOptions) => {
+        if (typeof containerOptions !== 'object') {
+          accumulator.push(containerOptions);
+          return accumulator;
+        }
+        accumulator.push(containerOptions.number);
+        return accumulator;
+      }, [])
+      .sort();
+    debug('[createTabInTempContainer] tempContainersNumbers', tempContainersNumbers);
+    if (!tempContainersNumbers.length) {
+      return 1;
+    } else {
+      const maxContainerNumber = Math.max.apply(Math, tempContainersNumbers);
+      debug('[createTabInTempContainer] maxContainerNumber', maxContainerNumber, tempContainersNumbers);
+      for (let i = 1; i < maxContainerNumber; i++) {
+        debug('[createTabInTempContainer] tempContainersNumbers[i]', i, tempContainersNumbers[i]);
+        if (!tempContainersNumbers.includes(i)) {
+          return i;
+        }
+      }
+      return maxContainerNumber + 1;
+    }
+  }
+
+
+  getAvailableContainerColors() {
+    // even out colors
+    const availableColors = [];
+    const containersOptions = Object.values(this.storage.local.tempContainers);
+    const assignedColors = {};
+    let maxColors = 0;
+    for (let containerOptions of containersOptions) {
+      if (typeof containerOptions !== 'object') {
+        continue;
+      }
+      if (!assignedColors[containerOptions.color]) {
+        assignedColors[containerOptions.color] = 0;
+      }
+      assignedColors[containerOptions.color]++;
+      if (assignedColors[containerOptions.color] > maxColors) {
+        maxColors = assignedColors[containerOptions.color];
+      }
+    }
+
+    for (let color of this.containerColors) {
+      if (!assignedColors[color] || assignedColors[color] < maxColors) {
+        availableColors.push(color);
+      }
+    }
+
+    return availableColors.length ? availableColors : this.containerColors;
   }
 }
 
