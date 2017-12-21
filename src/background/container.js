@@ -75,8 +75,13 @@ class Container {
           active,
           cookieStoreId: contextualIdentity.cookieStoreId,
         };
-        if (tab && tab.index) {
-          newTabOptions.index = tab.index + 1;
+        if (tab) {
+          if (tab.index) {
+            newTabOptions.index = tab.index + 1;
+          }
+          if (tab.pinned) {
+            newTabOptions.pinned = true;
+          }
         }
 
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);
