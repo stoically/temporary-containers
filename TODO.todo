@@ -1,6 +1,5 @@
 Features:
   ☐ support leftclick for new temporary containers (make sure to check for version on install and set left to "never")
-  ☐ even out container colors in random mode
 
 Bugs:
   ☐ reopen urls when they trigger the browser to start (and check wether onbeforerequest actually sees them)
@@ -17,6 +16,7 @@ Bugs:
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ even out container colors in random mode @done(2017-12-21 13:50) @project(Features)
   ✔ automaticModeState.multiAccount* is not properly cleaned up @done(2017-12-21 11:35) @project(Bugs)
   ✔ separate mouse clicks from automatic mode @done(2017-12-21 11:21) @project(Features)
   ✔ always open in temporary container per website @done(2017-12-21 09:44) @project(Features)

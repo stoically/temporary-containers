@@ -55,7 +55,7 @@ class Request {
       return;
     }
 
-    if (this.automaticModeState.noContainerTab[tab.id]) {
+    if (!alwaysOpenIn && this.automaticModeState.noContainerTab[tab.id]) {
       debug('[browser.webRequest.onBeforeRequest] no container tab, we ignore that', tab);
       return;
     }
