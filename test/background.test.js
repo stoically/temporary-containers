@@ -1,7 +1,6 @@
 describe('on require', () => {
   it('should register event listeners', async () => {
     const background = reload('../src/background');
-    sinon.stub(background.container, 'createTabInTempContainer');
     sinon.stub(background, 'contextMenusOnClicked');
     sinon.stub(background, 'commandsOnCommand');
     sinon.stub(background, 'runtimeOnInstalled');
@@ -12,6 +11,7 @@ describe('on require', () => {
     sinon.stub(background, 'tabsOnUpdated');
     sinon.stub(background, 'tabsOnRemoved');
     sinon.stub(background, 'tabsOnActivated');
+    sinon.stub(background.container, 'createTabInTempContainer');
     sinon.stub(background.request, 'webRequestOnBeforeRequest');
     await background.initialize();
 
