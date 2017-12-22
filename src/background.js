@@ -34,7 +34,6 @@ class TemporaryContainers {
       await this.storage.load();
     }
 
-    browser.browserAction.onClicked.addListener(this.container.createTabInTempContainer.bind(this));
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
     browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
     browser.tabs.onActivated.addListener(this.tabsOnActivated.bind(this));
@@ -43,6 +42,7 @@ class TemporaryContainers {
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
     browser.tabs.onRemoved.addListener(this.tabsOnRemoved.bind(this));
+    browser.browserAction.onClicked.addListener(this.container.createTabInTempContainer.bind(this.container));
     browser.webRequest.onBeforeRequest.addListener(this.request.webRequestOnBeforeRequest.bind(this.request),  {
       urls: ['<all_urls>'],
       types: ['main_frame']

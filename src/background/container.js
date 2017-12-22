@@ -236,14 +236,11 @@ class Container {
         return accumulator;
       }, [])
       .sort();
-    debug('[createTabInTempContainer] tempContainersNumbers', tempContainersNumbers);
     if (!tempContainersNumbers.length) {
       return 1;
     } else {
       const maxContainerNumber = Math.max.apply(Math, tempContainersNumbers);
-      debug('[createTabInTempContainer] maxContainerNumber', maxContainerNumber, tempContainersNumbers);
       for (let i = 1; i < maxContainerNumber; i++) {
-        debug('[createTabInTempContainer] tempContainersNumbers[i]', i, tempContainersNumbers[i]);
         if (!tempContainersNumbers.includes(i)) {
           return i;
         }

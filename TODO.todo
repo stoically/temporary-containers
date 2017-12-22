@@ -3,7 +3,6 @@ Features:
 
 Bugs:
   ☐ reopen urls when they trigger the browser to start (and check wether onbeforerequest actually sees them)
-  ☐ opening an url with mac-"remember my choice" in "no container" closes the tab
   ☐ ctrl(shift?)+left mouse click on an url with mac-"remember my choice" closes the window
   ☐ what's up with shift+left mouse click on links?
   ☐ disable browser action when firefox is started with --private-window
@@ -15,6 +14,7 @@ Bugs:
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✘ opening an url with mac-"remember my choice" in "no container" closes the tab (cant reproduce) @cancelled(2017-12-21 16:38) @project(Bugs)
   ✔ dont unpin "no container" tabs when installing addon or activating automatic mode @done(2017-12-21 16:35) @project(Bugs)
   ✔ even out container colors in random mode @done(2017-12-21 13:50) @project(Features)
   ✔ automaticModeState.multiAccount* is not properly cleaned up @done(2017-12-21 11:35) @project(Bugs)
