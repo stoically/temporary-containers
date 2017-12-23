@@ -9,8 +9,8 @@ document.body.addEventListener('mouseup', async (event) => {
     return;
   }
 
-  // only handle left mouse click if ctrl was clicked
-  if (event.button === 0 && !event.ctrlKey) {
+  // only handle left mouse click if ctrl or meta was clicked
+  if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
     return;
   }
 
@@ -27,7 +27,8 @@ document.body.addEventListener('mouseup', async (event) => {
       href: aElement.href,
       event: {
         button: event.button,
-        ctrlKey: event.ctrlKey
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey
       }
     }
   });

@@ -128,6 +128,27 @@ describe('preferences for global mouse clicks', () => {
     expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
   });
 
+  it('global meta+left mouse allowed', async () => {
+    const fakeSender = {
+      tab: {
+        id: 1,
+        url: 'https://notexample.com'
+      }
+    };
+    const fakeMessage = {
+      linkClicked: {
+        href: 'https://example.com',
+        event: {
+          button: 0,
+          metaKey: true
+        }
+      }
+    };
+    const background = await loadBackground();
+    await background.runtimeOnMessage(fakeMessage, fakeSender);
+    expect(background.automaticModeState.linkClicked[fakeMessage.linkClicked.href]).not.to.be.undefined;
+  });
+
   it('global ctrl+left mouse same domain (ignore)', async () => {
     const fakeSender = {
       tab: {

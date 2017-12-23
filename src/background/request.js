@@ -326,7 +326,8 @@ class Request {
       return this.checkClick('middle', message, sender);
     }
 
-    if (message.linkClicked.event.button === 0 && message.linkClicked.event.ctrlKey) {
+    if (message.linkClicked.event.button === 0 &&
+      (message.linkClicked.event.ctrlKey || message.linkClicked.event.metaKey)) {
       return this.checkClick('ctrlleft', message, sender);
     }
   }
