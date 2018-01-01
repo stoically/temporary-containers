@@ -44,7 +44,7 @@ The automatically created Temporary Containers get removed 0.5 seconds after the
 * In Automatic Mode:
   * Opening a "New Window" or starting Firefox, only opens a Temporary Container if you <strong>don't</strong> set the Preference "When Firefox starts" to "Show a blank page". Although as soon as you start navigating to a http(s) Website it will convert the Tab to a Temporary Container one.
   * "No Container" Alt+N (Tab) and Shift+Alt+C (Window) must open about:blank due to Firefox API limitations and thus the addressbar can't get focus when opening a new "No Container" Tab
-* With the Firefox Preference "Show your windows and tabs from last time" active, if you have multiple Windows and want the Tabs to correctly restore, you have to close the windows in a certain way:
+* With the Firefox Preference "Show your windows and tabs from last time" active, if you have multiple Windows and want the Tabs to correctly restore in its Temporary Container, you have to close the windows in a certain way:
   * Multiple normal and/or private windows: You have to close using the Browser Menu and then click "Quit"
   * One normal window and a private window: Either use the Browser Menu and click "Quit" (private windows don't get restored from Firefox) or *first* close the Private Window and *then* the normal window.
 
