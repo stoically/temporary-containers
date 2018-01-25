@@ -16,6 +16,8 @@ Bugs:
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ when opening domain thats bound using MAC from a no container tab when there are no other tabs it closes the window @done(2018-01-25 13:43) @project(Bugs)
+  ✔ prevent removal of tab when its the last one in the window @done(2018-01-25 13:43) @project(Bugs)
   ✔ open new tabs with icon&alt+c at last position (like firefox default new tab) @done(2018-01-25 12:54) @project(Bugs)
   ✔ with ff58 domains bound to "always open in" with MAC open two MAC confirm tabs @done(2018-01-25 12:29) @project(Bugs)
   ✘ opening an url with mac-"remember my choice" in "no container" closes the tab (cant reproduce) @cancelled(2017-12-21 16:38) @project(Bugs)

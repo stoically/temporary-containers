@@ -70,7 +70,7 @@ class Request {
           !this.automaticModeState.multiAccountWasFaster[request.url]) {
         debug('[browser.webRequest.onBeforeRequest] tab is loading the before clicked url in unknown container, just close it?', tab);
         try {
-          await browser.tabs.remove(tab.id);
+          await this.container.removeTab(tab);
           debug('[browser.webRequest.onBeforeRequest] removed tab (probably multi-account-containers huh)', tab.id);
         } catch (error) {
           debug('[browser.webRequest.onBeforeRequest] couldnt remove tab', tab.id, error);
@@ -165,7 +165,7 @@ class Request {
         const clickCreatedTabId = this.automaticModeState.linkClickCreatedTabs[request.url];
         debug('[handClickedLink] removing tab', clickCreatedTabId);
         try {
-          await browser.tabs.remove(clickCreatedTabId);
+          await this.container.removeTab({id: clickCreatedTabId});
           debug('[handClickedLink] removed tab', clickCreatedTabId);
           delete this.automaticModeState.linkClickCreatedTabs[request.url];
         } catch (error) {
@@ -183,7 +183,7 @@ class Request {
       const multiAccountTabId = this.automaticModeState.multiAccountWasFaster[request.url];
       debug('[handClickedLink] multi-account was faster and created a tab, remove the tab again', multiAccountTabId);
       try {
-        await browser.tabs.remove(multiAccountTabId);
+        await this.container.removeTab({id: multiAccountTabId});
         debug('[handClickedLink] removed tab', multiAccountTabId);
       } catch (error) {
         debug('[handClickedLink] something went wrong while removing tab', multiAccountTabId, error);
@@ -236,7 +236,7 @@ class Request {
             debug('[handleNotClickedLink] we saw that non-default link before, probably multi-account stuff, close tab',
               request.url, JSON.stringify(this.automaticModeState));
             try {
-              await browser.tabs.remove(request.tabId);
+              await this.container.removeTab({id: request.tabId});
             } catch (error) {
               debug('[handleNotClickedLink] removing tab failed', request.tabId, error);
             }

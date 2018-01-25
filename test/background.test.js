@@ -69,7 +69,7 @@ describe('runtime.onStartup should sometimes reload already open Tab in Temporar
     cookieStoreId: 'fake'
   };
 
-  it('one open about:home should reopen in temporary container', async () => {
+  it('one open about:home should reopen in temporary container', done => {
     const fakeAboutHomeTab = {
       incognito: false,
       cookieStoreId: 'firefox-default',
@@ -79,29 +79,19 @@ describe('runtime.onStartup should sometimes reload already open Tab in Temporar
     browser.tabs.query.resolves([fakeAboutHomeTab]);
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves({id: 1});
-    const background = await loadBackground();
-    await background.runtimeOnStartup();
+    loadBackground().then(background => {
+      background.runtimeOnStartup().then(() => {
+        browser.contextualIdentities.create.should.have.been.calledOnce;
+        browser.tabs.create.should.have.been.calledOnce;
 
-    browser.contextualIdentities.create.should.have.been.calledOnce;
-    browser.tabs.create.should.have.been.calledOnce;
-    browser.tabs.remove.should.have.been.calledOnce;
-  });
-
-  it('one open about:newtab should reopen in temporary container', async () => {
-    const fakeAboutNewTab = {
-      incognito: false,
-      cookieStoreId: 'firefox-default',
-      url: 'about:newtab'
-    };
-    browser.tabs.query.resolves([fakeAboutNewTab]);
-    browser.contextualIdentities.create.resolves(fakeContainer);
-    browser.tabs.create.resolves({id: 1});
-    const background = await loadBackground();
-    await background.runtimeOnStartup();
-
-    browser.contextualIdentities.create.should.have.been.calledOnce;
-    browser.tabs.create.should.have.been.calledOnce;
-    browser.tabs.remove.should.have.been.calledOnce;
+        browser.tabs.query.resolves([{},{}]);
+        clock.tick(500);
+        process.nextTick(() => {
+          browser.tabs.remove.should.have.been.calledOnce;
+          done();
+        });
+      });
+    });
   });
 
   it('one open tab not in the default container should not reopen in temporary container', async () => {

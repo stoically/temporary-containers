@@ -105,13 +105,33 @@ class Container {
     if (!tab) {
       return newTab;
     }
-    try {
-      await browser.tabs.remove(tab.id);
-      debug('[reloadTabInTempContainer] removed old tab', tab.id);
-    } catch (error) {
-      debug('[reloadTabInTempContainer] error while removing old tab', tab, error);
-    }
+    await this.removeTab(tab);
     return newTab;
+  }
+
+
+  async removeTab(tab) {
+    try {
+      // make sure we dont close the window by removing this tab
+      const tabs = await browser.tabs.query({windowId: browser.windows.WINDOW_ID_CURRENT});
+      if (tabs.length > 1) {
+        try {
+          await browser.tabs.remove(tab.id);
+          debug('[removeTab] removed old tab', tab.id);
+        } catch (error) {
+          debug('[removeTab] error while removing old tab', tab, error);
+        }
+      } else {
+        debug('[removeTab] queuing removal of tab to prevent closing of window', tab, tabs);
+        setTimeout(() => {
+          this.removeTab(tab);
+        }, 500);
+      }
+    } catch (error) {
+      debug('[removeTab] couldnt query tabs', tab, error);
+    }
+
+
   }
 
 
@@ -181,7 +201,7 @@ class Container {
           ||
           (this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] === 1)) {
         debug('[handleMultiAccountContainersConfirmPage] we can remove this tab, i guess - and yes this is a bit hacky', tab);
-        await browser.tabs.remove(tab.id);
+        await this.removeTab(tab);
         debug('[handleMultiAccountContainersConfirmPage] removed multi-account-containers tab', tab.id);
         return;
       }

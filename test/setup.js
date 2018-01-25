@@ -46,7 +46,7 @@ global.injectBrowser = () => {
       },
       create: sinon.stub(),
       remove: sinon.stub(),
-      query: sinon.stub(),
+      query: sinon.stub().resolves([{},{}]),
       get: sinon.stub()
     },
     storage: {
