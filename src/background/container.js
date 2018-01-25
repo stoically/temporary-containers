@@ -37,7 +37,7 @@ class Container {
   }
 
 
-  async createTabInTempContainer(tab, url, alwaysOpenIn) {
+  async createTabInTempContainer(tab, url, alwaysOpenIn, active) {
     let tempContainerNumber;
     if (this.storage.local.preferences.containerNumberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
@@ -69,10 +69,10 @@ class Container {
       await this.storage.persist();
 
       try {
-        const active = !url || alwaysOpenIn ? true : false;
+        const newTabActive = active || !url || alwaysOpenIn ? true : false;
         const newTabOptions = {
           url,
-          active,
+          active: newTabActive,
           cookieStoreId: contextualIdentity.cookieStoreId,
         };
         if (tab) {
@@ -100,8 +100,8 @@ class Container {
   }
 
 
-  async reloadTabInTempContainer(tab, url) {
-    const newTab = await this.createTabInTempContainer(tab, url);
+  async reloadTabInTempContainer(tab, url, active) {
+    const newTab = await this.createTabInTempContainer(tab, url, false, active);
     if (!tab) {
       return newTab;
     }
@@ -167,14 +167,19 @@ class Container {
           !this.request.shouldAlwaysOpenInTemporaryContainer({url: multiAccountTargetURL})) {
         return;
       }
-      this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = true;
+      if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {
+        this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = 0;
+      }
+      this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]++;
 
       debug('[handleMultiAccountContainersConfirmPage] debug',
         multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(this.automaticModeState.linkClicked), tab);
       if ((multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
            this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer])
           ||
-          (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')) {
+          (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')
+          ||
+          (this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] === 1)) {
         debug('[handleMultiAccountContainersConfirmPage] we can remove this tab, i guess - and yes this is a bit hacky', tab);
         await browser.tabs.remove(tab.id);
         debug('[handleMultiAccountContainersConfirmPage] removed multi-account-containers tab', tab.id);

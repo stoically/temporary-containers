@@ -206,6 +206,8 @@ class Request {
         && this.automaticModeState.multiAccountConfirmPage[request.url]
         && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
       debug('[handleNotClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
+      delete this.automaticModeState.multiAccountConfirmPage[request.url];
+      delete this.automaticModeState.alreadySawThatLink[request.url];
       return;
     }
     let containerExists = false;
@@ -258,7 +260,7 @@ class Request {
     }
 
     debug('[handleNotClickedLink] onBeforeRequest reload in temp tab', tab, request);
-    await this.container.reloadTabInTempContainer(tab, request.url);
+    await this.container.reloadTabInTempContainer(tab, request.url, true);
 
     return { cancel: true };
   }
