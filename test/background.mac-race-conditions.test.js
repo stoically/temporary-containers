@@ -106,7 +106,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.remove.should.not.have.been.called;
     });
 
-    it('should close first confirm page and leave the second open even when mac confirm comes before any request', async () => {
+    it.skip('should close first confirm page and leave the second open even when mac confirm comes before any request', async () => {
       // the first request already triggered multi-account-containers
       // it opened another tab that updates its url to moz-extension:// eventually
       // it also already removed our tab2
