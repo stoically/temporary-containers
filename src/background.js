@@ -168,7 +168,7 @@ class TemporaryContainers {
   async contextMenusOnClicked(info, tab) {
     switch (info.menuItemId)  {
     case 'open-link-in-new-temporary-container-tab':
-      this.container.createTabInTempContainer(tab, info.linkUrl);
+      this.container.createTabInTempContainer(tab, info.linkUrl, null, false, true);
       break;
     }
   }

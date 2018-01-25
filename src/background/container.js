@@ -37,7 +37,7 @@ class Container {
   }
 
 
-  async createTabInTempContainer(tab, url, alwaysOpenIn, active) {
+  async createTabInTempContainer(tab, url, alwaysOpenIn, active, dontPin) {
     let tempContainerNumber;
     if (this.storage.local.preferences.containerNumberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
@@ -76,10 +76,10 @@ class Container {
           cookieStoreId: contextualIdentity.cookieStoreId,
         };
         if (url && tab) {
-          if (tab.index) {
+          if (tab.index >= 0) {
             newTabOptions.index = tab.index + 1;
           }
-          if (tab.pinned) {
+          if (tab.pinned && !dontPin) {
             newTabOptions.pinned = true;
           }
         }
