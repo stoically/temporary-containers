@@ -8,8 +8,8 @@ Bugs:
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
   ✔ clicking links on about: and moz-extension: pages should open tmp container @done(2018-01-25 14:34) @project(Bugs)
-  ✔ drag&drop of files into the browser doesn't open a new tmp container @done(2018-01-25 14:25) @project(Bugs)
-  ✔ opening files from the host os in ff doesn't open a new tmp container @done(2018-01-25 14:25) @project(Bugs)
+  ✘ drag&drop of files into the browser doesn't open a new tmp container (not possible due to api limitations) @cancelled(2018-01-25 17:18) @project(Archive)
+  ✘ opening files from the host os in ff doesn't open a new tmp container (not possible due to api limitations) @cancelled(2018-01-25 17:18) @project(Archive)
   ✔ opening a url thats set to "always open in" from "last closed windows" closes MAC confirm @done(2018-01-25 14:25) @project(Bugs)
   ✘ external link opens in "no container" when firefox starts with already open tabs- not possible due to api limitations (request handler is not registered fast enough) @cancelled(2018-01-25 14:17) @project(Bugs)
   ✔ disable browser action when firefox is started with --private-window @done(2018-01-25 14:16) @project(Bugs)
