@@ -2,10 +2,6 @@ Features:
   ☐ support leftclick for new temporary containers (make sure to check for version on install and set left to "never")
 
 Bugs:
-  ☐ reopen urls when they trigger the browser to start (and check wether onbeforerequest actually sees them)
-  ☐ ctrl(shift?)+left mouse click on an url with mac-"remember my choice" closes the window
-  ☐ what's up with shift+left mouse click on links?
-  ☐ disable browser action when firefox is started with --private-window
   ☐ external link opens in "no container" when firefox starts with already open tabs
   ☐ restoring tabs from history doesn't open them in tmp container
   ☐ drag&drop of files into the browser doesn't open a new tmp container
@@ -16,6 +12,10 @@ Bugs:
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ disable browser action when firefox is started with --private-window @done(2018-01-25 14:16) @project(Bugs)
+  ✔ what's up with shift+left mouse click on links? @done(2018-01-25 14:04) @project(Bugs)
+  ✔ ctrl(shift?)+left mouse click on an url with mac-"remember my choice" closes the window @done(2018-01-25 14:03) @project(Bugs)
+  ✘ reopen urls when they trigger the browser to start (and check wether onbeforerequest actually sees them) - not possible due to api limitations (request handler is not registered fast enough) @cancelled(2018-01-25 14:02) @project(Bugs)
   ✔ when opening domain thats bound using MAC from a no container tab when there are no other tabs it closes the window @done(2018-01-25 13:43) @project(Bugs)
   ✔ prevent removal of tab when its the last one in the window @done(2018-01-25 13:43) @project(Bugs)
   ✔ open new tabs with icon&alt+c at last position (like firefox default new tab) @done(2018-01-25 12:54) @project(Bugs)

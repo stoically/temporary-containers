@@ -91,8 +91,11 @@ class TemporaryContainers {
   async tabsOnCreated(tab) {
     debug('[browser.tabs.onCreated] tab created', tab);
     if (tab.incognito) {
-      browser.browserAction.disable(tab.id);
-      debug('[browser.tabs.onCreated] tab is incognito, disabling browseraction', tab);
+      // delay disabling of browseraction (firefox doesnt pickup disabling right after creation)
+      setTimeout(() => {
+        debug('[browser.tabs.onCreated] tab is incognito, disabling browseraction', tab);
+        browser.browserAction.disable(tab.id);
+      }, 100);
       return;
     }
 
@@ -252,6 +255,12 @@ class TemporaryContainers {
     // extension loads after the first tab opens most of the time
     // lets see if we can reopen the first tab
     const tempTabs = await browser.tabs.query({});
+    // disable browseraction for all incognito tabs
+    tempTabs.map(tab =>{
+      if (tab.incognito) {
+        browser.browserAction.disable(tab.id);
+      }
+    });
     if (tempTabs.length !== 1) {
       return;
     }
