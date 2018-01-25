@@ -75,7 +75,7 @@ class Container {
           active: newTabActive,
           cookieStoreId: contextualIdentity.cookieStoreId,
         };
-        if (tab) {
+        if (url && tab) {
           if (tab.index) {
             newTabOptions.index = tab.index + 1;
           }
