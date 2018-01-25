@@ -3,11 +3,11 @@ Features:
 
 Bugs:
   ☐ restoring tabs from history doesn't open them in tmp container
-  ☐ clicking links on about: and moz-extension: pages should open tmp container
   ☐ tab doesn't keep index (goes to the end) when domain is set to "always open in" with MAC and middlemouse-clicked
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ clicking links on about: and moz-extension: pages should open tmp container @done(2018-01-25 14:34) @project(Bugs)
   ✔ drag&drop of files into the browser doesn't open a new tmp container @done(2018-01-25 14:25) @project(Bugs)
   ✔ opening files from the host os in ff doesn't open a new tmp container @done(2018-01-25 14:25) @project(Bugs)
   ✔ opening a url thats set to "always open in" from "last closed windows" closes MAC confirm @done(2018-01-25 14:25) @project(Bugs)
