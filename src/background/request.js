@@ -108,7 +108,12 @@ class Request {
       return await this.handleClickedLink(request, tab, alwaysOpenIn);
     } else {
       if (tab.cookieStoreId === 'firefox-default' && tab.openerTabId && !alwaysOpenIn) {
-        return;
+        debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
+        const openerTab = await browser.tabs.get(tab.openerTabId);
+        if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
+          debug('[webRequestOnBeforeRequest] request didnt came from about/moz-extension page, we do nothing', tab);
+          return;
+        }
       }
       if (!this.storage.local.preferences.automaticMode && !alwaysOpenIn) {
         debug('[browser.webRequest.onBeforeRequest] got not clicked request but automatic mode is off, ignoring', request);

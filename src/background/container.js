@@ -160,7 +160,13 @@ class Container {
       return;
     }
 
-    debug('[maybeReloadTabInTempContainer] not a home/new/moz tab, we dont handle that', tab);
+    if (tab.cookieStoreId === 'firefox-default' && tab.url.startsWith('file:')) {
+      debug('[maybeReloadTabInTempContainer] file: tab in firefox-default container, reload in temp container', tab);
+      await this.reloadTabInTempContainer(tab, tab.url);
+      return;
+    }
+
+    debug('[maybeReloadTabInTempContainer] not a home/new/moz/file tab, we dont handle that', tab);
   }
 
 

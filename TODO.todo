@@ -2,16 +2,16 @@ Features:
   ☐ support leftclick for new temporary containers (make sure to check for version on install and set left to "never")
 
 Bugs:
-  ☐ external link opens in "no container" when firefox starts with already open tabs
   ☐ restoring tabs from history doesn't open them in tmp container
-  ☐ drag&drop of files into the browser doesn't open a new tmp container
-  ☐ opening files from the host os in ff doesn't open a new tmp container
-  ☐ opening a url thats set to "always open in" from "last closed windows" closes MAC confirm
   ☐ clicking links on about: and moz-extension: pages should open tmp container
   ☐ tab doesn't keep index (goes to the end) when domain is set to "always open in" with MAC and middlemouse-clicked
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✔ drag&drop of files into the browser doesn't open a new tmp container @done(2018-01-25 14:25) @project(Bugs)
+  ✔ opening files from the host os in ff doesn't open a new tmp container @done(2018-01-25 14:25) @project(Bugs)
+  ✔ opening a url thats set to "always open in" from "last closed windows" closes MAC confirm @done(2018-01-25 14:25) @project(Bugs)
+  ✘ external link opens in "no container" when firefox starts with already open tabs- not possible due to api limitations (request handler is not registered fast enough) @cancelled(2018-01-25 14:17) @project(Bugs)
   ✔ disable browser action when firefox is started with --private-window @done(2018-01-25 14:16) @project(Bugs)
   ✔ what's up with shift+left mouse click on links? @done(2018-01-25 14:04) @project(Bugs)
   ✔ ctrl(shift?)+left mouse click on an url with mac-"remember my choice" closes the window @done(2018-01-25 14:03) @project(Bugs)
