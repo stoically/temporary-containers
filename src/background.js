@@ -95,7 +95,7 @@ class TemporaryContainers {
       setTimeout(() => {
         debug('[browser.tabs.onCreated] tab is incognito, disabling browseraction', tab);
         browser.browserAction.disable(tab.id);
-      }, 100);
+      }, 200);
       return;
     }
 
@@ -256,7 +256,7 @@ class TemporaryContainers {
     // lets see if we can reopen the first tab
     const tempTabs = await browser.tabs.query({});
     // disable browseraction for all incognito tabs
-    tempTabs.map(tab =>{
+    tempTabs.map(tab => {
       if (tab.incognito) {
         browser.browserAction.disable(tab.id);
       }

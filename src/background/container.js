@@ -137,7 +137,8 @@ class Container {
 
   async maybeReloadTabInTempContainer(tab) {
     if (tab.incognito) {
-      debug('[maybeReloadTabInTempContainer] tab is incognito, ignore it', tab);
+      debug('[maybeReloadTabInTempContainer] tab is incognito, ignore it and disable browseraction', tab);
+      browser.browserAction.disable(tab.id);
       return;
     }
 
