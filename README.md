@@ -23,7 +23,7 @@ Open Tabs in "No Container":
 * Pressing Alt+N (Tab) or Shift+Alt+C (Window)
 * RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
 
-[Get the Add-on here.](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/)
+[Get the Add-on here.](https://addons.mozilla.org/firefox/addon/temporary-containers/)
 
 ## Notes
 If you have any Suggestions, Feedback or BugReports please make sure to leave me an Issue here on GitHub.
@@ -32,7 +32,7 @@ Works together with [Multi-Account Containers](https://github.com/mozilla/multi-
 
 The automatically created Temporary Containers get removed 0.5 seconds after the Last Tab in a given Temporary Container closes. Sometimes removing the Temporary Container doesn't work immediately - but don't worry, not needed Temporary Containers will automatically get removed eventually!
 
-[Learn more about Containers](https://addons.mozilla.org/en-US/firefox/addon/multi-account-containers/)
+[Learn more about Containers](https://addons.mozilla.org/firefox/addon/multi-account-containers/)
 
 
 ## Limitations
