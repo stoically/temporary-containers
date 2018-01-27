@@ -1,3 +1,4 @@
+<!-- Feel free to ignore this Issue template if you just want to ask or suggest something -->
 - Temporary Containers Version:
 - Firefox Version:
 - Operating System + Version:
