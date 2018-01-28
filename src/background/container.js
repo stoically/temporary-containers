@@ -188,21 +188,24 @@ class Container {
           !this.request.shouldAlwaysOpenInTemporaryContainer({url: multiAccountTargetURL})) {
         return;
       }
+
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {
         this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = 0;
       }
-      this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]++;
-
-      debug('[handleMultiAccountContainersConfirmPage] debug',
+      debug('[handleMultiAccountContainersConfirmPage] debug', this.automaticModeState.multiAccountConfirmPage,
         multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(this.automaticModeState.linkClicked), tab);
-      if ((multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
+      if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] ||
+          (multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
            this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer])
           ||
           (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')) {
+        this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]++;
         debug('[handleMultiAccountContainersConfirmPage] we can remove this tab, i guess - and yes this is a bit hacky', tab);
         await this.removeTab(tab);
         debug('[handleMultiAccountContainersConfirmPage] removed multi-account-containers tab', tab.id);
         return;
+      } else {
+        this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]++;
       }
     }
   }

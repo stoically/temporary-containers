@@ -106,7 +106,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.remove.should.not.have.been.called;
     });
 
-    it.skip('should close first confirm page and leave the second open even when mac confirm comes before any request', async () => {
+    it('should close first confirm page and leave the second open even when mac confirm comes before any request', async () => {
       // since firefox58 the first thing we see is the MAC confirm page
       // MAC already closed the old tab at this point
       const fakeMATabId = 3;
@@ -162,7 +162,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const fakeMATab2 = {
         id: fakeMATabId2,
-        cookieStoreId: 'firefox-default',
+        cookieStoreId: 'firefox-tmp-container-2',
         url: fakeMAUrl2
       };
 

@@ -90,8 +90,7 @@ class Request {
       // this also means that there might be unexpected behavior when
       // someone clicks the same link while this hasn't run
       debug('[webRequestOnBeforeRequest] cleaning up', request.url);
-      delete this.automaticModeState.alreadySawThatLink[request.url];
-      delete this.automaticModeState.alreadySawThatLinkInNonDefault[request.url];
+      this.cleanupAutomaticModeState(request.url);
     }, 1000);
 
     if (this.automaticModeState.alreadySawThatLink[request.url] > 6) {
@@ -138,14 +137,19 @@ class Request {
 
     setTimeout(() => {
       debug('[runtimeOnMessage] cleaning up', url);
-      delete this.automaticModeState.linkClicked[url];
-      delete this.automaticModeState.linkClickCreatedTabs[url];
-      delete this.automaticModeState.alreadySawThatLink[url];
-      delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];
-      delete this.automaticModeState.multiAccountConfirmPage[url];
-      delete this.automaticModeState.multiAccountWasFaster[url];
-      delete this.automaticModeState.multiAccountRemovedTab[url];
+      this.cleanupAutomaticModeState(url);
     }, 1000);
+  }
+
+
+  cleanupAutomaticModeState(url) {
+    delete this.automaticModeState.linkClicked[url];
+    delete this.automaticModeState.linkClickCreatedTabs[url];
+    delete this.automaticModeState.alreadySawThatLink[url];
+    delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];
+    delete this.automaticModeState.multiAccountConfirmPage[url];
+    delete this.automaticModeState.multiAccountWasFaster[url];
+    delete this.automaticModeState.multiAccountRemovedTab[url];
   }
 
 
