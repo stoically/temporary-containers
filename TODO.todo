@@ -1,12 +1,8 @@
-Features:
-  ☐ support leftclick for new temporary containers (make sure to check for version on install and set left to "never")
-
-Bugs:
-  ☐ restoring tabs from history doesn't open them in tmp container
-  ☐ tab doesn't keep index (goes to the end) when domain is set to "always open in" with MAC and middlemouse-clicked
-
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+  ✘ support leftclick for new temporary containers (make sure to check for version on install and set left to "never") - moved to github issues @cancelled(2018-01-28 08:52) @project(Features)
+  ✘ restoring tabs from history doesn't open them in tmp container (cant reproduce) @cancelled(2018-01-28 08:52) @project(Bugs)
+  ✘ tab doesn't keep index (goes to the end) when domain is set to "always open in" with MAC and middlemouse-clicked - moved to github issues @cancelled(2018-01-28 08:52) @project(Bugs)
   ✔ clicking links on about: and moz-extension: pages should open tmp container @done(2018-01-25 14:34) @project(Bugs)
   ✘ drag&drop of files into the browser doesn't open a new tmp container (not possible due to api limitations) @cancelled(2018-01-25 17:18) @project(Archive)
   ✘ opening files from the host os in ff doesn't open a new tmp container (not possible due to api limitations) @cancelled(2018-01-25 17:18) @project(Archive)
