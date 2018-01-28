@@ -68,6 +68,7 @@ class Request {
           !this.automaticModeState.linkClicked[request.url].containers[tab.cookieStoreId]) &&
           !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
           !this.automaticModeState.multiAccountWasFaster[request.url]) {
+        this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
         debug('[browser.webRequest.onBeforeRequest] tab is loading the before clicked url in unknown container, just close it?', tab);
         try {
           await this.container.removeTab(tab);
@@ -75,7 +76,6 @@ class Request {
         } catch (error) {
           debug('[browser.webRequest.onBeforeRequest] couldnt remove tab', tab.id, error);
         }
-        this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
       }
       delete this.automaticModeState.alreadySawThatLink[request.url];
       return;
@@ -111,7 +111,7 @@ class Request {
         debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
         const openerTab = await browser.tabs.get(tab.openerTabId);
         if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
-          debug('[webRequestOnBeforeRequest] request didnt came from about/moz-extension page, we do nothing', tab);
+          debug('[webRequestOnBeforeRequest] request didnt came from about/moz-extension page, we do nothing', openerTab);
           return;
         }
       }
