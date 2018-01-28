@@ -192,9 +192,11 @@ class Container {
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {
         this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = 0;
       }
-      debug('[handleMultiAccountContainersConfirmPage] debug', this.automaticModeState.multiAccountConfirmPage,
-        multiAccountTargetURL, multiAccountOriginContainer, JSON.stringify(this.automaticModeState.linkClicked), tab);
-      if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] ||
+      debug('[handleMultiAccountContainersConfirmPage] debug', JSON.stringify(this.automaticModeState),
+        multiAccountTargetURL, multiAccountOriginContainer, tab);
+      if ((!this.automaticModeState.alreadySawThatLinkInNonDefault[multiAccountTargetURL] &&
+          !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
+          ||
           (multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
            this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer])
           ||

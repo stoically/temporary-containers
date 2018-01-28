@@ -15,6 +15,48 @@
 
 describe('raceconditions with multi-account-containers', () => {
   describe('when not previously clicked url loads thats set to "always open in $container" but not "remember my choice"', () => {
+    it('should leave the first confirm page open if its already in a temporary container', async () => {
+      // request comes in and we just ignore it because its loading in a temporary container and wasnt clicked
+      const fakeRequest = {
+        tabId: 1,
+        url: 'https://example.com'
+      };
+      const fakeTab = {
+        id: 1,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.tabs.get.resolves(fakeTab);
+      const background = await loadBackground();
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
+
+      expect(result1).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+      browser.contextualIdentities.create.should.not.have.been.calledOnce;
+      browser.tabs.create.should.not.have.been.calledOnce;
+
+      // the first request already triggered multi-account-containers
+      // it opened another tab that updates its url to moz-extension:// eventually
+      // it also already removed our tab2 and we just leave it open
+      const fakeMATabId = 3;
+      const fakeMAUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-container-1' +
+        '&currentCookieStoreId=firefox-tmp-container-1';
+      const fakeMAChangeInfo = {
+        url: fakeMAUrl
+      };
+      const fakeMATab = {
+        id: fakeMATabId,
+        cookieStoreId: 'firefox-tmp-container-1',
+        url: fakeMAUrl
+      };
+
+      browser.tabs.remove.reset();
+      const result3 = await background.tabsOnUpdated(fakeMATabId, fakeMAChangeInfo, fakeMATab);
+
+      expect(result3).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+    });
+
     it('should close first confirm page and leave the second open', async () => {
       // request comes in, we cancel it, close the tab and reopen in temp container
       const fakeRequest = {
