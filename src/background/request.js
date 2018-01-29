@@ -131,6 +131,7 @@ class Request {
         count: 0
       };
     }
+    this.automaticModeState.linkClicked[url].tab = tab;
     this.automaticModeState.linkClicked[url].tabs[tab.id] = true;
     this.automaticModeState.linkClicked[url].containers[tab.cookieStoreId] = true;
     this.automaticModeState.linkClicked[url].count++;
@@ -154,58 +155,64 @@ class Request {
 
 
   async handleClickedLink(request, tab) {
-    debug('[handClickedLink] onBeforeRequest', request);
+    debug('[handleClickedLink] onBeforeRequest', request, tab, JSON.stringify(this.automaticModeState));
 
     if (!tab) {
-      debug('[handClickedLink] multi-account-containers mightve removed the tab, continue', request.tabId);
+      debug('[handleClickedLink] multi-account-containers mightve removed the tab, continue', request.tabId);
+    }
+
+    if (this.automaticModeState.linkClickCreatedTabs[request.url] &&
+        this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
+        !this.automaticModeState.multiAccountConfirmPage[request.url] &&
+        !this.automaticModeState.multiAccountRemovedTab[request.url]) {
+      debug('[handleClickedLink] actually i have no idea what im doing, pls merge the pull request mac :C');
+      return;
     }
 
     if (!tab.openerTabId && !this.storage.local.tabContainerMap[tab.id] &&
-        !this.automaticModeState.multiAccountConfirmPage[request.url]) {
-      debug('[handClickedLink] no openerTabId and not in the tabContainerMap means probably ' +
+        !this.automaticModeState.multiAccountConfirmPage[request.url] &&
+        !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url]) {
+      debug('[handleClickedLink] no openerTabId and not in the tabContainerMap means probably ' +
         'multi-account reloaded the url ' +
         'in another tab, so were going either to close the tabs weve opened for that ' +
-        'link so far or inform our future self', JSON.stringify(this.automaticModeState));
+        'link so far or inform our future self');
 
       if (!this.automaticModeState.linkClickCreatedTabs[request.url]) {
-        debug('[handClickedLink] informing future self');
+        debug('[handleClickedLink] informing future self');
         this.automaticModeState.multiAccountWasFaster[request.url] = tab.id;
       } else {
         const clickCreatedTabId = this.automaticModeState.linkClickCreatedTabs[request.url];
-        debug('[handClickedLink] removing tab', clickCreatedTabId);
+        debug('[handleClickedLink] removing tab', clickCreatedTabId);
         try {
           await this.container.removeTab({id: clickCreatedTabId});
-          debug('[handClickedLink] removed tab', clickCreatedTabId);
+          debug('[handleClickedLink] removed tab', clickCreatedTabId);
           delete this.automaticModeState.linkClickCreatedTabs[request.url];
         } catch (error) {
-          debug('[handClickedLink] something went wrong while removing tab', clickCreatedTabId, error);
+          debug('[handleClickedLink] something went wrong while removing tab', clickCreatedTabId, error);
         }
       }
-      this.maybeRemoveClickState(request);
       return;
     }
 
     let newTab;
     newTab = await this.container.reloadTabInTempContainer(tab, request.url);
-    debug('[handClickedLink] created new tab', newTab);
+    debug('[handleClickedLink] created new tab', newTab);
     if (this.automaticModeState.multiAccountWasFaster[request.url]) {
       const multiAccountTabId = this.automaticModeState.multiAccountWasFaster[request.url];
-      debug('[handClickedLink] multi-account was faster and created a tab, remove the tab again', multiAccountTabId);
+      debug('[handleClickedLink] multi-account was faster and created a tab, remove the tab again', multiAccountTabId);
       try {
         await this.container.removeTab({id: multiAccountTabId});
-        debug('[handClickedLink] removed tab', multiAccountTabId);
+        debug('[handleClickedLink] removed tab', multiAccountTabId);
       } catch (error) {
-        debug('[handClickedLink] something went wrong while removing tab', multiAccountTabId, error);
+        debug('[handleClickedLink] something went wrong while removing tab', multiAccountTabId, error);
       }
       delete this.automaticModeState.multiAccountWasFaster[request.url];
     } else {
       this.automaticModeState.linkClickCreatedTabs[request.url] = newTab.id;
-      debug('[handClickedLink] linkClickCreatedTabs', JSON.stringify(this.automaticModeState.linkClickCreatedTabs));
+      debug('[handleClickedLink] linkClickCreatedTabs', JSON.stringify(this.automaticModeState.linkClickCreatedTabs));
     }
 
-    this.maybeRemoveClickState(request);
-
-    debug('[handClickedLink] canceling request', request);
+    debug('[handleClickedLink] canceling request', request);
     return { cancel: true };
   }
 
@@ -340,15 +347,6 @@ class Request {
     if (message.linkClicked.event.button === 0 &&
       (message.linkClicked.event.ctrlKey || message.linkClicked.event.metaKey)) {
       return this.checkClick('ctrlleft', message, sender);
-    }
-  }
-
-
-  async maybeRemoveClickState(request) {
-    this.automaticModeState.linkClicked[request.url].count--;
-    if (!this.automaticModeState.linkClicked[request.url].count) {
-      delete this.automaticModeState.linkClicked[request.url];
-      delete this.automaticModeState.linkClickCreatedTabs[request.url];
     }
   }
 

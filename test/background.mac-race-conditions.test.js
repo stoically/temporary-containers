@@ -1,13 +1,19 @@
-// when we open a tab and the url its loading is registered with MAC
-// it will cancel our request, close the tab and reopen in the container
-// that the tab was. thing is, we don't want that MAC opens the URL in that
-// container, we want it to open in a new temporary container
-// the way this works its not possible that we wait for MAC to eventually
-// make a request before doing our temporary container thing
-// this makes the whole thing somewhat complicated, because requests
-// can come in in the funniest of variations
-// only way to handle this in a sane way would be to include directly into MAC
-// interfacing with MAC might work too
+// When a tab starts loading an URL that is assigned using MAC (Multi-Account Containers)
+// it will cancel our request, close the tab and reopen it in
+// * "Always open in" Confirm Page
+// * "Always open in" and "Remember my choice" Target Container
+//
+// The thing is, we want it to open in a new Temporary Container instead,
+// so we have to try to guess that MAC intervenes and handle these cases
+//
+// What makes the whole thing somewhat complicated is that requests
+// can come in different variations based on Firefox versions, installed Add-ons and
+// even available CPU / RAM
+//
+// This is a collection of tests to make sure different variations of requests are
+// handled as good as possible
+//
+// To handle this in a sane way we need an API to MAC
 //
 // side-note: preventDetault of middlemouse click does not work in firefox
 // > https://jsfiddle.net/3fjqr43v/

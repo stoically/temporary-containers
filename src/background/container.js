@@ -198,7 +198,8 @@ class Container {
           !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
           ||
           (multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
-           this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer])
+           this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer] &&
+           !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
           ||
           (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')) {
         this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]++;
