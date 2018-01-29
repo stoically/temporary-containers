@@ -161,6 +161,13 @@ class Request {
       debug('[handleClickedLink] multi-account-containers mightve removed the tab, continue', request.tabId);
     }
 
+    if (tab.cookieStoreId === 'firefox-default'
+        && this.automaticModeState.multiAccountConfirmPage[request.url]
+        && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
+      debug('[handleClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
+      return;
+    }
+
     if (this.automaticModeState.linkClickCreatedTabs[request.url] &&
         this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
         !this.automaticModeState.multiAccountConfirmPage[request.url] &&
@@ -222,8 +229,6 @@ class Request {
         && this.automaticModeState.multiAccountConfirmPage[request.url]
         && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
       debug('[handleNotClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
-      delete this.automaticModeState.multiAccountConfirmPage[request.url];
-      delete this.automaticModeState.alreadySawThatLink[request.url];
       return;
     }
     let containerExists = false;

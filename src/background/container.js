@@ -189,12 +189,25 @@ class Container {
         return;
       }
 
+      // didnt saw a confirm page before &
+      // multiAccountOriginContainer is set to a known temporary container different from the linkclicked.tab container &
+      // (optional) the openerTabId matches the linkclicked.tab
+      // then we can probably leave this mac confirm open
+      // TODO hopefully replace soon with API call to MAC
+      let dontCloseThisMacConfirm = false;
+      if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
+          this.storage.local.tempContainers[multiAccountOriginContainer] &&
+          multiAccountOriginContainer !== this.automaticModeState.linkClicked[multiAccountTargetURL].tab.cookieStoreId) {
+        dontCloseThisMacConfirm = true;
+      }
+
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {
         this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = 0;
       }
       debug('[handleMultiAccountContainersConfirmPage] debug', JSON.stringify(this.automaticModeState),
         multiAccountTargetURL, multiAccountOriginContainer, tab);
-      if ((!this.automaticModeState.alreadySawThatLinkInNonDefault[multiAccountTargetURL] &&
+      if (!dontCloseThisMacConfirm &&
+          (!this.automaticModeState.alreadySawThatLinkInNonDefault[multiAccountTargetURL] &&
           !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
           ||
           (multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
