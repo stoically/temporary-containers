@@ -949,7 +949,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.remove.reset();
       await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest);
 
-      browser.tabs.remove.should.not.have.been.calledWith(44);
+      browser.tabs.remove.should.have.been.called;
 
 
       // the tab 43 request triggered MA and here's that request
@@ -964,9 +964,11 @@ describe('raceconditions with multi-account-containers', () => {
       };
       browser.tabs.get.resolves(fakeMultiAccountTab2);
       browser.tabs.remove.reset();
+      browser.tabs.create.reset();
       await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
 
       browser.tabs.remove.should.not.have.been.called;
+      browser.tabs.create.should.not.have.been.called;
     });
   });
 

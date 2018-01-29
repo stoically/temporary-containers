@@ -184,7 +184,8 @@ class Request {
         'in another tab, so were going either to close the tabs weve opened for that ' +
         'link so far or inform our future self');
 
-      if (!this.automaticModeState.linkClickCreatedTabs[request.url]) {
+      if (!this.automaticModeState.linkClickCreatedTabs[request.url] &&
+          !this.automaticModeState.multiAccountWasFaster[request.url]) {
         debug('[handleClickedLink] informing future self');
         this.automaticModeState.multiAccountWasFaster[request.url] = tab.id;
       } else {
