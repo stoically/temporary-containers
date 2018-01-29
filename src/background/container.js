@@ -197,6 +197,8 @@ class Container {
       let dontCloseThisMacConfirm = false;
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
           this.storage.local.tempContainers[multiAccountOriginContainer] &&
+          this.automaticModeState.linkClicked[multiAccountTargetURL] &&
+          this.automaticModeState.linkClicked[multiAccountTargetURL].tab &&
           multiAccountOriginContainer !== this.automaticModeState.linkClicked[multiAccountTargetURL].tab.cookieStoreId) {
         dontCloseThisMacConfirm = true;
       }
