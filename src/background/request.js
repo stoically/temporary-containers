@@ -60,6 +60,16 @@ class Request {
       return;
     }
 
+    if (!this.automaticModeState.alreadySawThatLinkTotal[request.url]) {
+      this.automaticModeState.alreadySawThatLinkTotal[request.url] = 0;
+    }
+    this.automaticModeState.alreadySawThatLinkTotal[request.url]++;
+
+    if (this.automaticModeState.alreadySawThatLinkTotal[request.url] > 3) {
+      debug('saw the link 4 times - thats enough, stop', JSON.stringify(this.automaticModeState));
+      return;
+    }
+
     if (tab.cookieStoreId !== 'firefox-default' && this.automaticModeState.alreadySawThatLink[request.url]) {
       debug('[browser.webRequest.onBeforeRequest] tab is loading an url that we saw before in non-default container',
         tab, JSON.stringify(this.automaticModeState), JSON.stringify(this.storage.local.tempContainers));
@@ -147,6 +157,7 @@ class Request {
     delete this.automaticModeState.linkClicked[url];
     delete this.automaticModeState.linkClickCreatedTabs[url];
     delete this.automaticModeState.alreadySawThatLink[url];
+    delete this.automaticModeState.alreadySawThatLinkTotal[url];
     delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];
     delete this.automaticModeState.multiAccountConfirmPage[url];
     delete this.automaticModeState.multiAccountWasFaster[url];
@@ -165,6 +176,14 @@ class Request {
         && this.automaticModeState.multiAccountConfirmPage[request.url]
         && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
       debug('[handleClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
+      return;
+    }
+
+    if (tab.cookieStoreId === 'firefox-default'
+        && this.automaticModeState.multiAccountRemovedTab[request.url]
+        && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
+      debug('[handleClickedLink] default container and we saw no mac confirm page + link more than once already, special case, remove tab');
+      await this.container.removeTab(tab);
       return;
     }
 

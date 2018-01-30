@@ -14,6 +14,7 @@ class TemporaryContainers {
       linkClicked: {},
       linkClickCreatedTabs: {},
       alreadySawThatLink: {},
+      alreadySawThatLinkTotal: {},
       alreadySawThatLinkInNonDefault: {},
       multiAccountWasFaster: {},
       multiAccountConfirmPage: {},

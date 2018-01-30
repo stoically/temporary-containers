@@ -1085,6 +1085,112 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.remove.should.not.have.been.called;
       browser.tabs.create.should.not.have.been.called;
     });
+
+    it('should not keep opening tabs (firefox58)', async () => {
+      // simulate click
+      const fakeSender = {
+        tab: {
+          id: 40,
+          cookieStoreId: 'firefox-tmp-container-7',
+          url: 'https://notexample.com'
+        }
+      };
+      const fakeMessage = {
+        linkClicked: {
+          href: 'https://example.com',
+          event: {
+            button: 1,
+            ctrlKey: false
+          }
+        }
+      };
+      const background = await loadBackground();
+      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
+
+      // click created tab 41 which results in this request
+      // mac didnt remove the tab already, so we have to proceed as if nothing happened
+      // we create tab 59
+      const fakeRequest = {
+        tabId: 41,
+        url: 'https://example.com'
+      };
+      const fakeRequestTab = {
+        id: 42,
+        cookieStoreId: 'firefox-ma-container-1',
+        openerTabId: 40
+      };
+      const fakeTab = {
+        id: 59,
+        cookieStoreId: 'firefox-tmp-container-131'
+      };
+      const fakeContainer = {
+        cookieStoreId: 'firefox-tmp-container-131'
+      };
+      browser.tabs.get.resolves(fakeRequestTab);
+      browser.contextualIdentities.create.resolves(fakeContainer);
+      browser.tabs.create.resolves(fakeTab);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
+
+      result1.should.deep.equal({cancel: true});
+      browser.contextualIdentities.create.should.have.been.called;
+      browser.tabs.create.should.have.been.called;
+
+
+      // now we see two requests rapidly
+      // request from the tab 59 we created (mac was fast and already removed that tab)
+      // we should cancel and remove
+      const fakeRequest2 = {
+        tabId: 59,
+        url: 'https://example.com'
+      };
+      browser.tabs.get.rejects({mac: 'was faster'});
+      browser.tabs.remove.reset();
+      browser.tabs.create.reset();
+      browser.contextualIdentities.create.reset();
+      background.request.webRequestOnBeforeRequest(fakeRequest2);
+
+      // request from mac (tab60) that intervenes
+      // we remove but dont open new tab
+      const fakeMultiAccountRequest = {
+        tabId: 60,
+        url: 'https://example.com'
+      };
+      const fakeMultiAccountTab = {
+        id: 60,
+        cookieStoreId: 'firefox-ma-container-1'
+      };
+      browser.tabs.get.resolves(fakeMultiAccountTab);
+      browser.tabs.remove.reset();
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest);
+
+      await (new Promise(r => process.nextTick(r)));
+      browser.tabs.remove.should.have.been.calledWith(59);
+      browser.tabs.remove.should.have.been.calledWith(60);
+      browser.tabs.create.should.not.have.been.called;
+      browser.contextualIdentities.create.should.not.have.been.called;
+
+      // request from mac (tab61) that intervenes
+      // we dont remove and dont open new tab
+      const fakeMultiAccountRequest2 = {
+        tabId: 61,
+        url: 'https://example.com'
+      };
+      const fakeMultiAccountTab2 = {
+        id: 61,
+        cookieStoreId: 'firefox-ma-container-1'
+      };
+      browser.tabs.get.resolves(fakeMultiAccountTab2);
+      browser.tabs.remove.reset();
+      browser.tabs.create.reset();
+      browser.contextualIdentities.create.reset();
+      await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest2);
+
+      browser.tabs.remove.should.not.have.been.called;
+      browser.tabs.create.should.not.have.been.called;
+      browser.contextualIdentities.create.should.not.have.been.called;
+
+    });
   });
 
   describe('when not previously clicked url loads thats set to "always open in $container" and "remember my choice"', () => {
