@@ -22,6 +22,47 @@
 describe('raceconditions with multi-account-containers', () => {
   describe('when not previously clicked url loads thats set to "always open in $container" but not "remember my choice"', () => {
     it('should leave the first confirm page open if its already in a temporary container', async () => {
+      // the first request triggered multi-account-containers and we just leave it open
+      const fakeMATabId = 3;
+      const fakeMAUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-container-1' +
+        '&currentCookieStoreId=firefox-tmp-container-1';
+      const fakeMAChangeInfo = {
+        url: fakeMAUrl
+      };
+      const fakeMATab = {
+        id: fakeMATabId,
+        cookieStoreId: 'firefox-tmp-container-1',
+        url: fakeMAUrl
+      };
+
+      browser.tabs.remove.reset();
+      const background = await loadBackground();
+      const result3 = await background.tabsOnUpdated(fakeMATabId, fakeMAChangeInfo, fakeMATab);
+
+      expect(result3).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+
+      // request comes in and we just ignore it because its loading in a temporary container and wasnt clicked
+      const fakeRequest = {
+        tabId: 1,
+        url: 'https://example.com'
+      };
+      const fakeTab = {
+        id: 1,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.tabs.get.resolves(fakeTab);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
+
+      expect(result1).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+      browser.contextualIdentities.create.should.not.have.been.calledOnce;
+      browser.tabs.create.should.not.have.been.calledOnce;
+
+    });
+
+    it('should leave the first confirm page open if its already in a temporary container', async () => {
       // request comes in and we just ignore it because its loading in a temporary container and wasnt clicked
       const fakeRequest = {
         tabId: 1,
@@ -1435,6 +1476,40 @@ describe('raceconditions with multi-account-containers', () => {
 
       browser.tabs.remove.should.have.been.calledOnce;
       browser.tabs.remove.should.have.been.calledWith(45);
+    });
+
+    it('should close the first tab and really leave the second open even when requests come in rapidly', async () => {
+      // request 1
+      // gets canceled by MAC
+      const fakeRequest = {
+        tabId: 1,
+        url: 'https://example.com'
+      };
+      const fakeTab = {
+        id: 1,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.tabs.get.resolves(fakeTab);
+      const background = await loadBackground();
+      background.storage.local.tempContainers['firefox-tmp-container-1'] = true;
+      background.request.webRequestOnBeforeRequest(fakeRequest);
+
+      // request 2
+      // from tab 2 created by MAC
+      const fakeRequest2 = {
+        tabId: 2,
+        url: 'https://example.com'
+      };
+      const fakeTab2 = {
+        id: 2,
+        cookieStoreId: 'firefox-ma-container-1'
+      };
+      browser.tabs.get.resolves(fakeTab2);
+      background.request.webRequestOnBeforeRequest(fakeRequest2);
+
+      await new Promise(r => process.nextTick(r));
+
+      browser.tabs.remove.should.not.have.been.called;
     });
   });
 });

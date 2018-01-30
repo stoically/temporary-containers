@@ -62,6 +62,14 @@ class Request {
 
     if (!this.automaticModeState.alreadySawThatLinkTotal[request.url]) {
       this.automaticModeState.alreadySawThatLinkTotal[request.url] = 0;
+
+      setTimeout(() => {
+        // we need to cleanup in case multi-account is not intervening
+        // this also means that there might be unexpected behavior when
+        // someone clicks the same link while this hasn't run
+        debug('[webRequestOnBeforeRequest] cleaning up', request.url);
+        this.cleanupAutomaticModeState(request.url);
+      }, 1000);
     }
     this.automaticModeState.alreadySawThatLinkTotal[request.url]++;
 
@@ -73,19 +81,28 @@ class Request {
     if (tab.cookieStoreId !== 'firefox-default' && this.automaticModeState.alreadySawThatLink[request.url]) {
       debug('[browser.webRequest.onBeforeRequest] tab is loading an url that we saw before in non-default container',
         tab, JSON.stringify(this.automaticModeState), JSON.stringify(this.storage.local.tempContainers));
-      if (!this.storage.local.tempContainers[tab.cookieStoreId] &&
+
+      let dontRemoveTab = false;
+      if (this.automaticModeState.alreadySawThatLinkTotal[request.url] === 2 &&
+          !this.storage.local.tempContainers[tab.cookieStoreId] &&
+          !this.automaticModeState.linkClicked[request.url] &&
+          !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
+          !this.automaticModeState.multiAccountWasFaster[request.url] &&
+          !this.automaticModeState.multiAccountConfirmPage[request.url] &&
+          !this.automaticModeState.multiAccountRemovedTab[request.url]) {
+        // excuse me but LUL, i might go insane if i have to handle more MAC race-conditions
+        dontRemoveTab = true;
+      }
+
+      if (!dontRemoveTab && !this.storage.local.tempContainers[tab.cookieStoreId] &&
           (!this.automaticModeState.linkClicked[request.url] ||
           !this.automaticModeState.linkClicked[request.url].containers[tab.cookieStoreId]) &&
           !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
           !this.automaticModeState.multiAccountWasFaster[request.url]) {
         this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
-        debug('[browser.webRequest.onBeforeRequest] tab is loading the before clicked url in unknown container, just close it?', tab);
-        try {
-          await this.container.removeTab(tab);
-          debug('[browser.webRequest.onBeforeRequest] removed tab (probably multi-account-containers huh)', tab.id);
-        } catch (error) {
-          debug('[browser.webRequest.onBeforeRequest] couldnt remove tab', tab.id, error);
-        }
+        debug('[browser.webRequest.onBeforeRequest] just close it', tab);
+        await this.container.removeTab(tab);
+        debug('[browser.webRequest.onBeforeRequest] removed tab (probably multi-account-containers huh)', tab.id);
       }
       delete this.automaticModeState.alreadySawThatLink[request.url];
       return;
@@ -94,19 +111,6 @@ class Request {
       this.automaticModeState.alreadySawThatLink[request.url] = 0;
     }
     this.automaticModeState.alreadySawThatLink[request.url]++;
-
-    setTimeout(() => {
-      // we need to cleanup in case multi-account is not intervening
-      // this also means that there might be unexpected behavior when
-      // someone clicks the same link while this hasn't run
-      debug('[webRequestOnBeforeRequest] cleaning up', request.url);
-      this.cleanupAutomaticModeState(request.url);
-    }, 1000);
-
-    if (this.automaticModeState.alreadySawThatLink[request.url] > 6) {
-      debug('[webRequestOnBeforeRequest] failsafe. we saw the link more than 6 times, stop it.', this.automaticModeState);
-      return {cancel: true};
-    }
 
     if (this.automaticModeState.linkClicked[request.url]) {
       // when someone clicks links fast in succession not clicked links

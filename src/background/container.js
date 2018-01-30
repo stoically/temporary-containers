@@ -202,6 +202,14 @@ class Container {
           multiAccountOriginContainer !== this.automaticModeState.linkClicked[multiAccountTargetURL].tab.cookieStoreId) {
         dontCloseThisMacConfirm = true;
       }
+      // first MAC confirm for a not clicked link in a non-default container, we probably can leave this open
+      if (tab.cookieStoreId !== 'firefox-default' &&
+         !this.automaticModeState.linkClicked[multiAccountTargetURL] &&
+         !this.automaticModeState.alreadySawThatLinkTotal[multiAccountTargetURL] &&
+         !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
+         !this.automaticModeState.multiAccountRemovedTab[multiAccountTargetURL]) {
+        dontCloseThisMacConfirm = true;
+      }
 
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {
         this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = 0;
