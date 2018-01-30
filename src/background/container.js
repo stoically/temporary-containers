@@ -184,6 +184,10 @@ class Container {
         debug('[handleMultiAccountContainersConfirmPage] origin container', multiAccountOriginContainer);
       }
 
+      if (!this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL]) {
+        this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL] = [];
+      }
+
       if (!this.storage.local.preferences.automaticMode &&
           !this.request.shouldAlwaysOpenInTemporaryContainer({url: multiAccountTargetURL})) {
         return;
@@ -209,6 +213,13 @@ class Container {
          !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
          !this.automaticModeState.multiAccountRemovedTab[multiAccountTargetURL]) {
         dontCloseThisMacConfirm = true;
+        this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL].push(tab.id);
+      } else {
+        if (this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL].length) {
+          this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL].map(tabId => {
+            this.removeTab({id: tabId});
+          });
+        }
       }
 
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {

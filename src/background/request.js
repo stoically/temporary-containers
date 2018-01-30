@@ -164,6 +164,7 @@ class Request {
     delete this.automaticModeState.alreadySawThatLinkTotal[url];
     delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];
     delete this.automaticModeState.multiAccountConfirmPage[url];
+    delete this.automaticModeState.multiAccountConfirmPageTabs[url];
     delete this.automaticModeState.multiAccountWasFaster[url];
     delete this.automaticModeState.multiAccountRemovedTab[url];
   }

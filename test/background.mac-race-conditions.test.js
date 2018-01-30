@@ -21,7 +21,7 @@
 
 describe('raceconditions with multi-account-containers', () => {
   describe('when not previously clicked url loads thats set to "always open in $container" but not "remember my choice"', () => {
-    it('should leave the first confirm page open if its already in a temporary container', async () => {
+    it('should leave the first confirm page open', async () => {
       // the first request triggered multi-account-containers and we just leave it open
       const fakeMATabId = 3;
       const fakeMAUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
@@ -193,6 +193,99 @@ describe('raceconditions with multi-account-containers', () => {
 
       expect(result4).to.be.undefined;
       browser.tabs.remove.should.not.have.been.called;
+    });
+
+    it('should close first confirm page and leave the second open even when we see mac confirm first', async () => {
+      // the first request already triggered multi-account-containers
+      // it opened another tab that updates its url to moz-extension:// eventually
+      // it also already removed our tab2
+      // so we're now going to remove it
+      const fakeMATabId = 3;
+      const fakeMAUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-container-1' +
+        '&currentCookieStoreId=firefox-tmp-container-1';
+      const fakeMAChangeInfo = {
+        url: fakeMAUrl
+      };
+      const fakeMATab = {
+        id: fakeMATabId,
+        cookieStoreId: 'firefox-tmp-container-1',
+        url: fakeMAUrl
+      };
+
+      browser.tabs.remove.reset();
+      const background = await loadBackground();
+      const result3 = await background.tabsOnUpdated(fakeMATabId, fakeMAChangeInfo, fakeMATab);
+
+      expect(result3).to.be.undefined;
+      browser.tabs.remove.should.not.have.been.called;
+
+      // request comes in, we cancel it, close the tab and reopen in temp container
+      const fakeRequest = {
+        tabId: 1,
+        url: 'https://example.com'
+      };
+      const fakeTab = {
+        id: 1,
+        cookieStoreId: 'firefox-default'
+      };
+      const fakeCreatedTab = {
+        id: 2,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      const fakeContainer = {
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.tabs.get.resolves(fakeTab);
+      browser.contextualIdentities.create.resolves(fakeContainer);
+      browser.tabs.create.resolves(fakeCreatedTab);
+      const result1 = await background.request.webRequestOnBeforeRequest(fakeRequest);
+
+      result1.should.deep.equal({cancel: true});
+      browser.tabs.remove.should.have.been.calledWith(1);
+      browser.contextualIdentities.create.should.have.been.calledOnce;
+      browser.tabs.create.should.have.been.calledOnce;
+
+      // the tab 2 we opened now makes its request
+      // should normally go through (hence we do nothing)
+      const fakeRequest2 = {
+        tabId: 2,
+        url: 'https://example.com'
+      };
+      const fakeTab2 = {
+        id: 2,
+        cookieStoreId: 'firefox-tmp-container-1'
+      };
+      browser.contextualIdentities.create.reset();
+      browser.tabs.create.reset();
+      browser.tabs.get.resolves(fakeTab2);
+      const result2 = await background.request.webRequestOnBeforeRequest(fakeRequest2);
+
+      expect(result2).to.be.undefined;
+      browser.contextualIdentities.create.should.not.have.been.called;
+      browser.tabs.create.should.not.have.been.called;
+
+      // tab 2 opening the url in another container triggered multi-account-containers again
+      // but this time its ok and we should leave the confirm page open
+      const fakeMATabId2 = 4;
+      const fakeMAUrl2 = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent('https://example.com') + '&cookieStoreId=firefox-container-1' +
+        '&currentCookieStoreId=firefox-tmp-container-1';
+      const fakeMAChangeInfo2 = {
+        url: fakeMAUrl2
+      };
+      const fakeMATab2 = {
+        id: fakeMATabId2,
+        cookieStoreId: 'firefox-default',
+        url: fakeMAUrl2
+      };
+
+      browser.tabs.remove.reset();
+      const result4 = await background.tabsOnUpdated(fakeMATabId2, fakeMAChangeInfo2, fakeMATab2);
+
+      expect(result4).to.be.undefined;
+      browser.tabs.remove.should.have.been.calledWith(3);
+      browser.tabs.remove.should.not.have.been.calledWith(4);
     });
 
     it('should close first confirm page and leave the second open even when mac confirm comes before any request', async () => {

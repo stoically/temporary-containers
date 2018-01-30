@@ -18,6 +18,7 @@ class TemporaryContainers {
       alreadySawThatLinkInNonDefault: {},
       multiAccountWasFaster: {},
       multiAccountConfirmPage: {},
+      multiAccountConfirmPageTabs: {},
       multiAccountRemovedTab: {},
       noContainerTab: {}
     };
