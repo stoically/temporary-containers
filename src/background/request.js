@@ -160,6 +160,7 @@ class Request {
   cleanupAutomaticModeState(url) {
     delete this.automaticModeState.linkClicked[url];
     delete this.automaticModeState.linkClickCreatedTabs[url];
+    delete this.automaticModeState.linkCreatedContainer[url];
     delete this.automaticModeState.alreadySawThatLink[url];
     delete this.automaticModeState.alreadySawThatLinkTotal[url];
     delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];

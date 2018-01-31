@@ -87,6 +87,9 @@ class Container {
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);
         const newTab = await browser.tabs.create(newTabOptions);
         debug('[createTabInTempContainer] new tab in temp container created', newTab);
+        if (url) {
+          this.automaticModeState.linkCreatedContainer[url] = contextualIdentity.cookieStoreId;
+        }
         this.storage.local.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
         await this.storage.persist();
 
@@ -220,6 +223,11 @@ class Container {
             this.removeTab({id: tabId});
           });
         }
+      }
+
+      if (this.automaticModeState.linkCreatedContainer[multiAccountTargetURL] && multiAccountOriginContainer &&
+          this.automaticModeState.linkCreatedContainer[multiAccountTargetURL] === multiAccountOriginContainer) {
+        dontCloseThisMacConfirm = true;
       }
 
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {

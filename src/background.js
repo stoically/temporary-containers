@@ -13,6 +13,7 @@ class TemporaryContainers {
     this.automaticModeState = {
       linkClicked: {},
       linkClickCreatedTabs: {},
+      linkCreatedContainer: {},
       alreadySawThatLink: {},
       alreadySawThatLinkTotal: {},
       alreadySawThatLinkInNonDefault: {},
