@@ -26,7 +26,8 @@ class Storage {
       containerColorRandom: false,
       containerIcon: 'circle',
       containerIconRandom: false,
-      containerNumberMode: 'keep'
+      containerNumberMode: 'keep',
+      iconColor: 'default'
     };
   }
 

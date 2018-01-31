@@ -80,6 +80,14 @@
                 <option value="reuse">Reuse available Numbers</option>
               </select>
             </div>
+            <div class="field" data-tooltip="When switching back to Default you might need to restart the browser">
+              <label>BrowserAction Icon Color</label>
+              <select id="iconColor" class="ui fluid dropdown">
+                <option value="default">Default</option>
+                <option value="blue-simple">Blue (Simple)</option>
+                <option value="red-simple">Red (Simple)</option>
+              </select>
+            </div>
             <div class="field">
               <button id="saveContainerPreferences" class="ui button primary">Save</button>
             </div>
@@ -93,7 +101,7 @@
         </div>
         <div class="ui bottom attached active tab segment" data-tab="mouseclicks/global">
           <form class="ui form">
-            <h4>When Mouse Clicks should open new Temporary Containers</h4>
+            <h4>When Mouse Clicks on Links should open new Temporary Containers</h4>
             <div class="field">
               <label>Middle Mouse</label>
               <select id="linkClickGlobalMiddle" class="ui fluid dropdown">
@@ -147,7 +155,7 @@
         <div class="ui bottom attached tab segment" data-tab="mouseclicks/perwebsite">
           <form class="ui form" id="linkClickDomainForm">
             <h4 data-tooltip="Website Rules overwrite Global Preferences">
-              On which Websites should Mouse Clicks open new Temporary Containers 🛈
+              On which Websites should Mouse Clicks on Links open new Temporary Containers 🛈
             </h4>
             <div id="linkClickDomainPatternDiv" class="field">
               <label>Website Pattern</label>

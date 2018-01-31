@@ -53,12 +53,15 @@ class TemporaryContainers {
     ]);
     this.addContextMenu();
 
+    if (this.storage.local.preferences.iconColor !== 'default') {
+      this.setIcon(this.storage.local.preferences.iconColor);
+    }
+
     setInterval(() => {
       debug('[interval] container removal interval', this.storage.local.tempContainers);
       this.container.cleanup();
     }, 60000);
   }
-
 
   async runtimeOnMessage(message, sender) {
     if (typeof message !== 'object') {
@@ -67,6 +70,9 @@ class TemporaryContainers {
 
     if (message.savePreferences) {
       debug('[browser.runtime.onMessage] saving preferences', message, sender);
+      if (this.storage.local.preferences.iconColor !== message.savePreferences.preferences.iconColor) {
+        this.setIcon(message.savePreferences.preferences.iconColor);
+      }
       this.storage.local.preferences = message.savePreferences.preferences;
       await this.storage.persist();
       return;
@@ -224,6 +230,21 @@ class TemporaryContainers {
     browser.contextMenus.removeAll();
   }
 
+
+  setIcon(iconColor) {
+    const path = require('path');
+    const iconPath = path.join('..', 'icons');
+    if (iconColor === 'default') {
+      iconColor = 'd';
+    }
+    const icon = {
+      path: {
+        16: path.join(iconPath, `page-${iconColor}-16.svg`),
+        32: path.join(iconPath, `page-${iconColor}-32.svg`)
+      }
+    };
+    browser.browserAction.setIcon(icon);
+  }
 
 
   async runtimeOnInstalled(details) {

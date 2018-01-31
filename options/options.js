@@ -44,6 +44,7 @@ const saveContainerPreferences = async (event) => {
   preferences.containerIcon = document.querySelector('#containerIcon').value;
   preferences.containerIconRandom = document.querySelector('#containerIconRandom').checked;
   preferences.containerNumberMode = document.querySelector('#containerNumberMode').value;
+  preferences.iconColor = document.querySelector('#iconColor').value;
 
   await savePreferences();
 };
@@ -167,6 +168,7 @@ const initialize = async () => {
     $('#containerIcon').dropdown('set selected', preferences.containerIcon);
     document.querySelector('#containerIconRandom').checked = preferences.containerIconRandom;
     $('#containerNumberMode').dropdown('set selected', preferences.containerNumberMode);
+    $('#iconColor').dropdown('set selected', preferences.iconColor);
 
     $('#linkClickGlobalMiddle').dropdown('set selected', preferences.linkClickGlobal.middle.action);
     document.querySelector('#linkClickGlobalMiddleOverwritesAutomaticMode').checked =
