@@ -52,6 +52,7 @@ describe('on require', () => {
   it('should loadStorage', async () => {
     await loadBackground();
     browser.storage.local.get.should.have.been.calledOnce;
+    browser.storage.sync.get.should.have.been.calledOnce;
   });
 
   it('should have registered a container cleanup interval', async () => {
@@ -162,6 +163,7 @@ describe('tabs loading URLs in default-container', () => {
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
     browser.storage.local.set.should.have.been.calledThrice;
+    browser.storage.sync.set.should.have.been.calledThrice;
   });
 
   it('should cleanup the alreadysawlink state', async () => {

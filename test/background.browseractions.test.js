@@ -23,6 +23,7 @@ describe('when triggering browseraction', () => {
           cookieStoreId: 'firefox-container-1'
         });
         browser.storage.local.set.should.have.been.calledWith(background.storage.local);
+        browser.storage.sync.set.should.have.been.calledWith(background.storage.preferences);
         done();
       });
     })();
@@ -37,9 +38,9 @@ describe('when triggering browseraction', () => {
     });
     (async () => {
       const background = await loadBackground();
-      background.storage.local.preferences.containerColorRandom = true;
-      background.storage.local.preferences.containerIconRandom = true;
-      background.storage.local.preferences.containerNumberMode = 'reuse';
+      background.storage.preferences.containerColorRandom = true;
+      background.storage.preferences.containerIconRandom = true;
+      background.storage.preferences.containerNumberMode = 'reuse';
       browser.browserAction.onClicked.addListener.yield();
 
       process.nextTick(() => {
@@ -55,6 +56,7 @@ describe('when triggering browseraction', () => {
           cookieStoreId: 'firefox-container-1'
         });
         browser.storage.local.set.should.have.been.calledWith(background.storage.local);
+        browser.storage.sync.set.should.have.been.calledWith(background.storage.preferences);
         done();
       });
     })();

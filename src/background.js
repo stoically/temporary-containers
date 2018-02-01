@@ -54,8 +54,8 @@ class TemporaryContainers {
     ]);
     this.addContextMenu();
 
-    if (this.storage.local.preferences.iconColor !== 'default') {
-      this.setIcon(this.storage.local.preferences.iconColor);
+    if (this.storage.preferences.iconColor !== 'default') {
+      this.setIcon(this.storage.preferences.iconColor);
     }
 
     setInterval(() => {
@@ -71,10 +71,10 @@ class TemporaryContainers {
 
     if (message.savePreferences) {
       debug('[browser.runtime.onMessage] saving preferences', message, sender);
-      if (this.storage.local.preferences.iconColor !== message.savePreferences.preferences.iconColor) {
+      if (this.storage.preferences.iconColor !== message.savePreferences.preferences.iconColor) {
         this.setIcon(message.savePreferences.preferences.iconColor);
       }
-      this.storage.local.preferences = message.savePreferences.preferences;
+      this.storage.preferences = message.savePreferences.preferences;
       await this.storage.persist();
       return;
     }
@@ -260,9 +260,9 @@ class TemporaryContainers {
         if (!this.storage.local) {
           await this.storage.load();
         }
-        if (!this.storage.local.preferences.automaticMode) {
-          this.storage.local.preferences.linkClickGlobal.middle.action = 'never';
-          this.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'never';
+        if (!this.storage.preferences.automaticMode) {
+          this.storage.preferences.linkClickGlobal.middle.action = 'never';
+          this.storage.preferences.linkClickGlobal.ctrlleft.action = 'never';
           await this.storage.persist();
         }
       }

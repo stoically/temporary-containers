@@ -12,5 +12,17 @@ module.exports = {
   ],
   node: {
     process: false
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: {
+          plugins:[ 'transform-object-rest-spread' ]
+        }
+      }
+    ]
   }
 };
