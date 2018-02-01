@@ -58,6 +58,28 @@ There's a discussion about [Moving between containers](https://github.com/mozill
 ## Libraries
 The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are **only** used to style the Preferences/Options Page.
 
+## Development
+
+### Requirements
+
+* Clone the repository
+* `npm install`
+* `npm install -g web-ext`
+
+### Run in Firefox
+
+* `npm run dev-webpack`
+  * webpack watcher
+* `web-ext run`
+  * starts the default system Firefox, loads the Add-on and watches for changes
+  * append `-p profilename` to start Firefox with a different profile
+  * check `about:debugging` and click `Debug` under Temporary Container to see the console
+
+### Running the tests
+
+* Once: `npm test`
+* Watcher: `npm run test-watch`
+
 
 ## License
 
