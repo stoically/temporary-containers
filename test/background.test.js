@@ -51,6 +51,7 @@ describe('on require', () => {
 
   it('should loadStorage', async () => {
     await loadBackground();
+    browser.storage.local.get.should.have.been.calledOnce;
     browser.storage.sync.get.should.have.been.calledOnce;
   });
 
@@ -161,6 +162,7 @@ describe('tabs loading URLs in default-container', () => {
   it('should reopen the Tab in temporary container', async () => {
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
+    browser.storage.local.set.should.have.been.calledThrice;
     browser.storage.sync.set.should.have.been.calledThrice;
   });
 

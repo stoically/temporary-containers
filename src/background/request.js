@@ -19,7 +19,7 @@ class Request {
     if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
       debug('[browser.webRequest.onBeforeRequest] always open in tmpcontainer request', request);
       alwaysOpenIn = true;
-    } else if (!this.storage.local.preferences.automaticMode &&
+    } else if (!this.storage.preferences.automaticMode &&
       !this.automaticModeState.linkClicked[request.url]) {
       debug('[browser.webRequest.onBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
@@ -128,7 +128,7 @@ class Request {
           return;
         }
       }
-      if (!this.storage.local.preferences.automaticMode && !alwaysOpenIn) {
+      if (!this.storage.preferences.automaticMode && !alwaysOpenIn) {
         debug('[browser.webRequest.onBeforeRequest] got not clicked request but automatic mode is off, ignoring', request);
         return;
       }
@@ -352,12 +352,12 @@ class Request {
     const parsedSenderTabURL = new URL(sender.tab.url);
     const parsedClickedURL = new URL(message.linkClicked.href);
 
-    for (let domainPattern in this.storage.local.preferences.linkClickDomain) {
+    for (let domainPattern in this.storage.preferences.linkClickDomain) {
       if (parsedSenderTabURL.hostname !== domainPattern &&
           !parsedSenderTabURL.hostname.match(globToRegexp(domainPattern))) {
         continue;
       }
-      const domainPatternPreferences = this.storage.local.preferences.linkClickDomain[domainPattern];
+      const domainPatternPreferences = this.storage.preferences.linkClickDomain[domainPattern];
       if (!domainPatternPreferences[type]) {
         continue;
       }
@@ -365,7 +365,7 @@ class Request {
         parsedClickedURL, parsedSenderTabURL);
     }
 
-    return this.checkClickPreferences(this.storage.local.preferences.linkClickGlobal[type],
+    return this.checkClickPreferences(this.storage.preferences.linkClickGlobal[type],
       parsedClickedURL, parsedSenderTabURL);
   }
 
@@ -385,7 +385,7 @@ class Request {
   shouldAlwaysOpenInTemporaryContainer(request) {
     const parsedRequestURL = new URL(request.url);
 
-    for (let domainPattern in this.storage.local.preferences.alwaysOpenInDomain) {
+    for (let domainPattern in this.storage.preferences.alwaysOpenInDomain) {
       if (parsedRequestURL.hostname === domainPattern ||
           parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
         return true;

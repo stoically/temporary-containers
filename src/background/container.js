@@ -39,22 +39,22 @@ class Container {
 
   async createTabInTempContainer(tab, url, alwaysOpenIn, active, dontPin) {
     let tempContainerNumber;
-    if (this.storage.local.preferences.containerNumberMode === 'keep') {
+    if (this.storage.preferences.containerNumberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
       tempContainerNumber = this.storage.local.tempContainerCounter;
     }
-    if (this.storage.local.preferences.containerNumberMode === 'reuse') {
+    if (this.storage.preferences.containerNumberMode === 'reuse') {
       tempContainerNumber = this.getReusedContainerNumber();
     }
-    const containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
+    const containerName = `${this.storage.preferences.containerNamePrefix}${tempContainerNumber}`;
     try {
-      let containerColor = this.storage.local.preferences.containerColor;
-      if (this.storage.local.preferences.containerColorRandom) {
+      let containerColor = this.storage.preferences.containerColor;
+      if (this.storage.preferences.containerColorRandom) {
         const containerColors = this.getAvailableContainerColors();
         containerColor = containerColors[Math.floor(Math.random() * containerColors.length)];
       }
-      let containerIcon = this.storage.local.preferences.containerIcon;
-      if (this.storage.local.preferences.containerIconRandom) {
+      let containerIcon = this.storage.preferences.containerIcon;
+      if (this.storage.preferences.containerIconRandom) {
         containerIcon = this.containerIcons[Math.floor(Math.random() * this.containerIcons.length)];
       }
       const containerOptions = {
@@ -151,7 +151,7 @@ class Container {
       return;
     }
 
-    if (!this.storage.local.preferences.automaticMode) {
+    if (!this.storage.preferences.automaticMode) {
       debug('[maybeReloadTabInTempContainer] automatic mode not active and not a moz page, we ignore that', tab);
       return;
     }
@@ -191,7 +191,7 @@ class Container {
         this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL] = [];
       }
 
-      if (!this.storage.local.preferences.automaticMode &&
+      if (!this.storage.preferences.automaticMode &&
           !this.request.shouldAlwaysOpenInTemporaryContainer({url: multiAccountTargetURL})) {
         return;
       }
