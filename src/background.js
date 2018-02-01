@@ -233,15 +233,14 @@ class TemporaryContainers {
 
 
   setIcon(iconColor) {
-    const path = require('path');
-    const iconPath = path.join('..', 'icons');
+    const iconPath = '../icons';
     if (iconColor === 'default') {
       iconColor = 'd';
     }
     const icon = {
       path: {
-        16: path.join(iconPath, `page-${iconColor}-16.svg`),
-        32: path.join(iconPath, `page-${iconColor}-32.svg`)
+        16: `${iconPath}/page-${iconColor}-16.svg`,
+        32: `${iconPath}/page-${iconColor}-32.svg`
       }
     };
     browser.browserAction.setIcon(icon);
