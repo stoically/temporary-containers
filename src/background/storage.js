@@ -34,7 +34,11 @@ class Storage {
   async load() {
     try {
       let storagePersistNeeded = false;
-      this.local = await browser.storage.local.get();
+      this.local = await browser.storage.sync.get();
+      if (!Object.keys(this.local).length) {
+        // Fallback to the previous storage for migration.
+        this.local = await browser.storage.local.get();
+      }
       if (!Object.keys(this.local).length) {
         this.local = {
           tempContainerCounter: 0,
@@ -73,7 +77,7 @@ class Storage {
 
   async persist() {
     try {
-      await browser.storage.local.set(this.local);
+      await browser.storage.sync.set(this.local);
       debug('storage persisted');
     } catch (error) {
       debug('something went wrong while trying to persist the storage', error);
