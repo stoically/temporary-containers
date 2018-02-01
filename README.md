@@ -1,5 +1,7 @@
 # Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.org/stoically/firefox-add-on-temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/firefox-add-on-temporary-containers)
 
+Wondering what Containers or Temporary Containers are? [Here's a compact article explaining it](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21).
+
 Open Tabs in new Temporary Containers when:
 * Clicking the "Temporary Containers"-Icon
 * Pressing the Alt+C Shortcut
