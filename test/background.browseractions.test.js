@@ -22,7 +22,7 @@ describe('when triggering browseraction', () => {
           active: true,
           cookieStoreId: 'firefox-container-1'
         });
-        browser.storage.local.set.should.have.been.calledWith(background.storage.local);
+        browser.storage.sync.set.should.have.been.calledWith(background.storage.local);
         done();
       });
     })();
@@ -54,7 +54,7 @@ describe('when triggering browseraction', () => {
           active: true,
           cookieStoreId: 'firefox-container-1'
         });
-        browser.storage.local.set.should.have.been.calledWith(background.storage.local);
+        browser.storage.sync.set.should.have.been.calledWith(background.storage.local);
         done();
       });
     })();
