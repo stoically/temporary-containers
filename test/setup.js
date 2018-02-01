@@ -53,7 +53,12 @@ global.injectBrowser = () => {
       local: {
         get: sinon.stub().resolves({}),
         set: sinon.stub()
+      },
+      sync: {
+        get: sinon.stub().resolves({}),
+        set: sinon.stub()
       }
+
     },
     contextualIdentities: {
       create: sinon.stub(),
