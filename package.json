@@ -22,6 +22,8 @@
   "homepage": "https://github.com/stoically/firefox-add-on-temporary-containers#readme",
   "devDependencies": {
     "addons-linter": "^0.29.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
     "copy-webpack-plugin": "^4.3.0",
     "eslint": "^4.11.0",

@@ -12,5 +12,17 @@ module.exports = {
   ],
   node: {
     process: false
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: {
+          presets:[ 'stage-2' ]
+        }
+      }
+    ]
   }
 };
