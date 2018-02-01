@@ -20,7 +20,7 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader',
         query: {
-          presets:[ 'stage-2' ]
+          plugins:[ 'transform-object-rest-spread' ]
         }
       }
     ]
