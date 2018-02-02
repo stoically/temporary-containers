@@ -1354,7 +1354,7 @@ describe('raceconditions with multi-account-containers', () => {
       browser.tabs.remove.reset();
       browser.tabs.create.reset();
       browser.contextualIdentities.create.reset();
-      background.request.webRequestOnBeforeRequest(fakeRequest2);
+      await background.request.webRequestOnBeforeRequest(fakeRequest2);
 
       // request from mac (tab60) that intervenes
       // we remove but dont open new tab
@@ -1367,7 +1367,6 @@ describe('raceconditions with multi-account-containers', () => {
         cookieStoreId: 'firefox-ma-container-1'
       };
       browser.tabs.get.resolves(fakeMultiAccountTab);
-      browser.tabs.remove.reset();
       await background.request.webRequestOnBeforeRequest(fakeMultiAccountRequest);
 
       await (new Promise(r => process.nextTick(r)));

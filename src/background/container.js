@@ -31,6 +31,7 @@ class Container {
 
 
   initialize(background) {
+    this.background = background;
     this.storage = background.storage;
     this.request = background.request;
     this.automaticModeState = background.automaticModeState;
@@ -147,7 +148,7 @@ class Container {
 
     if (tab.url.startsWith('moz-extension://')) {
       debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
-      await this.handleMultiAccountContainersConfirmPage(tab);
+      await this.background.emit('handleMultiAccountContainersConfirmPage', tab);
       return;
     }
 
@@ -166,95 +167,6 @@ class Container {
 
     debug('[maybeReloadTabInTempContainer] not a home/new/moz tab, we dont handle that', tab);
   }
-
-
-  async handleMultiAccountContainersConfirmPage(tab) {
-    // so this is *probably* the confirm page from multi-account-containers
-    // i need to reach out to the multi-account-containers devs, maybe its possible
-    // to handle this in a cleaner fashion
-    const multiAccountMatch = tab.url.match(/moz-extension:\/\/[^/]*\/confirm-page.html\?url=/);
-    if (multiAccountMatch) {
-      debug('[handleMultiAccountContainersConfirmPage] is intervening', tab);
-      const parsedURL = new URL(tab.url);
-      debug('[handleMultiAccountContainersConfirmPage] parsed url', parsedURL);
-      const queryParams = parsedURL.search.split('&').map(param => param.split('='));
-      debug('[handleMultiAccountContainersConfirmPage] query params', queryParams);
-      const multiAccountTargetURL = decodeURIComponent(queryParams[0][1]);
-      debug('[handleMultiAccountContainersConfirmPage] target url', multiAccountTargetURL);
-      let multiAccountOriginContainer;
-      if (queryParams[2]) {
-        multiAccountOriginContainer = queryParams[2][1];
-        debug('[handleMultiAccountContainersConfirmPage] origin container', multiAccountOriginContainer);
-      }
-
-      if (!this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL]) {
-        this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL] = [];
-      }
-
-      if (!this.storage.local.preferences.automaticMode &&
-          !this.request.shouldAlwaysOpenInTemporaryContainer({url: multiAccountTargetURL})) {
-        return;
-      }
-
-      // didnt saw a confirm page before &
-      // multiAccountOriginContainer is set to a known temporary container different from the linkclicked.tab container &
-      // (optional) the openerTabId matches the linkclicked.tab
-      // then we can probably leave this mac confirm open
-      // TODO hopefully replace soon with API call to MAC
-      let dontCloseThisMacConfirm = false;
-      if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
-          this.storage.local.tempContainers[multiAccountOriginContainer] &&
-          this.automaticModeState.linkClicked[multiAccountTargetURL] &&
-          this.automaticModeState.linkClicked[multiAccountTargetURL].tab &&
-          multiAccountOriginContainer !== this.automaticModeState.linkClicked[multiAccountTargetURL].tab.cookieStoreId) {
-        dontCloseThisMacConfirm = true;
-      }
-      // first MAC confirm for a not clicked link in a non-default container, we probably can leave this open
-      if (tab.cookieStoreId !== 'firefox-default' &&
-         !this.automaticModeState.linkClicked[multiAccountTargetURL] &&
-         !this.automaticModeState.alreadySawThatLinkTotal[multiAccountTargetURL] &&
-         !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
-         !this.automaticModeState.multiAccountRemovedTab[multiAccountTargetURL]) {
-        dontCloseThisMacConfirm = true;
-        this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL].push(tab.id);
-      } else {
-        if (this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL].length) {
-          this.automaticModeState.multiAccountConfirmPageTabs[multiAccountTargetURL].map(tabId => {
-            this.removeTab({id: tabId});
-          });
-        }
-      }
-
-      if (this.automaticModeState.linkCreatedContainer[multiAccountTargetURL] && multiAccountOriginContainer &&
-          this.automaticModeState.linkCreatedContainer[multiAccountTargetURL] === multiAccountOriginContainer) {
-        dontCloseThisMacConfirm = true;
-      }
-
-      if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]) {
-        this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] = 0;
-      }
-      debug('[handleMultiAccountContainersConfirmPage] debug', JSON.stringify(this.automaticModeState),
-        multiAccountTargetURL, multiAccountOriginContainer, tab);
-      if (!dontCloseThisMacConfirm &&
-          (!this.automaticModeState.alreadySawThatLinkInNonDefault[multiAccountTargetURL] &&
-          !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
-          ||
-          (multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
-           this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer] &&
-           !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
-          ||
-          (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')) {
-        this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]++;
-        debug('[handleMultiAccountContainersConfirmPage] we can remove this tab, i guess - and yes this is a bit hacky', tab);
-        await this.removeTab(tab);
-        debug('[handleMultiAccountContainersConfirmPage] removed multi-account-containers tab', tab.id);
-        return;
-      } else {
-        this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL]++;
-      }
-    }
-  }
-
 
   async tryToRemove(cookieStoreId) {
     try {

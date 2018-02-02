@@ -2,7 +2,8 @@ const { globToRegexp } = require('./utils');
 const { debug } = require('./log');
 
 class Request {
-  initialize(background) {
+  async initialize(background) {
+    this.background = background;
     this.storage = background.storage;
     this.container = background.container;
     this.automaticModeState = background.automaticModeState;
@@ -20,7 +21,7 @@ class Request {
       debug('[browser.webRequest.onBeforeRequest] always open in tmpcontainer request', request);
       alwaysOpenIn = true;
     } else if (!this.storage.local.preferences.automaticMode &&
-      !this.automaticModeState.linkClicked[request.url]) {
+               !this.automaticModeState.linkClicked[request.url]) {
       debug('[browser.webRequest.onBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
     }
@@ -31,15 +32,9 @@ class Request {
       debug('[browser.webRequest.onBeforeRequest] onbeforeRequest requested tab information', tab);
     } catch (error) {
       debug('[browser.webRequest.onBeforeRequest] onbeforeRequest retrieving tab information failed', error);
-      // this should only happen if multi-account-containers was fast and removed the tab already
-      if (!this.automaticModeState.multiAccountRemovedTab[request.url]) {
-        this.automaticModeState.multiAccountRemovedTab[request.url] = 0;
-      }
-      this.automaticModeState.multiAccountRemovedTab[request.url]++;
-      tab = {
-        id: request.tabId,
-        cookieStoreId: 'firefox-default'
-      };
+
+      const hook = await this.background.emit('webRequestOnBeforeRequestFailed', request);
+      tab = hook[0];
     }
 
     if (alwaysOpenIn && !this.automaticModeState.linkClicked[request.url] && tab.openerTabId) {
@@ -60,57 +55,10 @@ class Request {
       return;
     }
 
-    if (!this.automaticModeState.alreadySawThatLinkTotal[request.url]) {
-      this.automaticModeState.alreadySawThatLinkTotal[request.url] = 0;
-
-      setTimeout(() => {
-        // we need to cleanup in case multi-account is not intervening
-        // this also means that there might be unexpected behavior when
-        // someone clicks the same link while this hasn't run
-        debug('[webRequestOnBeforeRequest] cleaning up', request.url);
-        this.cleanupAutomaticModeState(request.url);
-      }, 1000);
-    }
-    this.automaticModeState.alreadySawThatLinkTotal[request.url]++;
-
-    if (this.automaticModeState.alreadySawThatLinkTotal[request.url] > 3) {
-      debug('saw the link 4 times - thats enough, stop', JSON.stringify(this.automaticModeState));
+    const hook = await this.background.emit('webRequestOnBeforeRequest', {request, tab});
+    if (!hook[0]) {
       return;
     }
-
-    if (tab.cookieStoreId !== 'firefox-default' && this.automaticModeState.alreadySawThatLink[request.url]) {
-      debug('[browser.webRequest.onBeforeRequest] tab is loading an url that we saw before in non-default container',
-        tab, JSON.stringify(this.automaticModeState), JSON.stringify(this.storage.local.tempContainers));
-
-      let dontRemoveTab = false;
-      if (this.automaticModeState.alreadySawThatLinkTotal[request.url] === 2 &&
-          !this.storage.local.tempContainers[tab.cookieStoreId] &&
-          !this.automaticModeState.linkClicked[request.url] &&
-          !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
-          !this.automaticModeState.multiAccountWasFaster[request.url] &&
-          !this.automaticModeState.multiAccountConfirmPage[request.url] &&
-          !this.automaticModeState.multiAccountRemovedTab[request.url]) {
-        // excuse me but LUL, i might go insane if i have to handle more MAC race-conditions
-        dontRemoveTab = true;
-      }
-
-      if (!dontRemoveTab && !this.storage.local.tempContainers[tab.cookieStoreId] &&
-          (!this.automaticModeState.linkClicked[request.url] ||
-          !this.automaticModeState.linkClicked[request.url].containers[tab.cookieStoreId]) &&
-          !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
-          !this.automaticModeState.multiAccountWasFaster[request.url]) {
-        this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
-        debug('[browser.webRequest.onBeforeRequest] just close it', tab);
-        await this.container.removeTab(tab);
-        debug('[browser.webRequest.onBeforeRequest] removed tab (probably multi-account-containers huh)', tab.id);
-      }
-      delete this.automaticModeState.alreadySawThatLink[request.url];
-      return;
-    }
-    if (!this.automaticModeState.alreadySawThatLink[request.url]) {
-      this.automaticModeState.alreadySawThatLink[request.url] = 0;
-    }
-    this.automaticModeState.alreadySawThatLink[request.url]++;
 
     if (this.automaticModeState.linkClicked[request.url]) {
       // when someone clicks links fast in succession not clicked links
@@ -174,76 +122,22 @@ class Request {
   async handleClickedLink(request, tab) {
     debug('[handleClickedLink] onBeforeRequest', request, tab, JSON.stringify(this.automaticModeState));
 
-    if (!tab) {
-      debug('[handleClickedLink] multi-account-containers mightve removed the tab, continue', request.tabId);
-    }
-
-    if (tab.cookieStoreId === 'firefox-default'
-        && this.automaticModeState.multiAccountConfirmPage[request.url]
-        && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
-      debug('[handleClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
+    const hook = await this.background.emit('handleClickedLink', {request, tab});
+    if (!hook[0]) {
       return;
     }
 
-    if (tab.cookieStoreId === 'firefox-default'
-        && this.automaticModeState.multiAccountRemovedTab[request.url]
-        && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
-      debug('[handleClickedLink] default container and we saw no mac confirm page + link more than once already, special case, remove tab');
-      await this.container.removeTab(tab);
-      return;
-    }
-
-    if (this.automaticModeState.linkClickCreatedTabs[request.url] &&
-        this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
-        !this.automaticModeState.multiAccountConfirmPage[request.url] &&
-        !this.automaticModeState.multiAccountRemovedTab[request.url]) {
-      debug('[handleClickedLink] actually i have no idea what im doing, pls merge the pull request mac :C');
-      return;
-    }
-
-    if (!tab.openerTabId && !this.storage.local.tabContainerMap[tab.id] &&
-        !this.automaticModeState.multiAccountConfirmPage[request.url] &&
-        !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url]) {
-      debug('[handleClickedLink] no openerTabId and not in the tabContainerMap means probably ' +
-        'multi-account reloaded the url ' +
-        'in another tab, so were going either to close the tabs weve opened for that ' +
-        'link so far or inform our future self');
-
-      if (!this.automaticModeState.linkClickCreatedTabs[request.url] &&
-          !this.automaticModeState.multiAccountWasFaster[request.url]) {
-        debug('[handleClickedLink] informing future self');
-        this.automaticModeState.multiAccountWasFaster[request.url] = tab.id;
-      } else {
-        const clickCreatedTabId = this.automaticModeState.linkClickCreatedTabs[request.url];
-        debug('[handleClickedLink] removing tab', clickCreatedTabId);
-        try {
-          await this.container.removeTab({id: clickCreatedTabId});
-          debug('[handleClickedLink] removed tab', clickCreatedTabId);
-          delete this.automaticModeState.linkClickCreatedTabs[request.url];
-        } catch (error) {
-          debug('[handleClickedLink] something went wrong while removing tab', clickCreatedTabId, error);
-        }
-      }
+    if (tab.cookieStoreId !== 'firefox-default' &&
+        this.automaticModeState.linkCreatedContainer[request.url] === tab.cookieStoreId) {
+      // link click already created this container, we can stop here
       return;
     }
 
     let newTab;
     newTab = await this.container.reloadTabInTempContainer(tab, request.url);
     debug('[handleClickedLink] created new tab', newTab);
-    if (this.automaticModeState.multiAccountWasFaster[request.url]) {
-      const multiAccountTabId = this.automaticModeState.multiAccountWasFaster[request.url];
-      debug('[handleClickedLink] multi-account was faster and created a tab, remove the tab again', multiAccountTabId);
-      try {
-        await this.container.removeTab({id: multiAccountTabId});
-        debug('[handleClickedLink] removed tab', multiAccountTabId);
-      } catch (error) {
-        debug('[handleClickedLink] something went wrong while removing tab', multiAccountTabId, error);
-      }
-      delete this.automaticModeState.multiAccountWasFaster[request.url];
-    } else {
-      this.automaticModeState.linkClickCreatedTabs[request.url] = newTab.id;
-      debug('[handleClickedLink] linkClickCreatedTabs', JSON.stringify(this.automaticModeState.linkClickCreatedTabs));
-    }
+
+    await this.background.emit('handleClickedLinkAfterReload', {request, newTab});
 
     debug('[handleClickedLink] canceling request', request);
     return { cancel: true };
@@ -251,12 +145,7 @@ class Request {
 
 
   async handleNotClickedLink(request, tab) {
-    if (tab.cookieStoreId === 'firefox-default'
-        && this.automaticModeState.multiAccountConfirmPage[request.url]
-        && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
-      debug('[handleNotClickedLink] default container and we saw a mac confirm page + link more than once already, i guess we can stop here');
-      return;
-    }
+
     let containerExists = false;
     if (tab.cookieStoreId === 'firefox-default') {
       containerExists = true;
@@ -269,41 +158,17 @@ class Request {
     }
 
     if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
-      debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request,
-        JSON.stringify(this.automaticModeState.multiAccountConfirmPage), JSON.stringify(this.automaticModeState.alreadySawThatLink));
-
-      if (this.automaticModeState.multiAccountConfirmPage[request.url]) {
-        debug('[handleNotClickedLink] we saw a multi account confirm page for that url', request.url);
-        delete this.automaticModeState.multiAccountConfirmPage[request.url];
-        return;
-      } else {
-        if (this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
-           !this.automaticModeState.alreadySawThatLink[request.url]) {
-          if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
-            debug('[handleNotClickedLink] we saw that non-default link before, probably multi-account stuff, close tab',
-              request.url, JSON.stringify(this.automaticModeState));
-            try {
-              await this.container.removeTab({id: request.tabId});
-            } catch (error) {
-              debug('[handleNotClickedLink] removing tab failed', request.tabId, error);
-            }
-            delete this.automaticModeState.alreadySawThatLinkInNonDefault[request.url];
-            return { cancel: true };
-          } else {
-            delete this.automaticModeState.alreadySawThatLinkInNonDefault[request.url];
-          }
-        }
-      }
+      debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
       this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
       return;
     }
 
-    if (this.automaticModeState.multiAccountRemovedTab[request.url] > 1 &&
-        !this.automaticModeState.multiAccountConfirmPage[request.url]) {
-      debug('[handleNotClickedLink] multi-account-containers already removed a tab before, stop now',
-        tab, request, JSON.stringify(this.automaticModeState));
-      delete this.automaticModeState.multiAccountRemovedTab[request.url];
+    const hook = await this.background.emit('handleNotClickedLink', {request, tab, containerExists});
+    if (!hook[0]) {
       return;
+    }
+    if (hook[0].cancel) {
+      return hook[0];
     }
 
     debug('[handleNotClickedLink] onBeforeRequest reload in temp tab', tab, request);

@@ -185,15 +185,16 @@ describe('tabs requesting something in non-default and non-temporary containers'
     const background = await loadBackground();
     await background.request.webRequestOnBeforeRequest(fakeRequest);
 
-    browser.contextualIdentities.create.should.not.have.been.calledOnce;
-    browser.tabs.create.should.not.have.been.calledOnce;
-    browser.tabs.remove.should.not.have.been.calledOnce;
+    browser.contextualIdentities.create.should.not.have.been.called;
+    browser.tabs.create.should.not.have.been.called;
+    browser.tabs.remove.should.not.have.been.called;
   });
 });
 
 
 describe('tabs requesting a previously clicked url in a temporary container', () => {
-  it('should reopen in a new temporary container', async () => {
+  let background, fakeMessage;
+  beforeEach(async () => {
     // simulate click
     const fakeSender = {
       tab: {
@@ -202,7 +203,7 @@ describe('tabs requesting a previously clicked url in a temporary container', ()
         url: 'https://notexample.com'
       }
     };
-    const fakeMessage = {
+    fakeMessage = {
       linkClicked: {
         href: 'https://example.com',
         event: {
@@ -211,9 +212,8 @@ describe('tabs requesting a previously clicked url in a temporary container', ()
         }
       }
     };
-    const background = await loadBackground();
+    background = await loadBackground();
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
 
     // now the request
     const fakeRequest = {
@@ -237,16 +237,41 @@ describe('tabs requesting a previously clicked url in a temporary container', ()
     browser.tabs.create.resolves(fakeCreatedTab);
     browser.contextualIdentities.create.resolves(fakeCreatedContainer);
     await background.request.webRequestOnBeforeRequest(fakeRequest);
+  });
 
+  it('should reopen in a new temporary container', async () => {
+    background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
     browser.tabs.remove.should.have.been.calledOnce;
   });
+
+  describe('follow-up request', () => {
+    beforeEach(async () => {
+      const fakeRequest = {
+        tabId: 3,
+        url: 'https://example.com'
+      };
+      const fakeTab = {
+        tabId: 3,
+        cookieStoreId: 'firefox-tmp-container-2',
+        openerTabId: 1
+      };
+      browser.tabs.get.resolves(fakeTab);
+      browser.contextualIdentities.create.reset();
+      browser.tabs.create.reset();
+      await background.request.webRequestOnBeforeRequest(fakeRequest);
+    });
+
+    it('should not trigger reopening in temporary container', () => {
+      browser.contextualIdentities.create.should.not.have.been.called;
+      browser.tabs.create.should.not.have.been.called;
+    });
+  });
 });
 
-
 describe('state for clicked links', async () => {
-  it('should be cleaned up in case something goes wrong', async () => {
+  it('should be cleaned up', async () => {
     const fakeSender = {
       tab: {
         id: 1,

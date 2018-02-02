@@ -1,15 +1,19 @@
 const Storage = require('./background/storage');
 const Container = require('./background/container');
 const Request = require('./background/request');
+const Emittery = require('emittery');
 const { versionCompare } = require('./background/utils');
 const {
   log,
   debug
 } = require('./background/log');
 
+const MultiAccountContainers = require('./background/mac-legacy');
 
-class TemporaryContainers {
+class TemporaryContainers extends Emittery {
   constructor() {
+    super();
+
     this.automaticModeState = {
       linkClicked: {},
       linkClickCreatedTabs: {},
@@ -27,10 +31,14 @@ class TemporaryContainers {
     this.storage = new Storage;
     this.request = new Request;
     this.container = new Container;
+
+
   }
 
 
   async initialize() {
+    new MultiAccountContainers(this);
+
     this.request.initialize(this);
     this.container.initialize(this);
     if (!this.storage.local) {
@@ -306,5 +314,6 @@ if (!browser.mochaTest) {
   if (process.argv[process.argv.length-1] === '--tmp-debug') {
     log.DEBUG = true;
   }
-  module.exports = tmp;
 }
+
+module.exports = tmp;

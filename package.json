@@ -32,5 +32,8 @@
     "web-ext": "^2.2.2",
     "webpack": "^3.10.0"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "emittery": "^0.2.0"
+  }
 }
