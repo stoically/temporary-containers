@@ -1,10 +1,10 @@
 <!-- Feel free to ignore this Issue template if you just want to ask or suggest something -->
-- Temporary Containers Version:
+- Temporary Containers Version: 
 - Firefox Version:
 - Operating System + Version:
 - Non-default Options/Preferences in Temporary Containers:
 - Other installed Add-ons + Version:
-<!-- Other Add-ons are optional if you're 100% sure that they're not relevant for the Issue. You should always list Add-ons that also manage Containers in any way -->
+<!-- Other Add-ons are optional if you're 100% sure that they're not relevant for the Issue. You should always list Add-ons that also manage Containers in any way (Like "Multi-Account Containers") -->
 
 ### Actual behavior
 ..
