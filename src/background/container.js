@@ -27,6 +27,8 @@ class Container {
       'tree',
       'chill',
     ];
+
+    this.urlCreatedContainer = {};
   }
 
 
@@ -34,7 +36,6 @@ class Container {
     this.background = background;
     this.storage = background.storage;
     this.request = background.request;
-    this.automaticModeState = background.automaticModeState;
   }
 
 
@@ -89,7 +90,7 @@ class Container {
         const newTab = await browser.tabs.create(newTabOptions);
         debug('[createTabInTempContainer] new tab in temp container created', newTab);
         if (url) {
-          this.automaticModeState.linkCreatedContainer[url] = contextualIdentity.cookieStoreId;
+          this.urlCreatedContainer[url] = contextualIdentity.cookieStoreId;
         }
         this.storage.local.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
         await this.storage.persist();
@@ -134,8 +135,6 @@ class Container {
     } catch (error) {
       debug('[removeTab] couldnt query tabs', tab, error);
     }
-
-
   }
 
 

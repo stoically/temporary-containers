@@ -6,12 +6,25 @@ class MultiAccountContainers {
     this.storage = background.storage;
     this.container = background.container;
     this.request = background.request;
+    this.mouseclick = background.mouseclick;
+
+    this.automaticModeState = {
+      linkClickCreatedTabs: {},
+      alreadySawThatLink: {},
+      alreadySawThatLinkTotal: {},
+      alreadySawThatLinkInNonDefault: {},
+      multiAccountWasFaster: {},
+      multiAccountConfirmPage: {},
+      multiAccountConfirmPageTabs: {},
+      multiAccountRemovedTab: {}
+    };
 
     background.on('webRequestOnBeforeRequestFailed', this.webRequestOnBeforeRequestFailed.bind(this));
     background.on('webRequestOnBeforeRequest', this.webRequestOnBeforeRequest.bind(this));
     background.on('handleClickedLink', this.handleClickedLink.bind(this));
     background.on('handleNotClickedLink', this.handleNotClickedLink.bind(this));
     background.on('handleMultiAccountContainersConfirmPage', this.handleMultiAccountContainersConfirmPage.bind(this));
+    background.on('cleanupAutomaticModeState', this.cleanupAutomaticModeState.bind(this));
   }
 
   async webRequestOnBeforeRequestFailed(request) {
@@ -35,7 +48,7 @@ class MultiAccountContainers {
         // this also means that there might be unexpected behavior when
         // someone clicks the same link while this hasn't run
         debug('[webRequestOnBeforeRequest] cleaning up', request.url);
-        this.request.cleanupAutomaticModeState(request.url);
+        this.cleanupAutomaticModeState(request.url);
       }, 1000);
     }
     this.automaticModeState.alreadySawThatLinkTotal[request.url]++;
@@ -52,7 +65,7 @@ class MultiAccountContainers {
       let dontRemoveTab = false;
       if (this.automaticModeState.alreadySawThatLinkTotal[request.url] === 2 &&
           !this.storage.local.tempContainers[tab.cookieStoreId] &&
-          !this.automaticModeState.linkClicked[request.url] &&
+          !this.mouseclick.linksClicked[request.url] &&
           !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
           !this.automaticModeState.multiAccountWasFaster[request.url] &&
           !this.automaticModeState.multiAccountConfirmPage[request.url] &&
@@ -62,8 +75,8 @@ class MultiAccountContainers {
       }
 
       if (!dontRemoveTab && !this.storage.local.tempContainers[tab.cookieStoreId] &&
-          (!this.automaticModeState.linkClicked[request.url] ||
-          !this.automaticModeState.linkClicked[request.url].containers[tab.cookieStoreId]) &&
+          (!this.mouseclick.linksClicked[request.url] ||
+          !this.mouseclick.linksClicked[request.url].containers[tab.cookieStoreId]) &&
           !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
           !this.automaticModeState.multiAccountWasFaster[request.url]) {
         this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
@@ -117,14 +130,14 @@ class MultiAccountContainers {
       let dontCloseThisMacConfirm = false;
       if (!this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
           this.storage.local.tempContainers[multiAccountOriginContainer] &&
-          this.automaticModeState.linkClicked[multiAccountTargetURL] &&
-          this.automaticModeState.linkClicked[multiAccountTargetURL].tab &&
-          multiAccountOriginContainer !== this.automaticModeState.linkClicked[multiAccountTargetURL].tab.cookieStoreId) {
+          this.mouseclick.linksClicked[multiAccountTargetURL] &&
+          this.mouseclick.linksClicked[multiAccountTargetURL].tab &&
+          multiAccountOriginContainer !== this.mouseclick.linksClicked[multiAccountTargetURL].tab.cookieStoreId) {
         dontCloseThisMacConfirm = true;
       }
       // first MAC confirm for a not clicked link in a non-default container, we probably can leave this open
       if (tab.cookieStoreId !== 'firefox-default' &&
-         !this.automaticModeState.linkClicked[multiAccountTargetURL] &&
+         !this.mouseclick.linksClicked[multiAccountTargetURL] &&
          !this.automaticModeState.alreadySawThatLinkTotal[multiAccountTargetURL] &&
          !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL] &&
          !this.automaticModeState.multiAccountRemovedTab[multiAccountTargetURL]) {
@@ -138,8 +151,8 @@ class MultiAccountContainers {
         }
       }
 
-      if (this.automaticModeState.linkCreatedContainer[multiAccountTargetURL] && multiAccountOriginContainer &&
-          this.automaticModeState.linkCreatedContainer[multiAccountTargetURL] === multiAccountOriginContainer) {
+      if (this.container.urlCreatedContainer[multiAccountTargetURL] && multiAccountOriginContainer &&
+          this.container.urlCreatedContainer[multiAccountTargetURL] === multiAccountOriginContainer) {
         dontCloseThisMacConfirm = true;
       }
 
@@ -152,8 +165,8 @@ class MultiAccountContainers {
           (!this.automaticModeState.alreadySawThatLinkInNonDefault[multiAccountTargetURL] &&
           !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
           ||
-          (multiAccountOriginContainer && this.automaticModeState.linkClicked[multiAccountTargetURL] &&
-           this.automaticModeState.linkClicked[multiAccountTargetURL].containers[multiAccountOriginContainer] &&
+          (multiAccountOriginContainer && this.mouseclick.linksClicked[multiAccountTargetURL] &&
+           this.mouseclick.linksClicked[multiAccountTargetURL].containers[multiAccountOriginContainer] &&
            !this.automaticModeState.multiAccountConfirmPage[multiAccountTargetURL])
           ||
           (!multiAccountOriginContainer && tab.cookieStoreId === 'firefox-default')) {
@@ -242,6 +255,12 @@ class MultiAccountContainers {
   }
 
   async handleNotClickedLink({request, tab, containerExists}) {
+    if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
+      debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
+      this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
+      return;
+    }
+
     if (tab.cookieStoreId === 'firefox-default'
         && this.automaticModeState.multiAccountConfirmPage[request.url]
         && this.automaticModeState.alreadySawThatLink[request.url] > 1) {
@@ -287,6 +306,19 @@ class MultiAccountContainers {
     }
 
     return true;
+  }
+
+  cleanupAutomaticModeState(url) {
+    delete this.mouseclick.linksClicked[url];
+    delete this.automaticModeState.linkClickCreatedTabs[url];
+    delete this.container.urlCreatedContainer[url];
+    delete this.automaticModeState.alreadySawThatLink[url];
+    delete this.automaticModeState.alreadySawThatLinkTotal[url];
+    delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];
+    delete this.automaticModeState.multiAccountConfirmPage[url];
+    delete this.automaticModeState.multiAccountConfirmPageTabs[url];
+    delete this.automaticModeState.multiAccountWasFaster[url];
+    delete this.automaticModeState.multiAccountRemovedTab[url];
   }
 }
 

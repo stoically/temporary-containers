@@ -1,6 +1,7 @@
 const Storage = require('./background/storage');
 const Container = require('./background/container');
 const Request = require('./background/request');
+const MouseClick = require('./background/mouseclick');
 const Emittery = require('emittery');
 const { versionCompare } = require('./background/utils');
 const {
@@ -13,26 +14,12 @@ const MultiAccountContainers = require('./background/mac-legacy');
 class TemporaryContainers extends Emittery {
   constructor() {
     super();
-
-    this.automaticModeState = {
-      linkClicked: {},
-      linkClickCreatedTabs: {},
-      linkCreatedContainer: {},
-      alreadySawThatLink: {},
-      alreadySawThatLinkTotal: {},
-      alreadySawThatLinkInNonDefault: {},
-      multiAccountWasFaster: {},
-      multiAccountConfirmPage: {},
-      multiAccountConfirmPageTabs: {},
-      multiAccountRemovedTab: {},
-      noContainerTab: {}
-    };
+    this.noContainerTabs = {};
 
     this.storage = new Storage;
     this.request = new Request;
     this.container = new Container;
-
-
+    this.mouseclick = new MouseClick;
   }
 
 
@@ -41,6 +28,7 @@ class TemporaryContainers extends Emittery {
 
     this.request.initialize(this);
     this.container.initialize(this);
+    this.mouseclick.initialize(this);
     if (!this.storage.local) {
       await this.storage.load();
     }
@@ -97,11 +85,11 @@ class TemporaryContainers extends Emittery {
       return;
     }
 
-    if (!this.request.isClickAllowed(message, sender)) {
+    if (!this.mouseclick.isClickAllowed(message, sender)) {
       return;
     }
 
-    this.request.linkClicked(message.linkClicked.href, sender.tab);
+    this.mouseclick.linkClicked(message.linkClicked.href, sender.tab);
   }
 
 
@@ -122,13 +110,6 @@ class TemporaryContainers extends Emittery {
 
   async tabsOnUpdated(tabId, changeInfo, tab) {
     debug('[browser.tabs.onUpdated] tab updated', tab);
-    if (changeInfo.status === 'complete' && (this.automaticModeState.alreadySawThatLink[tab.url] ||
-       this.automaticModeState.alreadySawThatLinkInNonDefault[tab.url])) {
-      debug('[browser.tabs.onUpdated] looks like a tab finished loading a url we saw before', changeInfo, tab);
-      delete this.automaticModeState.alreadySawThatLink[tab.url];
-      delete this.automaticModeState.alreadySawThatLinkInNonDefault[tab.url];
-      return;
-    }
     if (!changeInfo.url) {
       debug('[browser.tabs.onUpdated] url didnt change, not relevant', tabId, changeInfo, tab);
       return;
@@ -139,8 +120,8 @@ class TemporaryContainers extends Emittery {
 
 
   async tabsOnRemoved(tabId) {
-    if (this.automaticModeState.noContainerTab[tabId]) {
-      delete this.automaticModeState.noContainerTab[tabId];
+    if (this.noContainerTabs[tabId]) {
+      delete this.noContainerTabs[tabId];
     }
     if (!this.storage.local.tabContainerMap[tabId]) {
       debug('[browser.tabs.onRemoved] removed tab that isnt in the tabContainerMap', tabId, this.storage.local.tabContainerMap);
@@ -199,8 +180,8 @@ class TemporaryContainers extends Emittery {
           active: true,
           url: 'about:blank'
         });
-        this.automaticModeState.noContainerTab[tab.id] = true;
-        debug('[commandsOnCommand] new no container tab created', this.automaticModeState.noContainerTab);
+        this.noContainerTabs[tab.id] = true;
+        debug('[commandsOnCommand] new no container tab created', this.noContainerTabs);
       } catch (error) {
         debug('[commandsOnCommand] couldnt create tab', error);
       }
@@ -211,8 +192,8 @@ class TemporaryContainers extends Emittery {
         const window = await browser.windows.create({
           url: 'about:blank'
         });
-        this.automaticModeState.noContainerTab[window.tabs[0].id] = true;
-        debug('[commandsOnCommand] new no container tab created in window', window, this.automaticModeState.noContainerTab);
+        this.noContainerTabs[window.tabs[0].id] = true;
+        debug('[commandsOnCommand] new no container tab created in window', window, this.noContainerTabs);
       } catch (error) {
         debug('[commandsOnCommand] couldnt create tab in window', error);
       }

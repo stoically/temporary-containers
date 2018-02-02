@@ -163,11 +163,6 @@ describe('tabs loading URLs in default-container', () => {
     browser.tabs.create.should.have.been.calledOnce;
     browser.storage.local.set.should.have.been.calledThrice;
   });
-
-  it('should cleanup the alreadysawlink state', async () => {
-    clock.tick(3000);
-    background.automaticModeState.alreadySawThatLink.should.deep.equal({});
-  });
 });
 
 
@@ -240,7 +235,7 @@ describe('tabs requesting a previously clicked url in a temporary container', ()
   });
 
   it('should reopen in a new temporary container', async () => {
-    background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
+    background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
     browser.tabs.remove.should.have.been.calledOnce;
@@ -290,9 +285,10 @@ describe('state for clicked links', async () => {
     };
     const background = await loadBackground();
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    background.automaticModeState.linkClicked[fakeMessage.linkClicked.href].should.exist;
+    background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
 
-    clock.tick(3000);
-    background.automaticModeState.linkClicked.should.deep.equal({});
+    clock.tick(1000);
+    await new Promise(r => process.nextTick(r));
+    background.mouseclick.linksClicked.should.deep.equal({});
   });
 });
