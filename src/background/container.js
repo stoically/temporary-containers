@@ -36,6 +36,11 @@ class Container {
     this.background = background;
     this.storage = background.storage;
     this.request = background.request;
+
+    setInterval(() => {
+      debug('[interval] container removal interval', this.storage.local.tempContainers);
+      this.cleanup();
+    }, 60000);
   }
 
 
@@ -168,6 +173,11 @@ class Container {
   }
 
   async tryToRemove(cookieStoreId) {
+    if (await this.onlyIncognitoOrNoTabs()) {
+      debug('[tryToRemove] canceling, only incognito or no tabs');
+      return;
+    }
+
     try {
       const tempTabs = await browser.tabs.query({
         cookieStoreId
@@ -201,10 +211,33 @@ class Container {
   }
 
 
-  cleanup() {
+  async cleanup() {
+    if (await this.onlyIncognitoOrNoTabs()) {
+      debug('[cleanup] canceling, only incognito or no tabs');
+      return;
+    }
+
     Object.keys(this.storage.local.tempContainers).map((cookieStoreId) => {
       this.tryToRemove(cookieStoreId);
     });
+  }
+
+
+  async onlyIncognitoOrNoTabs() {
+    // don't do a cleanup if there are none or only incognito-tabs
+    try {
+      const tabs = await browser.tabs.query({});
+      if (!tabs.length) {
+        return true;
+      }
+      if (!tabs.filter(tab => !tab.incognito).length) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      debug('[onlyIncognitoOrNoTabs] failed to query tabs', error);
+      return false;
+    }
   }
 
 

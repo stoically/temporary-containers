@@ -53,11 +53,6 @@ class TemporaryContainers extends Emittery {
     if (this.storage.local.preferences.iconColor !== 'default') {
       this.setIcon(this.storage.local.preferences.iconColor);
     }
-
-    setInterval(() => {
-      debug('[interval] container removal interval', this.storage.local.tempContainers);
-      this.container.cleanup();
-    }, 60000);
   }
 
   async runtimeOnMessage(message, sender) {
@@ -131,7 +126,7 @@ class TemporaryContainers extends Emittery {
     debug('[browser.tabs.onRemoved] queuing container removal because of tab removal', cookieStoreId, tabId);
     setTimeout(() => {
       this.container.tryToRemove(cookieStoreId);
-    }, 500);
+    }, 1000);
   }
 
 
@@ -263,6 +258,11 @@ class TemporaryContainers extends Emittery {
     if (!this.storage.local) {
       await this.storage.load();
     }
+
+    // queue a container cleanup
+    setTimeout(() => {
+      this.container.cleanup();
+    }, 5000);
 
     // extension loads after the first tab opens most of the time
     // lets see if we can reopen the first tab
