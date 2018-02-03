@@ -24,7 +24,7 @@ class TemporaryContainers extends Emittery {
 
 
   async initialize() {
-    new MultiAccountContainers(this);
+    this.mac = new MultiAccountContainers(this);
 
     this.request.initialize(this);
     this.container.initialize(this);
@@ -41,7 +41,7 @@ class TemporaryContainers extends Emittery {
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
     browser.tabs.onRemoved.addListener(this.tabsOnRemoved.bind(this));
-    browser.browserAction.onClicked.addListener(this.container.createTabInTempContainer.bind(this.container));
+    browser.browserAction.onClicked.addListener(this.browserActionOnClicked.bind(this));
     browser.webRequest.onBeforeRequest.addListener(this.request.webRequestOnBeforeRequest.bind(this.request),  {
       urls: ['<all_urls>'],
       types: ['main_frame']
@@ -85,6 +85,11 @@ class TemporaryContainers extends Emittery {
     }
 
     this.mouseclick.linkClicked(message.linkClicked.href, sender.tab);
+  }
+
+
+  browserActionOnClicked(tab, url) {
+    this.container.createTabInTempContainer({tab, url});
   }
 
 
@@ -161,7 +166,7 @@ class TemporaryContainers extends Emittery {
   async contextMenusOnClicked(info, tab) {
     switch (info.menuItemId)  {
     case 'open-link-in-new-temporary-container-tab':
-      this.container.createTabInTempContainer(tab, info.linkUrl, null, false, true);
+      this.container.createTabInTempContainer({tab, url: info.linkUrl, active: false});
       break;
     }
   }
@@ -194,6 +199,8 @@ class TemporaryContainers extends Emittery {
       }
       break;
 
+    case 'new_no_history_tab':
+      this.container.createTabInTempContainer({deletesHistory: true});
     }
   }
 

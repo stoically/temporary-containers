@@ -1,3 +1,7 @@
+if (!process.listenerCount('unhandledRejection')) {
+  // eslint-disable-next-line no-console
+  process.on('unhandledRejection', r => console.log(r));
+}
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
 global.reload = require('require-reload')(require);
@@ -75,6 +79,9 @@ global.injectBrowser = () => {
       onCommand: {
         addListener: sinon.stub()
       }
+    },
+    history: {
+      deleteUrl: sinon.stub()
     }
   };
 };

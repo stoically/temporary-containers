@@ -156,6 +156,15 @@ const updateAlwaysOpenInDomainRules = () => {
   }
 };
 
+const saveAdvancedPreferences = async (event) => {
+  event.preventDefault();
+
+  preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
+  preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
+
+  await savePreferences();
+};
+
 const initialize = async () => {
   $('.menu .item').tab();
   $('.ui.dropdown').dropdown();
@@ -179,6 +188,9 @@ const initialize = async () => {
     $('#linkClickGlobalLeft').dropdown('set selected', preferences.linkClickGlobal.left.action);
     document.querySelector('#linkClickGlobalLeftOverwritesAutomaticMode').checked =
       preferences.linkClickGlobal.left.overwriteAutomaticMode;
+
+    $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
+    $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
 
     updateLinkClickDomainRules();
     updateAlwaysOpenInDomainRules();
@@ -245,4 +257,5 @@ const initialize = async () => {
 
 document.addEventListener('DOMContentLoaded', initialize);
 $('#saveContainerPreferences').on('click', saveContainerPreferences);
+$('#saveAdvancedPreferences').on('click', saveAdvancedPreferences);
 $('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);

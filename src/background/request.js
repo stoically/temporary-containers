@@ -39,6 +39,19 @@ class Request {
       }
     }
 
+    if (tab.cookieStoreId !== 'firefox-default' &&
+        this.storage.local.tempContainers[tab.cookieStoreId] &&
+        this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory) {
+      if (!this.storage.local.tempContainers[tab.cookieStoreId].history) {
+        this.storage.local.tempContainers[tab.cookieStoreId].history = {};
+      }
+      this.storage.local.tempContainers[tab.cookieStoreId].history[request.url] = {
+        tabId: request.tabId,
+        timeStamp: request.timeStamp
+      };
+      await this.storage.persist();
+    }
+
     if (alwaysOpenIn && !this.mouseclick.linksClicked[request.url] && tab.openerTabId) {
       debug('[browser.webRequest.onBeforeRequest] always open in tmpcontainer request, simulating click', request);
       this.linkClicked(request.url, {
@@ -101,8 +114,13 @@ class Request {
       return;
     }
 
-    let newTab;
-    newTab = await this.container.reloadTabInTempContainer(tab, request.url);
+    let deletesHistoryContainer = false;
+    if (this.storage.local.tempContainers[tab.cookieStoreId] &&
+        this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory &&
+        this.storage.local.preferences.deletesHistoryContainerMouseClicks === 'automatic') {
+      deletesHistoryContainer = true;
+    }
+    const newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer);
     debug('[handleClickedLink] created new tab', newTab);
 
     await this.background.emit('handleClickedLinkAfterReload', {request, newTab});
@@ -113,7 +131,6 @@ class Request {
 
 
   async handleNotClickedLink(request, tab) {
-
     let containerExists = false;
     if (tab.cookieStoreId === 'firefox-default') {
       containerExists = true;
@@ -124,8 +141,6 @@ class Request {
         debug('container doesnt exist anymore, probably undo close tab', tab);
       }
     }
-
-
 
     const hook = await this.background.emit('handleNotClickedLink', {request, tab, containerExists});
     if (typeof hook[0] !== 'undefined') {
@@ -140,13 +155,15 @@ class Request {
       return;
     }
 
+    let deletesHistoryContainer = false;
+    if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
+      deletesHistoryContainer = true;
+    }
     debug('[handleNotClickedLink] onBeforeRequest reload in temp tab', tab, request);
-    await this.container.reloadTabInTempContainer(tab, request.url, true);
+    await this.container.reloadTabInTempContainer(tab, request.url, true, deletesHistoryContainer);
 
     return { cancel: true };
   }
-
-
 
 
   shouldAlwaysOpenInTemporaryContainer(request) {

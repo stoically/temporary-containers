@@ -17,6 +17,7 @@
         <a class="item active" data-tab="general">General</a>
         <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
         <a class="item" data-tab="alwaysopenin">Always per Website</a>
+        <a class="item" data-tab="advanced">Advanced</a>
       </div>
       <div class="ui bottom attached active tab segment" data-tab="general">
         <form class="ui form">
@@ -234,6 +235,47 @@
           <div>
             <h3>Website Rules</h3>
             <div class="ui bulleted list" id="alwaysOpenInDomainRules">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="ui bottom attached tab segment" data-tab="advanced">
+        <form class="ui form">
+          <div id="advancedPreferences">
+            <div class="field">
+              <label>Delete History</label>
+              <div class="ui negative message">
+                <strong>
+                  WARNING: EVERY WEBSITE URL that you visit in a
+                  "Deletes History Temporary Container" WILL GET DELETED FROM YOUR HISTORY.
+                  This means if you visited a Website URL in another Container, Temporary Container
+                  or in No Container before or while visiting it in a "Deletes History Temporary Container"
+                  - those visits will get deleted from History too. This is true until Firefox supports a special History for Container Tabs.
+                  <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320">The related Bug can be found here</a>.<br>
+                  <br>
+                  You can open "Deletes History Temporary Containers" with the keyboard shortcut Alt+P instead of configuring it here. The same WARNING applies.<br>
+                  <br>
+                  "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted.<br>
+                  <br>
+                  Be careful. You have been warned. "Deletes History Temporary Containers" tabs have a "-deletes-history" suffix
+                  in the container name to remind you.
+                </strong>
+              </div>
+              <select id="deletesHistoryContainer" class="ui fluid dropdown">
+                <option value="never">DO NOT automatically create "Deletes History Temporary Containers"</option>
+                <option value="automatic">Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Mouse Clicks in "Deletes History Temporary Containers"</label>
+              <select id="deletesHistoryContainerMouseClicks" class="ui fluid dropdown">
+                <option value="never">Default</option>
+                <option value="automatic">Open New "Deletes History Temporary Containers" with Mouse Clicks in "No History Temporary Containers" instead of normal
+                  Temporary Containers. Same behavior regarding Mouse Clicks and the Mouse Clicks configuration still applies.</option>
+              </select>
+            </div>
+            <div class="field">
+              <button id="saveAdvancedPreferences" class="ui button primary">Save</button>
             </div>
           </div>
         </form>

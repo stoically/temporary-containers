@@ -44,7 +44,7 @@ class Container {
   }
 
 
-  async createTabInTempContainer(tab, url, alwaysOpenIn, active, dontPin) {
+  async createTabInTempContainer({tab, url, alwaysOpenIn = false, active = false, dontPin = true, deletesHistory = false}) {
     let tempContainerNumber;
     if (this.storage.local.preferences.containerNumberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
@@ -53,7 +53,10 @@ class Container {
     if (this.storage.local.preferences.containerNumberMode === 'reuse') {
       tempContainerNumber = this.getReusedContainerNumber();
     }
-    const containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
+    let containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
+    if (deletesHistory) {
+      containerName += '-deletes-history';
+    }
     try {
       let containerColor = this.storage.local.preferences.containerColor;
       if (this.storage.local.preferences.containerColorRandom) {
@@ -72,6 +75,7 @@ class Container {
       const contextualIdentity = await browser.contextualIdentities.create(containerOptions);
       debug('[createTabInTempContainer] contextualIdentity created', contextualIdentity);
       containerOptions.number = tempContainerNumber;
+      containerOptions.deletesHistory = deletesHistory;
       this.storage.local.tempContainers[contextualIdentity.cookieStoreId] = containerOptions;
       await this.storage.persist();
 
@@ -110,8 +114,9 @@ class Container {
   }
 
 
-  async reloadTabInTempContainer(tab, url, active) {
-    const newTab = await this.createTabInTempContainer(tab, url, false, active);
+  async reloadTabInTempContainer(tab, url, active, deletesHistory) {
+    console.log('??', deletesHistory)
+    const newTab = await this.createTabInTempContainer({tab, url, active, deletesHistory});
     if (!tab) {
       return newTab;
     }
@@ -165,7 +170,11 @@ class Container {
        (tab.url === 'about:home' ||
         tab.url === 'about:newtab')) {
       debug('[maybeReloadTabInTempContainer] about:home/new tab in firefox-default container, reload in temp container', tab);
-      await this.reloadTabInTempContainer(tab);
+      let deletesHistoryContainer = false;
+      if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
+        deletesHistoryContainer = true;
+      }
+      await this.reloadTabInTempContainer(tab, null, null, deletesHistoryContainer);
       return;
     }
 
@@ -205,6 +214,16 @@ class Container {
       });
     } catch (error) {
       debug('[tryToRemoveContainer] error while removing container', cookieStoreId, error);
+    }
+    if (this.storage.local.tempContainers[cookieStoreId].deletesHistory &&
+        this.storage.local.tempContainers[cookieStoreId].history) {
+      Object.keys(this.storage.local.tempContainers[cookieStoreId].history).map(url => {
+        if (!url) {
+          return;
+        }
+        debug('[tryToRemoveContainer] removing url from history', url);
+        browser.history.deleteUrl({url});
+      });
     }
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();

@@ -15,7 +15,8 @@ describe('when triggering browseraction', () => {
           name: 'tmp1',
           color: 'red',
           icon: 'circle',
-          number: 1
+          number: 1,
+          deletesHistory: false
         });
         browser.tabs.create.should.have.been.calledWith({
           url: undefined,
@@ -47,7 +48,8 @@ describe('when triggering browseraction', () => {
           name: sinon.match.string,
           color: sinon.match.string,
           icon: sinon.match.string,
-          number: 1
+          number: 1,
+          deletesHistory: false
         });
         browser.tabs.create.should.have.been.calledWith({
           url: undefined,
