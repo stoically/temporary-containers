@@ -115,7 +115,6 @@ class Container {
 
 
   async reloadTabInTempContainer(tab, url, active, deletesHistory) {
-    console.log('??', deletesHistory)
     const newTab = await this.createTabInTempContainer({tab, url, active, deletesHistory});
     if (!tab) {
       return newTab;

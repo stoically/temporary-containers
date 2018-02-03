@@ -5,14 +5,14 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="semantic/semantic.min.css">
     <style>
-      body { padding: 5px; }
+      body { padding: 50px; }
       .hidden { display: none; }
     </style>
   </head>
 
   <body>
   <div class="ui grid">
-    <div class="ui twelve wide column">
+    <div class="ui ten wide column">
       <div class="ui pointing secondary menu">
         <a class="item active" data-tab="general">General</a>
         <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
@@ -20,6 +20,8 @@
         <a class="item" data-tab="advanced">Advanced</a>
       </div>
       <div class="ui bottom attached active tab segment" data-tab="general">
+        <div class="ui grid">
+        <div class="fourteen wide column">
         <form class="ui form">
           <div id="containerPreferences">
             <div class="field" id="automaticModeField">
@@ -96,6 +98,8 @@
             </div>
           </div>
         </form>
+        </div>
+        </div>
       </div>
       <div class="ui tab segment" data-tab="mouseclicks">
         <div class="ui top attached tabular menu">
@@ -103,6 +107,8 @@
           <a class="item" data-tab="mouseclicks/perwebsite">Per Website</a>
         </div>
         <div class="ui bottom attached active tab segment" data-tab="mouseclicks/global">
+          <div class="ui grid">
+          <div class="fourteen wide column">
           <form class="ui form">
             <h4>When Mouse Clicks on Links should open new Temporary Containers</h4>
             <div class="field">
@@ -154,8 +160,12 @@
               <button id="saveLinkClickGlobalPreferences" class="ui button primary">Save</button>
             </div>
           </form>
+          </div>
+          </div>
         </div>
         <div class="ui bottom attached tab segment" data-tab="mouseclicks/perwebsite">
+          <div class="ui grid">
+          <div class="fourteen wide column">
           <form class="ui form" id="linkClickDomainForm">
             <h4 data-tooltip="Website Rules overwrite Global Preferences">
               On which Websites should Mouse Clicks on Links open new Temporary Containers [?]
@@ -218,9 +228,13 @@
               </div>
             </div>
           </form>
+          </div>
+          </div>
         </div>
       </div>
       <div class="ui bottom attached tab segment" data-tab="alwaysopenin">
+        <div class="ui grid">
+        <div class="fourteen wide column">
         <form class="ui form" id="alwaysOpenInDomainForm">
           <h4 data-tooltip="Regardless how they're opened. Only if not already in a container.">
             Which Websites should always open in new Temporary Containers [?]
@@ -238,8 +252,12 @@
             </div>
           </div>
         </form>
+        </div>
+        </div>
       </div>
       <div class="ui bottom attached tab segment" data-tab="advanced">
+        <div class="ui grid">
+        <div class="fourteen wide column">
         <form class="ui form">
           <div id="advancedPreferences">
             <div class="field">
@@ -247,7 +265,7 @@
               <div class="ui negative message">
                 <strong>
                   WARNING: EVERY WEBSITE URL that you visit in a
-                  "Deletes History Temporary Container" WILL GET DELETED FROM YOUR HISTORY.
+                  "Deletes History Temporary Container" WILL GET DELETED FROM YOUR ENTIRE HISTORY.
                   This means if you visited a Website URL in another Container, Temporary Container
                   or in No Container before or while visiting it in a "Deletes History Temporary Container"
                   - those visits will get deleted from History too. This is true until Firefox supports a special History for Container Tabs.
@@ -259,6 +277,13 @@
                   <br>
                   Be careful. You have been warned. "Deletes History Temporary Containers" tabs have a "-deletes-history" suffix
                   in the container name to remind you.
+                  <br><br>
+
+                  <div class="ui checkbox" id="deletesHistoryContainerWarningRead">
+                    <input type="checkbox" id="deletesHistoryContainerWarningReadCheckbox">
+                    <label>I have read the WARNING and understand the implications that come with using "Deletes History Temporary Containers".
+                      When ticking the checkbox Firefox will ask you for "Access browsing history" permissions, which you have to allow.</label>
+                  </div>
                 </strong>
               </div>
               <select id="deletesHistoryContainer" class="ui fluid dropdown">
@@ -279,6 +304,8 @@
             </div>
           </div>
         </form>
+        </div>
+        </div>
       </div>
       <div id="message" class="ui positive message hidden"></div>
     </div>

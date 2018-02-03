@@ -55,7 +55,8 @@
   },
 
   "options_ui": {
-    "page": "options/options.html"
+    "page": "options/options.html",
+    "open_in_tab": true
   },
 
   "permissions": [
@@ -63,12 +64,14 @@
     "contextMenus",
     "contextualIdentities",
     "cookies",
-    "history",
-    "management",
     "storage",
     "tabs",
     "webRequest",
     "webRequestBlocking"
+  ],
+
+  "optional_permissions": [
+    "history"
   ],
 
   "content_scripts": [

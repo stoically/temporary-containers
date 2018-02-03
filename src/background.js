@@ -201,9 +201,9 @@ class TemporaryContainers extends Emittery {
 
     case 'new_no_history_tab':
       this.container.createTabInTempContainer({deletesHistory: true});
+      break;
     }
   }
-
 
   async addContextMenu() {
     browser.contextMenus.create({

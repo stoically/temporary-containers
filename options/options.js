@@ -253,9 +253,32 @@ const initialize = async () => {
     html: automaticModeToolTip,
     inline: true
   });
+
+  const historyPermission = await browser.permissions.contains({permissions: ['history']});
+  if (historyPermission) {
+    $('#deletesHistoryContainerWarningRead')
+      .checkbox('check')
+      .checkbox('set disabled');
+  }
 };
 
 document.addEventListener('DOMContentLoaded', initialize);
 $('#saveContainerPreferences').on('click', saveContainerPreferences);
 $('#saveAdvancedPreferences').on('click', saveAdvancedPreferences);
 $('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);
+
+
+const requestHistoryPermissions = async () => {
+  const allowed = await browser.permissions.request({
+    permissions: ['history']
+  });
+  if (!allowed) {
+    $('#deletesHistoryContainerWarningRead')
+      .checkbox('uncheck');
+  } else {
+    $('#deletesHistoryContainerWarningRead')
+      .checkbox('check')
+      .checkbox('set disabled');
+  }
+};
+$('#deletesHistoryContainerWarningRead').on('click', requestHistoryPermissions);
