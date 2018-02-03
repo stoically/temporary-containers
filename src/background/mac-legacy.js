@@ -2,7 +2,6 @@ const { debug } = require('./log');
 
 class MultiAccountContainers {
   constructor(background) {
-    this.automaticModeState = background.automaticModeState;
     this.storage = background.storage;
     this.container = background.container;
     this.request = background.request;
@@ -256,7 +255,7 @@ class MultiAccountContainers {
 
   async handleNotClickedLink({request, tab, containerExists}) {
     if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
-      debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
+      debug('[handleNotClickedLink] mac onBeforeRequest tab belongs to a non-default container', tab, request);
       this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] = true;
       return;
     }
@@ -309,9 +308,7 @@ class MultiAccountContainers {
   }
 
   cleanupAutomaticModeState(url) {
-    delete this.mouseclick.linksClicked[url];
     delete this.automaticModeState.linkClickCreatedTabs[url];
-    delete this.container.urlCreatedContainer[url];
     delete this.automaticModeState.alreadySawThatLink[url];
     delete this.automaticModeState.alreadySawThatLinkTotal[url];
     delete this.automaticModeState.alreadySawThatLinkInNonDefault[url];

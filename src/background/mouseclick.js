@@ -10,6 +10,7 @@ class MouseClick {
   initialize(background) {
     this.background = background;
     this.storage = background.storage;
+    this.container = background.container;
   }
 
 
@@ -28,6 +29,8 @@ class MouseClick {
 
     setTimeout(() => {
       debug('[runtimeOnMessage] cleaning up', url);
+      delete this.linksClicked[url];
+      delete this.container.urlCreatedContainer[url];
       this.background.emit('cleanupAutomaticModeState', url);
     }, 1000);
   }

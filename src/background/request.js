@@ -34,7 +34,7 @@ class Request {
       debug('[browser.webRequest.onBeforeRequest] onbeforeRequest retrieving tab information failed', error);
 
       const hook = await this.background.emit('webRequestOnBeforeRequestFailed', request);
-      if (hook[0]) {
+      if (typeof hook[0] !== 'undefined' && hook[0]) {
         tab = hook[0];
       }
     }
@@ -58,7 +58,7 @@ class Request {
     }
 
     const hook = await this.background.emit('webRequestOnBeforeRequest', {request, tab});
-    if (!hook[0]) {
+    if (typeof hook[0] !== 'undefined' && !hook[0]) {
       return;
     }
 
@@ -91,7 +91,7 @@ class Request {
     debug('[handleClickedLink] onBeforeRequest', request, tab);
 
     const hook = await this.background.emit('handleClickedLink', {request, tab});
-    if (!hook[0]) {
+    if (typeof hook[0] !== 'undefined' && !hook[0]) {
       return;
     }
 
@@ -125,12 +125,19 @@ class Request {
       }
     }
 
+
+
     const hook = await this.background.emit('handleNotClickedLink', {request, tab, containerExists});
-    if (!hook[0]) {
+    if (typeof hook[0] !== 'undefined') {
+      if (!hook[0]) {
+        return;
+      }
+      if (hook[0].cancel) {
+        return hook[0];
+      }
+    } else if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
+      debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
       return;
-    }
-    if (hook[0].cancel) {
-      return hook[0];
     }
 
     debug('[handleNotClickedLink] onBeforeRequest reload in temp tab', tab, request);
