@@ -89,7 +89,11 @@ class TemporaryContainers extends Emittery {
 
 
   browserActionOnClicked(tab, url) {
-    this.container.createTabInTempContainer({tab, url});
+    let deletesHistory = false;
+    if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
+      deletesHistory = true;
+    }
+    this.container.createTabInTempContainer({tab, url, deletesHistory});
   }
 
 
@@ -164,9 +168,13 @@ class TemporaryContainers extends Emittery {
 
 
   async contextMenusOnClicked(info, tab) {
+    let deletesHistory = false;
+    if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
+      deletesHistory = true;
+    }
     switch (info.menuItemId)  {
     case 'open-link-in-new-temporary-container-tab':
-      this.container.createTabInTempContainer({tab, url: info.linkUrl, active: false});
+      this.container.createTabInTempContainer({tab, url: info.linkUrl, active: false, deletesHistory});
       break;
     }
   }
