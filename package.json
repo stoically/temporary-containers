@@ -6,7 +6,7 @@
     "test": "mocha ./test/setup.js test/*.test.js",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
     "lint": "eslint src",
-    "build": "rm -rf tmpcontainer && npm run webpack && web-ext build --overwrite-dest --ignore-files src* test* package* webpack* README.md && addons-linter web-ext-artifacts/temporary_containers-*.zip",
+    "build": "rm -rf tmpcontainer && npm run webpack && web-ext build --overwrite-dest --ignore-files src* test* package* webpack* && addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "webpack": "webpack",
     "dev-webpack": "webpack --watch"
   },
