@@ -28,6 +28,7 @@ class Storage {
       containerIconRandom: false,
       containerNumberMode: 'keep',
       iconColor: 'default',
+      historyPermission: false,
       deletesHistoryContainer: 'never',
       deletesHistoryContainerMouseClicks: 'never'
     };

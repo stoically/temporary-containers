@@ -261,19 +261,15 @@
         <form class="ui form">
           <div id="advancedPreferences">
             <div class="field">
-              <label>Delete History</label>
+              <label>"Deletes History Temporary Containers"</label>
               <div class="ui negative message">
                 <strong>
                   WARNING: EVERY WEBSITE URL that you visit in a
                   "Deletes History Temporary Container" WILL GET DELETED FROM YOUR ENTIRE HISTORY.
                   This means if you visited a Website URL in another Container, Temporary Container
                   or in No Container before or while visiting it in a "Deletes History Temporary Container"
-                  - those visits will get deleted from History too. This is true until Firefox supports a special History for Container Tabs.
+                  then those visits will get deleted from History too. This is true until Firefox supports a special History for Container Tabs.
                   <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320">The related Bug can be found here</a>.<br>
-                  <br>
-                  You can open "Deletes History Temporary Containers" with the keyboard shortcut Alt+P instead of configuring it here. The same WARNING applies.<br>
-                  <br>
-                  "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted.<br>
                   <br>
                   Be careful. You have been warned. "Deletes History Temporary Containers" tabs have a "-deletes-history" suffix
                   in the container name to remind you.
@@ -282,12 +278,24 @@
                   <div class="ui checkbox" id="deletesHistoryContainerWarningRead">
                     <input type="checkbox" id="deletesHistoryContainerWarningReadCheckbox">
                     <label>I have read the WARNING and understand the implications that come with using "Deletes History Temporary Containers".
-                      When ticking the checkbox Firefox will ask you for "Access browsing history" permissions, which you have to allow.</label>
+                      When ticking the checkbox Firefox will ask you for "Access browsing history" permissions.</label>
                   </div>
                 </strong>
               </div>
+              <div class="ui notice message">
+                You can open "Deletes History Temporary Containers" with the keyboard shortcut Alt+P<br>
+                <br>
+                The deletion applies to the full Website URL, not only the domain. That means, if you e.g. open a specific reddit post or a news article on
+                your favorite news site in a "Deletes History Temporary Container" it won't delete all your previous visits to other reddit posts or news articles
+                that you made outside of "Deletes History Temporary Containers" because the full Website URLs are different.<br>
+                <br>
+                "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted after the last Tab in it closes.
+              </div>
+            </div>
+            <div class="field">
+              <label>Automatically create "Deletes History Temporary Containers"</label>
               <select id="deletesHistoryContainer" class="ui fluid dropdown">
-                <option value="never">DO NOT automatically create "Deletes History Temporary Containers"</option>
+                <option value="never">Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers</option>
                 <option value="automatic">Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers</option>
               </select>
             </div>
@@ -295,7 +303,7 @@
               <label>Mouse Clicks in "Deletes History Temporary Containers"</label>
               <select id="deletesHistoryContainerMouseClicks" class="ui fluid dropdown">
                 <option value="never">Default</option>
-                <option value="automatic">Open New "Deletes History Temporary Containers" with Mouse Clicks in "No History Temporary Containers" instead of normal
+                <option value="automatic">Open New "Deletes History Temporary Containers" with Mouse Clicks on Links in "No History Temporary Containers" instead of normal
                   Temporary Containers. Same behavior regarding Mouse Clicks and the Mouse Clicks configuration still applies.</option>
               </select>
             </div>

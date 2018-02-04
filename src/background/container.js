@@ -55,7 +55,17 @@ class Container {
     }
     let containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
     if (deletesHistory) {
-      containerName += '-deletes-history';
+      if (!this.storage.local.historyPermission) {
+        this.storage.local.historyPermission = await browser.permissions.contains({permissions: ['history']});
+        if (this.storage.local.historyPermission) {
+          await this.storage.persist();
+        }
+      }
+      if (this.storage.local.historyPermission) {
+        containerName += '-deletes-history';
+      } else {
+        deletesHistory = false;
+      }
     }
     try {
       let containerColor = this.storage.local.preferences.containerColor;
