@@ -1,2 +1,2 @@
-/options/jquery-*
-/options/semantic
+/src/ui/jquery-*
+/src/ui/semantic
