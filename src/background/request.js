@@ -16,15 +16,6 @@ class Request {
       debug('[browser.webRequest.onBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
       return;
     }
-    let alwaysOpenIn = false;
-    if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
-      debug('[browser.webRequest.onBeforeRequest] always open in tmpcontainer request', request);
-      alwaysOpenIn = true;
-    } else if (!this.storage.local.preferences.automaticMode &&
-               !this.mouseclick.linksClicked[request.url]) {
-      debug('[browser.webRequest.onBeforeRequest] automatic mode disabled and no link clicked', request);
-      return;
-    }
 
     let tab;
     try {
@@ -50,6 +41,16 @@ class Request {
         timeStamp: request.timeStamp
       };
       await this.storage.persist();
+    }
+
+    let alwaysOpenIn = false;
+    if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
+      debug('[browser.webRequest.onBeforeRequest] always open in tmpcontainer request', request);
+      alwaysOpenIn = true;
+    } else if (!this.storage.local.preferences.automaticMode &&
+               !this.mouseclick.linksClicked[request.url]) {
+      debug('[browser.webRequest.onBeforeRequest] automatic mode disabled and no link clicked', request);
+      return;
     }
 
     if (alwaysOpenIn && !this.mouseclick.linksClicked[request.url] && tab.openerTabId) {
