@@ -2,7 +2,7 @@
   "description": "Automatically open Tabs in new Temporary Containers",
   "manifest_version": 2,
   "name": "Temporary Containers",
-  "version": "0.29",
+  "version": "0.30",
   "homepage_url": "https://github.com/stoically/firefox-add-on-temporary-containers",
   "icons": {
     "48": "icons/tmpcontainer-48.png"
