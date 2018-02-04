@@ -55,7 +55,7 @@
   },
 
   "options_ui": {
-    "page": "options/options.html",
+    "page": "tmpcontainer/ui/options.html",
     "open_in_tab": true
   },
 

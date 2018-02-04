@@ -8,7 +8,10 @@ module.exports = {
     filename: 'background.js'
   },
   plugins: [
-    new CopyWebpackPlugin(['src/contentscript.js'])
+    new CopyWebpackPlugin([
+      'src/contentscript.js',
+      {from: 'src/ui', to: 'ui'}
+    ]),
   ],
   node: {
     process: false
