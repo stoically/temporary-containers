@@ -30,8 +30,6 @@ Open Tabs in "No Container":
 ## Notes
 If you have any Suggestions, Feedback or BugReports please make sure to leave me an Issue here on GitHub.
 
-Works together with [Multi-Account Containers](https://github.com/mozilla/multi-account-containers).
-
 The automatically created Temporary Containers get removed 0.5 seconds after the Last Tab in a given Temporary Container closes. Sometimes removing the Temporary Container doesn't work immediately - but don't worry, not needed Temporary Containers will automatically get removed eventually!
 
 [Learn more about Containers](https://addons.mozilla.org/firefox/addon/multi-account-containers/)
@@ -46,6 +44,41 @@ The automatically created Temporary Containers get removed 0.5 seconds after the
 * In Automatic Mode:
   * Opening a "New Window" or starting Firefox, only opens a Temporary Container if you <strong>don't</strong> set the Preference "When Firefox starts" to "Show a blank page". Although as soon as you start navigating to a http(s) Website it will convert the Tab to a Temporary Container one.
   * "No Container" Alt+N (Tab) and Shift+Alt+C (Window) must open about:blank due to Firefox API limitations and thus the addressbar can't get focus when opening a new "No Container" Tab
+
+
+## Comparison with other privacy configurations and Add-ons
+
+### Private Windows
+If you open “Private Windows” in Firefox, all tabs that you open within that Private Windows use the same underlying container and accept first-party and third-party cookies. So if you do your browsing within that Private Window, it can easily be tracked between sites while the window is open. A way to test that is, just login to a site, open another tab and open the same site again — you’ll see that you’re still logged in. Of course, if you then close the window, the container storage is cleared.
+
+### Disabled third-party cookies, maybe even with [First Party Isolation](https://www.ghacks.net/2017/11/22/how-to-enable-first-party-isolation-in-firefox/)
+All first-party data will remain on your disk. If you for example open a link to an item on a shopping site in one tab and a little bit later open a link to another item on the same shopping site in another tab — then it’s clear to the site that you saw both items because of cookies/storage. Though in practice some sites might go to the extend to match that visit with [fingerprinting](https://panopticlick.eff.org/about), using Temporary Containers still makes it harder to track you.
+
+### [Cookie AutoDelete](https://addons.mozilla.org/en-US/firefox/addon/cookie-autodelete/) to automatically remove cookies and localStorage
+The same as with “Disabled third-party cookies” applies as long as the cookie storage isn’t cleared — which depends on which settings you have in CAD. Also with localStorage support enabled you make fingerprinting easier, [because CAD needs to set a cookie for the domains you visit](https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/wiki/Documentation#enable-localstorage-support) and CAD can’t clear indexebDB storage at all. If you want to see it yourself try filling your indexedDB and localStorage with 5kb [on this site](https://demo.agektmr.com/storage/). Now close the tab (and click Clean depending on your settings), open the site again and you’ll see that the indexedDB storage is still there.
+
+It’s still really useful to have Cookie AutoDelete: it can keep your permanent container clean from unwantend Cookies. Make sure to activate the Container Support — and instead of activating localStorage support I’d recommend using Temporary Containers.
+
+### Containers on the Go
+Has only the basic feature of opening disposable containers with Toolbar Icon, Keyboard Shortcut and Context Menu. None of the other mentioned features that Temporary Containers has. Also it’s Proprietary Software.
+
+
+## Recommended privacy enhancing Add-ons
+
+### [Multi-Account Containers](https://github.com/mozilla/multi-account-containers)
+Provides you configuration and management of permanent containers. Including a way to always open certain sites in a permanent container.
+
+### [Decentraleyes](https://addons.mozilla.org/firefox/addon/decentraleyes/)
+Protects you against tracking through “free”, centralized, content delivery by automatically injecting local resources if possible.
+
+### [Don’t track me google](https://addons.mozilla.org/firefox/addon/dont-track-me-google1/)
+If your search-engine of choice happens to be Google this Add-on will remove the tracking automatically placed on result-links. Or just use [startpage.com](https://www.startpage.com/) instead.
+
+### [HTTPS Everywhere](https://addons.mozilla.org/firefox/addon/https-everywhere)
+Automatically redirects you to the secure version of websites if available.
+
+### [uBlock Origin](https://addons.mozilla.org/firefox/addon/ublock-origin/)
+I guess you already know this one. If not, check it out.
 
 
 ## Privacy
