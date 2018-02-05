@@ -82,6 +82,13 @@ I guess you already know this one. If not, check it out.
 
 
 ## Privacy
+
+**Temporary Containers NEVER sends any data to external servers and it DOES NOT track ANYTHING. It only stores some necessary data LOCALLY to provide functionality.**
+
+Temporary Containers asks for some permissions upon installation:
+* "Access your data for all websites" is needed to provide automatic reopening of websites in Temporary Containers
+* "Access browser tabs" is needed to create tabs in Temporary Containers and close tabs that are not in Temporary Containers
+
 There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think that this Add-on enhances privacy by providing Temporary/Throw-away/Disposable Containers whenever possible, while not breaking normal navigation or e.g. OAuth redirects on a given Website.
 
 
