@@ -14,7 +14,25 @@ class MouseClick {
   }
 
 
-  linkClicked(url, tab) {
+  linkClicked(message, sender) {
+    let url;
+    let clickType;
+    if (typeof message !== 'object') {
+      url = message;
+    } else {
+      url = message.linkClicked.href;
+      if (message.linkClicked.event.button === 1) {
+        clickType = 'middle';
+      } else if (message.linkClicked.event.button === 0 &&
+        (message.linkClicked.event.ctrlKey || message.linkClicked.event.metaKey)) {
+        clickType = 'ctrlleft';
+      }
+      if (!this.checkClick(clickType, message, sender)) {
+        return;
+      }
+    }
+    const tab = sender.tab;
+
     if (!this.linksClicked[url]) {
       this.linksClicked[url] = {
         tabs: {},
@@ -22,6 +40,7 @@ class MouseClick {
         count: 0
       };
     }
+    this.linksClicked[url].clickType = clickType;
     this.linksClicked[url].tab = tab;
     this.linksClicked[url].tabs[tab.id] = true;
     this.linksClicked[url].containers[tab.cookieStoreId] = true;
@@ -90,18 +109,6 @@ class MouseClick {
 
     return this.checkClickPreferences(this.storage.local.preferences.linkClickGlobal[type],
       parsedClickedURL, parsedSenderTabURL);
-  }
-
-
-  isClickAllowed(message, sender) {
-    if (message.linkClicked.event.button === 1) {
-      return this.checkClick('middle', message, sender);
-    }
-
-    if (message.linkClicked.event.button === 0 &&
-      (message.linkClicked.event.ctrlKey || message.linkClicked.event.metaKey)) {
-      return this.checkClick('ctrlleft', message, sender);
-    }
   }
 }
 

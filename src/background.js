@@ -80,11 +80,8 @@ class TemporaryContainers extends Emittery {
       return;
     }
 
-    if (!this.mouseclick.isClickAllowed(message, sender)) {
-      return;
-    }
 
-    this.mouseclick.linkClicked(message.linkClicked.href, sender.tab);
+    this.mouseclick.linkClicked(message, sender);
   }
 
 

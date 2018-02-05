@@ -37,6 +37,7 @@ class Container {
     this.background = background;
     this.storage = background.storage;
     this.request = background.request;
+    this.mouseclick = background.mouseclick;
 
     setInterval(() => {
       debug('[interval] container removal interval', this.storage.local.tempContainers);
@@ -55,6 +56,14 @@ class Container {
       tempContainerNumber = this.getReusedContainerNumber();
     }
     let containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
+    if (!deletesHistory &&
+        this.mouseclick.linksClicked[url] &&
+        this.mouseclick.linksClicked[url].clickType) {
+      const clickType = this.mouseclick.linksClicked[url].clickType;
+      if (this.storage.local.preferences.linkClickGlobal[clickType].container === 'deleteshistory') {
+        deletesHistory = true;
+      }
+    }
     if (deletesHistory) {
       if (!this.storage.local.historyPermission) {
         this.storage.local.historyPermission = await browser.permissions.contains({permissions: ['history']});

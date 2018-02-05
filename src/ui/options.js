@@ -55,15 +55,14 @@ const saveLinkClickGlobalPreferences = async (event) => {
   preferences.linkClickGlobal = {
     middle: {
       action: document.querySelector('#linkClickGlobalMiddle').value,
-      overwriteAutomaticMode: document.querySelector('#linkClickGlobalMiddleOverwritesAutomaticMode').checked
+      container: document.querySelector('#linkClickGlobalMiddleCreatesContainer').value
     },
     ctrlleft: {
       action: document.querySelector('#linkClickGlobalCtrlLeft').value,
-      overwriteAutomaticMode: document.querySelector('#linkClickGlobalCtrlLeftOverwritesAutomaticMode').checked
+      container: document.querySelector('#linkClickGlobalCtrlLeftCreatesContainer').value
     },
     left: {
-      action: document.querySelector('#linkClickGlobalLeft').value,
-      overwriteAutomaticMode: document.querySelector('#linkClickGlobalLeftOverwritesAutomaticMode').checked
+      action: document.querySelector('#linkClickGlobalLeft').value
     }
   };
 
@@ -74,16 +73,13 @@ const linkClickDomainAddRule = async () => {
   const domainPattern = document.querySelector('#linkClickDomainPattern').value;
   const domainRule = {
     middle: {
-      action: document.querySelector('#linkClickDomainMiddle').value,
-      overwriteAutomaticMode: document.querySelector('#linkClickDomainMiddleOverwritesAutomaticMode').checked
+      action: document.querySelector('#linkClickDomainMiddle').value
     },
     ctrlleft: {
-      action: document.querySelector('#linkClickDomainCtrlLeft').value,
-      overwriteAutomaticMode: document.querySelector('#linkClickDomainCtrlLeftOverwritesAutomaticMode').checked
+      action: document.querySelector('#linkClickDomainCtrlLeft').value
     },
     left: {
-      action: document.querySelector('#linkClickDomainLeft').value,
-      overwriteAutomaticMode: document.querySelector('#linkClickDomainLeftOverwritesAutomaticMode').checked
+      action: document.querySelector('#linkClickDomainLeft').value
     }
   };
 
@@ -163,7 +159,7 @@ const saveAdvancedPreferences = async (event) => {
   preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
   preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
 
-  await savePreferences();
+  saveLinkClickGlobalPreferences(event);
 };
 
 const initialize = async () => {
@@ -181,14 +177,11 @@ const initialize = async () => {
     $('#iconColor').dropdown('set selected', preferences.iconColor);
 
     $('#linkClickGlobalMiddle').dropdown('set selected', preferences.linkClickGlobal.middle.action);
-    document.querySelector('#linkClickGlobalMiddleOverwritesAutomaticMode').checked =
-      preferences.linkClickGlobal.middle.overwriteAutomaticMode;
     $('#linkClickGlobalCtrlLeft').dropdown('set selected', preferences.linkClickGlobal.ctrlleft.action);
-    document.querySelector('#linkClickGlobalCtrlLeftOverwritesAutomaticMode').checked =
-      preferences.linkClickGlobal.ctrlleft.overwriteAutomaticMode;
     $('#linkClickGlobalLeft').dropdown('set selected', preferences.linkClickGlobal.left.action);
-    document.querySelector('#linkClickGlobalLeftOverwritesAutomaticMode').checked =
-      preferences.linkClickGlobal.left.overwriteAutomaticMode;
+
+    $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.middle.container);
+    $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.ctrlleft.container);
 
     $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
     $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);

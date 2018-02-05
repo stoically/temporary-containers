@@ -8,13 +8,16 @@ class Storage {
       automaticModeNewTab: 'created',
       linkClickGlobal: {
         middle: {
-          action: 'always'
+          action: 'always',
+          container: 'default'
         },
         ctrlleft: {
-          action: 'always'
+          action: 'always',
+          container: 'default'
         },
         left: {
-          action: 'never'
+          action: 'never',
+          container: 'default'
         }
       },
       linkClickDomain: {},
