@@ -161,6 +161,7 @@ const saveAdvancedPreferences = async (event) => {
 
   preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
   preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
+  preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
 
   await savePreferences();
 };
@@ -191,6 +192,7 @@ const initialize = async () => {
 
     $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
     $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
+    $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
 
     updateLinkClickDomainRules();
     updateAlwaysOpenInDomainRules();

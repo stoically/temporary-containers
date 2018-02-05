@@ -175,7 +175,8 @@ class Container {
       return;
     }
 
-    if (tab.cookieStoreId === 'firefox-default' &&
+    if (this.storage.local.preferences.automaticModeNewTab === 'created' &&
+        tab.cookieStoreId === 'firefox-default' &&
        (tab.url === 'about:home' ||
         tab.url === 'about:newtab')) {
       debug('[maybeReloadTabInTempContainer] about:home/new tab in firefox-default container, reload in temp container', tab);
@@ -187,7 +188,7 @@ class Container {
       return;
     }
 
-    debug('[maybeReloadTabInTempContainer] not a home/new/moz tab, we dont handle that', tab);
+    debug('[maybeReloadTabInTempContainer] not a home/new/moz tab or disabled, we dont handle that', tab);
   }
 
   async tryToRemove(cookieStoreId) {
