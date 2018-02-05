@@ -24,7 +24,11 @@ class MouseClick {
       if (message.linkClicked.event.button === 1) {
         clickType = 'middle';
       } else if (message.linkClicked.event.button === 0 &&
-        (message.linkClicked.event.ctrlKey || message.linkClicked.event.metaKey)) {
+                 !message.linkClicked.event.ctrlKey &&
+                 !message.linkClicked.event.metaKey) {
+        clickType = 'left';
+      } else if (message.linkClicked.event.button === 0 &&
+                (message.linkClicked.event.ctrlKey || message.linkClicked.event.metaKey)) {
         clickType = 'ctrlleft';
       }
       if (!this.checkClick(clickType, message, sender)) {

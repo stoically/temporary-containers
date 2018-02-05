@@ -121,6 +121,7 @@ class Request {
         this.storage.local.preferences.deletesHistoryContainerMouseClicks === 'automatic') {
       deletesHistoryContainer = true;
     }
+
     const newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer);
     debug('[handleClickedLink] created new tab', newTab);
 

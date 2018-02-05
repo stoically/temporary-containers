@@ -255,7 +255,7 @@ class TemporaryContainers extends Emittery {
     if (details.reason === 'update') {
       debug('updated from version', details.previousVersion);
       if (versionCompare('0.16', details.previousVersion) >= 0) {
-        // updated from version <= 0.16, adapt old automaticmode behaviour if necessary
+        debug('updated from version <= 0.16, adapt old automaticmode behaviour if necessary');
         if (!this.storage.local) {
           await this.storage.load();
         }
@@ -264,6 +264,17 @@ class TemporaryContainers extends Emittery {
           this.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'never';
           await this.storage.persist();
         }
+      }
+      if (versionCompare('0.33', details.previousVersion) >= 0) {
+        debug('updated from version <= 0.33, make sure to set all left-clicks to "never"');
+        this.storage.local.preferences.linkClickGlobal.left.action = 'never';
+        const linkClickDomainPatterns = Object.keys(this.storage.local.preferences.linkClickDomain);
+        if (linkClickDomainPatterns.length) {
+          linkClickDomainPatterns.map(linkClickDomainPattern => {
+            this.storage.local.preferences.linkClickDomain[linkClickDomainPattern].left.action = 'never';
+          });
+        }
+        await this.storage.persist();
       }
     }
   }

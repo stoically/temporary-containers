@@ -96,7 +96,8 @@ const updateLinkClickDomainRules = () => {
     domainRules.map((domainPattern) => {
       const domainRuleTooltip =
         `Middle Mouse: ${preferences.linkClickDomain[domainPattern].middle.action} / ` +
-        `Ctrl+Left Mouse: ${preferences.linkClickDomain[domainPattern].ctrlleft.action}`;
+        `Ctrl+Left Mouse: ${preferences.linkClickDomain[domainPattern].ctrlleft.action} / ` +
+        `Left Mouse: ${preferences.linkClickDomain[domainPattern].left.action}`;
       linkClickDomainRules.append(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
         `<span href="#" data-tooltip="${domainRuleTooltip}" data-position="right center">🛈</span> ` +
         '<a href="#" id="linkClickRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
