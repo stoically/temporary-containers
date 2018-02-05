@@ -25,6 +25,9 @@ Open Tabs in "No Container":
 * Pressing Alt+N (Tab) or Shift+Alt+C (Window)
 * RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
 
+Open Tabs in the current active Container:
+* Pressing Alt+X
+
 There's an Advanced configuration to activate automatic deletion of History for Temporary Containers. It comes with a Warning since Firefox doesn't support that feature fully yet. Make sure to read it carefully before using that feature.
 
 [Get the Add-on here.](https://addons.mozilla.org/firefox/addon/temporary-containers/)
