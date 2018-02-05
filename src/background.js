@@ -252,7 +252,7 @@ class TemporaryContainers extends Emittery {
       return; // prevent update logic
     }
 
-    if (details.reason === 'update') {
+    if (details.reason === 'update' && !details.previousVersion.includes('beta')) {
       debug('updated from version', details.previousVersion);
       if (versionCompare('0.16', details.previousVersion) >= 0) {
         debug('updated from version <= 0.16, adapt old automaticmode behaviour if necessary');
