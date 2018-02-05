@@ -29,6 +29,7 @@ class Container {
     ];
 
     this.urlCreatedContainer = {};
+    this.creatingTabInSameContainer = false;
   }
 
 
@@ -164,6 +165,11 @@ class Container {
       return;
     }
 
+    if (this.creatingTabInSameContainer) {
+      debug('[maybeReloadTabInTempContainer] were in the process of creating a tab in same container, ignore');
+      return;
+    }
+
     if (tab.url.startsWith('moz-extension://')) {
       debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
       await this.background.emit('handleMultiAccountContainersConfirmPage', tab);
@@ -266,6 +272,37 @@ class Container {
     } catch (error) {
       debug('[onlyIncognitoOrNoTabs] failed to query tabs', error);
       return false;
+    }
+  }
+
+
+  async createTabInSameContainer() {
+    this.creatingTabInSameContainer = true;
+    try {
+      const tabs = await browser.tabs.query({
+        active: true,
+        currentWindow: true
+      });
+      const activeTab = tabs[0];
+      if (!activeTab) {
+        debug('[createTabInSameContainer] couldnt find an active tab', activeTab);
+        return;
+      }
+      try {
+        const newTab = await browser.tabs.create({
+          active: true,
+          index: activeTab.index + 1,
+          cookieStoreId: activeTab.cookieStoreId
+        });
+        this.creatingTabInSameContainer = false;
+        debug('[createTabInSameContainer] new same container tab created', activeTab, newTab);
+      } catch (error) {
+        debug('[createTabInSameContainer] couldnt create tab', error);
+        this.creatingTabInSameContainer = false;
+      }
+    } catch (error) {
+      debug('[createTabInSameContainer] couldnt query tabs', error);
+      this.creatingTabInSameContainer = false;
     }
   }
 

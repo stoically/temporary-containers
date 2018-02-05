@@ -51,6 +51,12 @@
         "default": "Alt+Shift+C"
       },
       "description": "Open a new 'No Container' Tab in a new Window"
+    },
+    "new_same_container_tab": {
+      "suggested_key": {
+        "default": "Alt+X"
+      },
+      "description": "Open a new Tab in the same Container as the currently active Tab"
     }
   },
 
