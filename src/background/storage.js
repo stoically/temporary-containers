@@ -8,16 +8,13 @@ class Storage {
       automaticModeNewTab: 'created',
       linkClickGlobal: {
         middle: {
-          action: 'always',
-          overwriteAutomaticMode: false
+          action: 'always'
         },
         ctrlleft: {
-          action: 'always',
-          overwriteAutomaticMode: false
+          action: 'always'
         },
         left: {
-          action: 'never',
-          overwriteAutomaticMode: false
+          action: 'never'
         }
       },
       linkClickDomain: {},
