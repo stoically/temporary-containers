@@ -66,25 +66,8 @@ class Request {
     }
 
     if (this.mouseclick.linksClicked[request.url]) {
-      // when someone clicks links fast in succession not clicked links
-      // might get confused with clicked links :C
-      if (!this.mouseclick.linksClicked[request.url].tabs[tab.openerTabId]) {
-        debug('[webRequestOnBeforeRequest] warning, linked clicked but we dont know the opener', tab, request);
-      }
-      return await this.handleClickedLink(request, tab, alwaysOpenIn);
+      return await this.handleClickedLink(request, tab);
     } else {
-      if (tab.cookieStoreId === 'firefox-default' && tab.openerTabId && !alwaysOpenIn) {
-        debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
-        const openerTab = await browser.tabs.get(tab.openerTabId);
-        if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
-          debug('[webRequestOnBeforeRequest] request didnt came from about/moz-extension page, we do nothing', openerTab);
-          return;
-        }
-      }
-      if (!this.storage.local.preferences.automaticMode && !alwaysOpenIn) {
-        debug('[browser.webRequest.onBeforeRequest] got not clicked request but automatic mode is off, ignoring', request);
-        return;
-      }
       return await this.handleNotClickedLink(request, tab, alwaysOpenIn);
     }
   }
@@ -92,6 +75,12 @@ class Request {
 
   async handleClickedLink(request, tab) {
     debug('[handleClickedLink] onBeforeRequest', request, tab);
+
+    // when someone clicks links fast in succession not clicked links
+    // might get confused with clicked links :C
+    if (!this.mouseclick.linksClicked[request.url].tabs[tab.openerTabId]) {
+      debug('[webRequestOnBeforeRequest] warning, linked clicked but we dont know the opener', tab, request);
+    }
 
     const hook = await this.background.emit('handleClickedLink', {request, tab});
     if (typeof hook[0] !== 'undefined' && !hook[0]) {
@@ -131,7 +120,20 @@ class Request {
   }
 
 
-  async handleNotClickedLink(request, tab) {
+  async handleNotClickedLink(request, tab, alwaysOpenIn) {
+    if (tab.cookieStoreId === 'firefox-default' && tab.openerTabId && !alwaysOpenIn) {
+      debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
+      const openerTab = await browser.tabs.get(tab.openerTabId);
+      if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
+        debug('[webRequestOnBeforeRequest] request didnt came from about/moz-extension page, we do nothing', openerTab);
+        return;
+      }
+    }
+    if (!this.storage.local.preferences.automaticMode && !alwaysOpenIn) {
+      debug('[browser.webRequest.onBeforeRequest] got not clicked request but automatic mode is off, ignoring', request);
+      return;
+    }
+
     let containerExists = false;
     if (tab.cookieStoreId === 'firefox-default') {
       containerExists = true;

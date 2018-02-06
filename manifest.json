@@ -1,5 +1,5 @@
 {
-  "description": "Automatically open Tabs in new Temporary Containers",
+  "description": "Open tabs, websites, and links in automatically managed disposable containers. Containers isolate the data websites store (cookies, cache, and more) from each other, further enhancing your privacy while you browse.",
   "manifest_version": 2,
   "name": "Temporary Containers",
   "version": "0.35",

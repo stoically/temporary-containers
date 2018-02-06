@@ -1,8 +1,23 @@
 # Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.org/stoically/firefox-add-on-temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/firefox-add-on-temporary-containers)
 
-Wondering what Containers or Temporary Containers are? [Here's an article explaining it](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21).
+By default the Temporary Containers Add-on will overwrite your standard ways of opening Tabs  and instead of opening the Tab in No Container, it will open the Tab in a freshly created Temporary Container. If you don't want that, you have to disable "Automatic Mode" in the Add-ons options.
 
-Open Tabs in new Temporary Containers when:
+**But how do I stay logged in on some websites if I only have Temporary Containers?**  
+You can use the official [Multi-Account Containers Add-on from Mozilla](https://addons.mozilla.org/firefox/addon/multi-account-containers/) to keep data (like cookies) from some websites in permanent containers and with that stay logged in. Then you can easily leave "Automatic Mode" enabled, which is preferable from a privacy-perspective. For a step-by-step guide and some more in-depth informations [you might want to check out out this article](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21).
+
+Quick Guide:
+* Install [Multi-Account Containers](https://addons.mozilla.org/firefox/addon/multi-account-containers/)
+* Click on the new toolbar icon and through the initial welcome-cards
+* Now you see a list of predefined permanent containers: Personal, Work, Banking, Shopping
+* Click on one of the permanent containers to open a new tab in it
+* Navigate to the website where you always want to stay logged in
+* Click the toolbar icon again and tick the "Always open in" checkbox
+* Now every time you navigate to that website it'll open in the permanent container
+
+**Ok, so how does it enhance my privacy?**  
+Every new Container isolates all local data that websites create (First- and Third-Party Cookies, localStorage, indexedDB, HTTP data cache, Image Cache and any other areas supported by originAttributes) from each other - that makes it harder to track you and thus enhances your privacy. Also - when the last tab in an automatically created Temporary Container closes it gets deleted - and with it all data that websites created inside that Container. As a bonus it'll strip referer information if you use configured Mouse Clicks to open new Temporary Containers.
+
+**Open Tabs in new Temporary Containers by**
 * Clicking the "Temporary Containers"-Icon
 * Pressing the Alt+C Shortcut
 * Clicking on "Open Link in New Temporary Container Tab" in the RightClick ContextMenu on a Link
@@ -11,45 +26,48 @@ Open Tabs in new Temporary Containers when:
 * LeftMouse Click on a Link* (disabled by default)  
   \* Configurable in the Preferences Globally and per Website
 
-With "Automatic Mode" active (default):
+**With "Automatic Mode" active (default)**
 * Clicking the "New Tab"-Icon
 * Clicking "New Tab" or "New Window" in the Browser Menu
 * Pressing the Ctrl+T or Ctrl+N Shortcut
 * An external Program opens a Link in the Browser
 
-Never open Tabs in new Temporary Containers when:
+**Never open Tabs in new Temporary Containers by**
 * Website redirects or opens new Tab itself
 * Clicking "Open Link in New $Container Tab" in the RightClick ContextMenu on a Link
 
-Open Tabs in "No Container":
+**Open Tabs in new "No Container" tabs by**
 * Pressing Alt+N (Tab) or Shift+Alt+C (Window)
 * RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
 
-Open Tabs in the current active Container:
+**Open Tabs in the currently active Container**
 * Pressing Alt+X
 
-There's an Advanced configuration to activate automatic deletion of History for Temporary Containers. It comes with a Warning since Firefox doesn't support that feature fully yet. Make sure to read it carefully before using that feature.
+**Automatically Delete History**  
+There's a feature that lets you open special Temporary Containers that automatically delete their History. It needs to be explicitly enabled in the options under "Advanced". It comes with a warning since Firefox doesn't support that feature fully yet. Make sure to read it carefully before using that feature.
+
+**Privacy Policy and Permissions**  
+Temporary Containers NEVER sends any data to external servers and it DOES NOT track ANYTHING. It only stores some necessary data LOCALLY to provide functionality.
+
+Temporary Containers asks for some permissions upon installation:
+* "Access your data for all websites" is needed to provide automatic reopening of websites in Temporary Containers
+* "Access browser tabs" is needed to create tabs in Temporary Containers and close tabs that are not in Temporary Containers
 
 [Get the Add-on here.](https://addons.mozilla.org/firefox/addon/temporary-containers/)
-
-## Notes
-If you have any Suggestions, Feedback or BugReports please make sure to leave me an Issue here on GitHub.
-
-The automatically created Temporary Containers get removed 0.5 seconds after the Last Tab in a given Temporary Container closes. Sometimes removing the Temporary Container doesn't work immediately - but don't worry, not needed Temporary Containers will automatically get removed eventually!
 
 
 ## Comparison with other privacy configurations and Add-ons
 
 ### Private Windows
-If you open “Private Windows” in Firefox, all tabs that you open within that Private Windows use the same underlying container and accept first-party and third-party cookies. So if you do your browsing within that Private Window, it can easily be tracked between sites while the window is open. A way to test that is, just login to a site, open another tab and open the same site again — you’ll see that you’re still logged in. Of course, if you then close the window, the container storage is cleared.
+If you open “Private Windows” in Firefox, all tabs that you open within Private Windows (even multiple ones)  use the same underlying container and accept first-party and third-party cookies. So if you do your browsing within Private Windows, it can easily be tracked between sites while the windows are open. A way to test that is, just login to a site in one Private Window, open another tab in a new Private Window and open the same site again — you’ll see that you’re still logged in. Of course, if you then close the windows, the container storage is cleared.
 
 ### Disabled third-party cookies, maybe even with [First Party Isolation](https://www.ghacks.net/2017/11/22/how-to-enable-first-party-isolation-in-firefox/)
 All first-party data will remain on your disk. If you for example open a link to an item on a shopping site in one tab and a little bit later open a link to another item on the same shopping site in another tab — then it’s clear to the site that you saw both items because of cookies/storage. Though in practice some sites might go to the extend to match that visit with [fingerprinting](https://panopticlick.eff.org/about), using Temporary Containers still makes it harder to track you.
 
 ### [Cookie AutoDelete](https://addons.mozilla.org/en-US/firefox/addon/cookie-autodelete/) to automatically remove cookies and localStorage
-The same as with "Private Windows" and “Disabled third-party cookies” applies as long as the cookie storage isn’t cleared — which depends on which settings you have in CAD. Also with localStorage support enabled you make fingerprinting easier, [because CAD needs to set a cookie for the domains you visit](https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/wiki/Documentation#enable-localstorage-support) and CAD can’t clear [indexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) storage or [CacheStorage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage) at all ([because of Firefox API limitations](https://bugzilla.mozilla.org/show_bug.cgi?id=1340511)). If you want to see it yourself try filling your indexedDB and localStorage with 5kb [on this site](https://demo.agektmr.com/storage/). Now close the tab (and click Clean depending on your settings), open the site again and you’ll see that the indexedDB storage is still there.
+The same as with "Private Windows" and “Disabled third-party cookies” applies as long as the cookie storage isn’t cleared —  which depends on which settings you have in CAD and defaults to manually clicking "Clean". Also with localStorage support enabled you make fingerprinting easier, [because CAD needs to set a cookie for the domains you visit](https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/wiki/Documentation#enable-localstorage-support) and CAD can’t clear [indexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) storage or [CacheStorage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage) at all ([because of Firefox API limitations](https://bugzilla.mozilla.org/show_bug.cgi?id=1340511)). If you want to see it yourself try filling your indexedDB and localStorage with 5kb [on this site](https://demo.agektmr.com/storage/). Now close the tab (and click Clean depending on your settings), open the site again and you’ll see that the indexedDB storage is still there.
 
-It’s still really useful to have Cookie AutoDelete: it can keep your permanent container clean from unwantend Cookies. Make sure to activate the Container Support — and instead of activating localStorage support I’d recommend using Temporary Containers.
+It’s still really useful to have Cookie AutoDelete: it can keep your permanent container clean from unwanted Cookies. Make sure to activate the Container Support — and instead of activating localStorage support I’d recommend using Temporary Containers.
 
 ### Containers on the Go
 Has only the basic feature of opening disposable containers with Toolbar Icon, Keyboard Shortcut and Context Menu. None of the other mentioned features that Temporary Containers has. Also it’s Proprietary Software.
@@ -71,17 +89,6 @@ Automatically redirects you to the secure version of websites if available.
 
 ### [uBlock Origin](https://addons.mozilla.org/firefox/addon/ublock-origin/)
 I guess you already know this one. If not, check it out.
-
-
-## Privacy
-
-**Temporary Containers NEVER sends any data to external servers and it DOES NOT track ANYTHING. It only stores some necessary data LOCALLY to provide functionality.**
-
-Temporary Containers asks for some permissions upon installation:
-* "Access your data for all websites" is needed to provide automatic reopening of websites in Temporary Containers
-* "Access browser tabs" is needed to create tabs in Temporary Containers and close tabs that are not in Temporary Containers
-
-There's a discussion about [Moving between containers](https://github.com/mozilla/multi-account-containers/wiki/Moving-between-containers) and I think that this Add-on enhances privacy by providing Temporary/Throw-away/Disposable Containers whenever possible, while not breaking normal navigation or e.g. OAuth redirects on a given Website.
 
 
 ## Libraries
@@ -125,3 +132,6 @@ The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](
 ## License
 
 MIT
+
+
+[▲❤ We practice **Ethical** Design.](https://ind.ie/ethical-design)
