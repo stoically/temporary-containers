@@ -111,7 +111,13 @@ class Request {
       deletesHistoryContainer = true;
     }
 
-    const newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer);
+    let newTab;
+    if (this.mouseclick.linksClicked[request.url] &&
+        this.mouseclick.linksClicked[request.url].clickType === 'left') {
+      newTab = await this.container.createTabInTempContainer({tab, active: true, url: request.url, deletesHistory: deletesHistoryContainer});
+    } else {
+      newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer);
+    }
     debug('[handleClickedLink] created new tab', newTab);
 
     await this.background.emit('handleClickedLinkAfterReload', {request, newTab});
