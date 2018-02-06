@@ -60,28 +60,20 @@ class TemporaryContainers extends Emittery {
       return;
     }
 
-    if (message.savePreferences) {
+    switch (message.method) {
+    case 'savePreferences':
       debug('[browser.runtime.onMessage] saving preferences', message, sender);
-      if (this.storage.local.preferences.iconColor !== message.savePreferences.preferences.iconColor) {
-        this.setIcon(message.savePreferences.preferences.iconColor);
+      if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
+        this.setIcon(message.payload.preferences.iconColor);
       }
-      this.storage.local.preferences = message.savePreferences.preferences;
+      this.storage.local.preferences = message.payload.preferences;
       await this.storage.persist();
-      return;
-    }
+      break;
 
-    if (!message.linkClicked) {
-      return;
-    }
-    debug('[browser.runtime.onMessage] message from userscript received', message, sender);
-
-    if (sender.tab.incognito) {
-      debug('[browser.runtime.onMessage] message came from an incognito tab, we dont handle that', message, sender);
-      return;
-    }
-
-
-    this.mouseclick.linkClicked(message, sender);
+    case 'linkClicked':
+      debug('[browser.runtime.onMessage] message from userscript received', message, sender);
+      this.mouseclick.linkClicked(message.payload, sender);
+      break;
   }
 
 

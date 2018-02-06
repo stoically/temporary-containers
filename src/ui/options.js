@@ -20,7 +20,8 @@ const showError = (error) => {
 const savePreferences = async () => {
   try {
     await browser.runtime.sendMessage({
-      savePreferences: {
+      method: 'savePreferences',
+      payload: {
         preferences
       }
     });

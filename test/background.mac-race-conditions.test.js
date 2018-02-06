@@ -439,7 +439,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -449,7 +450,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
       // request comes in, we cancel it, close the tab and reopen in temp container
       const fakeRequest = {
@@ -551,7 +552,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -561,7 +563,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
       // request comes in, we cancel it, close the tab and reopen in temp container
       const fakeRequest = {
@@ -665,7 +667,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -675,7 +678,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
       // request comes in, we cancel it, close the tab and reopen in temp container
       const fakeRequest = {
@@ -780,7 +783,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -790,7 +794,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
       // request comes in, we cancel it, close the tab and reopen in temp container
       const fakeRequest = {
@@ -852,7 +856,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -862,7 +867,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
 
       // the first request already triggered multi-account-containers
@@ -961,7 +966,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -971,7 +977,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
 
       // the first request already triggered multi-account-containers
@@ -1097,7 +1103,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -1107,7 +1114,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
       // click created tab 2 which results in this request
       // this should close tab 2 and create a new tab 4
@@ -1196,7 +1203,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -1206,7 +1214,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
       // click created tab 41 which results in this request
       // MAC was really fast and removed the tab already
@@ -1302,7 +1310,8 @@ describe('raceconditions with multi-account-containers', () => {
         }
       };
       const fakeMessage = {
-        linkClicked: {
+        method: 'linkClicked',
+        payload: {
           href: 'https://example.com',
           event: {
             button: 1,
@@ -1312,7 +1321,7 @@ describe('raceconditions with multi-account-containers', () => {
       };
       const background = await loadBackground();
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
       // click created tab 41 which results in this request
       // mac didnt remove the tab already, so we have to proceed as if nothing happened

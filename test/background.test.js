@@ -199,7 +199,8 @@ describe('tabs requesting a previously clicked url in a temporary container', ()
       }
     };
     fakeMessage = {
-      linkClicked: {
+      method: 'linkClicked',
+      payload: {
         href: 'https://example.com',
         event: {
           button: 1,
@@ -235,7 +236,7 @@ describe('tabs requesting a previously clicked url in a temporary container', ()
   });
 
   it('should reopen in a new temporary container', async () => {
-    background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+    background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
     browser.contextualIdentities.create.should.have.been.calledOnce;
     browser.tabs.create.should.have.been.calledOnce;
     browser.tabs.remove.should.have.been.calledOnce;
@@ -275,7 +276,8 @@ describe('state for clicked links', async () => {
       }
     };
     const fakeMessage = {
-      linkClicked: {
+      method: 'linkClicked',
+      payload: {
         href: 'https://example.com',
         event: {
           button: 1,
@@ -285,7 +287,7 @@ describe('state for clicked links', async () => {
     };
     const background = await loadBackground();
     await background.runtimeOnMessage(fakeMessage, fakeSender);
-    background.mouseclick.linksClicked[fakeMessage.linkClicked.href].should.exist;
+    background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
 
     clock.tick(1000);
     await new Promise(r => process.nextTick(r));

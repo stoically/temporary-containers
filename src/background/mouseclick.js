@@ -15,20 +15,25 @@ class MouseClick {
 
 
   linkClicked(message, sender) {
+    if (sender.tab.incognito) {
+      debug('[linkClicked] message came from an incognito tab, we dont handle that', message, sender);
+      return;
+    }
+
     let url;
     let clickType;
     if (typeof message !== 'object') {
       url = message;
     } else {
-      url = message.linkClicked.href;
-      if (message.linkClicked.event.button === 1) {
+      url = message.href;
+      if (message.event.button === 1) {
         clickType = 'middle';
-      } else if (message.linkClicked.event.button === 0 &&
-                 !message.linkClicked.event.ctrlKey &&
-                 !message.linkClicked.event.metaKey) {
+      } else if (message.event.button === 0 &&
+                 !message.event.ctrlKey &&
+                 !message.event.metaKey) {
         clickType = 'left';
-      } else if (message.linkClicked.event.button === 0 &&
-                (message.linkClicked.event.ctrlKey || message.linkClicked.event.metaKey)) {
+      } else if (message.event.button === 0 &&
+                (message.event.ctrlKey || message.event.metaKey)) {
         clickType = 'ctrlleft';
       }
       if (!this.checkClick(clickType, message, sender)) {
@@ -96,7 +101,7 @@ class MouseClick {
 
   checkClick(type, message, sender) {
     const parsedSenderTabURL = new URL(sender.tab.url);
-    const parsedClickedURL = new URL(message.linkClicked.href);
+    const parsedClickedURL = new URL(message.href);
 
     for (let domainPattern in this.storage.local.preferences.linkClickDomain) {
       if (parsedSenderTabURL.hostname !== domainPattern &&

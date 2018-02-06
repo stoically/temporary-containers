@@ -17,7 +17,8 @@ document.body.addEventListener('mouseup', async (event) => {
 
   // tell background process to handle the clicked url
   await browser.runtime.sendMessage({
-    linkClicked: {
+    method: 'linkClicked',
+    payload: {
       href: aElement.href,
       event: {
         button: event.button,
