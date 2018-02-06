@@ -74,6 +74,7 @@ class TemporaryContainers extends Emittery {
       debug('[browser.runtime.onMessage] message from userscript received', message, sender);
       this.mouseclick.linkClicked(message.payload, sender);
       break;
+    }
   }
 
 
@@ -108,6 +109,7 @@ class TemporaryContainers extends Emittery {
       return;
     }
     debug('[tabsOnUpdated] url changed', changeInfo, tab);
+    await this.container.maybeAddHistory(tab, changeInfo.url);
     await this.container.maybeReloadTabInTempContainer(tab);
   }
 

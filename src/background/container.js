@@ -316,6 +316,21 @@ class Container {
   }
 
 
+  async maybeAddHistory(tab, url) {
+    if (tab.cookieStoreId !== 'firefox-default' &&
+        this.storage.local.tempContainers[tab.cookieStoreId] &&
+        this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory) {
+      if (!this.storage.local.tempContainers[tab.cookieStoreId].history) {
+        this.storage.local.tempContainers[tab.cookieStoreId].history = {};
+      }
+      this.storage.local.tempContainers[tab.cookieStoreId].history[url] = {
+        tabId: tab.id
+      };
+      await this.storage.persist();
+    }
+  }
+
+
   getReusedContainerNumber() {
     const tempContainersNumbers = Object.values(this.storage.local.tempContainers)
       .reduce((accumulator, containerOptions) => {

@@ -30,18 +30,7 @@ class Request {
       }
     }
 
-    if (tab.cookieStoreId !== 'firefox-default' &&
-        this.storage.local.tempContainers[tab.cookieStoreId] &&
-        this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory) {
-      if (!this.storage.local.tempContainers[tab.cookieStoreId].history) {
-        this.storage.local.tempContainers[tab.cookieStoreId].history = {};
-      }
-      this.storage.local.tempContainers[tab.cookieStoreId].history[request.url] = {
-        tabId: request.tabId,
-        timeStamp: request.timeStamp
-      };
-      await this.storage.persist();
-    }
+    this.container.maybeAddHistory(tab, request.url);
 
     let alwaysOpenIn = false;
     if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
