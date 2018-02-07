@@ -56,22 +56,12 @@ class Container {
       tempContainerNumber = this.getReusedContainerNumber();
     }
     let containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
-    if (!deletesHistory &&
-        this.mouseclick.linksClicked[url] &&
-        this.mouseclick.linksClicked[url].clickType) {
-      const clickType = this.mouseclick.linksClicked[url].clickType;
-      if (this.storage.local.preferences.linkClickGlobal[clickType].container === 'deleteshistory') {
-        deletesHistory = true;
-      }
+
+    if (!deletesHistory) {
+      deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
     }
     if (deletesHistory) {
-      if (!this.storage.local.historyPermission) {
-        this.storage.local.historyPermission = await browser.permissions.contains({permissions: ['history']});
-        if (this.storage.local.historyPermission) {
-          await this.storage.persist();
-        }
-      }
-      if (this.storage.local.historyPermission) {
+      if (this.background.permissions.history) {
         containerName += '-deletes-history';
       } else {
         deletesHistory = false;
@@ -225,6 +215,14 @@ class Container {
       debug('[tryToRemoveContainer] failed to query tabs', cookieStoreId, error);
       return;
     }
+    this.removeContainer(cookieStoreId);
+    this.maybeClearHistory(cookieStoreId);
+    delete this.storage.local.tempContainers[cookieStoreId];
+    await this.storage.persist();
+  }
+
+
+  async removeContainer(cookieStoreId) {
     try {
       const contextualIdentity = await browser.contextualIdentities.remove(cookieStoreId);
       if (!contextualIdentity) {
@@ -240,18 +238,6 @@ class Container {
     } catch (error) {
       debug('[tryToRemoveContainer] error while removing container', cookieStoreId, error);
     }
-    if (this.storage.local.tempContainers[cookieStoreId].deletesHistory &&
-        this.storage.local.tempContainers[cookieStoreId].history) {
-      Object.keys(this.storage.local.tempContainers[cookieStoreId].history).map(url => {
-        if (!url) {
-          return;
-        }
-        debug('[tryToRemoveContainer] removing url from history', url);
-        browser.history.deleteUrl({url});
-      });
-    }
-    delete this.storage.local.tempContainers[cookieStoreId];
-    await this.storage.persist();
   }
 
 
@@ -327,6 +313,20 @@ class Container {
         tabId: tab.id
       };
       await this.storage.persist();
+    }
+  }
+
+
+  maybeClearHistory(cookieStoreId) {
+    if (this.storage.local.tempContainers[cookieStoreId].deletesHistory &&
+        this.storage.local.tempContainers[cookieStoreId].history) {
+      Object.keys(this.storage.local.tempContainers[cookieStoreId].history).map(url => {
+        if (!url) {
+          return;
+        }
+        debug('[tryToRemoveContainer] removing url from history', url);
+        browser.history.deleteUrl({url});
+      });
     }
   }
 

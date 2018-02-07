@@ -119,6 +119,18 @@ class MouseClick {
     return this.checkClickPreferences(this.storage.local.preferences.linkClickGlobal[type],
       parsedClickedURL, parsedSenderTabURL);
   }
+
+
+  shouldOpenDeletesHistoryContainer(url) {
+    if (this.linksClicked[url] &&
+        this.linksClicked[url].clickType) {
+      const clickType = this.linksClicked[url].clickType;
+      if (this.storage.local.preferences.linkClickGlobal[clickType].container === 'deleteshistory') {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 module.exports = MouseClick;

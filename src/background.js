@@ -24,6 +24,12 @@ class TemporaryContainers extends Emittery {
 
 
   async initialize() {
+    // TODO cache history permission in storage when firefox bug is fixed
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1283320
+    this.permissions = {
+      history: await browser.permissions.contains({permissions: ['history']})
+    };
+
     this.mac = new MultiAccountContainers(this);
 
     this.request.initialize(this);
@@ -199,7 +205,9 @@ class TemporaryContainers extends Emittery {
       break;
 
     case 'new_no_history_tab':
-      this.container.createTabInTempContainer({deletesHistory: true});
+      if (this.permissions.history) {
+        this.container.createTabInTempContainer({deletesHistory: true});
+      }
       break;
 
     case 'new_same_container_tab':
