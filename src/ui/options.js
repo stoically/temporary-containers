@@ -63,7 +63,8 @@ const saveLinkClickGlobalPreferences = async (event) => {
       container: document.querySelector('#linkClickGlobalCtrlLeftCreatesContainer').value
     },
     left: {
-      action: document.querySelector('#linkClickGlobalLeft').value
+      action: document.querySelector('#linkClickGlobalLeft').value,
+      container: document.querySelector('#linkClickGlobalLeftCreatesContainer').value
     }
   };
 
@@ -161,6 +162,13 @@ const saveAdvancedPreferences = async (event) => {
   preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
   preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
 
+  preferences.keyboardShortcuts.AltC = document.querySelector('#keyboardShortcutsAltC').checked;
+  preferences.keyboardShortcuts.AltP = document.querySelector('#keyboardShortcutsAltP').checked;
+  preferences.keyboardShortcuts.AltN = document.querySelector('#keyboardShortcutsAltN').checked;
+  preferences.keyboardShortcuts.AltShiftC = document.querySelector('#keyboardShortcutsAltShiftC').checked;
+  preferences.keyboardShortcuts.AltX = document.querySelector('#keyboardShortcutsAltX').checked;
+
+  // TODO this might cause saving preferences that got selected on global mouseclicks but not saved
   saveLinkClickGlobalPreferences(event);
 };
 
@@ -184,10 +192,17 @@ const initialize = async () => {
 
     $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.middle.container);
     $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.ctrlleft.container);
+    $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.left.container);
 
     $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
     $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
     $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
+
+    document.querySelector('#keyboardShortcutsAltC').checked = preferences.keyboardShortcuts.AltC;
+    document.querySelector('#keyboardShortcutsAltP').checked = preferences.keyboardShortcuts.AltP;
+    document.querySelector('#keyboardShortcutsAltN').checked = preferences.keyboardShortcuts.AltN;
+    document.querySelector('#keyboardShortcutsAltShiftC').checked = preferences.keyboardShortcuts.AltShiftC;
+    document.querySelector('#keyboardShortcutsAltX').checked = preferences.keyboardShortcuts.AltX;
 
     updateLinkClickDomainRules();
     updateAlwaysOpenInDomainRules();

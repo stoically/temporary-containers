@@ -31,7 +31,14 @@ class Storage {
       iconColor: 'default',
       historyPermission: false,
       deletesHistoryContainer: 'never',
-      deletesHistoryContainerMouseClicks: 'never'
+      deletesHistoryContainerMouseClicks: 'never',
+      keyboardShortcuts: {
+        AltC: true,
+        AltP: true,
+        AltN: true,
+        AltShiftC: true,
+        AltX: true
+      }
     };
   }
 
@@ -57,13 +64,20 @@ class Storage {
         this.local.preferences = this.preferencesDefault;
         storagePersistNeeded = true;
       } else {
-        Object.keys(this.preferencesDefault).map(key => {
-          if (this.local.preferences[key] === undefined) {
-            debug('preference not found, setting default', key, this.preferencesDefault[key]);
-            this.local.preferences[key] = this.preferencesDefault[key];
-            storagePersistNeeded = true;
-          }
-        });
+        // TODO maybe replace with Object.assign
+        // but then we dont know whether something changed and need to persist every time
+        const checkPreferences = (preferencesDefault, preferences) => {
+          Object.keys(preferencesDefault).map(key => {
+            if (preferences[key] === undefined) {
+              debug('preference not found, setting default', key, preferencesDefault[key]);
+              preferences[key] = preferencesDefault[key];
+              storagePersistNeeded = true;
+            } else if (typeof preferences[key] === 'object') {
+              checkPreferences(preferencesDefault[key], preferences[key]);
+            }
+          });
+        };
+        checkPreferences(this.preferencesDefault, this.local.preferences);
       }
 
       if (storagePersistNeeded) {

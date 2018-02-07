@@ -85,6 +85,9 @@ class TemporaryContainers extends Emittery {
 
 
   browserActionOnClicked(tab, url) {
+    if (!this.storage.local.preferences.keyboardShortcuts.AltC) {
+      return;
+    }
     let deletesHistory = false;
     if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
       deletesHistory = true;
@@ -180,6 +183,9 @@ class TemporaryContainers extends Emittery {
   async commandsOnCommand(name) {
     switch(name) {
     case 'new_no_container_tab':
+      if (!this.storage.local.preferences.keyboardShortcuts.AltN) {
+        return;
+      }
       try {
         const tab = await browser.tabs.create({
           active: true,
@@ -193,6 +199,9 @@ class TemporaryContainers extends Emittery {
       break;
 
     case 'new_no_container_window_tab':
+      if (!this.storage.local.preferences.keyboardShortcuts.AltShiftC) {
+        return;
+      }
       try {
         const window = await browser.windows.create({
           url: 'about:blank'
@@ -205,12 +214,18 @@ class TemporaryContainers extends Emittery {
       break;
 
     case 'new_no_history_tab':
+      if (!this.storage.local.preferences.keyboardShortcuts.AltP) {
+        return;
+      }
       if (this.permissions.history) {
         this.container.createTabInTempContainer({deletesHistory: true});
       }
       break;
 
     case 'new_same_container_tab':
+      if (!this.storage.local.preferences.keyboardShortcuts.AltX) {
+        return;
+      }
       this.container.createTabInSameContainer();
     }
   }

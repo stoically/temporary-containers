@@ -271,21 +271,28 @@
               <select id="deletesHistoryContainerMouseClicks" class="ui fluid dropdown">
                 <option value="never">Default</option>
                 <option value="automatic">Open New "Deletes History Temporary Containers" with Mouse Clicks on Links in "No History Temporary Containers" instead of normal
-                  Temporary Containers. Same behavior regarding Mouse Clicks and the Mouse Clicks configuration still applies.</option>
+                  Temporary Containers</option>
               </select>
             </div>
             <div class="field">
               <label>Middle Mouse Click in Temporary Containers</label>
               <select id="linkClickGlobalMiddleCreatesContainer" class="ui fluid dropdown">
                 <option value="default">Default</option>
-                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Middle Mouse Clicks instead of Temporary Containers.</option>
+                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Middle Mouse Clicks instead of Temporary Containers</option>
               </select>
             </div>
             <div class="field">
               <label>Ctrl/Cmd+Left Mouse Click in Temporary Containers</label>
               <select id="linkClickGlobalCtrlLeftCreatesContainer" class="ui fluid dropdown">
                 <option value="default">Default</option>
-                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Ctrl/Cmd+Left Mouse Clicks instead of Temporary Containers.</option>
+                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Ctrl/Cmd+Left Mouse Clicks instead of Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Left Mouse Click in Temporary Containers</label>
+              <select id="linkClickGlobalLeftCreatesContainer" class="ui fluid dropdown">
+                <option value="default">Default</option>
+                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Left Mouse Clicks instead of Temporary Containers</option>
               </select>
             </div>
             <div class="field">
@@ -294,6 +301,39 @@
                 <option value="created">Reopen New Tabs in Temporary Containers (Default)</option>
                 <option value="navigation">Don't reopen New Tabs in Temporary Container but instead on navigation (Prevents initial flickering)</option>
               </select>
+            </div>
+            <div class="field">
+              <label>Enabled Keyboard shortcuts</label>
+            </div>
+            <div class="field" id="keyboardShortcutsAltCField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltC">
+                <label>Alt+C - Open a new Tab in a new Temporary Container</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltPField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltP">
+                <label>Alt+P - Open a new Tab in a new 'Deletes History Temporary Container'</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltNField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltN">
+                <label>Alt+N - Open a new 'No Container' Tab</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltShiftCField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltShiftC">
+                <label>Alt+Shift+C - Open a new 'No Container' Tab in a new Window</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltXField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltX">
+                <label>Alt+X - Open a new Tab in the same Container as the currently active Tab</label>
+              </div>
             </div>
             <div class="field">
               <button id="saveAdvancedPreferences" class="ui button primary">Save</button>
