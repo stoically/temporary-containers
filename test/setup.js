@@ -82,6 +82,9 @@ global.injectBrowser = () => {
     },
     history: {
       deleteUrl: sinon.stub()
+    },
+    permissions: {
+      contains: sinon.stub()
     }
   };
 };
