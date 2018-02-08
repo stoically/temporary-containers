@@ -42,6 +42,10 @@ class Container {
 
     setInterval(() => {
       debug('[interval] container removal interval', this.storage.local.tempContainers);
+      if (this.removeContainerQueue.length) {
+        debug('[interval] skipping because theres something in the queue');
+        return;
+      }
       this.cleanup();
     }, 60000);
   }
@@ -222,7 +226,7 @@ class Container {
       debug('[tryToRemoveQueue] more then 10 containers removed, requeuing', this.removeContainerQueue);
       setTimeout(() => {
         this.tryToRemoveQueue();
-      }, 1000);
+      }, 5000);
     }
   }
 
