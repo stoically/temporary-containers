@@ -127,15 +127,7 @@ class TemporaryContainers extends Emittery {
     if (this.noContainerTabs[tabId]) {
       delete this.noContainerTabs[tabId];
     }
-    if (!this.storage.local.tabContainerMap[tabId]) {
-      debug('[browser.tabs.onRemoved] removed tab that isnt in the tabContainerMap', tabId, this.storage.local.tabContainerMap);
-      return;
-    }
-    const cookieStoreId = this.storage.local.tabContainerMap[tabId];
-    debug('[browser.tabs.onRemoved] queuing container removal because of tab removal', cookieStoreId, tabId);
-    setTimeout(() => {
-      this.container.tryToRemove(cookieStoreId);
-    }, 1000);
+    this.container.addToRemoveQueue(tabId);
   }
 
 

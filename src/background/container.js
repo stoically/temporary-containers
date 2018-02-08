@@ -30,6 +30,7 @@ class Container {
 
     this.urlCreatedContainer = {};
     this.creatingTabInSameContainer = false;
+    this.removeContainerQueue = [];
   }
 
 
@@ -194,6 +195,35 @@ class Container {
     }
 
     debug('[maybeReloadTabInTempContainer] not a home/new/moz tab or disabled, we dont handle that', tab);
+  }
+
+  addToRemoveQueue(tabId) {
+    if (!this.storage.local.tabContainerMap[tabId]) {
+      debug('[addToRemoveQueue] removed tab that isnt in the tabContainerMap', tabId, this.storage.local.tabContainerMap);
+      return;
+    }
+    const cookieStoreId = this.storage.local.tabContainerMap[tabId];
+    debug('[addToRemoveQueue] queuing container removal because of tab removal', cookieStoreId, tabId);
+    this.removeContainerQueue.push(cookieStoreId);
+    if (this.removeContainerQueue.length === 1) {
+      debug('[addToRemoveQueue] registering tryToRemoveQueue timeout', this.removeContainerQueue);
+      setTimeout(() => {
+        this.tryToRemoveQueue();
+      }, 1000);
+    }
+  }
+
+  tryToRemoveQueue() {
+    this.removeContainerQueue
+      .splice(0, 10)
+      .map(this.tryToRemove.bind(this));
+
+    if (this.removeContainerQueue.length) {
+      debug('[tryToRemoveQueue] more then 10 containers removed, requeuing', this.removeContainerQueue);
+      setTimeout(() => {
+        this.tryToRemoveQueue();
+      }, 1000);
+    }
   }
 
   async tryToRemove(cookieStoreId) {
