@@ -10,6 +10,7 @@
         "clock": false,
         "expect": false,
         "loadBackground": false,
-        "injectBrowser": false
+        "injectBrowser": false,
+        "background": true
     }
 }

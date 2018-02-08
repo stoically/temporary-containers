@@ -29,6 +29,7 @@ class Container {
     ];
 
     this.urlCreatedContainer = {};
+    this.requestCreatedTab = {};
     this.creatingTabInSameContainer = false;
     this.removeContainerQueue = [];
   }
@@ -51,7 +52,29 @@ class Container {
   }
 
 
-  async createTabInTempContainer({tab, url, alwaysOpenIn = false, active = false, dontPin = true, deletesHistory = false}) {
+  async createTabInTempContainer({
+    tab,
+    url,
+    request = false,
+    alwaysOpenIn = false,
+    active = false,
+    dontPin = true,
+    deletesHistory = false
+  }) {
+    if (request && request.requestId) {
+      // we saw that request already
+      if (this.requestCreatedTab[request.requestId]) {
+        debug('[createTabInTempContainer] we already created a tab for this request, so we stop here, probably redirect', tab, request);
+        return;
+      }
+      this.requestCreatedTab[request.requestId] = true;
+      // cleanup tracked requests later
+      setTimeout(() => {
+        debug('[createTabInTempContainer] cleanup timeout', request);
+        delete this.requestCreatedTab[request.requestId];
+      }, 2000);
+    }
+
     let tempContainerNumber;
     if (this.storage.local.preferences.containerNumberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
@@ -129,8 +152,8 @@ class Container {
   }
 
 
-  async reloadTabInTempContainer(tab, url, active, deletesHistory) {
-    const newTab = await this.createTabInTempContainer({tab, url, active, deletesHistory});
+  async reloadTabInTempContainer(tab, url, active, deletesHistory, request) {
+    const newTab = await this.createTabInTempContainer({tab, url, active, deletesHistory, request});
     if (!tab) {
       return newTab;
     }

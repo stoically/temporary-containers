@@ -104,13 +104,13 @@ class Request {
     if (this.mouseclick.linksClicked[request.url] &&
         this.mouseclick.linksClicked[request.url].clickType === 'left') {
       debug('[handleClickedLink] creating new container because request got left clicked', this.mouseclick.linksClicked[request.url], tab);
-      newTab = await this.container.createTabInTempContainer({tab, active: true, url: request.url, deletesHistory: deletesHistoryContainer});
+      newTab = await this.container.createTabInTempContainer({tab, active: true, url: request.url, deletesHistory: deletesHistoryContainer, request});
       if (this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
         debug('[handleClickedLink] looks like the left clicked opened a new tab, remove it', tab);
         await this.container.removeTab(tab);
       }
     } else {
-      newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer);
+      newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer, request);
     }
     debug('[handleClickedLink] created new tab', newTab);
     await this.background.emit('handleClickedLinkAfterReload', {request, newTab});
@@ -163,7 +163,7 @@ class Request {
       deletesHistoryContainer = true;
     }
     debug('[handleNotClickedLink] onBeforeRequest reload in temp tab', tab, request);
-    await this.container.reloadTabInTempContainer(tab, request.url, true, deletesHistoryContainer);
+    await this.container.reloadTabInTempContainer(tab, request.url, true, deletesHistoryContainer, request);
 
     return { cancel: true };
   }
