@@ -9,8 +9,14 @@ global.sinon = require('sinon');
 global.expect = chai.expect;
 chai.should();
 chai.use(sinonChai);
+global.nextTick = () => {
+  return new Promise(resolve => {
+    process.nextTick(resolve);
+  });
+};
 
 global.URL = require('url').URL;
+global.helper = require('./helper');
 global.injectBrowser = () => {
   global.browser = {
     mochaTest: true,

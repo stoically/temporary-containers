@@ -11,6 +11,8 @@
         "expect": false,
         "loadBackground": false,
         "injectBrowser": false,
-        "background": true
+        "background": true,
+        "helper": false,
+        "nextTick": false
     }
 }

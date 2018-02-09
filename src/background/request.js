@@ -2,6 +2,10 @@ const { globToRegexp } = require('./utils');
 const { debug } = require('./log');
 
 class Request {
+  constructor() {
+    this.canceledRequests = {};
+  }
+
   async initialize(background) {
     this.background = background;
     this.storage = background.storage;
@@ -15,6 +19,11 @@ class Request {
     if (request.tabId === -1) {
       debug('[browser.webRequest.onBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
       return;
+    }
+
+    if (this.canceledRequests[request.requestId]) {
+      debug('[webRequestOnBeforeRequest] we canceled a request with that requestId before, probably redirect, cancel again', request);
+      return { cancel: true };
     }
 
     let tab;
@@ -65,11 +74,22 @@ class Request {
       return;
     }
 
+    let returnVal;
     if (this.mouseclick.linksClicked[request.url]) {
-      return await this.handleClickedLink(request, tab);
+      returnVal = await this.handleClickedLink(request, tab);
     } else {
-      return await this.handleNotClickedLink(request, tab, alwaysOpenIn);
+      returnVal = await this.handleNotClickedLink(request, tab, alwaysOpenIn);
     }
+
+    if (returnVal && returnVal.cancel && request && request.requestId) {
+      this.canceledRequests[request.requestId] = true;
+      // cleanup canceledRequests later
+      setTimeout(() => {
+        debug('[webRequestOnBeforeRequest] cleaning up canceledRequests', request);
+        delete this.canceledRequests[request.requestId];
+      }, 2000);
+    }
+    return returnVal;
   }
 
 

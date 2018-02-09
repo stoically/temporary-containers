@@ -65,16 +65,25 @@ class MouseClick {
 
 
   checkClickPreferences(preferences, parsedClickedURL, parsedSenderTabURL) {
+    if (preferences.action === 'always') {
+      debug('[checkClick] click handled based on preference "always"', preferences);
+      return true;
+    }
+
     if (preferences.action === 'never') {
+      debug('[checkClickPreferences] click not handled based on preference "never"',
+        preferences, parsedClickedURL, parsedSenderTabURL);
       return false;
     }
 
     if (preferences.action === 'notsamedomainexact') {
       if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
-        debug('[browser.runtime.onMessage] click not handled based on global preference "notsamedomainexact"');
+        debug('[checkClickPreferences] click handled based on preference "notsamedomainexact"',
+          preferences, parsedClickedURL, parsedSenderTabURL);
         return true;
       } else {
-        debug('[browser.runtime.onMessage] click handled based on global preference "notsamedomainexact"');
+        debug('[checkClickPreferences] click not handled based on preference "notsamedomainexact"',
+          preferences, parsedClickedURL, parsedSenderTabURL);
         return false;
       }
     }
@@ -87,21 +96,25 @@ class MouseClick {
       if (parsedClickedURL.hostname.length > 1 &&
           (dottedParsedSenderTabURL.endsWith(checkHostname) ||
            checkHostname.endsWith(dottedParsedSenderTabURL))) {
-        debug('[browser.runtime.onMessage] click handled from global preference "notsamedomain"');
+        debug('[checkClickPreferences] click not handled from preference "notsamedomain"',
+          parsedClickedURL, parsedSenderTabURL);
         return false;
       } else {
-        debug('[browser.runtime.onMesbrowser.commands.onCommand.addListenersage] click not handled from global preference "notsamedomain"');
+        debug('[checkClickPreferences] click handled from preference "notsamedomain"',
+          parsedClickedURL, parsedSenderTabURL);
         return true;
       }
     }
 
-    return true;
+    debug('[checkClickPreferences] this should never happen');
+    return false;
   }
 
 
   checkClick(type, message, sender) {
     const parsedSenderTabURL = new URL(sender.tab.url);
     const parsedClickedURL = new URL(message.href);
+    debug('[checkClick] checking click', type, message, sender);
 
     for (let domainPattern in this.storage.local.preferences.linkClickDomain) {
       if (parsedSenderTabURL.hostname !== domainPattern &&
@@ -112,10 +125,11 @@ class MouseClick {
       if (!domainPatternPreferences[type]) {
         continue;
       }
+      debug('[checkClick] per website pattern found', domainPatternPreferences[type]);
       return this.checkClickPreferences(domainPatternPreferences[type],
         parsedClickedURL, parsedSenderTabURL);
     }
-
+    debug('[checkClick] no website pattern found, checking global preferences');
     return this.checkClickPreferences(this.storage.local.preferences.linkClickGlobal[type],
       parsedClickedURL, parsedSenderTabURL);
   }
