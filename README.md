@@ -1,8 +1,22 @@
 # Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.org/stoically/firefox-add-on-temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/firefox-add-on-temporary-containers)
 
-By default the Temporary Containers Add-on will overwrite your standard ways of opening Tabs  and instead of opening the Tab in No Container, it will open the Tab in a freshly created Temporary Container. If you don't want that, you have to disable "Automatic Mode" in the Add-ons options.
+**Open Tabs in new Temporary Containers by**
+* Clicking the "Temporary Containers"-Icon
+* Pressing the Alt+C Shortcut
+* Clicking on "Open Link in New Temporary Container Tab" in the RightClick ContextMenu on a Link
+* MiddleMouse Click on a Link*
+* Ctrl/Cmd+LeftMouse Click on a Link*
+* LeftMouse Click on a Link* (disabled by default)  
+  \* Configurable in the Preferences Globally and per Website
 
-**But how do I stay logged in on some websites if I only have Temporary Containers?**  
+
+**Want to make the most out of Temporary Containers? Enable Automatic Mode!**
+The Automatic Mode will overwrite your standard ways of opening Tabs : instead of opening the Tab in No Container, it will open the Tab in a freshly created Temporary Container. If you do so, you should also configure the Global Mouse Clicks to open new Temporary Containers. Recommended settings:
+* Middle Mouse: Always
+* Ctrl/Cmd+Left Mouse: Always
+* Left Mouse: Only if the clicked Link is not the exact same Domain as the Website
+
+**How to stay logged in on some websites in Automatic Mode?**  
 You can use the official [Multi-Account Containers Add-on from Mozilla](https://addons.mozilla.org/firefox/addon/multi-account-containers/) to keep data (like cookies) from some websites in permanent containers and with that stay logged in. Then you can easily leave "Automatic Mode" enabled, which is preferable from a privacy-perspective. For a step-by-step guide and some more in-depth informations [you might want to check out out this article](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21).
 
 Quick Guide:
@@ -17,30 +31,13 @@ Quick Guide:
 **Ok, so how does it enhance my privacy?**  
 Every new Container isolates all local data that websites create (First- and Third-Party Cookies, localStorage, indexedDB, HTTP data cache, Image Cache and any other areas supported by originAttributes) from each other - that makes it harder to track you and thus enhances your privacy. Also - when the last tab in an automatically created Temporary Container closes it gets deleted - and with it all data that websites created inside that Container. As a bonus it'll strip referer information if you use configured Mouse Clicks to open new Temporary Containers.
 
-**Open Tabs in new Temporary Containers by**
-* Clicking the "Temporary Containers"-Icon
-* Pressing the Alt+C Shortcut
-* Clicking on "Open Link in New Temporary Container Tab" in the RightClick ContextMenu on a Link
-* MiddleMouse Click on a Link*
-* Ctrl/Cmd+LeftMouse Click on a Link*
-* LeftMouse Click on a Link* (disabled by default)  
-  \* Configurable in the Preferences Globally and per Website
 
-**With "Automatic Mode" active (default)**
-* Clicking the "New Tab"-Icon
-* Clicking "New Tab" or "New Window" in the Browser Menu
-* Pressing the Ctrl+T or Ctrl+N Shortcut
-* An external Program opens a Link in the Browser
-
-**Never open Tabs in new Temporary Containers by**
-* Website redirects or opens new Tab itself
-* Clicking "Open Link in New $Container Tab" in the RightClick ContextMenu on a Link
-
-**Open Tabs in new "No Container" tabs by**
+**Other Keyboard Shortcuts**
+Open Tabs in new "No Container" tabs by
 * Pressing Alt+N (Tab) or Shift+Alt+C (Window)
 * RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
 
-**Open Tabs in the currently active Container**
+Open Tabs in the currently active Container
 * Pressing Alt+X
 
 **Automatically Delete History**  
