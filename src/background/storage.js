@@ -4,15 +4,15 @@ class Storage {
   constructor() {
     this.local = null;
     this.preferencesDefault = {
-      automaticMode: true,
+      automaticMode: false,
       automaticModeNewTab: 'created',
       linkClickGlobal: {
         middle: {
-          action: 'always',
+          action: 'never',
           container: 'default'
         },
         ctrlleft: {
-          action: 'always',
+          action: 'never',
           container: 'default'
         },
         left: {
