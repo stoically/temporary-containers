@@ -297,7 +297,7 @@ class TemporaryContainers extends Emittery {
     // queue a container cleanup
     setTimeout(() => {
       this.container.cleanup();
-    }, 5000);
+    }, 15000);
 
     // extension loads after the first tab opens most of the time
     // lets see if we can reopen the first tab

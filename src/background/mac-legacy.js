@@ -210,11 +210,14 @@ class MultiAccountContainers {
 
     if (!tab.openerTabId && !this.storage.local.tabContainerMap[tab.id] &&
         !this.automaticModeState.multiAccountConfirmPage[request.url] &&
-        !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url]) {
+        !this.automaticModeState.alreadySawThatLinkInNonDefault[request.url] &&
+        (!this.mouseclick.linksClicked[request.url] ||
+          (this.mouseclick.linksClicked[request.url] &&
+           this.mouseclick.linksClicked[request.url].clickType !== 'left'))) {
       debug('[handleClickedLink] no openerTabId and not in the tabContainerMap means probably ' +
         'multi-account reloaded the url ' +
         'in another tab, so were going either to close the tabs weve opened for that ' +
-        'link so far or inform our future self');
+        'link so far or inform our future self', this.automaticModeState);
 
       if (!this.automaticModeState.linkClickCreatedTabs[request.url] &&
           !this.automaticModeState.multiAccountWasFaster[request.url]) {
