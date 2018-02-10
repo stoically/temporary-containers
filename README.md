@@ -132,6 +132,3 @@ The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](
 ## License
 
 MIT
-
-
-[▲❤ We practice **Ethical** Design.](https://ind.ie/ethical-design)
