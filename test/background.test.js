@@ -80,6 +80,7 @@ describe('runtime.onStartup should sometimes reload already open Tab in Temporar
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves({id: 1});
     loadBackground().then(background => {
+      background.storage.local.preferences.automaticModeNewTab = 'created';
       background.runtimeOnStartup().then(() => {
         browser.contextualIdentities.create.should.have.been.calledOnce;
         browser.tabs.create.should.have.been.calledOnce;
@@ -129,6 +130,7 @@ describe('tabs loading about:home or about:newtab in the default container', () 
     browser.contextualIdentities.create.resolves(fakeContainer);
     browser.tabs.create.resolves({id: 1});
     const background = await loadBackground();
+    background.storage.local.preferences.automaticModeNewTab = 'created';
     await background.container.maybeReloadTabInTempContainer(fakeTab);
 
     browser.contextualIdentities.create.should.have.been.calledOnce;

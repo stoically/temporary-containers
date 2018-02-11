@@ -255,10 +255,8 @@ const initialize = async () => {
 
   const automaticModeToolTip =
     '<div style="width:500px;">' +
-    'Automatically open Tabs in new Temporary Containers when<ul>' +
-    '<li> Clicking the "New Tab"-Icon' +
-    '<li> Clicking "New Tab" or "New Window" in the Browser Menu' +
-    '<li> Pressing the Ctrl+T or Ctrl+N Shortcut' +
+    'Automatically reopen Tabs in new Temporary Containers when<ul>' +
+    '<li> Navigating to a website' +
     '<li> An external Program opens a Link in the Browser</ul>';
 
   $('#automaticModeField').popup({

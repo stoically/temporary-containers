@@ -5,7 +5,7 @@ class Storage {
     this.local = null;
     this.preferencesDefault = {
       automaticMode: false,
-      automaticModeNewTab: 'created',
+      automaticModeNewTab: 'navigation',
       linkClickGlobal: {
         middle: {
           action: 'never',
