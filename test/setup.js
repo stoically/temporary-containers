@@ -29,6 +29,9 @@ global.injectBrowser = () => {
       },
       onMessage: {
         addListener: sinon.stub()
+      },
+      onMessageExternal: {
+        addListener: sinon.stub()
       }
     },
     webRequest: {
