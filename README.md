@@ -10,8 +10,8 @@
   \* Configurable in the Preferences Globally and per Website
 
 
-**Want to make the most out of Temporary Containers? Enable Automatic Mode!**
-The Automatic Mode will overwrite your standard ways of opening Tabs : instead of opening the Tab in No Container, it will open the Tab in a freshly created Temporary Container. If you do so, you should also configure the Global Mouse Clicks to open new Temporary Containers. Recommended settings:
+**Want to make the most out of Temporary Containers? Enable Automatic Mode!**  
+The Automatic Mode will overwrite your standard ways of opening websites - even when opened from an external program. Instead of opening the website in No Container, it will open the website in a freshly created Temporary Container. No more cookie, cache and storage collecting in one place, everything happens in its own isolated Temporary Container. If you enable Automatic Mode, you should also configure the Global Mouse Clicks to open new Temporary Containers. Recommended settings:
 * Middle Mouse: Always
 * Ctrl/Cmd+Left Mouse: Always
 * Left Mouse: Only if the clicked Link is not the exact same Domain as the Website
