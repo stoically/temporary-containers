@@ -44,6 +44,7 @@ class TemporaryContainers extends Emittery {
     browser.tabs.onActivated.addListener(this.tabsOnActivated.bind(this));
     browser.windows.onFocusChanged.addListener(this.windowsOnFocusChanged.bind(this));
     browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
+    browser.runtime.onMessageExternal.addListener(this.runtimeOnMessageExternal.bind(this));
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
     browser.tabs.onRemoved.addListener(this.tabsOnRemoved.bind(this));
@@ -80,6 +81,21 @@ class TemporaryContainers extends Emittery {
       debug('[browser.runtime.onMessage] message from userscript received', message, sender);
       this.mouseclick.linkClicked(message.payload, sender);
       break;
+    }
+  }
+
+  async runtimeOnMessageExternal(message, sender) {
+    debug('[runtimeOnMessageExternal] got external message', message, sender);
+    switch (message.method) {
+    case 'createTabInTempContainer':
+      this.container.createTabInTempContainer({
+        url: message.url ? message.url : null,
+        active: typeof message.active === 'undefined' ? true : message.active,
+        deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic' ? true : false
+      });
+      break;
+    default:
+      throw new Error('Unknown message.method');
     }
   }
 
