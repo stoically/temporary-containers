@@ -21,6 +21,8 @@ class Request {
       return;
     }
 
+    this.container.removeBrowserActionBadge(request.tabId);
+
     if (this.canceledRequests[request.requestId]) {
       debug('[webRequestOnBeforeRequest] we canceled a request with that requestId before, probably redirect, cancel again', request);
       return { cancel: true };

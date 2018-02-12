@@ -208,6 +208,15 @@ class Container {
       return;
     }
 
+    if (this.storage.local.preferences.automaticModeNewTab === 'navigation' &&
+        tab.cookieStoreId === 'firefox-default' &&
+       (tab.url === 'about:home' ||
+        tab.url === 'about:newtab')) {
+      debug('[maybeReloadTabInTempContainer] automatic mode on navigation, setting icon badge', tab);
+      this.addBrowserActionBadge(tab.id);
+      return;
+    }
+
     if (this.storage.local.preferences.automaticModeNewTab === 'created' &&
         tab.cookieStoreId === 'firefox-default' &&
        (tab.url === 'about:home' ||
@@ -385,6 +394,35 @@ class Container {
         browser.history.deleteUrl({url});
       });
     }
+  }
+
+
+  addBrowserActionBadge(tabId) {
+    browser.browserAction.setBadgeBackgroundColor({
+      color: '#FF613D',
+      tabId: tabId
+    });
+    browser.browserAction.setTitle({
+      title: 'Automatic Mode active. The next website you navigate to will be reopened ' +
+             'in a Temporay Container. Click to open a new Tab in a new Temporary Container (Alt+C)',
+      tabId: tabId
+    });
+    browser.browserAction.setBadgeText({
+      text: 'A',
+      tabId: tabId
+    });
+  }
+
+
+  removeBrowserActionBadge(tabId) {
+    browser.browserAction.setTitle({
+      title: 'Open a new Tab in a new Temporary Container (Alt+C)',
+      tabId
+    });
+    browser.browserAction.setBadgeText({
+      text: '',
+      tabId
+    });
   }
 
 

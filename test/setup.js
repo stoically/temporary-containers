@@ -75,7 +75,10 @@ global.injectBrowser = () => {
     browserAction: {
       onClicked: {
         addListener: sinon.stub()
-      }
+      },
+      setTitle: sinon.stub(),
+      setBadgeBackgroundColor: sinon.stub(),
+      setBadgeText: sinon.stub()
     },
     contextMenus: {
       create: sinon.stub(),
