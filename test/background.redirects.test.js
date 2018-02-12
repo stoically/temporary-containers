@@ -69,6 +69,34 @@ describe('addons that do redirects', () => {
         const initialClickRequest = await initialClickRequestPromise;
         initialClickRequest.should.deep.equal({cancel: true});
       });
+
+      it('should not keep loading the link in the same tab if unexpected redirects happen even when in temporary container', async () => {
+        const initialClickRequestPromise = helper.browser.request({
+          requestId: 1,
+          tabId: 2,
+          originContainer: 'firefox-tmp123',
+          createsTabId: 3,
+          createsContainer: 'firefox-tmp1',
+          url: 'http://notexample.com'
+        });
+
+        const redirectRequest = await helper.browser.request({
+          requestId: 1,
+          tabId: 2,
+          originContainer: 'firefox-tmp123',
+          createsTabId: 4,
+          createsContainer: 'firefox-tmp2',
+          url: 'https://notexample.com',
+          resetHistory: true
+        });
+        redirectRequest.should.deep.equal({cancel: true});
+        browser.contextualIdentities.create.should.have.been.calledOnce;
+        browser.tabs.create.should.have.been.calledOnce;
+        browser.tabs.remove.should.not.have.been.called;
+
+        const initialClickRequest = await initialClickRequestPromise;
+        initialClickRequest.should.deep.equal({cancel: true});
+      });
     });
   });
 });

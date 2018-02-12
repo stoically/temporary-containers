@@ -114,12 +114,6 @@ class Request {
   async handleClickedLink(request, tab) {
     debug('[handleClickedLink] onBeforeRequest', request, tab);
 
-    // when someone clicks links fast in succession not clicked links
-    // might get confused with clicked links :C
-    if (!this.mouseclick.linksClicked[request.url].tabs[tab.openerTabId]) {
-      debug('[webRequestOnBeforeRequest] warning, linked clicked but we dont know the opener', tab, request);
-    }
-
     const hook = await this.background.emit('handleClickedLink', {request, tab});
     if (typeof hook[0] !== 'undefined' && !hook[0]) {
       return;
@@ -197,6 +191,10 @@ class Request {
       }
     } else if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
       debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
+      if (this.canceledRequests[request.requestId]) {
+        debug('[handleNotClickedLink] we canceled a request with that requestId before, probably redirect, cancel again', request);
+        return { cancel: true };
+      }
       return;
     }
 
