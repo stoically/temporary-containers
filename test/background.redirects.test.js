@@ -25,7 +25,8 @@ describe('addons that do redirects', () => {
         createsContainer: 'firefox-tmp2',
         url: 'https://example.com'
       });
-      browser.tabs.remove.should.have.been.calledTwice;
+      await nextTick();
+      browser.tabs.remove.should.have.been.calledOnce;
       browser.tabs.remove.should.have.been.calledWith(1);
       browser.tabs.create.should.have.been.calledOnce;
     });
@@ -44,17 +45,13 @@ describe('addons that do redirects', () => {
       });
 
       it('should not keep loading the link in the same tab if unexpected redirects happen', async () => {
-        const initialClickRequest = await helper.browser.request({
+        const initialClickRequestPromise = helper.browser.request({
           requestId: 1,
           tabId: 2,
           createsTabId: 3,
           createsContainer: 'firefox-tmp1',
-          url: 'http://notexample.com',
-          resetHistory: true
+          url: 'http://notexample.com'
         });
-        initialClickRequest.should.deep.equal({cancel: true});
-        browser.tabs.remove.should.have.been.calledOnce;
-        browser.tabs.create.should.have.been.calledOnce;
 
         const redirectRequest = await helper.browser.request({
           requestId: 1,
@@ -65,8 +62,12 @@ describe('addons that do redirects', () => {
           resetHistory: true
         });
         redirectRequest.should.deep.equal({cancel: true});
+        browser.contextualIdentities.create.should.have.been.calledOnce;
+        browser.tabs.create.should.have.been.calledOnce;
         browser.tabs.remove.should.not.have.been.called;
-        browser.tabs.create.should.not.have.been.called;
+
+        const initialClickRequest = await initialClickRequestPromise;
+        initialClickRequest.should.deep.equal({cancel: true});
       });
     });
   });

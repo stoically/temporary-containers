@@ -83,15 +83,31 @@ class Request {
       returnVal = await this.handleNotClickedLink(request, tab, alwaysOpenIn);
     }
 
-    if (returnVal && returnVal.cancel && request && request.requestId) {
+    if (returnVal && returnVal.cancel) {
+      this.cancelRequest(request);
+    }
+    return returnVal;
+  }
+
+
+  cancelRequest(request) {
+    if (!request || typeof request.requestId === 'undefined') {
+      return;
+    }
+
+    if (!this.canceledRequests[request.requestId]) {
+      debug('[cancelRequest] marked request as canceled', request);
       this.canceledRequests[request.requestId] = true;
       // cleanup canceledRequests later
       setTimeout(() => {
         debug('[webRequestOnBeforeRequest] cleaning up canceledRequests', request);
         delete this.canceledRequests[request.requestId];
       }, 2000);
+      return false;
+    } else {
+      debug('[cancelRequest] already canceled, do it again', request);
+      return true;
     }
-    return returnVal;
   }
 
 
@@ -120,6 +136,10 @@ class Request {
         this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory &&
         this.storage.local.preferences.deletesHistoryContainerMouseClicks === 'automatic') {
       deletesHistoryContainer = true;
+    }
+
+    if (this.cancelRequest(request)) {
+      return { cancel: true };
     }
 
     let newTab;
@@ -178,6 +198,10 @@ class Request {
     } else if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
       debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
       return;
+    }
+
+    if (this.cancelRequest(request)) {
+      return { cancel: true };
     }
 
     let deletesHistoryContainer = false;

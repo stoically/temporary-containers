@@ -110,6 +110,7 @@ class Container {
         color: containerColor,
         icon: containerIcon
       };
+      debug('[createTabInTempContainer] creating new container', containerOptions);
       const contextualIdentity = await browser.contextualIdentities.create(containerOptions);
       debug('[createTabInTempContainer] contextualIdentity created', contextualIdentity);
       containerOptions.number = tempContainerNumber;
