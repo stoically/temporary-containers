@@ -41,7 +41,7 @@ class Request {
 
     this.container.removeBrowserActionBadge(request.tabId);
 
-    if (this.canceledRequests[request.tabId]) {
+    if (this.shouldCancelRequest(request)) {
       debug('[webRequestOnBeforeRequest] we canceled a request with that requestId before, probably redirect, cancel again', request);
       return { cancel: true };
     }
@@ -141,8 +141,7 @@ class Request {
     } else {
       debug('[cancelRequest] already canceled', request, this.canceledRequests);
       let cancel = false;
-      if (this.canceledRequests[request.tabId].requestIds[request.requestId] ||
-          this.canceledRequests[request.tabId].urls[request.url]) {
+      if (this.shouldCancelRequest(request)) {
         // same requestId or url from the same tab, this is a redirect that we have to cancel to prevent opening two tabs
         cancel = true;
       }
@@ -151,6 +150,21 @@ class Request {
       this.canceledRequests[request.tabId].urls[request.url] = true;
       return cancel;
     }
+  }
+
+  shouldCancelRequest(request) {
+    if (!request ||
+      typeof request.requestId === 'undefined' ||
+      typeof request.tabId === 'undefined') {
+      return;
+    }
+
+    if (this.canceledRequests[request.tabId] &&
+        (this.canceledRequests[request.tabId].requestIds[request.requestId] ||
+         this.canceledRequests[request.tabId].urls[request.url])) {
+      return true;
+    }
+    return false;
   }
 
 
@@ -226,21 +240,24 @@ class Request {
     }
 
     const hook = await this.background.emit('handleNotClickedLink', {request, tab, containerExists});
-
-    if (this.cancelRequest(request)) {
-      return { cancel: true };
-    }
-
     if (typeof hook[0] !== 'undefined') {
       if (!hook[0]) {
         return;
       }
       if (hook[0].cancel) {
+        this.cancelRequest(request);
         return hook[0];
       }
     } else if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
+      if (this.shouldCancelRequest(request)) {
+        return { cancel: true };
+      }
       debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
       return;
+    }
+
+    if (this.cancelRequest(request)) {
+      return { cancel: true };
     }
 
     let deletesHistoryContainer = false;

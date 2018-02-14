@@ -46,20 +46,21 @@ describe('addons that do redirects', () => {
       it('should not keep loading the link in the same tab if redirects happen', async () => {
         const initialClickRequestPromise = helper.browser.request({
           requestId: 1,
-          tabId: 2,
-          createsTabId: 3,
+          tabId: 1,
+          createsTabId: 2,
           createsContainer: 'firefox-tmp1',
           url: 'http://notexample.com'
         });
 
         const redirectRequest = await helper.browser.request({
           requestId: 1,
-          tabId: 2,
-          createsTabId: 4,
+          tabId: 1,
+          createsTabId: 3,
           createsContainer: 'firefox-tmp2',
           url: 'https://notexample.com',
           resetHistory: true
         });
+        await nextTick();
         redirectRequest.should.deep.equal({cancel: true});
         browser.contextualIdentities.create.should.have.been.calledOnce;
         browser.tabs.create.should.have.been.calledOnce;
@@ -134,6 +135,7 @@ describe('addons that do redirects', () => {
           url: 'https://somethingcompletelydifferent.com',
           resetHistory: true
         });
+        await nextTick();
         redirectRequest.should.deep.equal({cancel: true});
         browser.contextualIdentities.create.should.have.been.calledOnce;
         browser.tabs.create.should.have.been.calledOnce;
@@ -202,6 +204,57 @@ describe('native firefox redirects', () => {
       (await request1).should.deep.equal({cancel: true});
       (await request2).should.deep.equal({cancel: true});
       (await request3).should.deep.equal({cancel: true});
+    });
+  });
+
+  describe('native firefox redirects', () => {
+    beforeEach(async () => {
+      global.background = await loadBackground();
+    });
+
+    describe('opening new tmptab and left clicking link with global never setting', () => {
+      beforeEach(async () => {
+        background.storage.local.preferences.linkClickGlobal.left.action = 'never';
+        await helper.browser.openNewTmpTab({
+          tabId: 1,
+          createsTabId: 2
+        });
+        await helper.browser.mouseClickOnLink({
+          senderUrl: 'http://example.com',
+          targetUrl: 'http://notexample.com',
+        });
+        await nextTick();
+      });
+
+      it('should not cancel the requests and redirects', async () => {
+        const request1 = await helper.browser.request({
+          requestId: 1,
+          tabId: 1,
+          originContainer: 'firefox-tmp123',
+          url: 'http://notexample.com',
+        });
+
+        const request2 = await helper.browser.request({
+          requestId: 1,
+          tabId: 1,
+          originContainer: 'firefox-tmp123',
+          url: 'https://notexample.com',
+        });
+
+        const request3 = await helper.browser.request({
+          requestId: 1,
+          tabId: 1,
+          originContainer: 'firefox-tmp123',
+          url: 'https://reallynotexample.com',
+        });
+
+        expect(request1).to.be.undefined;
+        expect(request2).to.be.undefined;
+        expect(request3).to.be.undefined;
+        browser.tabs.create.should.not.have.been.calledOnce;
+        browser.contextualIdentities.create.should.not.have.been.calledOnce;
+        browser.tabs.remove.should.not.have.been.called;
+      });
     });
   });
 });
