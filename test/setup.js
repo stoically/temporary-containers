@@ -37,6 +37,12 @@ global.injectBrowser = () => {
     webRequest: {
       onBeforeRequest: {
         addListener: sinon.stub()
+      },
+      onCompleted: {
+        addListener: sinon.stub()
+      },
+      onErrorOccurred: {
+        addListener: sinon.stub()
       }
     },
     windows: {

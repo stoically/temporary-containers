@@ -11,6 +11,24 @@ class Request {
     this.storage = background.storage;
     this.container = background.container;
     this.mouseclick = background.mouseclick;
+
+    // Clean up canceled requests
+    browser.webRequest.onCompleted.addListener((request) => {
+      if (this.canceledRequests[request.tabId]) {
+        delete this.canceledRequests[request.tabId];
+      }
+    }, {
+      urls: ['<all_urls>'],
+      types: ['main_frame']
+    });
+    browser.webRequest.onErrorOccurred.addListener((request) => {
+      if (this.canceledRequests[request.tabId]) {
+        delete this.canceledRequests[request.tabId];
+      }
+    }, {
+      urls: ['<all_urls>'],
+      types: ['main_frame']
+    });
   }
 
 
@@ -91,22 +109,40 @@ class Request {
 
 
   cancelRequest(request) {
-    if (!request || typeof request.requestId === 'undefined') {
+    if (!request ||
+      typeof request.requestId === 'undefined' ||
+      typeof request.tabId === 'undefined') {
       return;
     }
 
-    if (!this.canceledRequests[request.requestId]) {
+    if (!this.canceledRequests[request.tabId]) {
       debug('[cancelRequest] marked request as canceled', request);
-      this.canceledRequests[request.requestId] = true;
+      this.canceledRequests[request.tabId] = {
+        requestIds: {
+          [request.requestId]: true
+        },
+        urls: {
+          [request.url]: true
+        }
+      };
       // cleanup canceledRequests later
       setTimeout(() => {
         debug('[webRequestOnBeforeRequest] cleaning up canceledRequests', request);
-        delete this.canceledRequests[request.requestId];
+        delete this.canceledRequests[request.tabId];
       }, 2000);
       return false;
     } else {
-      debug('[cancelRequest] already canceled, do it again', request);
-      return true;
+      debug('[cancelRequest] already canceled', request, this.canceledRequests);
+      let cancel = false;
+      if (this.canceledRequests[request.tabId].requestIds[request.requestId] ||
+          this.canceledRequests[request.tabId].urls[request.url]) {
+        // same requestId or url from the same tab, this is a redirect that we have to cancel to prevent opening two tabs
+        cancel = true;
+      }
+      // we decided to cancel the request at this point, register canceled request
+      this.canceledRequests[request.tabId].requestIds[request.requestId] = true;
+      this.canceledRequests[request.tabId].urls[request.url] = true;
+      return cancel;
     }
   }
 
