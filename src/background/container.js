@@ -209,7 +209,10 @@ class Container {
       return;
     }
 
-    if (this.storage.local.preferences.automaticModeNewTab === 'navigation' &&
+    const deletesHistoryContainer = this.storage.local.preferences.deletesHistoryContainer === 'automatic';
+
+    if (!deletesHistoryContainer &&
+        this.storage.local.preferences.automaticModeNewTab === 'navigation' &&
         tab.cookieStoreId === 'firefox-default' &&
        (tab.url === 'about:home' ||
         tab.url === 'about:newtab')) {
@@ -218,15 +221,12 @@ class Container {
       return;
     }
 
-    if (this.storage.local.preferences.automaticModeNewTab === 'created' &&
+    if ((this.storage.local.preferences.automaticModeNewTab === 'created' || deletesHistoryContainer) &&
         tab.cookieStoreId === 'firefox-default' &&
        (tab.url === 'about:home' ||
         tab.url === 'about:newtab')) {
       debug('[maybeReloadTabInTempContainer] about:home/new tab in firefox-default container, reload in temp container', tab);
-      let deletesHistoryContainer = false;
-      if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
-        deletesHistoryContainer = true;
-      }
+
       await this.reloadTabInTempContainer(tab, null, null, deletesHistoryContainer);
       return;
     }
