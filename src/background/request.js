@@ -41,7 +41,7 @@ class Request {
 
     this.container.removeBrowserActionBadge(request.tabId);
 
-    if (this.canceledRequests[request.requestId]) {
+    if (this.canceledRequests[request.tabId]) {
       debug('[webRequestOnBeforeRequest] we canceled a request with that requestId before, probably redirect, cancel again', request);
       return { cancel: true };
     }
@@ -158,6 +158,11 @@ class Request {
     debug('[handleClickedLink] onBeforeRequest', request, tab);
 
     const hook = await this.background.emit('handleClickedLink', {request, tab});
+
+    if (this.cancelRequest(request)) {
+      return { cancel: true };
+    }
+
     if (typeof hook[0] !== 'undefined' && !hook[0]) {
       return;
     }
@@ -173,10 +178,6 @@ class Request {
         this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory &&
         this.storage.local.preferences.deletesHistoryContainerMouseClicks === 'automatic') {
       deletesHistoryContainer = true;
-    }
-
-    if (this.cancelRequest(request)) {
-      return { cancel: true };
     }
 
     let newTab;
@@ -225,6 +226,11 @@ class Request {
     }
 
     const hook = await this.background.emit('handleNotClickedLink', {request, tab, containerExists});
+
+    if (this.cancelRequest(request)) {
+      return { cancel: true };
+    }
+
     if (typeof hook[0] !== 'undefined') {
       if (!hook[0]) {
         return;
@@ -234,15 +240,7 @@ class Request {
       }
     } else if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
       debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
-      if (this.canceledRequests[request.requestId]) {
-        debug('[handleNotClickedLink] we canceled a request with that requestId before, probably redirect, cancel again', request);
-        return { cancel: true };
-      }
       return;
-    }
-
-    if (this.cancelRequest(request)) {
-      return { cancel: true };
     }
 
     let deletesHistoryContainer = false;
