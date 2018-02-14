@@ -46,6 +46,13 @@ class Request {
       return { cancel: true };
     }
 
+    if (request.url.startsWith('https://getpocket.com')) {
+      // TODO consider "Decontain Websites" in the preferences
+      // getpocket.com is ignored because of #52
+      debug('[webRequestOnBeforeRequest] were ignoring requests to getpocket.com because of #52', request);
+      return;
+    }
+
     let tab;
     try {
       tab = await browser.tabs.get(request.tabId);
