@@ -35,9 +35,9 @@ class Storage {
       keyboardShortcuts: {
         AltC: true,
         AltP: true,
-        AltN: true,
-        AltShiftC: true,
-        AltX: true
+        AltN: false,
+        AltShiftC: false,
+        AltX: false
       }
     };
   }
