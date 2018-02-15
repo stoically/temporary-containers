@@ -90,7 +90,12 @@ class TemporaryContainers extends Emittery {
       this.storage.local.statistics = {
         startTime: new Date,
         containersDeleted: 0,
-        cookiesDeleted: 0
+        cookiesDeleted: 0,
+        deletesHistory: {
+          containersDeleted: 0,
+          cookiesDeleted: 0,
+          urlsDeleted: 0
+        }
       };
       await this.storage.persist();
       break;
