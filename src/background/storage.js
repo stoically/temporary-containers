@@ -39,7 +39,8 @@ class Storage {
         AltShiftC: false,
         AltX: false
       },
-      notifications: false
+      notifications: false,
+      statistics: false
     };
   }
 

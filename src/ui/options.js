@@ -212,6 +212,8 @@ const initialize = async () => {
     $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
     $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
 
+    document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
+
     document.querySelector('#keyboardShortcutsAltC').checked = preferences.keyboardShortcuts.AltC;
     document.querySelector('#keyboardShortcutsAltP').checked = preferences.keyboardShortcuts.AltP;
     document.querySelector('#keyboardShortcutsAltN').checked = preferences.keyboardShortcuts.AltN;
@@ -290,9 +292,6 @@ const initialize = async () => {
     inline: true
   });
 
-
-
-
   const historyPermission = await browser.permissions.contains({permissions: ['history']});
   if (historyPermission) {
     $('#deletesHistoryContainerWarningRead')
@@ -307,10 +306,28 @@ const initialize = async () => {
   }
 };
 
+const saveStatisticsPreferences = async (event) => {
+  event.preventDefault();
+  preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
+  await savePreferences();
+};
+
+const resetStatistics = async (event) => {
+  event.preventDefault();
+  await browser.runtime.sendMessage({
+    method: 'resetStatistics'
+  });
+
+  updateStatistics();
+  showMessage('Statistics resetted.');
+};
+
 document.addEventListener('DOMContentLoaded', initialize);
 $('#saveContainerPreferences').on('click', saveContainerPreferences);
 $('#saveAdvancedPreferences').on('click', saveAdvancedPreferences);
 $('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);
+$('#saveStatisticsPreferences').on('click', saveStatisticsPreferences);
+$('#resetStatistics').on('click', resetStatistics);
 
 
 const requestHistoryPermissions = async () => {

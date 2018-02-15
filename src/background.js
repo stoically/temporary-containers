@@ -69,18 +69,30 @@ class TemporaryContainers extends Emittery {
     }
 
     switch (message.method) {
+    case 'linkClicked':
+      debug('[browser.runtime.onMessage] message from userscript received', message, sender);
+      this.mouseclick.linkClicked(message.payload, sender);
+      break;
+
     case 'savePreferences':
       debug('[browser.runtime.onMessage] saving preferences', message, sender);
       if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
         this.setIcon(message.payload.preferences.iconColor);
       }
+      if (message.payload.preferences.notifications) {
+        this.permissions.notifications = true;
+      }
       this.storage.local.preferences = message.payload.preferences;
       await this.storage.persist();
       break;
 
-    case 'linkClicked':
-      debug('[browser.runtime.onMessage] message from userscript received', message, sender);
-      this.mouseclick.linkClicked(message.payload, sender);
+    case 'resetStatistics':
+      this.storage.local.statistics = {
+        startTime: new Date,
+        containersDeleted: 0,
+        cookiesDeleted: 0
+      };
+      await this.storage.persist();
       break;
     }
   }
@@ -306,6 +318,7 @@ class TemporaryContainers extends Emittery {
         debug('updated from version <= 0.44, initialize statistics', this.storage.local);
         if (!this.storage.local.statistics) {
           this.storage.local.statistics = {
+            enabled: false,
             startTime: new Date,
             containersDeleted: 0,
             cookiesDeleted: 0

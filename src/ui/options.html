@@ -347,6 +347,18 @@
         <div class="ui compact small segment">
           <p>Statistics since </p><span id="statisticsStartTime"></span>
         </div>
+        <form class="ui form">
+          <div class="field" id="statisticsField">
+            <div class="ui checkbox">
+              <input type="checkbox" id="statisticsCheckbox">
+              <label>Collect local statistics</label>
+            </div>
+          </div>
+          <div class="field">
+            <button id="saveStatisticsPreferences" class="ui button primary">Save</button>
+            <button id="resetStatistics" class="ui button negative primary" data-tooltip="No confirmation">Reset Statistics</button>
+          </div>
+        </form>
       </div>
       <div id="message" class="ui positive message hidden"></div>
     </div>

@@ -305,9 +305,13 @@ class Container {
     }
     this.removeContainer(cookieStoreId);
     this.maybeClearHistory(cookieStoreId);
-    this.storage.local.statistics.containersDeleted += 1;
+    if (this.storage.local.preferences.statistics) {
+      this.storage.local.statistics.containersDeleted += 1;
+    }
     if (this.storage.local.tempContainers[cookieStoreId].cookieCount) {
-      this.storage.local.statistics.cookiesDeleted += this.storage.local.tempContainers[cookieStoreId].cookieCount;
+      if (this.storage.local.preferences.statistics) {
+        this.storage.local.statistics.cookiesDeleted += this.storage.local.tempContainers[cookieStoreId].cookieCount;
+      }
       this.removedContainerCookiesCount += this.storage.local.tempContainers[cookieStoreId].cookieCount;
     }
     delete this.storage.local.tempContainers[cookieStoreId];
@@ -442,6 +446,10 @@ class Container {
 
 
   async cookieCount(changeInfo) {
+    if (!this.storage.local.preferences.statistics &&
+        !this.storage.local.preferences.notifications) {
+      return;
+    }
     debug('[cookieCount]', changeInfo);
     if (changeInfo.removed) {
       return;
