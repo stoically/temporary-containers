@@ -51,6 +51,11 @@ class Storage {
           tempContainerCounter: 0,
           tempContainers: {},
           tabContainerMap: {},
+          statistics: {
+            startTime: new Date,
+            containersDeleted: 0,
+            cookiesDeleted: 0
+          },
           preferences: this.preferencesDefault
         };
         debug('storage empty, setting defaults');

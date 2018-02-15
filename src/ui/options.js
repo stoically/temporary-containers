@@ -155,6 +155,18 @@ const updateAlwaysOpenInDomainRules = () => {
   }
 };
 
+const updateStatistics = async () => {
+  const storage = await browser.storage.local.get('statistics');
+  if (!storage.statistics) {
+    showError('Error while loading statistics.');
+    return;
+  }
+  $('#containersDeleted').html(storage.statistics.containersDeleted);
+  $('#cookiesDeleted').html(storage.statistics.cookiesDeleted);
+  $('#statisticsStartTime').html(storage.statistics.startTime);
+
+};
+
 const saveAdvancedPreferences = async (event) => {
   event.preventDefault();
 
@@ -206,6 +218,7 @@ const initialize = async () => {
 
     updateLinkClickDomainRules();
     updateAlwaysOpenInDomainRules();
+    updateStatistics();
   };
 
   const storage = await browser.storage.local.get('preferences');

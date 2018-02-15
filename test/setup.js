@@ -103,6 +103,11 @@ global.injectBrowser = () => {
     },
     permissions: {
       contains: sinon.stub()
+    },
+    cookies: {
+      onChanged: {
+        addListener: sinon.stub()
+      }
     }
   };
 };

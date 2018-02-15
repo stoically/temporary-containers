@@ -278,12 +278,12 @@ class TemporaryContainers extends Emittery {
     }
 
     if (details.reason === 'update' && !details.previousVersion.includes('beta')) {
+      if (!this.storage.local) {
+        await this.storage.load();
+      }
       debug('updated from version', details.previousVersion);
       if (versionCompare('0.16', details.previousVersion) >= 0) {
         debug('updated from version <= 0.16, adapt old automaticmode behaviour if necessary');
-        if (!this.storage.local) {
-          await this.storage.load();
-        }
         if (!this.storage.local.preferences.automaticMode) {
           this.storage.local.preferences.linkClickGlobal.middle.action = 'never';
           this.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'never';
@@ -300,6 +300,17 @@ class TemporaryContainers extends Emittery {
           });
         }
         await this.storage.persist();
+      }
+      if (versionCompare('0.44', details.previousVersion) >= 0) {
+        debug('updated from version <= 0.44, initialize statistics', this.storage.local);
+        if (!this.storage.local.statistics) {
+          this.storage.local.statistics = {
+            startTime: new Date,
+            containersDeleted: 0,
+            cookiesDeleted: 0
+          };
+          await this.storage.persist();
+        }
       }
     }
   }

@@ -17,6 +17,7 @@
         <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
         <a class="item" data-tab="alwaysopenin">Always per Website</a>
         <a class="item" data-tab="advanced">Advanced</a>
+        <a class="item" data-tab="statistics">Statistics</a>
       </div>
       <div class="ui active tab segment" data-tab="general">
         <form class="ui form">
@@ -24,6 +25,12 @@
             <div class="ui checkbox">
               <input type="checkbox" id="automaticMode">
               <label>Automatic Mode [?]</label>
+            </div>
+          </div>
+          <div class="field" id="notificationsField">
+            <div data-tooltip="Show a notification when Temporary Containers are deleted" class="ui checkbox">
+              <input type="checkbox" id="notifications">
+              <label>Notifications [?]</label>
             </div>
           </div>
           <div class="field">
@@ -317,6 +324,30 @@
             <button id="saveAdvancedPreferences" class="ui button primary">Save</button>
           </div>
         </form>
+      </div>
+      <div class="ui tab segment" data-tab="statistics">
+        <div class="ui segment">
+          <div class="ui green statistic">
+            <div class="value" id="containersDeleted">
+              54
+            </div>
+            <div class="label">
+              Deleted Temporary Containers
+            </div>
+          </div>
+          <div class="ui green statistic">
+            <div class="value" id="cookiesDeleted">
+              27
+            </div>
+            <div class="label">
+              and Cookies with them
+            </div>
+          </div>
+        </div>
+        <div class="ui compact small segment">
+          <p>Statistics since </p><span id="statisticsStartTime"></span>
+        </div>
+      </div>
       </div>
       <div id="message" class="ui positive message hidden"></div>
     </div>

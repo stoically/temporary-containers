@@ -41,6 +41,8 @@ class Container {
     this.request = background.request;
     this.mouseclick = background.mouseclick;
 
+    browser.cookies.onChanged.addListener(this.cookieCount.bind(this));
+
     setInterval(() => {
       debug('[interval] container removal interval', this.storage.local.tempContainers);
       if (this.removeContainerQueue.length) {
@@ -252,14 +254,14 @@ class Container {
 
   tryToRemoveQueue() {
     this.removeContainerQueue
-      .splice(0, 10)
+      .splice(0, 3)
       .map(this.tryToRemove.bind(this));
 
     if (this.removeContainerQueue.length) {
-      debug('[tryToRemoveQueue] more then 10 containers removed, requeuing', this.removeContainerQueue);
+      debug('[tryToRemoveQueue] more then 3 containers removed, requeuing', this.removeContainerQueue);
       setTimeout(() => {
         this.tryToRemoveQueue();
-      }, 5000);
+      }, 8000);
     }
   }
 
@@ -284,6 +286,10 @@ class Container {
     }
     this.removeContainer(cookieStoreId);
     this.maybeClearHistory(cookieStoreId);
+    this.storage.local.statistics.containersDeleted += 1;
+    if (this.storage.local.tempContainers[cookieStoreId].cookieCount) {
+      this.storage.local.statistics.cookiesDeleted += this.storage.local.tempContainers[cookieStoreId].cookieCount;
+    }
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();
   }
@@ -412,6 +418,21 @@ class Container {
       text: 'A',
       tabId: tabId
     });
+  }
+
+
+  async cookieCount(changeInfo) {
+    if (changeInfo.removed) {
+      return;
+    }
+    if (!this.storage.local.tempContainers[changeInfo.cookie.storeId]) {
+      return;
+    }
+    if (!this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount) {
+      this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount = 0;
+    }
+    this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount++;
+    await this.storage.persist();
   }
 
 
