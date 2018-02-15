@@ -473,6 +473,7 @@ class Container {
 
   async cookieCount(changeInfo) {
     if (!this.storage.local.preferences.statistics &&
+        !this.storage.local.preferences.deletesHistoryStatistics &&
         !this.storage.local.preferences.notifications) {
       return;
     }
