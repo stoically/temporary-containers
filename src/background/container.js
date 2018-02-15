@@ -32,6 +32,8 @@ class Container {
     this.requestCreatedTab = {};
     this.creatingTabInSameContainer = false;
     this.removeContainerQueue = [];
+    this.removedContainerCount = 0;
+    this.removedContainerCookiesCount = 0;
   }
 
 
@@ -245,23 +247,40 @@ class Container {
     debug('[addToRemoveQueue] queuing container removal because of tab removal', cookieStoreId, tabId);
     this.removeContainerQueue.push(cookieStoreId);
     if (this.removeContainerQueue.length === 1) {
+      this.removedContainerCount = 1;
+      this.removedContainerCookiesCount = 0;
       debug('[addToRemoveQueue] registering tryToRemoveQueue timeout', this.removeContainerQueue);
       setTimeout(() => {
         this.tryToRemoveQueue();
       }, 1000);
+    } else {
+      this.removedContainerCount++;
     }
   }
 
-  tryToRemoveQueue() {
-    this.removeContainerQueue
-      .splice(0, 3)
-      .map(this.tryToRemove.bind(this));
+  async tryToRemoveQueue() {
+    const removeContainers = this.removeContainerQueue.splice(0, 3);
+    for (let cookieStoreId of removeContainers) {
+      await this.tryToRemove.call(this, cookieStoreId);
+    }
 
     if (this.removeContainerQueue.length) {
       debug('[tryToRemoveQueue] more then 3 containers removed, requeuing', this.removeContainerQueue);
       setTimeout(() => {
         this.tryToRemoveQueue();
       }, 8000);
+    } else {
+      debug('[tryToRemoveQueue] queue cleared', this.storage.local.preferences.notifications);
+      if (this.storage.local.preferences.notifications && this.background.permissions.notifications) {
+        debug('[tryToRemoveQueue] showing notification');
+        browser.notifications.create({
+          type: 'basic',
+          title: 'Temporary Containers',
+          iconUrl: 'icons/page-w-32.svg',
+          message: `Deleted Temporary Containers: ${this.removedContainerCount}\n` +
+                   `and ${this.removedContainerCookiesCount} Cookies with them`
+        });
+      }
     }
   }
 
@@ -276,12 +295,12 @@ class Container {
         cookieStoreId
       });
       if (tempTabs.length > 0) {
-        debug('[tryToRemoveContainer] not removing container because it still has tabs', cookieStoreId, tempTabs.length);
+        debug('[tryToRemove] not removing container because it still has tabs', cookieStoreId, tempTabs.length);
         return;
       }
-      debug('[tryToRemoveContainer] no tabs in temp container anymore, deleting container', cookieStoreId);
+      debug('[tryToRemove] no tabs in temp container anymore, deleting container', cookieStoreId);
     } catch (error) {
-      debug('[tryToRemoveContainer] failed to query tabs', cookieStoreId, error);
+      debug('[tryToRemove] failed to query tabs', cookieStoreId, error);
       return;
     }
     this.removeContainer(cookieStoreId);
@@ -289,6 +308,7 @@ class Container {
     this.storage.local.statistics.containersDeleted += 1;
     if (this.storage.local.tempContainers[cookieStoreId].cookieCount) {
       this.storage.local.statistics.cookiesDeleted += this.storage.local.tempContainers[cookieStoreId].cookieCount;
+      this.removedContainerCookiesCount += this.storage.local.tempContainers[cookieStoreId].cookieCount;
     }
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();
@@ -422,6 +442,7 @@ class Container {
 
 
   async cookieCount(changeInfo) {
+    debug('[cookieCount]', changeInfo);
     if (changeInfo.removed) {
       return;
     }

@@ -77,7 +77,8 @@
   ],
 
   "optional_permissions": [
-    "history"
+    "history",
+    "notifications"
   ],
 
   "content_scripts": [

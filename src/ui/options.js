@@ -39,6 +39,7 @@ const saveContainerPreferences = async (event) => {
   event.preventDefault();
 
   preferences.automaticMode = document.querySelector('#automaticMode').checked;
+  preferences.notifications = document.querySelector('#notificationsCheckbox').checked;
   preferences.containerNamePrefix = document.querySelector('#containerNamePrefix').value;
   preferences.containerColor = document.querySelector('#containerColor').value;
   preferences.containerColorRandom = document.querySelector('#containerColorRandom').checked;
@@ -190,6 +191,7 @@ const initialize = async () => {
   $('.ui.checkbox').checkbox();
   const setCurrentPreferences = () => {
     document.querySelector('#automaticMode').checked = preferences.automaticMode;
+    document.querySelector('#notificationsCheckbox').checked = preferences.notifications;
     document.querySelector('#containerNamePrefix').value = preferences.containerNamePrefix;
     $('#containerColor').dropdown('set selected', preferences.containerColor);
     document.querySelector('#containerColorRandom').checked = preferences.containerColorRandom;
@@ -270,18 +272,38 @@ const initialize = async () => {
     '<div style="width:500px;">' +
     'Automatically reopen Tabs in new Temporary Containers when<ul>' +
     '<li> Opening a Website in a new Tab' +
-    '<li> An external Program opens a Link in the Browser</ul>';
+    '<li> An external Program opens a Link in the Browser</ul></div>';
 
   $('#automaticModeField').popup({
     html: automaticModeToolTip,
     inline: true
   });
 
+  const notificationsToolTip =
+    '<div style="width:500px;">' +
+    'Will ask for Notifications Permissions when you click the first time<br>' +
+    'And with the next update of the Add-on - not again after that.<br>' +
+    'Asking after update again is a Firefox bug and is already reported.</div>';
+
+  $('#notificationsField').popup({
+    html: notificationsToolTip,
+    inline: true
+  });
+
+
+
+
   const historyPermission = await browser.permissions.contains({permissions: ['history']});
   if (historyPermission) {
     $('#deletesHistoryContainerWarningRead')
       .checkbox('check')
       .checkbox('set disabled');
+  }
+
+  const notificationsPermission = await browser.permissions.contains({permissions: ['notifications']});
+  if (!notificationsPermission) {
+    $('#notifications')
+      .checkbox('uncheck');
   }
 };
 
@@ -305,3 +327,14 @@ const requestHistoryPermissions = async () => {
   }
 };
 $('#deletesHistoryContainerWarningRead').on('click', requestHistoryPermissions);
+
+const requestNotificationsPermissions = async () => {
+  const allowed = await browser.permissions.request({
+    permissions: ['notifications']
+  });
+  if (!allowed) {
+    $('#notifications')
+      .checkbox('uncheck');
+  }
+};
+$('#notifications').on('click', requestNotificationsPermissions);

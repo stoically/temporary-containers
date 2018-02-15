@@ -38,7 +38,8 @@ class Storage {
         AltN: false,
         AltShiftC: false,
         AltX: false
-      }
+      },
+      notifications: false
     };
   }
 

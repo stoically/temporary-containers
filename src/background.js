@@ -27,7 +27,8 @@ class TemporaryContainers extends Emittery {
     // TODO cache history permission in storage when firefox bug is fixed
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1283320
     this.permissions = {
-      history: await browser.permissions.contains({permissions: ['history']})
+      history: await browser.permissions.contains({permissions: ['history']}),
+      notifications: await browser.permissions.contains({permissions: ['notifications']})
     };
 
     this.mac = new MultiAccountContainers(this);
