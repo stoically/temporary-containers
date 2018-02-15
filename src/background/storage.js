@@ -40,7 +40,8 @@ class Storage {
         AltX: false
       },
       notifications: false,
-      statistics: false
+      statistics: false,
+      deletesHistoryStatistics: false
     };
   }
 
@@ -66,6 +67,14 @@ class Storage {
           startTime: new Date,
           containersDeleted: 0,
           cookiesDeleted: 0
+        };
+        storagePersistNeeded = true;
+      }
+      if (!this.local.statistics.deletesHistory) {
+        this.local.statistics.deletesHistory = {
+          containersDeleted: 0,
+          cookiesDeleted: 0,
+          urlsDeleted: 0
         };
         storagePersistNeeded = true;
       }

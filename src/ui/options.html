@@ -329,7 +329,7 @@
         <div class="ui segment">
           <div class="ui green statistic">
             <div class="value" id="containersDeleted">
-              54
+              0
             </div>
             <div class="label">
               Deleted Temporary Containers
@@ -337,10 +337,36 @@
           </div>
           <div class="ui green statistic">
             <div class="value" id="cookiesDeleted">
-              27
+              0
             </div>
             <div class="label">
               and Cookies with them
+            </div>
+          </div>
+        </div>
+        <div class="ui inverted segment hidden" id="deletesHistoryStatistics">
+          <div class="ui purple inverted statistic">
+            <div class="value" id="deletesHistoryContainersDeleted">
+              0
+            </div>
+            <div class="label">
+              Deleted "Deletes History Temporary Containers"
+            </div>
+          </div>
+          <div class="ui purple inverted statistic">
+            <div class="value" id="deletesHistoryCookiesDeleted">
+              0
+            </div>
+            <div class="label">
+              and Cookies with them
+            </div>
+          </div>
+          <div class="ui purple inverted statistic">
+            <div class="value" id="deletesHistoryUrlsDeleted">
+              0
+            </div>
+            <div class="label">
+              and URLs from History with them
             </div>
           </div>
         </div>
@@ -351,7 +377,13 @@
           <div class="field" id="statisticsField">
             <div class="ui checkbox">
               <input type="checkbox" id="statisticsCheckbox">
-              <label>Collect local statistics</label>
+              <label>Collect local statistics about all Temporary Containers</label>
+            </div>
+          </div>
+          <div class="field" id="deletesHistoryStatisticsField">
+            <div class="ui checkbox">
+              <input type="checkbox" id="deletesHistoryStatisticsCheckbox">
+              <label>Collect local statistics about "Deletes History Temporary Containers" [?]</label>
             </div>
           </div>
           <div class="field">

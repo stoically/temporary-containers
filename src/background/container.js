@@ -250,6 +250,7 @@ class Container {
     if (this.removeContainerQueue.length === 1) {
       this.removedContainerCount = 1;
       this.removedContainerCookiesCount = 0;
+      this.removedContainerHistoryCount = 0;
       debug('[addToRemoveQueue] registering tryToRemoveQueue timeout', this.removeContainerQueue);
       setTimeout(() => {
         this.tryToRemoveQueue();
@@ -316,7 +317,18 @@ class Container {
       this.removedContainerHistoryCount += historyClearedCount;
     }
     if (this.storage.local.preferences.statistics) {
-      this.storage.local.statistics.containersDeleted += 1;
+      this.storage.local.statistics.containersDeleted++;
+    }
+
+    if (this.storage.local.preferences.deletesHistoryStatistics &&
+        this.storage.local.tempContainers[cookieStoreId].deletesHistory) {
+      this.storage.local.statistics.deletesHistory.containersDeleted++;
+      if (historyClearedCount) {
+        this.storage.local.statistics.deletesHistory.urlsDeleted += historyClearedCount;
+      }
+      if (this.storage.local.tempContainers[cookieStoreId].cookieCount) {
+        this.storage.local.statistics.deletesHistory.cookiesDeleted += this.storage.local.tempContainers[cookieStoreId].cookieCount;
+      }
     }
     if (this.storage.local.tempContainers[cookieStoreId].cookieCount) {
       if (this.storage.local.preferences.statistics) {

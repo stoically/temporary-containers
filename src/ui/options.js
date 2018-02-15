@@ -166,6 +166,9 @@ const updateStatistics = async () => {
   $('#cookiesDeleted').html(storage.statistics.cookiesDeleted);
   $('#statisticsStartTime').html(storage.statistics.startTime);
 
+  $('#deletesHistoryContainersDeleted').html(storage.statistics.deletesHistory.containersDeleted);
+  $('#deletesHistoryCookiesDeleted').html(storage.statistics.deletesHistory.cookiesDeleted);
+  $('#deletesHistoryUrlsDeleted').html(storage.statistics.deletesHistory.urlsDeleted);
 };
 
 const saveAdvancedPreferences = async (event) => {
@@ -213,6 +216,7 @@ const initialize = async () => {
     $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
 
     document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
+    document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistoryStatistics;
 
     document.querySelector('#keyboardShortcutsAltC').checked = preferences.keyboardShortcuts.AltC;
     document.querySelector('#keyboardShortcutsAltP').checked = preferences.keyboardShortcuts.AltP;
@@ -223,6 +227,7 @@ const initialize = async () => {
     updateLinkClickDomainRules();
     updateAlwaysOpenInDomainRules();
     updateStatistics();
+    showDeletesHistoryStatistics();
   };
 
   const storage = await browser.storage.local.get('preferences');
@@ -292,6 +297,17 @@ const initialize = async () => {
     inline: true
   });
 
+  const deletesHistoryStatisticsToolTip =
+    '<div style="width:500px;">' +
+    'The overall statistics include all Temporary Containers already<br>' +
+    'This will show and collect separate statistics about how many "Deletes History<br>' +
+    'Temporary Container" plus cookies and URLs with them got deleted.</div>';
+
+  $('#deletesHistoryStatisticsField').popup({
+    html: deletesHistoryStatisticsToolTip,
+    inline: true
+  });
+
   const historyPermission = await browser.permissions.contains({permissions: ['history']});
   if (historyPermission) {
     $('#deletesHistoryContainerWarningRead')
@@ -309,6 +325,7 @@ const initialize = async () => {
 const saveStatisticsPreferences = async (event) => {
   event.preventDefault();
   preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
+  preferences.deletesHistoryStatistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
   await savePreferences();
 };
 
@@ -322,13 +339,22 @@ const resetStatistics = async (event) => {
   showMessage('Statistics resetted.');
 };
 
+const showDeletesHistoryStatistics = async () => {
+  const checked = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
+  if (checked) {
+    $('#deletesHistoryStatistics').removeClass('hidden');
+  } else {
+    $('#deletesHistoryStatistics').addClass('hidden');
+  }
+};
+
 document.addEventListener('DOMContentLoaded', initialize);
 $('#saveContainerPreferences').on('click', saveContainerPreferences);
 $('#saveAdvancedPreferences').on('click', saveAdvancedPreferences);
 $('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);
 $('#saveStatisticsPreferences').on('click', saveStatisticsPreferences);
 $('#resetStatistics').on('click', resetStatistics);
-
+$('#deletesHistoryStatisticsField').on('click', showDeletesHistoryStatistics);
 
 const requestHistoryPermissions = async () => {
   const allowed = await browser.permissions.request({
