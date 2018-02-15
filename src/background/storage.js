@@ -53,17 +53,21 @@ class Storage {
           tempContainerCounter: 0,
           tempContainers: {},
           tabContainerMap: {},
-          statistics: {
-            startTime: new Date,
-            containersDeleted: 0,
-            cookiesDeleted: 0
-          },
           preferences: this.preferencesDefault
         };
         debug('storage empty, setting defaults');
         storagePersistNeeded = true;
       } else {
         debug('storage loaded', this.local);
+      }
+      // initialize statistics if not present
+      if (!this.local.statistics) {
+        this.local.statistics = {
+          startTime: new Date,
+          containersDeleted: 0,
+          cookiesDeleted: 0
+        };
+        storagePersistNeeded = true;
       }
       // set preferences defaults if not present
       if (!this.local.preferences) {

@@ -319,18 +319,6 @@ class TemporaryContainers extends Emittery {
         }
         await this.storage.persist();
       }
-      if (versionCompare('0.44', details.previousVersion) >= 0) {
-        debug('updated from version <= 0.44, initialize statistics', this.storage.local);
-        if (!this.storage.local.statistics) {
-          this.storage.local.statistics = {
-            enabled: false,
-            startTime: new Date,
-            containersDeleted: 0,
-            cookiesDeleted: 0
-          };
-          await this.storage.persist();
-        }
-      }
     }
   }
 
