@@ -336,7 +336,7 @@ const resetStatistics = async (event) => {
   });
 
   updateStatistics();
-  showMessage('Statistics resetted.');
+  showMessage('Statistics have been reset.');
 };
 
 const showDeletesHistoryStatistics = async () => {
