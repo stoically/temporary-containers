@@ -94,7 +94,12 @@ class TemporaryContainers extends Emittery {
       };
       await this.storage.persist();
       break;
+
+    case 'historyPermissionAllowed':
+      this.permissions.history = true;
+      break;
     }
+
   }
 
   async runtimeOnMessageExternal(message, sender) {

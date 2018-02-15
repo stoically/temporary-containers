@@ -341,6 +341,10 @@ const requestHistoryPermissions = async () => {
     $('#deletesHistoryContainerWarningRead')
       .checkbox('check')
       .checkbox('set disabled');
+
+    await browser.runtime.sendMessage({
+      method: 'historyPermissionAllowed'
+    });
   }
 };
 $('#deletesHistoryContainerWarningRead').on('click', requestHistoryPermissions);
