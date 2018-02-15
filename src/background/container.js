@@ -34,6 +34,7 @@ class Container {
     this.removeContainerQueue = [];
     this.removedContainerCount = 0;
     this.removedContainerCookiesCount = 0;
+    this.removedContainerHistoryCount = 0;
   }
 
 
@@ -273,12 +274,18 @@ class Container {
       debug('[tryToRemoveQueue] queue cleared', this.storage.local.preferences.notifications);
       if (this.storage.local.preferences.notifications && this.background.permissions.notifications) {
         debug('[tryToRemoveQueue] showing notification');
+        let message = `Deleted Temporary Containers: ${this.removedContainerCount}`;
+        if (this.removedContainerCookiesCount) {
+          message += `\nand ${this.removedContainerCookiesCount} Cookies with them`;
+        }
+        if (this.removedContainerHistoryCount) {
+          message += `\nand ${this.removedContainerHistoryCount} URLs from History with them`;
+        }
         browser.notifications.create({
           type: 'basic',
           title: 'Temporary Containers',
           iconUrl: 'icons/page-w-32.svg',
-          message: `Deleted Temporary Containers: ${this.removedContainerCount}\n` +
-                   `and ${this.removedContainerCookiesCount} Cookies with them`
+          message
         });
       }
     }
@@ -304,7 +311,10 @@ class Container {
       return;
     }
     this.removeContainer(cookieStoreId);
-    this.maybeClearHistory(cookieStoreId);
+    const historyClearedCount = this.maybeClearHistory(cookieStoreId);
+    if (historyClearedCount) {
+      this.removedContainerHistoryCount += historyClearedCount;
+    }
     if (this.storage.local.preferences.statistics) {
       this.storage.local.statistics.containersDeleted += 1;
     }
@@ -415,9 +425,12 @@ class Container {
 
 
   maybeClearHistory(cookieStoreId) {
+    let count = 0;
     if (this.storage.local.tempContainers[cookieStoreId].deletesHistory &&
         this.storage.local.tempContainers[cookieStoreId].history) {
-      Object.keys(this.storage.local.tempContainers[cookieStoreId].history).map(url => {
+      const urls = Object.keys(this.storage.local.tempContainers[cookieStoreId].history);
+      count = urls.length;
+      urls.map(url => {
         if (!url) {
           return;
         }
@@ -425,6 +438,7 @@ class Container {
         browser.history.deleteUrl({url});
       });
     }
+    return count;
   }
 
 
