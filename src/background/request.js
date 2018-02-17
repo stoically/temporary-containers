@@ -297,6 +297,9 @@ class Request {
         if (parsedRequestURL.hostname === domainPattern ||
             parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
           this.storage.local.preferences.setCookiesDomain[domainPattern].map(cookie => {
+            if (!cookie) {
+              return;
+            }
             const setCookie = {
               domain: cookie.domain || undefined,
               expirationDate: cookie.expirationDate || undefined,

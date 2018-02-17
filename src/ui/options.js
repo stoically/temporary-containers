@@ -187,6 +187,9 @@ const updateSetCookiesDomainRules = () => {
   domainRules.map((domainPattern) => {
     const domainPatternCookies = preferences.setCookiesDomain[domainPattern];
     domainPatternCookies.map((domainPatternCookie, index) => {
+      if (!domainPatternCookie) {
+        return;
+      }
       setCookiesDomainCookies.append(
         `<div class="item" id="${encodeURIComponent(domainPattern)}" idIndex="${index}">${domainPattern} [${index}]: ` +
         ` ${domainPatternCookie.name} ${domainPatternCookie.value} ` +
