@@ -41,7 +41,8 @@ class Storage {
       },
       notifications: false,
       statistics: false,
-      deletesHistoryStatistics: false
+      deletesHistoryStatistics: false,
+      setCookiesDomain: {}
     };
   }
 

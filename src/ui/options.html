@@ -3,6 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <title>Temporary Containers</title>
     <link rel="stylesheet" href="semantic/semantic.min.css">
     <style>
       body { padding: 50px; }
@@ -208,122 +209,198 @@
         </form>
       </div>
       <div class="ui tab segment" data-tab="advanced">
-        <form class="ui form">
-          <div class="field">
-            <label>"Deletes History Temporary Containers"</label>
+        <div class="ui top attached tabular menu">
+          <a class="active item" data-tab="advanced/general">General</a>
+          <a class="item" data-tab="advanced/setcookies">Set Cookies</a>
+          <a class="item" data-tab="advanced/deletehistory">Delete History</a>
+        </div>
+        <div class="ui bottom attached active tab segment" data-tab="advanced/general">
+          <form class="ui form">
+            <div class="field">
+              <label>Automatic Mode</label>
+              <select id="automaticModeNewTab" class="ui fluid dropdown">
+                <option value="navigation">Don't reopen New Tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening (Default)</option>
+                <option value="created">Reopen New Tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Keyboard shortcuts</label>
+            </div>
+            <div class="field" id="keyboardShortcutsAltCField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltC">
+                <label>Alt+C - Open a new Tab in a new Temporary Container</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltPField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltP">
+                <label>Alt+P - Open a new Tab in a new 'Deletes History Temporary Container'</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltNField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltN">
+                <label>Alt+N - Open a new 'No Container' Tab</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltShiftCField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltShiftC">
+                <label>Alt+Shift+C - Open a new 'No Container' Tab in a new Window</label>
+              </div>
+            </div>
+            <div class="field" id="keyboardShortcutsAltXField">
+              <div class="ui checkbox">
+                <input type="checkbox" id="keyboardShortcutsAltX">
+                <label>Alt+X - Open a new Tab in the same Container as the currently active Tab</label>
+              </div>
+            </div>
+            <div class="field">
+              <button id="saveAdvancedGeneralPreferences" class="ui button primary">Save</button>
+            </div>
+          </form>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="advanced/setcookies">
+          <form class="ui form" id="setCookiesDomainForm">
+            <h4 data-tooltip="Regardless how they're opened. Only if not already in a container.">
+              Configure cookies to be set on certain websites in Temporary Containers
+            </h4>
             <div class="ui negative message">
-              <strong>
-                WARNING: EVERY WEBSITE URL that you visit in a
-                "Deletes History Temporary Container" WILL GET DELETED FROM YOUR ENTIRE HISTORY.
-                This means if you visited a Website URL in another Container, Temporary Container
-                or in No Container before or while visiting it in a "Deletes History Temporary Container"
-                then those visits will get deleted from History too. This is true until Firefox supports a special History for Container Tabs.
-                <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320" target="_blank">The related Firefox bug can be found here</a>.<br>
-                <br>
-                Be careful. You have been warned. "Deletes History Temporary Containers" tabs have a "-deletes-history" suffix
-                in the container name to remind you.
-                <br><br>
-
-                <div class="ui checkbox" id="deletesHistoryContainerWarningRead">
-                  <input type="checkbox" id="deletesHistoryContainerWarningReadCheckbox">
-                  <label>I have read the WARNING and understand the implications that come with using "Deletes History Temporary Containers".
-                    When ticking the checkbox Firefox will ask you for "Access browsing history" permissions.</label>
-                </div>
-              </strong>
+              <strong>WARNING:</strong> Setting cookies can make you easier fingerprintable. Especially
+              when they contain user/session-specific data. Avoid setting cookies if you can.
             </div>
             <div class="ui notice message">
-              You can open "Deletes History Temporary Containers" - also with the keyboard shortcut Alt+P - after you read the WARNING and ticked the checkbox.<br>
-              <br>
-              The deletion applies to the full Website URL, not only the domain. That means, if you e.g. open a specific reddit post or a news article on
-              your favorite news site in a "Deletes History Temporary Container" it won't delete all your previous visits to other reddit posts or news articles
-              that you made outside of "Deletes History Temporary Containers" because the full Website URLs are different.<br>
-              <br>
-              "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted after the last Tab in it closes.<br>
-              <br>
-              After you gave the "Access browsing history" permission you'll be asked to give the permission again with the next update of the Add-on (not again after that).
-              <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1402850" target="_blank">That's a Firefox bug and it's reported here</a>.
+              This will call <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/cookies/set" target="_blank">cookies.set</a>
+              while <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeRequest" target="_blank">webRequest.onBeforeRequest</a>
+              for the Temporary Container belonging to the request if the website matches the given pattern.
             </div>
-          </div>
-          <div class="field">
-            <label>Automatically create "Deletes History Temporary Containers"</label>
-            <select id="deletesHistoryContainer" class="ui fluid dropdown">
-              <option value="never">Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (Default)</option>
-              <option value="automatic">Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Mouse Clicks in "Deletes History Temporary Containers"</label>
-            <select id="deletesHistoryContainerMouseClicks" class="ui fluid dropdown">
-              <option value="never">Default</option>
-              <option value="automatic">Open New "Deletes History Temporary Containers" with Mouse Clicks on Links in "Deletes History Temporary Containers" instead of normal
-                Temporary Containers</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Middle Mouse Click in Temporary Containers</label>
-            <select id="linkClickGlobalMiddleCreatesContainer" class="ui fluid dropdown">
-              <option value="default">Default</option>
-              <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Middle Mouse Clicks instead of Temporary Containers</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Ctrl/Cmd+Left Mouse Click in Temporary Containers</label>
-            <select id="linkClickGlobalCtrlLeftCreatesContainer" class="ui fluid dropdown">
-              <option value="default">Default</option>
-              <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Ctrl/Cmd+Left Mouse Clicks instead of Temporary Containers</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Left Mouse Click in Temporary Containers</label>
-            <select id="linkClickGlobalLeftCreatesContainer" class="ui fluid dropdown">
-              <option value="default">Default</option>
-              <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Left Mouse Clicks instead of Temporary Containers</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Automatic Mode</label>
-            <select id="automaticModeNewTab" class="ui fluid dropdown">
-              <option value="navigation">Don't reopen New Tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening (Default)</option>
-              <option value="created">Reopen New Tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Keyboard shortcuts</label>
-          </div>
-          <div class="field" id="keyboardShortcutsAltCField">
-            <div class="ui checkbox">
-              <input type="checkbox" id="keyboardShortcutsAltC">
-              <label>Alt+C - Open a new Tab in a new Temporary Container</label>
+            <div id="setCookiesDomainPatternDiv" class="field">
+              <label>Website Pattern [?]</label>
+              <input id="setCookiesDomainPattern" type="text">
             </div>
-          </div>
-          <div class="field" id="keyboardShortcutsAltPField">
-            <div class="ui checkbox">
-              <input type="checkbox" id="keyboardShortcutsAltP">
-              <label>Alt+P - Open a new Tab in a new 'Deletes History Temporary Container'</label>
+            <div id="setCookiesDomainDomainDiv" class="field">
+              <label>domain</label>
+              <input id="setCookiesDomainDomain" type="text">
             </div>
-          </div>
-          <div class="field" id="keyboardShortcutsAltNField">
-            <div class="ui checkbox">
-              <input type="checkbox" id="keyboardShortcutsAltN">
-              <label>Alt+N - Open a new 'No Container' Tab</label>
+            <div id="setCookiesDomainExpirationDateDiv" class="field">
+              <label>expirationDate</label>
+              <input id="setCookiesDomainExpirationDate" type="text">
             </div>
-          </div>
-          <div class="field" id="keyboardShortcutsAltShiftCField">
-            <div class="ui checkbox">
-              <input type="checkbox" id="keyboardShortcutsAltShiftC">
-              <label>Alt+Shift+C - Open a new 'No Container' Tab in a new Window</label>
+            <div class="field">
+              <label>httpOnly</label>
+              <select id="setCookiesDomainHttpOnly" class="ui fluid dropdown">
+                <option value="false">false</option>
+                <option value="true">true</option>
+              </select>
             </div>
-          </div>
-          <div class="field" id="keyboardShortcutsAltXField">
-            <div class="ui checkbox">
-              <input type="checkbox" id="keyboardShortcutsAltX">
-              <label>Alt+X - Open a new Tab in the same Container as the currently active Tab</label>
+            <div id="setCookiesDomainNameDiv" class="field">
+              <label>name</label>
+              <input id="setCookiesDomainName" type="text">
             </div>
-          </div>
-          <div class="field">
-            <button id="saveAdvancedPreferences" class="ui button primary">Save</button>
-          </div>
-        </form>
+            <div class="field">
+              <label>secure</label>
+              <select id="setCookiesDomainSecure" class="ui fluid dropdown">
+                <option value="false">false</option>
+                <option value="true">true</option>
+              </select>
+            </div>
+            <div id="setCookiesDomainUrlDiv" class="field">
+              <label>url</label>
+              <input id="setCookiesDomainUrl" type="text">
+            </div>
+            <div id="setCookiesDomainValueDiv" class="field">
+              <label>value</label>
+              <input id="setCookiesDomainValue" type="text">
+            </div>
+            <div class="field">
+              <button id="setCookiesDomainAddRule" class="ui button primary">Add Rule</button>
+            </div>
+            <div>
+              <h3>Website Cookies</h3>
+              <div class="ui bulleted list" id="setCookiesDomainCookies">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="advanced/deletehistory">
+          <form class="ui form">
+            <div class="field">
+              <label>"Deletes History Temporary Containers"</label>
+              <div class="ui negative message">
+                <strong>
+                  WARNING: EVERY WEBSITE URL that you visit in a
+                  "Deletes History Temporary Container" WILL GET DELETED FROM YOUR ENTIRE HISTORY.
+                  This means if you visited a Website URL in another Container, Temporary Container
+                  or in No Container before or while visiting it in a "Deletes History Temporary Container"
+                  then those visits will get deleted from History too. This is true until Firefox supports a special History for Container Tabs.
+                  <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320" target="_blank">The related Firefox bug can be found here</a>.<br>
+                  <br>
+                  Be careful. You have been warned. "Deletes History Temporary Containers" tabs have a "-deletes-history" suffix
+                  in the container name to remind you.
+                  <br><br>
+
+                  <div class="ui checkbox" id="deletesHistoryContainerWarningRead">
+                    <input type="checkbox" id="deletesHistoryContainerWarningReadCheckbox">
+                    <label>I have read the WARNING and understand the implications that come with using "Deletes History Temporary Containers".
+                      When ticking the checkbox Firefox will ask you for "Access browsing history" permissions.</label>
+                  </div>
+                </strong>
+              </div>
+              <div class="ui notice message">
+                You can open "Deletes History Temporary Containers" - also with the keyboard shortcut Alt+P - after you read the WARNING and ticked the checkbox.<br>
+                <br>
+                The deletion applies to the full Website URL, not only the domain. That means, if you e.g. open a specific reddit post or a news article on
+                your favorite news site in a "Deletes History Temporary Container" it won't delete all your previous visits to other reddit posts or news articles
+                that you made outside of "Deletes History Temporary Containers" because the full Website URLs are different.<br>
+                <br>
+                "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted after the last Tab in it closes.<br>
+                <br>
+                After you gave the "Access browsing history" permission you'll be asked to give the permission again with the next update of the Add-on (not again after that).
+                <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1402850" target="_blank">That's a Firefox bug and it's reported here</a>.
+              </div>
+            </div>
+            <div class="field">
+              <label>Automatically create "Deletes History Temporary Containers"</label>
+              <select id="deletesHistoryContainer" class="ui fluid dropdown">
+                <option value="never">Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (Default)</option>
+                <option value="automatic">Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Mouse Clicks in "Deletes History Temporary Containers"</label>
+              <select id="deletesHistoryContainerMouseClicks" class="ui fluid dropdown">
+                <option value="never">Default</option>
+                <option value="automatic">Open New "Deletes History Temporary Containers" with Mouse Clicks on Links in "Deletes History Temporary Containers" instead of normal
+                  Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Middle Mouse Click in Temporary Containers</label>
+              <select id="linkClickGlobalMiddleCreatesContainer" class="ui fluid dropdown">
+                <option value="default">Default</option>
+                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Middle Mouse Clicks instead of Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Ctrl/Cmd+Left Mouse Click in Temporary Containers</label>
+              <select id="linkClickGlobalCtrlLeftCreatesContainer" class="ui fluid dropdown">
+                <option value="default">Default</option>
+                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Ctrl/Cmd+Left Mouse Clicks instead of Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Left Mouse Click in Temporary Containers</label>
+              <select id="linkClickGlobalLeftCreatesContainer" class="ui fluid dropdown">
+                <option value="default">Default</option>
+                <option value="deleteshistory">Open New "Deletes History Temporary Containers" with Left Mouse Clicks instead of Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <button id="saveAdvancedDeleteHistoryPreferences" class="ui button primary">Save</button>
+            </div>
+          </form>
+        </div>
       </div>
       <div class="ui tab segment" data-tab="statistics">
         <div class="ui segment">

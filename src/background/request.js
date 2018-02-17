@@ -46,13 +46,6 @@ class Request {
       return { cancel: true };
     }
 
-    if (request.url.startsWith('https://getpocket.com')) {
-      // TODO consider "Decontain Websites" in the preferences
-      // getpocket.com is ignored because of #52
-      debug('[webRequestOnBeforeRequest] were ignoring requests to getpocket.com because of #52', request);
-      return;
-    }
-
     let tab;
     try {
       tab = await browser.tabs.get(request.tabId);
@@ -67,6 +60,14 @@ class Request {
     }
 
     this.container.maybeAddHistory(tab, request.url);
+    this.maybeSetCookies(tab, request.url);
+
+    if (request.url.startsWith('https://getpocket.com')) {
+      // TODO consider "Decontain Websites" in the preferences
+      // getpocket.com is ignored because of #52
+      debug('[webRequestOnBeforeRequest] were ignoring requests to getpocket.com because of #52', request);
+      return;
+    }
 
     let alwaysOpenIn = false;
     if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
@@ -282,6 +283,38 @@ class Request {
     }
 
     return false;
+  }
+
+
+  async maybeSetCookies(tab, url) {
+    if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
+      return;
+    }
+
+    try {
+      const parsedRequestURL = new URL(url);
+      for (let domainPattern in this.storage.local.preferences.setCookiesDomain) {
+        if (parsedRequestURL.hostname === domainPattern ||
+            parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
+          this.storage.local.preferences.setCookiesDomain[domainPattern].map(cookie => {
+            const setCookie = {
+              domain: cookie.domain || undefined,
+              expirationDate: cookie.expirationDate || undefined,
+              httpOnly: cookie.httpOnly === 'true' ? true : false,
+              name: cookie.name,
+              secure: cookie.secure === 'true' ? true : false,
+              url: cookie.url,
+              value: cookie.value || undefined,
+              storeId: tab.cookieStoreId
+            };
+            debug('[maybeSetCookies] setting cookie', cookie, setCookie);
+            browser.cookies.set(setCookie);
+          });
+        }
+      }
+    } catch (error) {
+      debug('[maybeSetCookies] something went wrong while setting cookies', tab, url, error);
+    }
   }
 }
 

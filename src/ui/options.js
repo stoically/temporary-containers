@@ -156,6 +156,64 @@ const updateAlwaysOpenInDomainRules = () => {
   }
 };
 
+const setCookiesDomainAddRule = async () => {
+  const domainPattern = document.querySelector('#setCookiesDomainPattern').value;
+  const setCookieRule = {
+    domain: document.querySelector('#setCookiesDomainDomain').value,
+    expirationDate: document.querySelector('#setCookiesDomainExpirationDate').value,
+    httpOnly: document.querySelector('#setCookiesDomainHttpOnly').value,
+    name: document.querySelector('#setCookiesDomainName').value,
+    secure: document.querySelector('#setCookiesDomainSecure').value,
+    url: document.querySelector('#setCookiesDomainUrl').value,
+    value: document.querySelector('#setCookiesDomainValue').value
+  };
+
+  if (!preferences.setCookiesDomain[domainPattern]) {
+    preferences.setCookiesDomain[domainPattern] = [];
+  }
+  preferences.setCookiesDomain[domainPattern].push(setCookieRule);
+  await savePreferences();
+  updateSetCookiesDomainRules();
+};
+
+const updateSetCookiesDomainRules = () => {
+  const setCookiesDomainCookies = $('#setCookiesDomainCookies');
+  const domainRules = Object.keys(preferences.setCookiesDomain);
+  if (!domainRules.length) {
+    setCookiesDomainCookies.html('No Cookies added');
+    return;
+  }
+  setCookiesDomainCookies.html('');
+  domainRules.map((domainPattern) => {
+    const domainPatternCookies = preferences.setCookiesDomain[domainPattern];
+    domainPatternCookies.map((domainPatternCookie, index) => {
+      setCookiesDomainCookies.append(
+        `<div class="item" id="${encodeURIComponent(domainPattern)}" idIndex="${index}">${domainPattern} [${index}]: ` +
+        ` ${domainPatternCookie.name} ${domainPatternCookie.value} ` +
+        '<a href="#" id="setCookiesRemoveDomainRules" data-tooltip="Remove Cookie (no confirmation)" ' +
+        'data-position="right center">❌</a></div>');
+    });
+  });
+
+  setCookiesDomainCookies.on('click', async (event) => {
+    event.preventDefault();
+    const domainPattern = $(event.target).parent().attr('id');
+    const domainPatternIndex = $(event.target).parent().attr('idIndex');
+    if (domainPattern === 'setCookiesDomainCookies' ||
+        !preferences.setCookiesDomain[decodeURIComponent(domainPattern)]) {
+      return;
+    }
+
+    delete preferences.setCookiesDomain[decodeURIComponent(domainPattern)][domainPatternIndex];
+    const cookies = preferences.setCookiesDomain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie !== undefined);
+    if (!cookies.length) {
+      delete preferences.setCookiesDomain[decodeURIComponent(domainPattern)];
+    }
+    await savePreferences();
+    updateSetCookiesDomainRules();
+  });
+};
+
 const updateStatistics = async () => {
   const storage = await browser.storage.local.get('statistics');
   if (!storage.statistics) {
@@ -226,6 +284,7 @@ const initialize = async () => {
 
     updateLinkClickDomainRules();
     updateAlwaysOpenInDomainRules();
+    updateSetCookiesDomainRules();
     updateStatistics();
     showDeletesHistoryStatistics();
   };
@@ -257,6 +316,20 @@ const initialize = async () => {
       alwaysOpenInDomainAddRule();
     }
   });
+
+  $('#setCookiesDomainForm').form({
+    fields: {
+      setCookiesDomainPattern: 'empty',
+      setCookiesDomainUrl: 'empty'
+    },
+    onSuccess: (event) => {
+      event.preventDefault();
+      setCookiesDomainAddRule();
+    }
+  });
+  $('#setCookiesDomainHttpOnly').dropdown('set selected', 'false');
+  $('#setCookiesDomainSecure').dropdown('set selected', 'false');
+
 
   const domainPatternToolTip =
     '<div style="width:400px;">' +
@@ -350,7 +423,8 @@ const showDeletesHistoryStatistics = async () => {
 
 document.addEventListener('DOMContentLoaded', initialize);
 $('#saveContainerPreferences').on('click', saveContainerPreferences);
-$('#saveAdvancedPreferences').on('click', saveAdvancedPreferences);
+$('#saveAdvancedGeneralPreferences').on('click', saveAdvancedPreferences);
+$('#saveAdvancedDeleteHistoryPreferences').on('click', saveAdvancedPreferences);
 $('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);
 $('#saveStatisticsPreferences').on('click', saveStatisticsPreferences);
 $('#resetStatistics').on('click', resetStatistics);
