@@ -208,7 +208,7 @@ const updateSetCookiesDomainRules = () => {
     }
 
     delete preferences.setCookiesDomain[decodeURIComponent(domainPattern)][domainPatternIndex];
-    const cookies = preferences.setCookiesDomain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie !== undefined);
+    const cookies = preferences.setCookiesDomain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie === 'object');
     if (!cookies.length) {
       delete preferences.setCookiesDomain[decodeURIComponent(domainPattern)];
     }
@@ -347,6 +347,11 @@ const initialize = async () => {
   });
 
   $('#alwaysOpenInDomainPatternDiv').popup({
+    html: domainPatternToolTip,
+    inline: true
+  });
+
+  $('#setCookiesDomainPatternDiv').popup({
     html: domainPatternToolTip,
     inline: true
   });
