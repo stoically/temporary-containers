@@ -43,6 +43,9 @@ global.injectBrowser = () => {
       },
       onErrorOccurred: {
         addListener: sinon.stub()
+      },
+      onBeforeSendHeaders: {
+        addListener: sinon.stub()
       }
     },
     windows: {

@@ -263,7 +263,7 @@
         </div>
         <div class="ui bottom attached tab segment" data-tab="advanced/setcookies">
           <form class="ui form" id="setCookiesDomainForm">
-            <h4 data-tooltip="Regardless how they're opened. Only if not already in a container.">
+            <h4>
               Configure cookies to be set on certain websites in Temporary Containers
             </h4>
             <div class="ui negative message">
@@ -273,7 +273,9 @@
             <div class="ui notice message">
               This will call <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/cookies/set" target="_blank">cookies.set</a>
               while <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeRequest" target="_blank">webRequest.onBeforeRequest</a>
-              for the Temporary Container belonging to the request if the website matches the given pattern.
+              and adds the cookie in <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeSendHeaders" target="_blank">webRequest.onBeforeSendHeaders</a>
+              to the header. Only if the request belongs to a Temporary Container and the website matches the given pattern. Make sure that the cookie name and value are correctly
+              encoded, or you might break the header being sent.
             </div>
             <div id="setCookiesDomainPatternDiv" class="field">
               <label>Website Pattern [?]</label>

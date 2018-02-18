@@ -19,6 +19,15 @@ class Request {
       'blocking'
     ]);
 
+    browser.webRequest.onBeforeSendHeaders.addListener(async details => {
+      return this.maybeAddCookiesToHeader(details);
+    }, {
+      urls: ['<all_urls>'],
+      types: ['main_frame']
+    }, [
+      'blocking', 'requestHeaders'
+    ]);
+
     // Clean up canceled requests
     browser.webRequest.onCompleted.addListener((request) => {
       if (this.canceledRequests[request.tabId]) {
@@ -320,11 +329,93 @@ class Request {
             storeId: tab.cookieStoreId
           };
           debug('[maybeSetCookies] setting cookie', cookie, setCookie);
-          await browser.cookies.set(setCookie);
+          const cookieSet = await browser.cookies.set(setCookie);
+          debug('[maybeSetCookies] cookie set', cookieSet);
         }
       }
     } catch (error) {
       debug('[maybeSetCookies] something went wrong while setting cookies', tab, url, error);
+    }
+  }
+
+  async maybeAddCookiesToHeader(details) {
+    if (details.tabId < 0 || !Object.keys(this.storage.local.preferences.setCookiesDomain).length) {
+      return;
+    }
+
+    let tab;
+    try {
+      const parsedRequestURL = new URL(details.url);
+      let cookieHeader;
+      let cookiesHeader = {};
+      let cookieHeaderChanged = false;
+      for (let domainPattern in this.storage.local.preferences.setCookiesDomain) {
+        if (parsedRequestURL.hostname !== domainPattern &&
+            !parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
+          continue;
+        }
+        if (!tab) {
+          tab = await browser.tabs.get(details.tabId);
+          if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
+            return;
+          }
+
+          cookieHeader = details.requestHeaders.find(element => element.name.toLowerCase() === 'cookie');
+          if (cookieHeader) {
+            cookiesHeader = cookieHeader.value.split('; ').reduce((accumulator, cookie) => {
+              const split = cookie.split('=');
+              if (split.length === 2) {
+                accumulator[split[0]] = split[1];
+              }
+              return accumulator;
+            }, {});
+          }
+          debug('[maybeAddCookiesToHeader] found temp tab and header', details, cookieHeader, cookiesHeader);
+        }
+
+        for (let cookie of this.storage.local.preferences.setCookiesDomain[domainPattern]) {
+          if (!cookie) {
+            continue;
+          }
+
+          const cookieToAdd = await browser.cookies.get({
+            name: cookie.name,
+            url: details.url,
+            storeId: tab.cookieStoreId
+          });
+          debug('[maybeAddCookiesToHeader] checked if allowed to add cookie to header', cookieToAdd);
+
+          if (cookieToAdd && cookiesHeader[cookieToAdd.name] !== cookieToAdd.value) {
+            cookieHeaderChanged = true;
+            cookiesHeader[cookieToAdd.name] = cookieToAdd.value;
+            debug('[maybeAddCookiesToHeader] cookie value changed', cookiesHeader);
+          }
+        }
+      }
+      debug('[maybeAddCookiesToHeader] cookieHeaderChanged', cookieHeaderChanged, cookieHeader, cookiesHeader);
+      if (!cookieHeaderChanged) {
+        return;
+      } else {
+        const changedCookieHeaderValues = [];
+        Object.keys(cookiesHeader).map(cookieName => {
+          changedCookieHeaderValues.push(`${cookieName}=${cookiesHeader[cookieName]}`);
+        });
+        const changedCookieHeaderValue = changedCookieHeaderValues.join('; ');
+        debug('[maybeAddCookiesToHeader] changedCookieHeaderValue', changedCookieHeaderValue);
+        if (cookieHeader) {
+          cookieHeader.value = changedCookieHeaderValue;
+        } else {
+          details.requestHeaders.push({
+            name: 'Cookie',
+            value: changedCookieHeaderValue
+          });
+        }
+        debug('[maybeAddCookiesToHeader] changed cookieHeader to', cookieHeader, details);
+        return details;
+      }
+    } catch (error) {
+      debug('[maybeAddCookiesToHeader] something went wrong while adding cookies to header', tab, details.url, error);
+      return;
     }
   }
 }
