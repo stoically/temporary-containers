@@ -42,7 +42,8 @@ class Storage {
       notifications: false,
       statistics: false,
       deletesHistoryStatistics: false,
-      setCookiesDomain: {}
+      setCookiesDomain: {},
+      contextMenu: true
     };
   }
 

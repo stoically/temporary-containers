@@ -239,6 +239,7 @@ const saveAdvancedPreferences = async (event) => {
   preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
   preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
   preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
+  preferences.contextMenu = document.querySelector('#contextMenu').checked;
 
   preferences.keyboardShortcuts.AltC = document.querySelector('#keyboardShortcutsAltC').checked;
   preferences.keyboardShortcuts.AltP = document.querySelector('#keyboardShortcutsAltP').checked;
@@ -248,6 +249,33 @@ const saveAdvancedPreferences = async (event) => {
 
   // TODO this might cause saving preferences that got selected on global mouseclicks but not saved
   saveLinkClickGlobalPreferences(event);
+};
+
+
+const saveStatisticsPreferences = async (event) => {
+  event.preventDefault();
+  preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
+  preferences.deletesHistoryStatistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
+  await savePreferences();
+};
+
+const resetStatistics = async (event) => {
+  event.preventDefault();
+  await browser.runtime.sendMessage({
+    method: 'resetStatistics'
+  });
+
+  updateStatistics();
+  showMessage('Statistics have been reset.');
+};
+
+const showDeletesHistoryStatistics = async () => {
+  const checked = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
+  if (checked) {
+    $('#deletesHistoryStatistics').removeClass('hidden');
+  } else {
+    $('#deletesHistoryStatistics').addClass('hidden');
+  }
 };
 
 const initialize = async () => {
@@ -276,6 +304,7 @@ const initialize = async () => {
     $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
     $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
     $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
+    document.querySelector('#contextMenu').checked = preferences.contextMenu;
 
     document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
     document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistoryStatistics;
@@ -401,32 +430,6 @@ const initialize = async () => {
   if (!notificationsPermission) {
     $('#notifications')
       .checkbox('uncheck');
-  }
-};
-
-const saveStatisticsPreferences = async (event) => {
-  event.preventDefault();
-  preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
-  preferences.deletesHistoryStatistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
-  await savePreferences();
-};
-
-const resetStatistics = async (event) => {
-  event.preventDefault();
-  await browser.runtime.sendMessage({
-    method: 'resetStatistics'
-  });
-
-  updateStatistics();
-  showMessage('Statistics have been reset.');
-};
-
-const showDeletesHistoryStatistics = async () => {
-  const checked = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
-  if (checked) {
-    $('#deletesHistoryStatistics').removeClass('hidden');
-  } else {
-    $('#deletesHistoryStatistics').addClass('hidden');
   }
 };
 

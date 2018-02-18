@@ -256,6 +256,9 @@ class TemporaryContainers extends Emittery {
   }
 
   async addContextMenu() {
+    if (!this.storage.local.preferences.contextMenu) {
+      return;
+    }
     browser.contextMenus.create({
       id: 'open-link-in-new-temporary-container-tab',
       title: 'Open Link in New Temporary Container Tab',
