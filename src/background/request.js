@@ -355,6 +355,11 @@ class Request {
           const cookieSet = await browser.cookies.set(setCookie);
           debug('[maybeSetCookies] cookie set', cookieSet);
 
+          if (cookiesHeader[cookie.name] === cookie.value) {
+            debug('[maybeSetCookies] the set cookie is already in the header', cookie, cookiesHeader);
+            continue;
+          }
+
           // check if we're allowed to send the cookie with the current request
           const cookieAllowed = await browser.cookies.get({
             name: cookie.name,
@@ -363,7 +368,7 @@ class Request {
           });
           debug('[maybeAddCookiesToHeader] checked if allowed to add cookie to header', cookieAllowed);
 
-          if (cookieAllowed && cookiesHeader[cookieAllowed.name] !== cookieAllowed.value) {
+          if (cookieAllowed) {
             cookieHeaderChanged = true;
             cookiesHeader[cookieAllowed.name] = cookieAllowed.value;
             debug('[maybeAddCookiesToHeader] cookie value changed', cookiesHeader);
