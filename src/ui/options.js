@@ -330,8 +330,6 @@ const initialize = async () => {
       setCookiesDomainAddRule();
     }
   });
-  $('#setCookiesDomainHttpOnly').dropdown('set selected', 'false');
-  $('#setCookiesDomainSecure').dropdown('set selected', 'false');
 
 
   const domainPatternToolTip =

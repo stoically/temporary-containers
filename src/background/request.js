@@ -302,10 +302,10 @@ class Request {
             }
             const setCookie = {
               domain: cookie.domain || undefined,
-              expirationDate: cookie.expirationDate || undefined,
-              httpOnly: cookie.httpOnly === 'true' ? true : false,
+              expirationDate: cookie.expirationDate ? parseInt(cookie.expirationDate) : undefined,
+              httpOnly: cookie.httpOnly === '' ? undefined : (cookie.httpOnly === 'true' ? true : false),
               name: cookie.name,
-              secure: cookie.secure === 'true' ? true : false,
+              secure: cookie.secure === '' ? undefined : (cookie.secure === 'true' ? true : false),
               url: cookie.url,
               value: cookie.value || undefined,
               storeId: tab.cookieStoreId
