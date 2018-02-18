@@ -163,6 +163,7 @@ const setCookiesDomainAddRule = async () => {
     expirationDate: document.querySelector('#setCookiesDomainExpirationDate').value,
     httpOnly: document.querySelector('#setCookiesDomainHttpOnly').value,
     name: document.querySelector('#setCookiesDomainName').value,
+    path: document.querySelector('#setCookiesDomainPath').value,
     secure: document.querySelector('#setCookiesDomainSecure').value,
     url: document.querySelector('#setCookiesDomainUrl').value,
     value: document.querySelector('#setCookiesDomainValue').value

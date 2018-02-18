@@ -323,6 +323,7 @@ class Request {
             expirationDate: cookie.expirationDate ? parseInt(cookie.expirationDate) : undefined,
             httpOnly: cookie.httpOnly === '' ? undefined : (cookie.httpOnly === 'true' ? true : false),
             name: cookie.name,
+            path: cookie.path || undefined,
             secure: cookie.secure === '' ? undefined : (cookie.secure === 'true' ? true : false),
             url: cookie.url,
             value: cookie.value || undefined,
