@@ -392,6 +392,8 @@ const initialize = async () => {
     $('#deletesHistoryContainerWarningRead')
       .checkbox('check')
       .checkbox('set disabled');
+
+    $('#keyboardShortcutsAltPField').removeClass('hidden');
   }
 
   const notificationsPermission = await browser.permissions.contains({permissions: ['notifications']});
@@ -447,6 +449,8 @@ const requestHistoryPermissions = async () => {
     $('#deletesHistoryContainerWarningRead')
       .checkbox('check')
       .checkbox('set disabled');
+
+    $('#keyboardShortcutsAltPField').removeClass('hidden');
 
     await browser.runtime.sendMessage({
       method: 'historyPermissionAllowed'

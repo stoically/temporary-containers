@@ -12,6 +12,13 @@ class Request {
     this.container = background.container;
     this.mouseclick = background.mouseclick;
 
+    browser.webRequest.onBeforeRequest.addListener(this.webRequestOnBeforeRequest.bind(this),  {
+      urls: ['<all_urls>'],
+      types: ['main_frame']
+    }, [
+      'blocking'
+    ]);
+
     // Clean up canceled requests
     browser.webRequest.onCompleted.addListener((request) => {
       if (this.canceledRequests[request.tabId]) {
@@ -60,7 +67,7 @@ class Request {
     }
 
     this.container.maybeAddHistory(tab, request.url);
-    this.maybeSetCookies(tab, request.url);
+    await this.maybeSetCookies(tab, request.url);
 
     if (request.url.startsWith('https://getpocket.com')) {
       // TODO consider "Decontain Websites" in the preferences
@@ -294,25 +301,26 @@ class Request {
     try {
       const parsedRequestURL = new URL(url);
       for (let domainPattern in this.storage.local.preferences.setCookiesDomain) {
-        if (parsedRequestURL.hostname === domainPattern ||
-            parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
-          this.storage.local.preferences.setCookiesDomain[domainPattern].map(cookie => {
-            if (!cookie) {
-              return;
-            }
-            const setCookie = {
-              domain: cookie.domain || undefined,
-              expirationDate: cookie.expirationDate ? parseInt(cookie.expirationDate) : undefined,
-              httpOnly: cookie.httpOnly === '' ? undefined : (cookie.httpOnly === 'true' ? true : false),
-              name: cookie.name,
-              secure: cookie.secure === '' ? undefined : (cookie.secure === 'true' ? true : false),
-              url: cookie.url,
-              value: cookie.value || undefined,
-              storeId: tab.cookieStoreId
-            };
-            debug('[maybeSetCookies] setting cookie', cookie, setCookie);
-            browser.cookies.set(setCookie);
-          });
+        if (parsedRequestURL.hostname !== domainPattern &&
+            !parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
+          continue;
+        }
+        for (let cookie of this.storage.local.preferences.setCookiesDomain[domainPattern]) {
+          if (!cookie) {
+            continue;
+          }
+          const setCookie = {
+            domain: cookie.domain || undefined,
+            expirationDate: cookie.expirationDate ? parseInt(cookie.expirationDate) : undefined,
+            httpOnly: cookie.httpOnly === '' ? undefined : (cookie.httpOnly === 'true' ? true : false),
+            name: cookie.name,
+            secure: cookie.secure === '' ? undefined : (cookie.secure === 'true' ? true : false),
+            url: cookie.url,
+            value: cookie.value || undefined,
+            storeId: tab.cookieStoreId
+          };
+          debug('[maybeSetCookies] setting cookie', cookie, setCookie);
+          await browser.cookies.set(setCookie);
         }
       }
     } catch (error) {

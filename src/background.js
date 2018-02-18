@@ -50,12 +50,6 @@ class TemporaryContainers extends Emittery {
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
     browser.tabs.onRemoved.addListener(this.tabsOnRemoved.bind(this));
     browser.browserAction.onClicked.addListener(this.browserActionOnClicked.bind(this));
-    browser.webRequest.onBeforeRequest.addListener(this.request.webRequestOnBeforeRequest.bind(this.request),  {
-      urls: ['<all_urls>'],
-      types: ['main_frame']
-    }, [
-      'blocking'
-    ]);
     this.addContextMenu();
 
     if (this.storage.local.preferences.iconColor !== 'default') {
