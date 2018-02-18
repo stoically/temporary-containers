@@ -272,9 +272,8 @@
             </div>
             <div class="ui notice message">
               This will call <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/cookies/set" target="_blank">cookies.set</a>
-              while <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeRequest" target="_blank">webRequest.onBeforeRequest</a>
-              and adds the cookie in <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeSendHeaders" target="_blank">webRequest.onBeforeSendHeaders</a>
-              to the header. Only if the request belongs to a Temporary Container and the website matches the given pattern. Make sure that the cookie name and value are correctly
+              and add the cookie to the header (if allowed) during <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeSendHeaders" target="_blank">webRequest.onBeforeSendHeaders</a>.
+              Only if the request belongs to a Temporary Container and the website matches the given pattern. Make sure that the cookie name and value are correctly
               encoded, or you might break the header being sent.
             </div>
             <div id="setCookiesDomainPatternDiv" class="field">

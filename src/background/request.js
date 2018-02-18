@@ -20,7 +20,7 @@ class Request {
     ]);
 
     browser.webRequest.onBeforeSendHeaders.addListener(async details => {
-      return this.maybeAddCookiesToHeader(details);
+      return this.maybeSetAndAddCookiesToHeader(details);
     }, {
       urls: ['<all_urls>'],
       types: ['main_frame']
@@ -62,6 +62,13 @@ class Request {
       return { cancel: true };
     }
 
+    if (request.url.startsWith('https://getpocket.com')) {
+      // TODO consider "Decontain Websites" in the preferences
+      // getpocket.com is ignored because of #52
+      debug('[webRequestOnBeforeRequest] were ignoring requests to getpocket.com because of #52', request);
+      return;
+    }
+
     let tab;
     try {
       tab = await browser.tabs.get(request.tabId);
@@ -76,14 +83,6 @@ class Request {
     }
 
     this.container.maybeAddHistory(tab, request.url);
-    await this.maybeSetCookies(tab, request.url);
-
-    if (request.url.startsWith('https://getpocket.com')) {
-      // TODO consider "Decontain Websites" in the preferences
-      // getpocket.com is ignored because of #52
-      debug('[webRequestOnBeforeRequest] were ignoring requests to getpocket.com because of #52', request);
-      return;
-    }
 
     let alwaysOpenIn = false;
     if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
@@ -301,45 +300,7 @@ class Request {
     return false;
   }
 
-
-  async maybeSetCookies(tab, url) {
-    if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
-      return;
-    }
-
-    try {
-      const parsedRequestURL = new URL(url);
-      for (let domainPattern in this.storage.local.preferences.setCookiesDomain) {
-        if (parsedRequestURL.hostname !== domainPattern &&
-            !parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
-          continue;
-        }
-        for (let cookie of this.storage.local.preferences.setCookiesDomain[domainPattern]) {
-          if (!cookie) {
-            continue;
-          }
-          const setCookie = {
-            domain: cookie.domain || undefined,
-            expirationDate: cookie.expirationDate ? parseInt(cookie.expirationDate) : undefined,
-            httpOnly: cookie.httpOnly === '' ? undefined : (cookie.httpOnly === 'true' ? true : false),
-            name: cookie.name,
-            path: cookie.path || undefined,
-            secure: cookie.secure === '' ? undefined : (cookie.secure === 'true' ? true : false),
-            url: cookie.url,
-            value: cookie.value || undefined,
-            storeId: tab.cookieStoreId
-          };
-          debug('[maybeSetCookies] setting cookie', cookie, setCookie);
-          const cookieSet = await browser.cookies.set(setCookie);
-          debug('[maybeSetCookies] cookie set', cookieSet);
-        }
-      }
-    } catch (error) {
-      debug('[maybeSetCookies] something went wrong while setting cookies', tab, url, error);
-    }
-  }
-
-  async maybeAddCookiesToHeader(details) {
+  async maybeSetAndAddCookiesToHeader(details) {
     if (details.tabId < 0 || !Object.keys(this.storage.local.preferences.setCookiesDomain).length) {
       return;
     }
@@ -378,17 +339,33 @@ class Request {
           if (!cookie) {
             continue;
           }
+          // website pattern matched request, set cookie
+          const setCookie = {
+            domain: cookie.domain || undefined,
+            expirationDate: cookie.expirationDate ? parseInt(cookie.expirationDate) : undefined,
+            httpOnly: cookie.httpOnly === '' ? undefined : (cookie.httpOnly === 'true' ? true : false),
+            name: cookie.name,
+            path: cookie.path || undefined,
+            secure: cookie.secure === '' ? undefined : (cookie.secure === 'true' ? true : false),
+            url: cookie.url,
+            value: cookie.value || undefined,
+            storeId: tab.cookieStoreId
+          };
+          debug('[maybeSetCookies] setting cookie', cookie, setCookie);
+          const cookieSet = await browser.cookies.set(setCookie);
+          debug('[maybeSetCookies] cookie set', cookieSet);
 
-          const cookieToAdd = await browser.cookies.get({
+          // check if we're allowed to send the cookie with the current request
+          const cookieAllowed = await browser.cookies.get({
             name: cookie.name,
             url: details.url,
             storeId: tab.cookieStoreId
           });
-          debug('[maybeAddCookiesToHeader] checked if allowed to add cookie to header', cookieToAdd);
+          debug('[maybeAddCookiesToHeader] checked if allowed to add cookie to header', cookieAllowed);
 
-          if (cookieToAdd && cookiesHeader[cookieToAdd.name] !== cookieToAdd.value) {
+          if (cookieAllowed && cookiesHeader[cookieAllowed.name] !== cookieAllowed.value) {
             cookieHeaderChanged = true;
-            cookiesHeader[cookieToAdd.name] = cookieToAdd.value;
+            cookiesHeader[cookieAllowed.name] = cookieAllowed.value;
             debug('[maybeAddCookiesToHeader] cookie value changed', cookiesHeader);
           }
         }
