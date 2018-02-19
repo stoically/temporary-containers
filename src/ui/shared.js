@@ -90,6 +90,7 @@ const linkClickDomainAddRule = async () => {
   updateLinkClickDomainRules();
 };
 
+let linkClickDomainRulesClickEvent = false;
 window.updateLinkClickDomainRules = () => {
   const linkClickDomainRules = $('#linkClickDomainRules');
   const domainRules = Object.keys(preferences.linkClickDomain);
@@ -113,16 +114,19 @@ window.updateLinkClickDomainRules = () => {
       });
     });
 
-    linkClickDomainRules.on('click', async (event) => {
-      event.preventDefault();
-      const domainPattern = $(event.target).parent().attr('id');
-      if (domainPattern === 'linkClickDomainRules') {
-        return;
-      }
-      delete preferences.linkClickDomain[decodeURIComponent(domainPattern)];
-      await savePreferences();
-      updateLinkClickDomainRules();
-    });
+    if (!linkClickDomainRulesClickEvent) {
+      linkClickDomainRules.on('click', async (event) => {
+        event.preventDefault();
+        const domainPattern = $(event.target).parent().attr('id');
+        if (domainPattern === 'linkClickDomainRules') {
+          return;
+        }
+        delete preferences.linkClickDomain[decodeURIComponent(domainPattern)];
+        await savePreferences();
+        updateLinkClickDomainRules();
+      });
+      linkClickDomainRulesClickEvent = true;
+    }
   } else {
     linkClickDomainRules.html('No Rules added');
   }
