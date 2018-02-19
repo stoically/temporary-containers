@@ -111,6 +111,11 @@ global.injectBrowser = () => {
       onChanged: {
         addListener: sinon.stub()
       }
+    },
+    pageAction: {
+      setIcon: sinon.stub(),
+      hide: sinon.stub(),
+      show: sinon.stub()
     }
   };
 };
