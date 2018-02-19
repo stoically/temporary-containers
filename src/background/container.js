@@ -3,14 +3,14 @@ const { debug } = require('./log');
 class Container {
   constructor() {
     this.containerColors = [
-      'blue',
-      'turquoise',
-      'green',
-      'yellow',
-      'orange',
-      'red',
-      'pink',
-      'purple',
+      'blue',      // #37ADFF
+      'turquoise', // #00C79A
+      'green',     // #51CD00
+      'yellow',    // #FFCB00
+      'orange',    // #FF9F00
+      'red',       // #FF613D
+      'pink',      // #FF4BDA
+      'purple',    // #AF51F5
     ];
 
     this.containerIcons = [

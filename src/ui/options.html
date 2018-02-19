@@ -179,7 +179,7 @@
               </select>
             </div>
             <div class="field">
-              <button id="linkClickDomainAddRule" class="ui button primary">Add Rule</button>
+              <button id="linkClickDomainAddRule" class="ui button primary">Save</button>
             </div>
             <div>
               <h3>Website Rules</h3>
@@ -199,7 +199,7 @@
             <input id="alwaysOpenInDomainPattern" type="text">
           </div>
           <div class="field">
-            <button id="alwaysOpenInDomainAddRule" class="ui button primary">Add Rule</button>
+            <button id="alwaysOpenInDomainAddRule" class="ui button primary">Save</button>
           </div>
           <div>
             <h3>Website Rules</h3>
@@ -222,6 +222,13 @@
                 <option value="navigation">Don't reopen New Tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening (Default)</option>
                 <option value="created">Reopen New Tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected</option>
               </select>
+            </div>
+            <div class="field" id="pageActionField">
+              <label>Address Bar Icon</label>
+              <div class="ui checkbox" data-tooltip="The popup lets you configure mouse clicks for the active website (more coming soon)">
+                <input type="checkbox" id="pageAction">
+                <label>Additional Icon in address bar that reveals a popup [?]</label>
+              </div>
             </div>
             <div class="field">
               <label>Context Menu</label>
@@ -487,6 +494,7 @@
     </div>
     <script src="jquery-3.3.1.min.js"></script>
     <script src="semantic/semantic.min.js"></script>
+    <script src="shared.js"></script>
     <script src="options.js"></script>
   </body>
 

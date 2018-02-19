@@ -152,6 +152,7 @@ class TemporaryContainers extends Emittery {
     }
     debug('[tabsOnUpdated] url changed', changeInfo, tab);
     await this.container.maybeAddHistory(tab, changeInfo.url);
+    await this.showOrHidePageAction(tab);
     await this.container.maybeReloadTabInTempContainer(tab);
   }
 
@@ -169,6 +170,34 @@ class TemporaryContainers extends Emittery {
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     if (!activatedTab.incognito) {
       this.addContextMenu();
+
+      this.showOrHidePageAction(activatedTab);
+    }
+  }
+
+  async showOrHidePageAction(activatedTab) {
+    let color;
+    if (activatedTab.cookieStoreId === 'firefox-default') {
+      color = 'gray';
+    } else if (this.storage.local.tempContainers[activatedTab.cookieStoreId] &&
+      this.storage.local.tempContainers[activatedTab.cookieStoreId].color) {
+      color = this.storage.local.tempContainers[activatedTab.cookieStoreId].color;
+    } else {
+      const container = await browser.contextualIdentities.get(activatedTab.cookieStoreId);
+      color = container.color;
+    }
+    browser.pageAction.setIcon({
+      path: {
+        '19': `icons/pageaction-${color}-19.svg`,
+        '38': `icons/pageaction-${color}-38.svg`
+      },
+      tabId: activatedTab.id
+    });
+    if (!this.storage.local.preferences.pageAction ||
+        !activatedTab.url.startsWith('http')) {
+      browser.pageAction.hide(activatedTab.id);
+    } else {
+      browser.pageAction.show(activatedTab.id);
     }
   }
 

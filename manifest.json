@@ -27,6 +27,14 @@
     }]
   },
 
+  "page_action": {
+    "default_popup": "tmpcontainer/ui/popup.html",
+    "default_icon": {
+      "19": "icons/pageaction-gray-19.svg",
+      "38": "icons/pageaction-gray-38.svg"
+    }
+  },
+
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {

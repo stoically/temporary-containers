@@ -43,7 +43,8 @@ class Storage {
       statistics: false,
       deletesHistoryStatistics: false,
       setCookiesDomain: {},
-      contextMenu: true
+      contextMenu: true,
+      pageAction: false
     };
   }
 

@@ -5,24 +5,65 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="semantic/semantic.min.css">
     <style>
-      body { padding: 20px; }
+      body { padding: 10px; }
       .hidden { display: none; }
     </style>
   </head>
 
   <body>
-    <form class="ui form">
-      <button class="ui button">
-        New Temporary Container Tab
-      </button>
-      <div class="field" id="automaticModeField">
-        <div class="ui checkbox">
-          <input type="checkbox" id="automaticMode">
-          <label>Automatic Mode [?]</label>
+    <div class="ui top attached tabular menu">
+      <a class="active item">
+        Mouse Clicks
+      </a>
+    </div>
+    <div class="ui bottom attached segment">
+      <form class="ui form" id="linkClickDomainForm">
+        <div id="linkClickDomainPatternDiv" class="field">
+          <label>Website Pattern</label>
+          <input id="linkClickDomainPattern" type="text">
         </div>
-      </div>
-    </form>
-    <script src="jquery-3.2.1.min.js"></script>
+        <div class="field">
+          <label>Middle Mouse</label>
+          <select id="linkClickDomainMiddle" class="ui fluid dropdown">
+            <option value="always" selected="selected">Always</option>
+            <option value="notsamedomainexact">Link not exact same Domain</option>
+            <option value="notsamedomain">Link not same Domain</option>
+            <option value="never">Never</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Ctrl/Cmd+Left Mouse</label>
+          <select id="linkClickDomainCtrlLeft" class="ui fluid dropdown">
+            <option value="always" selected="selected">Always</option>
+            <option value="notsamedomainexact">Link not exact same Domain</option>
+            <option value="notsamedomain">Link not same Domain</option>
+            <option value="never">Never</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Left Mouse</label>
+          <select id="linkClickDomainLeft" class="ui fluid dropdown">
+            <option value="always" selected="selected">Always</option>
+            <option value="notsamedomainexact">Link not exact same Domain</option>
+            <option value="notsamedomain">Link not same Domain</option>
+            <option value="never">Never</option>
+          </select>
+        </div>
+        <div class="field">
+          <button id="linkClickDomainAddRule" class="ui button primary">Save</button>
+        </div>
+        <div>
+          <h3>Website Rules</h3>
+          <div class="ui bulleted list" id="linkClickDomainRules">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div id="message" class="ui positive message hidden"></div>
+
+    <script src="jquery-3.3.1.min.js"></script>
     <script src="semantic/semantic.min.js"></script>
+    <script src="shared.js"></script>
+    <script src="popup.js"></script>
   </body>
 </html>
