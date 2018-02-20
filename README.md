@@ -26,7 +26,7 @@ Detailed informations about the [Add-on can be found on AMO](https://addons.mozi
 
 
 ## Libraries
-The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are **only** used to style the UI. The background and contentscript that do the heavy lifting don't use external libraries (except [emittery](https://github.com/sindresorhus/emittery)).
+The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are **only** used for the preferences&popup UI, not for the background and contentscript.
 
 
 ## Limitations

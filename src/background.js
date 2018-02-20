@@ -180,7 +180,7 @@ class TemporaryContainers extends Emittery {
     if (activatedTab.cookieStoreId === 'firefox-default') {
       color = 'gray';
     } else if (this.storage.local.tempContainers[activatedTab.cookieStoreId] &&
-      this.storage.local.tempContainers[activatedTab.cookieStoreId].color) {
+               this.storage.local.tempContainers[activatedTab.cookieStoreId].color) {
       color = this.storage.local.tempContainers[activatedTab.cookieStoreId].color;
     } else {
       const container = await browser.contextualIdentities.get(activatedTab.cookieStoreId);
@@ -361,7 +361,7 @@ class TemporaryContainers extends Emittery {
 
     // queue a container cleanup
     setTimeout(() => {
-      this.container.cleanup();
+      this.container.cleanup(true);
     }, 15000);
 
     // extension loads after the first tab opens most of the time

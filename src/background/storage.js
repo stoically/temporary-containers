@@ -28,9 +28,11 @@ class Storage {
       containerIcon: 'circle',
       containerIconRandom: false,
       containerNumberMode: 'keep',
+      containerRemoval: '15minutes',
       iconColor: 'default',
       historyPermission: false,
       deletesHistoryContainer: 'never',
+      deletesHistoryContainerRemoval: 'instant',
       deletesHistoryContainerMouseClicks: 'never',
       keyboardShortcuts: {
         AltC: true,

@@ -45,6 +45,7 @@ window.saveContainerPreferences = async (event) => {
   preferences.containerIcon = document.querySelector('#containerIcon').value;
   preferences.containerIconRandom = document.querySelector('#containerIconRandom').checked;
   preferences.containerNumberMode = document.querySelector('#containerNumberMode').value;
+  preferences.containerRemoval = document.querySelector('#containerRemoval').value;
   preferences.iconColor = document.querySelector('#iconColor').value;
 
   await savePreferences();
@@ -247,6 +248,7 @@ window.saveAdvancedPreferences = async (event) => {
   event.preventDefault();
 
   preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
+  preferences.deletesHistoryContainerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
   preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
   preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
   preferences.pageAction = document.querySelector('#pageAction').checked;

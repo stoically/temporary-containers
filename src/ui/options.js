@@ -11,7 +11,9 @@ const initialize = async () => {
     $('#containerIcon').dropdown('set selected', preferences.containerIcon);
     document.querySelector('#containerIconRandom').checked = preferences.containerIconRandom;
     $('#containerNumberMode').dropdown('set selected', preferences.containerNumberMode);
+    $('#containerRemoval').dropdown('set selected', preferences.containerRemoval);
     $('#iconColor').dropdown('set selected', preferences.iconColor);
+
 
     $('#linkClickGlobalMiddle').dropdown('set selected', preferences.linkClickGlobal.middle.action);
     $('#linkClickGlobalCtrlLeft').dropdown('set selected', preferences.linkClickGlobal.ctrlleft.action);
@@ -22,6 +24,7 @@ const initialize = async () => {
     $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.left.container);
 
     $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
+    $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistoryContainerRemoval);
     $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
     $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
     document.querySelector('#pageAction').checked = preferences.pageAction;

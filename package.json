@@ -34,6 +34,8 @@
   },
   "private": true,
   "dependencies": {
-    "emittery": "^0.2.0"
+    "delay": "^2.0.0",
+    "emittery": "^0.2.0",
+    "p-queue": "^2.3.0"
   }
 }

@@ -58,7 +58,7 @@ describe('on require', () => {
     const background = reload('../src/background');
     sinon.stub(background.container, 'cleanup');
     await background.initialize();
-    clock.tick(60000);
+    clock.tick(600000);
     background.container.cleanup.should.have.been.calledOnce;
   });
 });
