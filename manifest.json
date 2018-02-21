@@ -38,7 +38,8 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Alt+C"
+        "default": "Alt+C",
+        "windows": "Alt+Shift+T"
       },
       "description": "Open a new Tab in a new Temporary Container"
     },
