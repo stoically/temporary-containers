@@ -124,6 +124,7 @@ global.loadBackground = async () => {
   const background = reload('../src/background');
   await background.initialize();
   background.storage.local.preferences.automaticMode = true;
+  background.storage.local.preferences.automaticModeNewTab = 'navigation';
   background.storage.local.preferences.linkClickGlobal.middle.action = 'always';
   background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'always';
   return background;

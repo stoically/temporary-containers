@@ -1,3 +1,4 @@
+const delay = require('delay');
 const Storage = require('./background/storage');
 const Container = require('./background/container');
 const Request = require('./background/request');
@@ -133,10 +134,10 @@ class TemporaryContainers extends Emittery {
     debug('[browser.tabs.onCreated] tab created', tab);
     if (tab.incognito) {
       // delay disabling of browseraction (firefox doesnt pickup disabling right after creation)
-      setTimeout(() => {
+      delay(200).then(() => {
         debug('[browser.tabs.onCreated] tab is incognito, disabling browseraction', tab);
         browser.browserAction.disable(tab.id);
-      }, 200);
+      });
       return;
     }
 
@@ -326,29 +327,47 @@ class TemporaryContainers extends Emittery {
       return; // prevent update logic
     }
 
-    if (details.reason === 'update' && !details.previousVersion.includes('beta')) {
-      if (!this.storage.local) {
-        await this.storage.load();
-      }
-      debug('updated from version', details.previousVersion);
-      if (versionCompare('0.16', details.previousVersion) >= 0) {
-        debug('updated from version <= 0.16, adapt old automaticmode behaviour if necessary');
-        if (!this.storage.local.preferences.automaticMode) {
-          this.storage.local.preferences.linkClickGlobal.middle.action = 'never';
-          this.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'never';
-          await this.storage.persist();
-        }
-      }
-      if (versionCompare('0.33', details.previousVersion) >= 0) {
-        debug('updated from version <= 0.33, make sure to set all left-clicks to "never"');
-        this.storage.local.preferences.linkClickGlobal.left.action = 'never';
-        const linkClickDomainPatterns = Object.keys(this.storage.local.preferences.linkClickDomain);
-        if (linkClickDomainPatterns.length) {
-          linkClickDomainPatterns.map(linkClickDomainPattern => {
-            this.storage.local.preferences.linkClickDomain[linkClickDomainPattern].left.action = 'never';
-          });
-        }
+    if (details.reason === 'update') {
+      delay(60000).then(() => this.onUpdateMigration(details));
+    }
+  }
+
+  async onUpdateMigration(details) {
+    if (!this.storage.local) {
+      await this.storage.load();
+    }
+    const previousVersion = details.previousVersion.replace('beta', '.');
+    debug('updated from version', details.previousVersion, previousVersion);
+    if (versionCompare('0.16', previousVersion) >= 0) {
+      debug('updated from version <= 0.16, adapt old automaticmode behaviour if necessary');
+      if (!this.storage.local.preferences.automaticMode) {
+        this.storage.local.preferences.linkClickGlobal.middle.action = 'never';
+        this.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'never';
         await this.storage.persist();
+      }
+    }
+    if (versionCompare('0.33', previousVersion) >= 0) {
+      debug('updated from version <= 0.33, make sure to set all left-clicks to "never"');
+      this.storage.local.preferences.linkClickGlobal.left.action = 'never';
+      const linkClickDomainPatterns = Object.keys(this.storage.local.preferences.linkClickDomain);
+      if (linkClickDomainPatterns.length) {
+        linkClickDomainPatterns.map(linkClickDomainPattern => {
+          this.storage.local.preferences.linkClickDomain[linkClickDomainPattern].left.action = 'never';
+        });
+      }
+      await this.storage.persist();
+    }
+    if (versionCompare('0.57', previousVersion) >= 0) {
+      debug('updated from version <= 0.57, potentially inform user about automatic mode preference change');
+      if (this.storage.local.preferences.automaticMode &&
+          this.storage.local.preferences.automaticModeNewTab === 'navigation') {
+        this.storage.local.preferences.automaticModeNewTab = 'created';
+        await this.storage.persist();
+
+        const url = browser.runtime.getURL('tmpcontainer/ui/notifications/update_from_0.57_and_below.html');
+        browser.tabs.create({
+          url
+        });
       }
     }
   }
@@ -360,9 +379,9 @@ class TemporaryContainers extends Emittery {
     }
 
     // queue a container cleanup
-    setTimeout(() => {
+    delay(15000).then(() => {
       this.container.cleanup(true);
-    }, 15000);
+    });
 
     // extension loads after the first tab opens most of the time
     // lets see if we can reopen the first tab

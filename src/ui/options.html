@@ -223,13 +223,6 @@
         </div>
         <div class="ui bottom attached active tab segment" data-tab="advanced/general">
           <form class="ui form">
-            <div class="field" data-tooltip='"Deletes History Temporary Containers" always reopen New Tabs to avoid leaving traces in recently closed tabs'>
-              <label>Automatic Mode</label>
-              <select id="automaticModeNewTab" class="ui fluid dropdown">
-                <option value="navigation">Don't reopen New Tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening (Default)</option>
-                <option value="created">Reopen New Tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected but it doesn't clutter recently closed tabs with "new tabs"</option>
-              </select>
-            </div>
             <div class="field" id="pageActionField">
               <label>Address Bar Icon</label>
               <div class="ui checkbox" data-tooltip="The popup lets you configure mouse clicks for the active website (more coming soon)">
@@ -250,7 +243,7 @@
             <div class="field" id="keyboardShortcutsAltCField">
               <div class="ui checkbox">
                 <input type="checkbox" id="keyboardShortcutsAltC">
-                <label>Alt+C - Open a new Tab in a new Temporary Container</label>
+                <label>Alt+Shift+T (windows) / Alt+C (linux, macos) - Open a new Tab in a new Temporary Container</label>
               </div>
             </div>
             <div class="field hidden" id="keyboardShortcutsAltPField">
@@ -275,6 +268,22 @@
               <div class="ui checkbox">
                 <input type="checkbox" id="keyboardShortcutsAltX">
                 <label>Alt+X - Open a new Tab in the same Container as the currently active Tab</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>Automatic Mode</label>
+              <div class="ui negative message">
+                <strong>WARNING:</strong> New Tabs (about:newtab) can make network requests and set cookies. Especially when you use the address bar for search engines.
+                If you select "Don't reopen New Tabs in Temporary Containers" here, cookies can get written into and read from the default container.<br>
+                <br>
+                If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean it
+                should be no problem to use the "Don't reopen New Tabs" preference.
+              </div>
+              <div data-tooltip='"Deletes History Temporary Containers" always reopen New Tabs to avoid leaving traces in recently closed tabs'>
+                <select id="automaticModeNewTab" class="ui fluid dropdown">
+                  <option value="created">Reopen New Tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected but it doesn't clutter recently closed tabs with "new tabs" (Default)</option>
+                  <option value="navigation">Don't reopen New Tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening but New Tabs can set and read cookies in the default container</option>
+                </select>
               </div>
             </div>
             <div class="field">
