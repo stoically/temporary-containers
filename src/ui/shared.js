@@ -123,6 +123,7 @@ window.updateLinkClickDomainRules = () => {
           return;
         }
         delete preferences.linkClickDomain[decodeURIComponent(domainPattern)];
+        // TODO show "rule deleted" instead of "preferences saved"
         await savePreferences();
         updateLinkClickDomainRules();
       });

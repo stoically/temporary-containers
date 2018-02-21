@@ -92,10 +92,10 @@ class Container {
       }
       this.requestCreatedTab[request.requestId] = true;
       // cleanup tracked requests later
-      setTimeout(() => {
+      delay(2000).then(() => {
         debug('[createTabInTempContainer] cleanup timeout', request);
         delete this.requestCreatedTab[request.requestId];
-      }, 2000);
+      });
     }
 
     let tempContainerNumber;
@@ -189,6 +189,7 @@ class Container {
   async removeTab(tab) {
     try {
       // make sure we dont close the window by removing this tab
+      // TODO implement actual queue for removal, race-condition (and with that window-closing) is possible
       const tabs = await browser.tabs.query({windowId: browser.windows.WINDOW_ID_CURRENT});
       if (tabs.length > 1) {
         try {
@@ -199,9 +200,9 @@ class Container {
         }
       } else {
         debug('[removeTab] queuing removal of tab to prevent closing of window', tab, tabs);
-        setTimeout(() => {
+        delay(500).then(() => {
           this.removeTab(tab);
-        }, 500);
+        });
       }
     } catch (error) {
       debug('[removeTab] couldnt query tabs', tab, error);
@@ -276,7 +277,7 @@ class Container {
     if (this.removeContainerFetchMassRemoval[containerType].length === 1) {
       debug('[addToRemoveQueue] registering fetch mass removal delay', containerType, this.removeContainerFetchMassRemoval[containerType]);
       this.removingContainerQueue = true;
-      delay(5000).then(() => {
+      delay(15000).then(() => {
         const queue = this.removeContainerFetchMassRemoval[containerType].splice(0);
         switch (containerRemoval) {
         case 'instant':
@@ -286,8 +287,8 @@ class Container {
           break;
 
         case '15minutes':
-          debug('[addToRemoveQueue] registering 15minutes delay for queue removal in 15minutes', containerType, queue);
-          this.maybeShowNotification(`Queued ${queue.length} Temporary Containers for removal`);
+          debug('[addToRemoveQueue] registering 15minutes delay for queue removal', containerType, queue);
+          this.maybeShowNotification(`Queued ${queue.length} Temporary Containers for removal in 15minutes`);
           this.removeContainerDelayQueue.add(() => delay(900000).then(() => {
             debug('[addToRemoveQueue] trying to remove queue after 15minutes timeout', containerType, queue);
             this.removeContainerQueue.add(() => this.tryToRemoveQueue(queue))
