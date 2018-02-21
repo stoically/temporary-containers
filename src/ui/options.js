@@ -111,7 +111,7 @@ const initialize = async () => {
   const automaticModeToolTip =
     '<div style="width:500px;">' +
     'Automatically reopen Tabs in new Temporary Containers when<ul>' +
-    '<li> Opening a Website in a new Tab' +
+    '<li> Opening a new Tab' +
     '<li> An external Program opens a Link in the Browser</ul></div>';
 
   $('#automaticModeField').popup({
