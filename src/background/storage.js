@@ -1,7 +1,9 @@
+const delay = require('delay');
 const { debug } = require('./log');
 
 class Storage {
   constructor() {
+    this.loaded = false;
     this.local = null;
     this.preferencesDefault = {
       automaticMode: false,
@@ -51,6 +53,20 @@ class Storage {
   }
 
   async load() {
+    while (!this.loaded) {
+      // we stay in this loop until we can load the storage
+      // this prevents the add-on from entering a corrupt state
+      const loaded = await this._load();
+      if (loaded) {
+        this.loaded = true;
+      } else {
+        debug('[load] couldnt load storage, retrying in 10s');
+        await delay(10000);
+      }
+    }
+  }
+
+  async _load() {
     try {
       let storagePersistNeeded = false;
       this.local = await browser.storage.local.get();
@@ -108,14 +124,24 @@ class Storage {
       if (storagePersistNeeded) {
         await this.persist();
       }
+      return true;
     } catch (error) {
-      debug('error while loading local storage', error);
-      // TODO: stop execution, inform user and/or retry?
+      // eslint-disable-next-line no-console
+      console.error('error while loading local storage', error);
+      return false;
     }
   }
 
   async persist() {
     try {
+      if (!this.local ||
+          !this.local.tempContainers ||
+          !this.local.preferences ||
+          !this.local.statistics) {
+        debug('[persist] tried to persist corrupt storage, try to load whats in storage and dont persist', this.local);
+        await this.load();
+        return;
+      }
       await browser.storage.local.set(this.local);
       debug('storage persisted');
     } catch (error) {

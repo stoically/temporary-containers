@@ -224,10 +224,10 @@
         <div class="ui bottom attached active tab segment" data-tab="advanced/general">
           <form class="ui form">
             <div class="field" id="pageActionField">
-              <label>Address Bar Icon</label>
+              <label>Address Bar Icon Popup</label>
               <div class="ui checkbox" data-tooltip="The popup lets you configure mouse clicks for the active website (more coming soon)">
                 <input type="checkbox" id="pageAction">
-                <label>Additional Icon in address bar that reveals a popup [?]</label>
+                <label>Show Additional Icon in the address bar that reveals a popup [?]</label>
               </div>
             </div>
             <div class="field">
@@ -517,6 +517,13 @@
         </form>
       </div>
       <div id="message" class="ui positive message hidden"></div>
+      <div id="preferenceserror" class="ui tiny modal">
+        <h2 class="ui header">
+          <div class="content">
+            Error while loading preferences. Please try again later. Sorry about that.
+          </div>
+        </h2>
+      </div>
     </div>
     <script src="jquery-3.3.1.min.js"></script>
     <script src="semantic/semantic.min.js"></script>

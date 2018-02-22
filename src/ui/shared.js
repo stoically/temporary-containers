@@ -1,6 +1,6 @@
 window.preferences = {};
 const messageBox = $('#message');
-const showMessage = (message) => {
+window.showMessage = (message) => {
   messageBox.html(message);
   messageBox.addClass('positive');
   messageBox.removeClass('negative');
@@ -9,11 +9,18 @@ const showMessage = (message) => {
     messageBox.addClass('hidden');
   }, 3000);
 };
-const showError = (error) => {
+window.showError = (error) => {
   messageBox.html(error);
   messageBox.addClass('negative');
   messageBox.removeClass('positive');
   messageBox.removeClass('hidden');
+};
+window.showPreferencesError = () => {
+  $('#preferenceserror')
+    .modal({
+      closable: false
+    })
+    .modal('show');
 };
 
 const savePreferences = async () => {

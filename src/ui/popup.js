@@ -4,8 +4,8 @@ const initialize = async () => {
   $('.ui.checkbox').checkbox();
 
   const storage = await browser.storage.local.get('preferences');
-  if (!storage.preferences) {
-    showError('Error while loading preferences.');
+  if (!storage.preferences || !Object.keys(storage.preferences).length) {
+    showPreferencesError();
     return;
   }
   preferences = storage.preferences;
