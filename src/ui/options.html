@@ -273,11 +273,14 @@
             <div class="field">
               <label>Automatic Mode</label>
               <div class="ui negative message">
-                <strong>WARNING:</strong> New Tabs (about:newtab) can make network requests and set cookies. Especially when you use the address bar for search engines.
-                If you select "Don't reopen New Tabs in Temporary Containers" here, cookies can get written into and read from the default container.<br>
+                <strong>WARNING:</strong> New Tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
+                use the address bar for search engines. If you select "Don't reopen New Tabs in Temporary Containers"
+                here, cookies can get written into and read from the permanent default container as long as the new
+                tab didn't get reopened in a Temporary Container.<br>
                 <br>
-                If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean it
-                should be no problem to use the "Don't reopen New Tabs" preference.
+                If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
+                and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo then it should be no problem
+                to use the "Don't reopen New Tabs" preference.
               </div>
               <div data-tooltip='"Deletes History Temporary Containers" always reopen New Tabs to avoid leaving traces in recently closed tabs'>
                 <select id="automaticModeNewTab" class="ui fluid dropdown">
