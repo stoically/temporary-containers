@@ -142,6 +142,11 @@ class TemporaryContainers extends Emittery {
       return;
     }
 
+    if (tab && tab.cookieStoreId && !this.storage.local.tabContainerMap[tab.id] &&
+        this.storage.local.tempContainers[tab.cookieStoreId]) {
+      this.storage.local.tabContainerMap[tab.id] = tab.cookieStoreId;
+    }
+
     await this.container.maybeReloadTabInTempContainer(tab);
   }
 
@@ -162,6 +167,9 @@ class TemporaryContainers extends Emittery {
   async tabsOnRemoved(tabId) {
     if (this.noContainerTabs[tabId]) {
       delete this.noContainerTabs[tabId];
+    }
+    if (this.container.tabCreatedAsMacConfirmPage[tabId]) {
+      delete this.tabCreatedAsMacConfirmPage[tabId];
     }
     this.container.addToRemoveQueue(tabId);
   }

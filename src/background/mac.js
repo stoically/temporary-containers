@@ -14,6 +14,10 @@ class MultiAccountContainers {
   }
 
   handleConfirmPage(tab) {
+    if (tab && tab.id && this.container.tabCreatedAsMacConfirmPage[tab.id]) {
+      debug('[handleConfirmPage] we reopened a confirmpage in that tab already', tab);
+      return;
+    }
     const multiAccountMatch = tab.url.match(/moz-extension:\/\/[^/]*\/confirm-page.html\?url=/);
     if (multiAccountMatch) {
       debug('[handleConfirmPage] is intervening', tab, multiAccountMatch);
@@ -40,12 +44,17 @@ class MultiAccountContainers {
     }
   }
 
-  maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer) {
-    debug('[maybeReopenConfirmPage]', macAssignment, request, tab, deletesHistoryContainer);
+  async maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer) {
+    debug('[maybeReopenConfirmPage]', macAssignment, request, tab, deletesHistoryContainer, this.container.tabCreatedAsMacConfirmPage);
+    if ((tab && tab.id && this.container.tabCreatedAsMacConfirmPage[tab.id]) ||
+       (request && request.tabId && this.container.tabCreatedAsMacConfirmPage[request.tabId])) {
+      debug('[maybeReopenConfirmPage] we reopened a confirmpage in that tab / for that request.tabId already', tab, request);
+      return;
+    }
     const targetContainer = `firefox-container-${macAssignment.userContextId}`;
     if (this.confirmPage[targetContainer]) {
       debug('[maybeReopenConfirmPage] we saw a mac confirm page for the target container already', targetContainer);
-      this._maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer});
+      return this._maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer});
     } else {
       debug('[maybeReopenConfirmPage] we didnt saw a mac confirm page yet, waiting', targetContainer, tab);
       this.waitingForConfirmPage[targetContainer] = {targetContainer, request, tab, deletesHistoryContainer};
@@ -53,10 +62,11 @@ class MultiAccountContainers {
         debug('[maybeReopenConfirmPage] cleaning up', targetContainer);
         delete this.waitingForConfirmPage[targetContainer];
       });
+      return false;
     }
   }
 
-  _maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer}, confirmPage) {
+  async _maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer}, confirmPage) {
     debug('[_maybeReopenConfirmPage]', targetContainer, request, tab, deletesHistoryContainer);
     if (this.waitingForConfirmPage[targetContainer]) {
       delete this.waitingForConfirmPage[targetContainer];
@@ -66,14 +76,14 @@ class MultiAccountContainers {
     }
     if (!confirmPage) {
       debug('[_maybeReopenConfirmPage] something went wrong, aborting');
-      return;
+      return false;
     }
     const currentContainer = confirmPage.currentContainer;
     if (currentContainer) {
       if (this.storage.local.tempContainers[currentContainer] &&
           this.storage.local.tempContainers[currentContainer].clean) {
         debug('[_maybeReopenConfirmPage] the currentContainer mac confirm wants to open is a clean tmp container, we do nothing');
-        return;
+        return {clean: true};
       } else {
         debug('[_maybeReopenConfirmPage] currentContainer not clean, reopen in new tmp container');
       }
@@ -81,13 +91,15 @@ class MultiAccountContainers {
       debug('[_maybeReopenConfirmPage] no currentContainer, reopen in new tmp container');
     }
 
-    this.container.reloadTabInTempContainer(
+    await this.container.reloadTabInTempContainer(
       confirmPage.tab ? confirmPage.tab : undefined,
       request.url,
       confirmPage.tab ? confirmPage.tab.active : undefined,
       deletesHistoryContainer,
-      request
+      request,
+      true
     );
+    return true;
   }
 
   async getAssignment(url) {

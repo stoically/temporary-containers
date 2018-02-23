@@ -32,6 +32,7 @@ class Container {
 
     this.urlCreatedContainer = {};
     this.requestCreatedTab = {};
+    this.tabCreatedAsMacConfirmPage = {};
     this.creatingTabInSameContainer = false;
     this.removingContainerQueue = false;
     this.removeContainerFetchMassRemoval = {
@@ -82,7 +83,8 @@ class Container {
     alwaysOpenIn = false,
     active = false,
     dontPin = true,
-    deletesHistory = false
+    deletesHistory = false,
+    macConfirmPage = false
   }) {
     if (request && request.requestId) {
       // we saw that request already
@@ -165,6 +167,9 @@ class Container {
           this.urlCreatedContainer[url] = contextualIdentity.cookieStoreId;
         }
         this.storage.local.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
+        if (macConfirmPage) {
+          this.tabCreatedAsMacConfirmPage[newTab.id] = true;
+        }
         await this.storage.persist();
 
         return newTab;
@@ -177,8 +182,8 @@ class Container {
   }
 
 
-  async reloadTabInTempContainer(tab, url, active, deletesHistory, request) {
-    const newTab = await this.createTabInTempContainer({tab, url, active, deletesHistory, request});
+  async reloadTabInTempContainer(tab, url, active, deletesHistory, request, macConfirmPage) {
+    const newTab = await this.createTabInTempContainer({tab, url, active, deletesHistory, request, macConfirmPage});
     if (!tab) {
       return newTab;
     }

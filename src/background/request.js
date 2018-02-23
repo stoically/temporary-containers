@@ -53,7 +53,8 @@ class Request {
     const returnVal = await this._webRequestOnBeforeRequest(request);
     if (returnVal && returnVal.cancel) {
       this.cancelRequest(request);
-    } else {
+      return returnVal;
+    } else if (!returnVal || (returnVal && !returnVal.clean)) {
       const cookieStoreId = this.storage.local.tabContainerMap[request.tabId];
       if (cookieStoreId && this.storage.local.tempContainers[cookieStoreId] &&
           this.storage.local.tempContainers[cookieStoreId].clean) {
@@ -61,7 +62,7 @@ class Request {
         this.storage.local.tempContainers[cookieStoreId].clean = false;
       }
     }
-    return returnVal;
+    return;
   }
 
 
@@ -100,20 +101,13 @@ class Request {
         return;
       } else {
         debug('[webRequestOnBeforeRequest] mac assigned', macAssignment);
-        // we just assume that we cant get the tab informations anymore
-        // so we dont even try
       }
-    } else {
-      try {
-        tab = await browser.tabs.get(request.tabId);
-        debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
-        if (macAssignment && tab.cookieStoreId === macAssignment.cookieStoreId) {
-          debug('[webRequestOnBeforeRequest] the request url is mac assigned to this container, we do nothing');
-          return;
-        }
-      } catch (error) {
-        debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
-      }
+    }
+    try {
+      tab = await browser.tabs.get(request.tabId);
+      debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
+    } catch (error) {
+      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
     }
 
     this.container.maybeAddHistory(tab, request.url);
@@ -180,8 +174,8 @@ class Request {
       deletesHistoryContainer = true;
     }
 
-    if (macAssignment) {
-      debug('[handleClickedLink] decided to reopen but mac assigned, reopen confirmpage', request, tab, macAssignment);
+    if (macAssignment && (!tab || (tab && tab.cookieStoreId !== macAssignment.cookieStoreId))) {
+      debug('[handleClickedLink] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
       this.mac.maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer);
       return;
     }
@@ -218,6 +212,7 @@ class Request {
       return;
     }
 
+
     if (!macAssignment) {
       let containerExists = false;
       if (tab.cookieStoreId === 'firefox-default') {
@@ -236,10 +231,15 @@ class Request {
         debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
         return;
       }
-    }
-
-    if (this.cancelRequest(request)) {
-      return { cancel: true };
+    } else if (tab && tab.url && request && request.url) {
+      const parsedTabUrl = new URL(tab.url);
+      const parsedRequestUrl = new URL(request.url);
+      if (tab.cookieStoreId === macAssignment.cookieStoreId &&
+          parsedTabUrl.hostname === parsedRequestUrl.hostname &&
+          tab.id === request.tabId) {
+        debug('[webRequestOnBeforeRequest] the request url is mac assigned to this container, we do nothing');
+        return;
+      }
     }
 
     let deletesHistoryContainer = false;
@@ -248,8 +248,12 @@ class Request {
     }
 
     if (macAssignment) {
-      debug('[handleNotClickedLink] decided to reopen but mac assigned, reopen confirmpage', request, tab, macAssignment);
-      this.mac.maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer);
+      debug('[handleNotClickedLink] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
+      // we dont know here whether to cancel or not, just let it fall through
+      return this.mac.maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer);
+    }
+
+    if (this.cancelRequest(request)) {
       return { cancel: true };
     }
 
