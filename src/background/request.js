@@ -92,8 +92,12 @@ class Request {
     try {
       tab = await browser.tabs.get(request.tabId);
       debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
+      if (macAssignment && tab.cookieStoreId === macAssignment.cookieStoreId) {
+        debug('[webRequestOnBeforeRequest] the request url is mac assigned to this container, we do nothing');
+        return;
+      }
     } catch (error) {
-      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was faster', error);
+      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
     }
 
     this.container.maybeAddHistory(tab, request.url);

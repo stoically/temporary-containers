@@ -82,11 +82,17 @@ class MultiAccountContainers {
     );
   }
 
-  getAssignment(url) {
-    return browser.runtime.sendMessage('@testpilot-containers', {
+  async getAssignment(url) {
+    const assignment = await browser.runtime.sendMessage('@testpilot-containers', {
       method: 'getAssignment',
       url
     });
+
+    return {
+      userContextId: assignment.userContextId,
+      cookieStoreId: `firefox-container-${assignment.userContextId}`,
+      neverAsk: assignment.neverAsk
+    };
   }
 }
 
