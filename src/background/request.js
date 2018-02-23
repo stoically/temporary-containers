@@ -61,16 +61,8 @@ class Request {
     let macAssignment;
     try {
       macAssignment = await this.mac.getAssignment(request.url);
-      if (this.background.macLegacy) {
-        this.background.macLegacy.removeAllListeners();
-        this.background.macLegacy = false;
-      }
     } catch (error) {
       debug('[webRequestOnBeforeRequest] contacting mac failed, either not installed or old version', error);
-      if (!this.background.macLegacy) {
-        debug('[webRequestOnBeforeRequest] loading macLegacy as fallback');
-        this.background.loadMacLegacy();
-      }
     }
 
     if (this.shouldCancelRequest(request)) {
@@ -101,12 +93,7 @@ class Request {
       tab = await browser.tabs.get(request.tabId);
       debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
     } catch (error) {
-      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed', error);
-
-      const hook = await this.background.emit('webRequestOnBeforeRequestFailed', request);
-      if (typeof hook[0] !== 'undefined' && hook[0]) {
-        tab = hook[0];
-      }
+      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was faster', error);
     }
 
     this.container.maybeAddHistory(tab, request.url);
@@ -140,11 +127,6 @@ class Request {
       return;
     }
 
-    const hook = await this.background.emit('webRequestOnBeforeRequest', {request, tab});
-    if (typeof hook[0] !== 'undefined' && !hook[0]) {
-      return;
-    }
-
     let returnVal;
     if (this.mouseclick.linksClicked[request.url]) {
       returnVal = await this.handleClickedLink(request, tab, macAssignment);
@@ -168,22 +150,15 @@ class Request {
   async handleClickedLink(request, tab, macAssignment) {
     debug('[handleClickedLink] onBeforeRequest', request, tab);
 
-    const hook = await this.background.emit('handleClickedLink', {request, tab});
-
-    if (this.cancelRequest(request)) {
-      debug('[handleClickedLink] canceling request', request, tab);
-      return { cancel: true };
-    }
-
-    if (typeof hook[0] !== 'undefined' && !hook[0]) {
-      debug('[handleClickedLink] maclegacy return', request, tab);
-      return;
-    }
-
     if (tab.cookieStoreId !== 'firefox-default' &&
         this.container.urlCreatedContainer[request.url] === tab.cookieStoreId) {
       debug('[handleClickedLink] link click already created this container, we can stop here', request, tab);
       return;
+    }
+
+    if (this.cancelRequest(request)) {
+      debug('[handleClickedLink] canceling request', request, tab);
+      return { cancel: true };
     }
 
     let deletesHistoryContainer = false;
@@ -212,8 +187,6 @@ class Request {
       newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer, request);
     }
     debug('[handleClickedLink] created new tab', newTab);
-    await this.background.emit('handleClickedLinkAfterReload', {request, newTab});
-
     debug('[handleClickedLink] canceling request', request);
     return { cancel: true };
   }
@@ -243,17 +216,7 @@ class Request {
         debug('[handleNotClickedLink] container doesnt exist anymore, probably undo close tab', tab);
       }
     }
-
-    const hook = await this.background.emit('handleNotClickedLink', {request, tab, containerExists});
-    if (typeof hook[0] !== 'undefined') {
-      if (!hook[0]) {
-        return;
-      }
-      if (hook[0].cancel) {
-        this.cancelRequest(request);
-        return hook[0];
-      }
-    } else if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
+    if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
       if (this.shouldCancelRequest(request)) {
         return { cancel: true };
       }

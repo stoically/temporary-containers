@@ -59,7 +59,6 @@ class MouseClick {
       debug('[runtimeOnMessage] cleaning up', url);
       delete this.linksClicked[url];
       delete this.container.urlCreatedContainer[url];
-      this.background.emit('cleanupAutomaticModeState', url);
     }, 1000);
   }
 

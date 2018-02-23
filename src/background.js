@@ -4,14 +4,13 @@ const Container = require('./background/container');
 const Request = require('./background/request');
 const MouseClick = require('./background/mouseclick');
 const Emittery = require('emittery');
+const MultiAccountContainers = require('./background/mac');
 const { versionCompare } = require('./background/utils');
 const {
   log,
   debug
 } = require('./background/log');
 
-const MultiAccountContainers = require('./background/mac');
-const MultiAccountContainersLegacy = require('./background/mac-legacy');
 
 class TemporaryContainers extends Emittery {
   constructor() {
@@ -321,12 +320,6 @@ class TemporaryContainers extends Emittery {
     };
     browser.browserAction.setIcon(icon);
   }
-
-
-  loadMacLegacy() {
-    this.macLegacy = new MultiAccountContainersLegacy(this);
-  }
-
 
   async runtimeOnInstalled(details) {
     if (details.temporary) {
