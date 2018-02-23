@@ -124,19 +124,19 @@ global.injectBrowser = () => {
 global.preferencesTestSet = [
   {
     automaticMode: true,
-    automaticModeNewTab: 'navigation'
+    automaticModeNewTab: 'created'
+  },
+  {
+    automaticMode: false,
+    automaticModeNewTab: 'created'
   },
   {
     automaticMode: true,
-    automaticModeNewTab: 'created'
-  },
-  {
-    automaticMode: false,
     automaticModeNewTab: 'navigation'
   },
   {
     automaticMode: false,
-    automaticModeNewTab: 'created'
+    automaticModeNewTab: 'navigation'
   }
 ];
 

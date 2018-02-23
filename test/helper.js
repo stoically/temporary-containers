@@ -97,6 +97,29 @@ module.exports = {
         }
       };
       return await background.runtimeOnMessage(fakeMessage, fakeSender);
+    },
+
+    openMacConfirmPage({
+      tabId = 1,
+      originContainer = 'firefox-default',
+      url = 'http://example.com',
+      targetContainer = false
+    }) {
+      let confirmPageUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent(url) + '&cookieStoreId=' + targetContainer;
+      if (originContainer) {
+        '&currentCookieStoreId=' + originContainer;
+      }
+      const changeInfo = {
+        url: confirmPageUrl
+      };
+      const tab = {
+        id: tabId,
+        cookieStoreId: originContainer,
+        url: confirmPageUrl
+      };
+
+      return background.tabsOnUpdated(tabId, changeInfo, tab);
     }
   }
 };
