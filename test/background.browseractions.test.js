@@ -10,13 +10,14 @@ describe('when triggering browseraction', () => {
     const background = await loadBackground();
     browser.browserAction.onClicked.addListener.yield();
     await nextTick();
-    
+
     browser.contextualIdentities.create.should.have.been.calledWith({
       name: 'tmp1',
       color: 'red',
       icon: 'circle',
       number: 1,
-      deletesHistory: false
+      deletesHistory: false,
+      clean: true
     });
     browser.tabs.create.should.have.been.calledWith({
       url: undefined,
@@ -46,7 +47,8 @@ describe('when triggering browseraction', () => {
       color: sinon.match.string,
       icon: sinon.match.string,
       number: 1,
-      deletesHistory: false
+      deletesHistory: false,
+      clean: true
     });
     browser.tabs.create.should.have.been.calledWith({
       url: undefined,

@@ -74,7 +74,7 @@ class Request {
     }
 
     if (this.shouldCancelRequest(request)) {
-      debug('[webRequestOnBeforeRequest] we canceled a request with that requestId before, probably redirect, cancel again', request);
+      debug('[webRequestOnBeforeRequest] canceling', request);
       return { cancel: true };
     }
 
@@ -95,24 +95,17 @@ class Request {
         return;
       } else {
         debug('[webRequestOnBeforeRequest] mac assigned', macAssignment);
-        // we dont even need to try to get tab informations, mac already removed the tab anyway
       }
-    } else {
-      try {
-        tab = await browser.tabs.get(request.tabId);
-        debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
-        if (this.storage.local.tempContainers[tab.cookieStoreId] &&
-            this.storage.local.tempContainers[tab.cookieStoreId].clean) {
-          debug('[webRequestOnBeforeRequest] marking tmp container as not clean anymore', tab);
-          this.storage.local.tempContainers[tab.cookieStoreId].clean = false;
-        }
-      } catch (error) {
-        debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed', error);
+    }
+    try {
+      tab = await browser.tabs.get(request.tabId);
+      debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
+    } catch (error) {
+      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed', error);
 
-        const hook = await this.background.emit('webRequestOnBeforeRequestFailed', request);
-        if (typeof hook[0] !== 'undefined' && hook[0]) {
-          tab = hook[0];
-        }
+      const hook = await this.background.emit('webRequestOnBeforeRequestFailed', request);
+      if (typeof hook[0] !== 'undefined' && hook[0]) {
+        tab = hook[0];
       }
     }
 
@@ -161,6 +154,12 @@ class Request {
 
     if (returnVal && returnVal.cancel) {
       this.cancelRequest(request);
+    } else {
+      if (this.storage.local.tempContainers[tab.cookieStoreId] &&
+          this.storage.local.tempContainers[tab.cookieStoreId].clean) {
+        debug('[webRequestOnBeforeRequest] marking tmp container as not clean anymore', tab);
+        this.storage.local.tempContainers[tab.cookieStoreId].clean = false;
+      }
     }
     return returnVal;
   }

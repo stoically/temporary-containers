@@ -1,3 +1,5 @@
+// DEPRECATED
+
 // When a tab starts loading an URL that is assigned using MAC (Multi-Account Containers)
 // it will cancel our request, close the tab and reopen it in
 // * "Always open in" Confirm Page
@@ -19,7 +21,7 @@
 // > https://jsfiddle.net/3fjqr43v/
 // > https://bugzilla.mozilla.org/show_bug.cgi?id=1374096
 
-describe('raceconditions with multi-account-containers', () => {
+describe.skip('raceconditions with multi-account-containers', () => {
   describe('when not previously clicked url loads thats set to "always open in $container" but not "remember my choice"', () => {
     it('should leave the first confirm page open', async () => {
       // the first request triggered multi-account-containers and we just leave it open

@@ -58,6 +58,9 @@ class MultiAccountContainers {
 
   _maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer}) {
     debug('[_maybeReopenConfirmPage]', targetContainer, request, tab, deletesHistoryContainer);
+    if (this.waitingForConfirmPage[targetContainer]) {
+      delete this.waitingForConfirmPage[targetContainer];
+    }
     const currentContainer = this.confirmPage[targetContainer].currentContainer;
     if (currentContainer) {
       if (this.storage.local.tempContainers[currentContainer].clean) {
@@ -69,6 +72,7 @@ class MultiAccountContainers {
     } else {
       debug('[_maybeReopenConfirmPage] no currentContainer, reopen in new tmp container');
     }
+
     this.container.reloadTabInTempContainer(
       this.confirmPage[targetContainer].tab,
       request.url,
