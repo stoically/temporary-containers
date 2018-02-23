@@ -10,7 +10,8 @@ const {
   debug
 } = require('./background/log');
 
-const MultiAccountContainers = require('./background/mac-legacy');
+const MultiAccountContainers = require('./background/mac');
+const MultiAccountContainersLegacy = require('./background/mac-legacy');
 
 class TemporaryContainers extends Emittery {
   constructor() {
@@ -21,6 +22,8 @@ class TemporaryContainers extends Emittery {
     this.request = new Request;
     this.container = new Container;
     this.mouseclick = new MouseClick;
+    this.mac = new MultiAccountContainers;
+    this.macLegacy = false;
   }
 
 
@@ -32,11 +35,10 @@ class TemporaryContainers extends Emittery {
       notifications: await browser.permissions.contains({permissions: ['notifications']})
     };
 
-    this.mac = new MultiAccountContainers(this);
-
     this.request.initialize(this);
     this.container.initialize(this);
     this.mouseclick.initialize(this);
+    this.mac.initialize(this);
     if (!this.storage.local) {
       await this.storage.load();
     }
@@ -318,6 +320,11 @@ class TemporaryContainers extends Emittery {
       }
     };
     browser.browserAction.setIcon(icon);
+  }
+
+
+  loadMacLegacy() {
+    this.macLegacy = new MultiAccountContainersLegacy(this);
   }
 
 

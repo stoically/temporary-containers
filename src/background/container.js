@@ -138,6 +138,7 @@ class Container {
       debug('[createTabInTempContainer] contextualIdentity created', contextualIdentity);
       containerOptions.number = tempContainerNumber;
       containerOptions.deletesHistory = deletesHistory;
+      containerOptions.clean = true;
       this.storage.local.tempContainers[contextualIdentity.cookieStoreId] = containerOptions;
       await this.storage.persist();
 
@@ -218,7 +219,7 @@ class Container {
     }
 
     if (this.creatingTabInSameContainer) {
-      debug('[maybeReloadTabInTempContainer] were in the process of creating a tab in same container, ignore');
+      debug('[maybeReloadTabInTempContainer] we are in the process of creating a tab in same container, ignore');
       return;
     }
 
@@ -255,6 +256,11 @@ class Container {
       return;
     }
 
+    if (this.storage.local.tempContainers[tab.cookieStoreId] &&
+        this.storage.local.tempContainers[tab.cookieStoreId].clean) {
+      debug('[maybeReloadTabInTempContainer] marking tmp container as not clean anymore', tab);
+      this.storage.local.tempContainers[tab.cookieStoreId].clean = false;
+    }
     debug('[maybeReloadTabInTempContainer] not a home/new/moz tab or disabled, we dont handle that', tab);
   }
 
@@ -507,7 +513,7 @@ class Container {
 
 
   async maybeAddHistory(tab, url) {
-    if (url === 'about:blank' || url === 'about:newtab') {
+    if (!tab || url === 'about:blank' || url === 'about:newtab') {
       return;
     }
     if (tab.cookieStoreId !== 'firefox-default' &&

@@ -18,12 +18,17 @@ class MultiAccountContainers {
       multiAccountRemovedTab: {}
     };
 
-    background.on('webRequestOnBeforeRequestFailed', this.webRequestOnBeforeRequestFailed.bind(this));
-    background.on('webRequestOnBeforeRequest', this.webRequestOnBeforeRequest.bind(this));
-    background.on('handleClickedLink', this.handleClickedLink.bind(this));
-    background.on('handleNotClickedLink', this.handleNotClickedLink.bind(this));
-    background.on('handleMultiAccountContainersConfirmPage', this.handleMultiAccountContainersConfirmPage.bind(this));
-    background.on('cleanupAutomaticModeState', this.cleanupAutomaticModeState.bind(this));
+    this.unsubscribeFns = [];
+    this.unsubscribeFns.push(background.on('webRequestOnBeforeRequestFailed', this.webRequestOnBeforeRequestFailed.bind(this)));
+    this.unsubscribeFns.push(background.on('webRequestOnBeforeRequest', this.webRequestOnBeforeRequest.bind(this)));
+    this.unsubscribeFns.push(background.on('handleClickedLink', this.handleClickedLink.bind(this)));
+    this.unsubscribeFns.push(background.on('handleNotClickedLink', this.handleNotClickedLink.bind(this)));
+    this.unsubscribeFns.push(background.on('handleMultiAccountContainersConfirmPage', this.handleMultiAccountContainersConfirmPage.bind(this)));
+    this.unsubscribeFns.push(background.on('cleanupAutomaticModeState', this.cleanupAutomaticModeState.bind(this)));
+  }
+
+  removeAllListeners() {
+    this.unsubscribeFns.map(fn => fn());
   }
 
   async webRequestOnBeforeRequestFailed(request) {
@@ -216,7 +221,7 @@ class MultiAccountContainers {
            this.mouseclick.linksClicked[request.url].clickType !== 'left'))) {
       debug('[handleClickedLink] no openerTabId and not in the tabContainerMap means probably ' +
         'multi-account reloaded the url ' +
-        'in another tab, so were going either to close the tabs weve opened for that ' +
+        'in another tab, so we are going either to close the tabs weve opened for that ' +
         'link so far or inform our future self', this.automaticModeState);
 
       if (!this.automaticModeState.linkClickCreatedTabs[request.url] &&
