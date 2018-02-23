@@ -76,6 +76,13 @@ module.exports = {
 
       let clickEvent = {};
       switch (clickType) {
+      case 'middle':
+        clickEvent.button = 1;
+        break;
+      case 'ctrlleft':
+        clickEvent.button = 0;
+        clickEvent.ctrlKey = true;
+        break;
       case 'left':
         clickEvent.button = 0;
         break;
@@ -91,9 +98,7 @@ module.exports = {
         method: 'linkClicked',
         payload: {
           href: targetUrl,
-          event: {
-            button: clickEvent.button
-          }
+          event: clickEvent
         }
       };
       return await background.runtimeOnMessage(fakeMessage, fakeSender);
@@ -103,12 +108,19 @@ module.exports = {
       tabId = 1,
       originContainer = 'firefox-default',
       url = 'http://example.com',
-      targetContainer = false
+      targetContainer = false,
+      resetHistory = false
     }) {
+      if (resetHistory) {
+        browser.tabs.remove.resetHistory();
+        browser.tabs.create.resetHistory();
+        browser.contextualIdentities.create.resetHistory();
+      }
+      
       let confirmPageUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
         encodeURIComponent(url) + '&cookieStoreId=' + targetContainer;
-      if (originContainer) {
-        '&currentCookieStoreId=' + originContainer;
+      if (originContainer !== 'firefox-default') {
+        confirmPageUrl += '&currentCookieStoreId=' + originContainer;
       }
       const changeInfo = {
         url: confirmPageUrl

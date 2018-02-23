@@ -4,6 +4,7 @@ const { debug } = require('./log');
 class MouseClick {
   constructor() {
     this.linksClicked = {};
+    this.unhandledLinksClicked = {};
   }
 
 
@@ -37,8 +38,16 @@ class MouseClick {
         clickType = 'ctrlleft';
       }
       if (!this.checkClick(clickType, message, sender)) {
+        this.unhandledLinksClicked[url] = {};
+        setTimeout(() => {
+          debug('[linkClicked] cleaning up unhandledLinksClicked', url);
+          delete this.unhandledLinksClicked[url];
+        }, 1000);
         return;
       }
+    }
+    if (this.unhandledLinksClicked[url]) {
+      delete this.unhandledLinksClicked[url];
     }
     const tab = sender.tab;
 
@@ -56,7 +65,7 @@ class MouseClick {
     this.linksClicked[url].count++;
 
     setTimeout(() => {
-      debug('[runtimeOnMessage] cleaning up', url);
+      debug('[linkClicked] cleaning up linksClicked', url);
       delete this.linksClicked[url];
       delete this.container.urlCreatedContainer[url];
     }, 1000);

@@ -50,6 +50,22 @@ class Request {
 
 
   async webRequestOnBeforeRequest(request) {
+    const returnVal = await this._webRequestOnBeforeRequest(request);
+    if (returnVal && returnVal.cancel) {
+      this.cancelRequest(request);
+    } else {
+      const cookieStoreId = this.storage.local.tabContainerMap[request.tabId];
+      if (cookieStoreId && this.storage.local.tempContainers[cookieStoreId] &&
+          this.storage.local.tempContainers[cookieStoreId].clean) {
+        debug('[webRequestOnBeforeRequest] marking tmp container as not clean anymore', cookieStoreId, request);
+        this.storage.local.tempContainers[cookieStoreId].clean = false;
+      }
+    }
+    return returnVal;
+  }
+
+
+  async _webRequestOnBeforeRequest(request) {
     debug('[browser.webRequest.onBeforeRequest] incoming request', request);
     if (request.tabId === -1) {
       debug('[browser.webRequest.onBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
@@ -77,27 +93,27 @@ class Request {
       return;
     }
 
-    let tab = {
-      id: request.tabId,
-      cookieStoreId: 'firefox-default'
-    };
+    let tab;
     if (macAssignment) {
       if (macAssignment.neverAsk) {
         debug('[webRequestOnBeforeRequest] mac neverask assigned, we do nothing', macAssignment);
         return;
       } else {
         debug('[webRequestOnBeforeRequest] mac assigned', macAssignment);
+        // we just assume that we cant get the tab informations anymore
+        // so we dont even try
       }
-    }
-    try {
-      tab = await browser.tabs.get(request.tabId);
-      debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
-      if (macAssignment && tab.cookieStoreId === macAssignment.cookieStoreId) {
-        debug('[webRequestOnBeforeRequest] the request url is mac assigned to this container, we do nothing');
-        return;
+    } else {
+      try {
+        tab = await browser.tabs.get(request.tabId);
+        debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
+        if (macAssignment && tab.cookieStoreId === macAssignment.cookieStoreId) {
+          debug('[webRequestOnBeforeRequest] the request url is mac assigned to this container, we do nothing');
+          return;
+        }
+      } catch (error) {
+        debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
       }
-    } catch (error) {
-      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
     }
 
     this.container.maybeAddHistory(tab, request.url);
@@ -110,9 +126,12 @@ class Request {
                !this.mouseclick.linksClicked[request.url]) {
       debug('[webRequestOnBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
+    } else if (this.mouseclick.unhandledLinksClicked[request.url]) {
+      debug('[webRequestOnBeforeRequest] we saw an unhandled click for that url', request);
+      return;
     }
 
-    if (alwaysOpenIn && !this.mouseclick.linksClicked[request.url] && tab.openerTabId) {
+    if (alwaysOpenIn && !this.mouseclick.linksClicked[request.url] && tab && tab.openerTabId) {
       // TODO probably macLegacy-related
       debug('[webRequestOnBeforeRequest] always open in tmpcontainer request, simulating click', request);
       this.linkClicked(request.url, {
@@ -121,40 +140,28 @@ class Request {
       });
     }
 
-    if (tab.incognito) {
+    if (tab && tab.incognito) {
       debug('[webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
       return;
     }
 
-    if (!alwaysOpenIn && this.background.noContainerTabs[tab.id]) {
+    if (!alwaysOpenIn && this.background.noContainerTabs[request.tabId]) {
       debug('[webRequestOnBeforeRequest] no container tab, we ignore that', tab);
       return;
     }
 
-    let returnVal;
     if (this.mouseclick.linksClicked[request.url]) {
-      returnVal = await this.handleClickedLink(request, tab, macAssignment);
+      return this.handleClickedLink(request, tab, macAssignment);
     } else {
-      returnVal = await this.handleNotClickedLink(request, tab, alwaysOpenIn, macAssignment);
+      return this.handleNotClickedLink(request, tab, alwaysOpenIn, macAssignment);
     }
-
-    if (returnVal && returnVal.cancel) {
-      this.cancelRequest(request);
-    } else {
-      if (this.storage.local.tempContainers[tab.cookieStoreId] &&
-          this.storage.local.tempContainers[tab.cookieStoreId].clean) {
-        debug('[webRequestOnBeforeRequest] marking tmp container as not clean anymore', tab);
-        this.storage.local.tempContainers[tab.cookieStoreId].clean = false;
-      }
-    }
-    return returnVal;
   }
 
 
   async handleClickedLink(request, tab, macAssignment) {
     debug('[handleClickedLink] onBeforeRequest', request, tab);
 
-    if (tab.cookieStoreId !== 'firefox-default' &&
+    if (tab && tab.cookieStoreId !== 'firefox-default' &&
         this.container.urlCreatedContainer[request.url] === tab.cookieStoreId) {
       debug('[handleClickedLink] link click already created this container, we can stop here', request, tab);
       return;
@@ -166,7 +173,8 @@ class Request {
     }
 
     let deletesHistoryContainer = false;
-    if (this.storage.local.tempContainers[tab.cookieStoreId] &&
+    if (tab &&
+        this.storage.local.tempContainers[tab.cookieStoreId] &&
         this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory &&
         this.storage.local.preferences.deletesHistoryContainerMouseClicks === 'automatic') {
       deletesHistoryContainer = true;
@@ -183,7 +191,7 @@ class Request {
         this.mouseclick.linksClicked[request.url].clickType === 'left') {
       debug('[handleClickedLink] creating new container because request got left clicked', this.mouseclick.linksClicked[request.url], tab);
       newTab = await this.container.createTabInTempContainer({tab, active: true, url: request.url, deletesHistory: deletesHistoryContainer, request});
-      if (this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
+      if (tab && this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
         debug('[handleClickedLink] looks like the left clicked opened a new tab, remove it', tab);
         await this.container.removeTab(tab);
       }
@@ -197,7 +205,7 @@ class Request {
 
 
   async handleNotClickedLink(request, tab, alwaysOpenIn, macAssignment) {
-    if (tab.cookieStoreId === 'firefox-default' && tab.openerTabId && !alwaysOpenIn) {
+    if (tab && tab.cookieStoreId === 'firefox-default' && tab.openerTabId && !alwaysOpenIn) {
       debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
       const openerTab = await browser.tabs.get(tab.openerTabId);
       if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
@@ -210,22 +218,24 @@ class Request {
       return;
     }
 
-    let containerExists = false;
-    if (tab.cookieStoreId === 'firefox-default') {
-      containerExists = true;
-    } else {
-      try {
-        containerExists = await browser.contextualIdentities.get(tab.cookieStoreId);
-      } catch (error) {
-        debug('[handleNotClickedLink] container doesnt exist anymore, probably undo close tab', tab);
+    if (!macAssignment) {
+      let containerExists = false;
+      if (tab.cookieStoreId === 'firefox-default') {
+        containerExists = true;
+      } else {
+        try {
+          containerExists = await browser.contextualIdentities.get(tab.cookieStoreId);
+        } catch (error) {
+          debug('[handleNotClickedLink] container doesnt exist anymore', tab);
+        }
       }
-    }
-    if (tab.cookieStoreId !== 'firefox-default' && containerExists) {
-      if (this.shouldCancelRequest(request)) {
-        return { cancel: true };
+      if (tab && tab.cookieStoreId !== 'firefox-default' && containerExists) {
+        if (this.shouldCancelRequest(request)) {
+          return { cancel: true };
+        }
+        debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
+        return;
       }
-      debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
-      return;
     }
 
     if (this.cancelRequest(request)) {
@@ -240,7 +250,7 @@ class Request {
     if (macAssignment) {
       debug('[handleNotClickedLink] decided to reopen but mac assigned, reopen confirmpage', request, tab, macAssignment);
       this.mac.maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer);
-      return;
+      return { cancel: true };
     }
 
     debug('[handleNotClickedLink] onBeforeRequest reload in temp tab', tab, request);

@@ -25,10 +25,10 @@ class MultiAccountContainers {
         targetContainer: queryParams[1][1],
         currentContainer: queryParams[2] ? queryParams[2][1] : false
       };
-      debug('[handleConfirmPage] parsed url', parsedURL, queryParams, confirmPage);
+      debug('[handleConfirmPage] parsed url', queryParams, confirmPage);
       if (this.waitingForConfirmPage[confirmPage.targetContainer]) {
         debug('[handleConfirmPage] we are already waiting for this confirm page, maybe reopen', confirmPage.targetContainer);
-        this._maybeReopenConfirmPage(this.waitingForConfirmPage[confirmPage.targetContainer]);
+        this._maybeReopenConfirmPage(this.waitingForConfirmPage[confirmPage.targetContainer], confirmPage);
       } else {
         debug('[handleConfirmPage] we remember that we saw this confirm page, maybe it needs to be reopened', confirmPage.targetContainer);
         this.confirmPage[confirmPage.targetContainer] = confirmPage;
@@ -47,7 +47,7 @@ class MultiAccountContainers {
       debug('[maybeReopenConfirmPage] we saw a mac confirm page for the target container already', targetContainer);
       this._maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer});
     } else {
-      debug('[maybeReopenConfirmPage] we didnt saw a mac confirm page yet, waiting', targetContainer);
+      debug('[maybeReopenConfirmPage] we didnt saw a mac confirm page yet, waiting', targetContainer, tab);
       this.waitingForConfirmPage[targetContainer] = {targetContainer, request, tab, deletesHistoryContainer};
       delay(2000).then(() => {
         debug('[maybeReopenConfirmPage] cleaning up', targetContainer);
@@ -56,14 +56,22 @@ class MultiAccountContainers {
     }
   }
 
-  _maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer}) {
+  _maybeReopenConfirmPage({targetContainer, request, tab, deletesHistoryContainer}, confirmPage) {
     debug('[_maybeReopenConfirmPage]', targetContainer, request, tab, deletesHistoryContainer);
     if (this.waitingForConfirmPage[targetContainer]) {
       delete this.waitingForConfirmPage[targetContainer];
     }
-    const currentContainer = this.confirmPage[targetContainer].currentContainer;
+    if (!confirmPage) {
+      confirmPage = this.confirmPage[targetContainer];
+    }
+    if (!confirmPage) {
+      debug('[_maybeReopenConfirmPage] something went wrong, aborting');
+      return;
+    }
+    const currentContainer = confirmPage.currentContainer;
     if (currentContainer) {
-      if (this.storage.local.tempContainers[currentContainer].clean) {
+      if (this.storage.local.tempContainers[currentContainer] &&
+          this.storage.local.tempContainers[currentContainer].clean) {
         debug('[_maybeReopenConfirmPage] the currentContainer mac confirm wants to open is a clean tmp container, we do nothing');
         return;
       } else {
@@ -74,9 +82,9 @@ class MultiAccountContainers {
     }
 
     this.container.reloadTabInTempContainer(
-      this.confirmPage[targetContainer].tab,
+      confirmPage.tab ? confirmPage.tab : undefined,
       request.url,
-      this.confirmPage[targetContainer].tab.active,
+      confirmPage.tab ? confirmPage.tab.active : undefined,
       deletesHistoryContainer,
       request
     );

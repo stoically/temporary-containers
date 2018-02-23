@@ -27,7 +27,7 @@
     "eslint": "^4.11.0",
     "mocha": "^4.0.1",
     "require-reload": "^0.2.2",
-    "sinon": "^4.1.2",
+    "sinon": "^4.4.0",
     "sinon-chai": "^2.14.0",
     "web-ext": "^2.2.2",
     "webpack": "^3.10.0"
