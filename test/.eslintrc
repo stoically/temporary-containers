@@ -13,6 +13,7 @@
         "injectBrowser": false,
         "background": true,
         "helper": false,
-        "nextTick": false
+        "nextTick": false,
+        "preferencesTestSet": false
     }
 }

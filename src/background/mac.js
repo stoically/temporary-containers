@@ -88,6 +88,10 @@ class MultiAccountContainers {
       url
     });
 
+    if (!assignment) {
+      return assignment;
+    }
+
     return {
       userContextId: assignment.userContextId,
       cookieStoreId: `firefox-container-${assignment.userContextId}`,

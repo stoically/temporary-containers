@@ -121,11 +121,30 @@ global.injectBrowser = () => {
   };
 };
 
-global.loadBackground = async () => {
+global.preferencesTestSet = [
+  {
+    automaticMode: true,
+    automaticModeNewTab: 'navigation'
+  },
+  {
+    automaticMode: true,
+    automaticModeNewTab: 'created'
+  },
+  {
+    automaticMode: false,
+    automaticModeNewTab: 'navigation'
+  },
+  {
+    automaticMode: false,
+    automaticModeNewTab: 'created'
+  }
+];
+
+global.loadBackground = async (preferences = {}) => {
   const background = reload('../src/background');
   await background.initialize();
-  background.storage.local.preferences.automaticMode = true;
-  background.storage.local.preferences.automaticModeNewTab = 'navigation';
+  background.storage.local.preferences.automaticMode = preferences.automaticMode ? preferences.automaticMode : true;
+  background.storage.local.preferences.automaticModeNewTab = preferences.automaticModeNewTab ? preferences.automaticModeNewTab : 'navigation';
   background.storage.local.preferences.linkClickGlobal.middle.action = 'always';
   background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'always';
   return background;
