@@ -1,12 +1,15 @@
 preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(preferences)}`, () => {
 
-  describe('addons that do redirects', () => {
+  describe('addons that do redirects in automatic mode', () => {
     beforeEach(async () => {
       global.background = await loadBackground(preferences);
     });
 
     describe('https everywhere', () => {
       it('should not open two tabs if redirects happen', async () => {
+        if (!preferences.automaticMode) {
+          return;
+        }
         // we get a http request, cancel it and create a new tab with id 2 (the http version)
         // but https everywhere saw it and redirects the request instantly
         // we see the new request, cancel that and create a new tab 3 (the https version)

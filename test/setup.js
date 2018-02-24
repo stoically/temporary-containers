@@ -143,8 +143,7 @@ global.preferencesTestSet = [
 global.loadBackground = async (preferences = {}) => {
   const background = reload('../src/background');
   await background.initialize();
-  background.storage.local.preferences.automaticMode = preferences.automaticMode ? preferences.automaticMode : true;
-  background.storage.local.preferences.automaticModeNewTab = preferences.automaticModeNewTab ? preferences.automaticModeNewTab : 'navigation';
+  Object.assign(background.storage.local.preferences, preferences);
   background.storage.local.preferences.linkClickGlobal.middle.action = 'always';
   background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'always';
   return background;

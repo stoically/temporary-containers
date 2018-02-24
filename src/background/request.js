@@ -63,6 +63,13 @@ class Request {
         this.storage.local.tempContainers[cookieStoreId].clean = false;
       }
     }
+
+    // make sure we shouldnt cancel anyway
+    if (this.shouldCancelRequest(request)) {
+      debug('[webRequestOnBeforeRequest] canceling', request);
+      this.cancelRequest(request);
+      return {cancel: true};
+    }
     return;
   }
 
@@ -231,9 +238,6 @@ class Request {
         }
       }
       if (tab && tab.cookieStoreId !== 'firefox-default' && containerExists) {
-        if (this.shouldCancelRequest(request)) {
-          return { cancel: true };
-        }
         debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
         return;
       }
@@ -285,6 +289,7 @@ class Request {
     if (!request ||
       typeof request.requestId === 'undefined' ||
       typeof request.tabId === 'undefined') {
+      debug('[cancelRequest] invalid request', request);
       return;
     }
 
@@ -323,6 +328,7 @@ class Request {
     if (!request ||
       typeof request.requestId === 'undefined' ||
       typeof request.tabId === 'undefined') {
+      debug('[shouldCancelRequest] invalid request', request);
       return;
     }
 

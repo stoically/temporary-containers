@@ -66,23 +66,30 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             await nextTick();
           });
 
-          it('should sometimes reopen the confirm page', async () => {
-            switch (preferences.automaticModeNewTab) {
-            case 'navigation':
-              if (confirmPage !== 'last' && confirmPage !== 'first') {
-                browser.tabs.remove.should.not.have.been.called;
-                browser.tabs.create.should.not.have.been.called;
-              } else {
-                // TODO dont reopen clean/created containers
-                browser.tabs.remove.should.have.been.called;
-                browser.tabs.create.should.have.been.called;
-              }
-              break;
+          it('should sometimes reopen the confirm page once', async () => {
+            // TODO in fact, reopen *should never* be triggered since the tmpcontainer is clean
 
-            case 'created':
+            if (!preferences.automaticMode) {
+              // if we're not in automatic mode we should never reopen
               browser.tabs.remove.should.not.have.been.called;
               browser.tabs.create.should.not.have.been.called;
-              break;
+            } else {
+              switch (preferences.automaticModeNewTab) {
+              case 'navigation':
+                if (confirmPage !== 'last' && confirmPage !== 'first') {
+                  browser.tabs.remove.should.not.have.been.called;
+                  browser.tabs.create.should.not.have.been.called;
+                } else {
+                  browser.tabs.remove.should.have.been.calledOnce;
+                  browser.tabs.create.should.have.been.calledOnce;
+                }
+                break;
+
+              case 'created':
+                browser.tabs.remove.should.not.have.been.called;
+                browser.tabs.create.should.not.have.been.called;
+                break;
+              }
             }
           });
 
