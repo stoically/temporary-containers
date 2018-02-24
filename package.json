@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Temporary Containers",
   "scripts": {
-    "test": "mocha ./test/setup.js test/*.test.js",
+    "test": "nyc mocha ./test/setup.js test/*.test.js",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
     "lint": "eslint src",
     "build": "rm -rf tmpcontainer && npm run webpack && web-ext build --overwrite-dest --ignore-files src* test* package* webpack* && addons-linter web-ext-artifacts/temporary_containers-*.zip",
@@ -26,6 +26,7 @@
     "copy-webpack-plugin": "^4.3.0",
     "eslint": "^4.11.0",
     "mocha": "^4.0.1",
+    "nyc": "^11.4.1",
     "require-reload": "^0.2.2",
     "sinon": "^4.4.0",
     "sinon-chai": "^2.14.0",

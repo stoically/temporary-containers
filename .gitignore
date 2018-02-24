@@ -2,3 +2,4 @@
 /web-ext-artifacts
 /package-lock.json
 /tmpcontainer
+/.nyc_output
