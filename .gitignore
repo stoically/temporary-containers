@@ -3,3 +3,4 @@
 /package-lock.json
 /tmpcontainer
 /.nyc_output
+/coverage
