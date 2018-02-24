@@ -228,7 +228,7 @@ class Request {
 
     if (!macAssignment) {
       let containerExists = false;
-      if (tab.cookieStoreId === 'firefox-default') {
+      if (tab && tab.cookieStoreId === 'firefox-default') {
         containerExists = true;
       } else {
         try {

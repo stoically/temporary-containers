@@ -30,6 +30,7 @@ module.exports = {
       originContainer = 'firefox-default',
       createsContainer = 'firefox-tmp1',
       createsTabId = 2,
+      macWasFaster = false,
       resetHistory = false
     }) {
       if (resetHistory) {
@@ -53,7 +54,11 @@ module.exports = {
         id: createsTabId,
         openerTabId: tabId
       };
-      browser.tabs.get.resolves(fakeTab);
+      if (macWasFaster) {
+        browser.tabs.get.rejects({mac: 'was faster'});
+      } else {
+        browser.tabs.get.resolves(fakeTab);
+      }
       browser.contextualIdentities.create.resolves(fakeCreatedContainer);
       browser.tabs.create.resolves(fakeCreatedTab);
 
@@ -116,7 +121,7 @@ module.exports = {
         browser.tabs.create.resetHistory();
         browser.contextualIdentities.create.resetHistory();
       }
-      
+
       let confirmPageUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
         encodeURIComponent(url) + '&cookieStoreId=' + targetContainer;
       if (originContainer !== 'firefox-default') {
