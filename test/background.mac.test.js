@@ -67,7 +67,8 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should sometimes reopen the confirm page', async () => {
-            if (preferences.automaticModeNewTab === 'navigation') {
+            switch (preferences.automaticModeNewTab) {
+            case 'navigation':
               if (confirmPage !== 'last' && confirmPage !== 'first') {
                 browser.tabs.remove.should.not.have.been.called;
                 browser.tabs.create.should.not.have.been.called;
@@ -76,15 +77,12 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                 browser.tabs.remove.should.have.been.called;
                 browser.tabs.create.should.have.been.called;
               }
-            } else {
-              if (confirmPage !== 'last') {
-                browser.tabs.remove.should.not.have.been.called;
-                browser.tabs.create.should.not.have.been.called;
-              } else {
-                // TODO dont reopen clean/created containers
-                browser.tabs.remove.should.have.been.called;
-                browser.tabs.create.should.have.been.called;
-              }
+              break;
+
+            case 'created':
+              browser.tabs.remove.should.not.have.been.called;
+              browser.tabs.create.should.not.have.been.called;
+              break;
             }
           });
 
