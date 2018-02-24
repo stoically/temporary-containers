@@ -91,14 +91,14 @@ class MultiAccountContainers {
       debug('[_maybeReopenConfirmPage] no currentContainer, reopen in new tmp container');
     }
 
-    await this.container.reloadTabInTempContainer(
-      confirmPage.tab ? confirmPage.tab : undefined,
-      request.url,
-      confirmPage.tab ? confirmPage.tab.active : undefined,
-      deletesHistoryContainer,
+    await this.container.reloadTabInTempContainer({
+      tab: confirmPage.tab ? confirmPage.tab : undefined,
+      url: request.url,
+      active: confirmPage.tab ? confirmPage.tab.active : undefined,
+      deletesHistory: deletesHistoryContainer,
       request,
-      true
-    );
+      macConfirmPage: true
+    });
     return true;
   }
 

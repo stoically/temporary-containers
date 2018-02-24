@@ -151,7 +151,7 @@ class Container {
           active: newTabActive,
           cookieStoreId: contextualIdentity.cookieStoreId,
         };
-        if (url && tab) {
+        if (tab) {
           if (tab.index >= 0) {
             newTabOptions.index = tab.index + 1;
           }
@@ -182,8 +182,24 @@ class Container {
   }
 
 
-  async reloadTabInTempContainer(tab, url, active, deletesHistory, request, macConfirmPage) {
-    const newTab = await this.createTabInTempContainer({tab, url, active, deletesHistory, request, macConfirmPage});
+  async reloadTabInTempContainer({
+    tab,
+    url,
+    active,
+    deletesHistory,
+    request,
+    macConfirmPage,
+    dontPin = true
+  }) {
+    const newTab = await this.createTabInTempContainer({
+      tab,
+      url,
+      active,
+      dontPin,
+      deletesHistory,
+      request,
+      macConfirmPage
+    });
     if (!tab) {
       return newTab;
     }
@@ -257,7 +273,10 @@ class Container {
         tab.url === 'about:newtab')) {
       debug('[maybeReloadTabInTempContainer] about:home/new tab in firefox-default container, reload in temp container', tab);
 
-      await this.reloadTabInTempContainer(tab, null, null, deletesHistoryContainer);
+      await this.reloadTabInTempContainer({
+        tab,
+        deletesHistory: deletesHistoryContainer
+      });
       return;
     }
 

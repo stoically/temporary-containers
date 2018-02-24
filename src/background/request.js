@@ -191,7 +191,12 @@ class Request {
         await this.container.removeTab(tab);
       }
     } else {
-      newTab = await this.container.reloadTabInTempContainer(tab, request.url, null, deletesHistoryContainer, request);
+      newTab = await this.container.reloadTabInTempContainer({
+        tab,
+        url: request.url,
+        deletesHistory: deletesHistoryContainer,
+        request
+      });
     }
     debug('[handleClickedLink] created new tab', newTab);
     debug('[handleClickedLink] canceling request', request);
@@ -263,7 +268,14 @@ class Request {
     }
 
     debug('[handleNotClickedLink] onBeforeRequest reload in temp tab', tab, request);
-    await this.container.reloadTabInTempContainer(tab, request.url, true, deletesHistoryContainer, request);
+    await this.container.reloadTabInTempContainer({
+      tab,
+      url: request.url,
+      active: true,
+      deletesHistory: deletesHistoryContainer,
+      request,
+      dontPin: false
+    });
 
     return { cancel: true };
   }
