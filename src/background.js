@@ -107,12 +107,13 @@ class TemporaryContainers extends Emittery {
     debug('[runtimeOnMessageExternal] got external message', message, sender);
     switch (message.method) {
     case 'createTabInTempContainer':
-      this.container.createTabInTempContainer({
+      return this.container.createTabInTempContainer({
         url: message.url ? message.url : null,
         active: typeof message.active === 'undefined' ? true : message.active,
         deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic' ? true : false
       });
-      break;
+    case 'isTempContainer':
+      return this.storage.local.tempContainers[message.cookieStoreId] ? true : false;
     default:
       throw new Error('Unknown message.method');
     }

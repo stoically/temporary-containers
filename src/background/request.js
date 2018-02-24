@@ -50,6 +50,7 @@ class Request {
 
 
   async webRequestOnBeforeRequest(request) {
+    // TODO stop early if nothing is configured that requires request-intervention
     const returnVal = await this._webRequestOnBeforeRequest(request);
     if (returnVal && returnVal.cancel) {
       this.cancelRequest(request);

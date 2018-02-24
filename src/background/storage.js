@@ -139,7 +139,7 @@ class Storage {
           !this.local.preferences ||
           !this.local.statistics) {
         debug('[persist] tried to persist corrupt storage, try to load whats in storage and dont persist', this.local);
-        await this.load();
+        this.load();
         return;
       }
       await browser.storage.local.set(this.local);
