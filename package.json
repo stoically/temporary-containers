@@ -26,9 +26,11 @@
     "chai": "^4.1.2",
     "copy-webpack-plugin": "^4.3.0",
     "coveralls": "^3.0.0",
+    "delay": "^2.0.0",
     "eslint": "^4.11.0",
     "mocha": "^5.0.1",
     "nyc": "^11.4.1",
+    "p-queue": "^2.3.0",
     "require-reload": "^0.2.2",
     "sinon": "^4.4.0",
     "sinon-chai": "^2.14.0",
@@ -36,10 +38,6 @@
     "webpack": "^4.0.0"
   },
   "private": true,
-  "dependencies": {
-    "delay": "^2.0.0",
-    "p-queue": "^2.3.0"
-  },
   "nyc": {
     "exclude": [
       "test/**/*.js",

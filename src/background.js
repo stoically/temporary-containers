@@ -1,4 +1,4 @@
-const delay = require('delay');
+const { delay } = require('./background/utils');
 const Storage = require('./background/storage');
 const Container = require('./background/container');
 const Request = require('./background/request');
