@@ -80,7 +80,6 @@ class Container {
     tab,
     url,
     request = false,
-    alwaysOpenIn = false,
     active = false,
     dontPin = true,
     deletesHistory = false,
@@ -145,7 +144,7 @@ class Container {
       await this.storage.persist();
 
       try {
-        const newTabActive = active || !url || alwaysOpenIn ? true : false;
+        const newTabActive = active || !url;
         const newTabOptions = {
           url,
           active: newTabActive,

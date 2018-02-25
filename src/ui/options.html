@@ -208,12 +208,18 @@
       </div>
       <div class="ui tab segment" data-tab="alwaysopenin">
         <form class="ui form" id="alwaysOpenInDomainForm">
-          <h4 data-tooltip="Regardless how they're opened. Only if not already in a container.">
+          <h4 data-tooltip="Regardless how they're opened. Will not work if the Website is assigned using Multi-Account Containers.">
             Which Websites should always open in new Temporary Containers [?]
           </h4>
           <div id="alwaysOpenInDomainPatternDiv" class="field">
             <label>Website Pattern [?]</label>
             <input id="alwaysOpenInDomainPattern" type="text">
+          </div>
+          <div class="field" id="alwaysOpenInDomainAllowedInPermanentDiv">
+            <div class="ui checkbox">
+              <input type="checkbox" id="alwaysOpenInDomainAllowedInPermanent">
+              <label>Allow the Website to load in permanent Containers</label>
+            </div>
           </div>
           <div class="field">
             <button id="alwaysOpenInDomainAddRule" class="ui button primary">Save</button>

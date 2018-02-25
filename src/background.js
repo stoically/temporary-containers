@@ -128,7 +128,7 @@ class TemporaryContainers extends Emittery {
     if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
       deletesHistory = true;
     }
-    this.container.createTabInTempContainer({tab, deletesHistory});
+    return this.container.createTabInTempContainer({tab, deletesHistory});
   }
 
 
@@ -379,6 +379,18 @@ class TemporaryContainers extends Emittery {
         browser.tabs.create({
           url
         });
+      }
+    }
+    if (versionCompare('0.59', previousVersion) >= 0) {
+      debug('updated from version <= 0.58, potentially migrate always open in preferences');
+      const alwaysOpenInDomains = Object.keys(this.storage.local.preferences.alwaysOpenInDomain);
+      if (alwaysOpenInDomains.length) {
+        alwaysOpenInDomains.map(alwaysOpenInDomainPattern => {
+          this.storage.local.preferences.alwaysOpenInDomain[alwaysOpenInDomainPattern] = {
+            allowedInPermanent: false
+          };
+        });
+        await this.storage.persist();
       }
     }
   }

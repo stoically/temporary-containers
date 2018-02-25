@@ -120,10 +120,10 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    let alwaysOpenIn = false;
-    if (this.shouldAlwaysOpenInTemporaryContainer(request)) {
-      debug('[webRequestOnBeforeRequest] always open in tmpcontainer request', request);
-      alwaysOpenIn = true;
+    const alwaysOpenIn = !macAssignment && await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
+    if (alwaysOpenIn) {
+      debug('[webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
+      return alwaysOpenIn;
     } else if (!this.storage.local.preferences.automaticMode &&
                !this.mouseclick.linksClicked[request.url]) {
       debug('[webRequestOnBeforeRequest] automatic mode disabled and no link clicked', request);
@@ -133,7 +133,7 @@ class Request {
       return;
     }
 
-    if (alwaysOpenIn && !this.mouseclick.linksClicked[request.url] && tab && tab.openerTabId) {
+    if (!this.mouseclick.linksClicked[request.url] && tab && tab.openerTabId) {
       // TODO probably macLegacy-related
       debug('[webRequestOnBeforeRequest] always open in tmpcontainer request, simulating click', request);
       this.linkClicked(request.url, {
@@ -147,7 +147,7 @@ class Request {
       return;
     }
 
-    if (!alwaysOpenIn && this.background.noContainerTabs[request.tabId]) {
+    if (this.background.noContainerTabs[request.tabId]) {
       debug('[webRequestOnBeforeRequest] no container tab, we ignore that', tab);
       return;
     }
@@ -155,7 +155,7 @@ class Request {
     if (this.mouseclick.linksClicked[request.url]) {
       return this.handleClickedLink(request, tab, macAssignment);
     } else {
-      return this.handleNotClickedLink(request, tab, alwaysOpenIn, macAssignment);
+      return this.handleNotClickedLink(request, tab, macAssignment);
     }
   }
 
@@ -211,8 +211,8 @@ class Request {
   }
 
 
-  async handleNotClickedLink(request, tab, alwaysOpenIn, macAssignment) {
-    if (tab && tab.cookieStoreId === 'firefox-default' && tab.openerTabId && !alwaysOpenIn) {
+  async handleNotClickedLink(request, tab, macAssignment) {
+    if (tab && tab.cookieStoreId === 'firefox-default' && tab.openerTabId) {
       debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
       const openerTab = await browser.tabs.get(tab.openerTabId);
       if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
@@ -220,7 +220,7 @@ class Request {
         return;
       }
     }
-    if (!this.storage.local.preferences.automaticMode && !alwaysOpenIn) {
+    if (!this.storage.local.preferences.automaticMode) {
       debug('[browser.webRequest.onBeforeRequest] got not clicked request but automatic mode is off, ignoring', request);
       return;
     }
@@ -341,14 +341,61 @@ class Request {
   }
 
 
-  shouldAlwaysOpenInTemporaryContainer(request) {
+  async maybeAlwaysOpenInTemporaryContainer(tab, request) {
+    if (!tab || !tab.url) {
+      debug('[maybeAlwaysOpenInTemporaryContainer] we cant proceed without tab url information', request);
+      return false;
+    }
+    const parsedTabURL = new URL(tab.url);
     const parsedRequestURL = new URL(request.url);
+    let reopen = false;
+    debug('[maybeAlwaysOpenInTemporaryContainer]',
+      tab, request, parsedTabURL.hostname, parsedRequestURL.hostname);
 
     for (let domainPattern in this.storage.local.preferences.alwaysOpenInDomain) {
-      if (parsedRequestURL.hostname === domainPattern ||
-          parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
-        return true;
+      if ((parsedRequestURL.hostname === domainPattern ||
+          parsedRequestURL.hostname.match(globToRegexp(domainPattern)))) {
+
+        const preferences = this.storage.local.preferences.alwaysOpenInDomain[domainPattern];
+        debug('[maybeAlwaysOpenInTemporaryContainer] found pattern', domainPattern, preferences);
+        if (this.storage.local.tempContainers[tab.cookieStoreId] &&
+            this.storage.local.tempContainers[tab.cookieStoreId].clean) {
+          break;
+        }
+
+        if (tab.cookieStoreId !== 'firefox-default' &&
+            !this.storage.local.tempContainers[tab.cookieStoreId] &&
+            (typeof preferences !== 'object' ||
+             preferences.allowedInPermanent)) {
+          break;
+        }
+
+        if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
+          reopen = true;
+          break;
+        }
+        if (parsedTabURL.hostname !== domainPattern ||
+            !parsedTabURL.hostname.match(globToRegexp(domainPattern))) {
+          reopen = true;
+          break;
+        }
       }
+    }
+
+    if (reopen) {
+      this.cancelRequest(request);
+      const params = {
+        tab,
+        active: true,
+        url: request.url,
+        request
+      };
+      if (tab.url === 'about:newtab' || tab.url === 'about:blank') {
+        await this.container.reloadTabInTempContainer(params);
+      } else {
+        await this.container.createTabInTempContainer(params);
+      }
+      return {cancel: true};
     }
 
     return false;

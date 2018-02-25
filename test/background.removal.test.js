@@ -7,7 +7,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         createsTabId: 2,
         createsContainer: 'firefox-tmp1'
       });
-      await nextTick();
 
       browser.tabs.query.withArgs({}).resolves([{},{}]);
       browser.tabs.query.withArgs({cookieStoreId: 'firefox-tmp1'}).resolves([]);

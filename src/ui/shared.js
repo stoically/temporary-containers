@@ -143,8 +143,11 @@ window.updateLinkClickDomainRules = () => {
 
 window.alwaysOpenInDomainAddRule = async () => {
   const domainPattern = document.querySelector('#alwaysOpenInDomainPattern').value;
+  const allowedInPermanent = document.querySelector('#alwaysOpenInDomainAllowedInPermanent').checked;
 
-  preferences.alwaysOpenInDomain[domainPattern] = true;
+  preferences.alwaysOpenInDomain[domainPattern] = {
+    allowedInPermanent
+  };
   await savePreferences();
   updateAlwaysOpenInDomainRules();
 };
@@ -155,9 +158,12 @@ window.updateAlwaysOpenInDomainRules = () => {
   if (domainRules.length) {
     alwaysOpenInDomainRules.html('');
     domainRules.map((domainPattern) => {
-      alwaysOpenInDomainRules.append(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
+      const alwaysOpenInDomainPreferences = preferences.alwaysOpenInDomain[domainPattern];
+      const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
+        `<span href="#" data-tooltip="Allow in permanent Container: ${alwaysOpenInDomainPreferences.allowedInPermanent}">🛈</span> ` +
         '<a href="#" id="alwaysOpenInRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
         'data-position="right center">❌</a></div>');
+      alwaysOpenInDomainRules.append(el);
     });
 
     alwaysOpenInDomainRules.on('click', async (event) => {

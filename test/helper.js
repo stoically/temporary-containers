@@ -2,9 +2,9 @@ module.exports = {
   browser: {
     async openNewTmpTab({
       tabId = 1,
-      url = 'about:newtab',
       createsTabId = 2,
-      createsContainer = 'firefox-tmp1'
+      createsContainer = 'firefox-tmp1',
+      resetHistory = true
     }) {
       const fakeCreatedContainer = {
         cookieStoreId: createsContainer
@@ -20,15 +20,20 @@ module.exports = {
         cookieStoreId: createsContainer
       });
       const [promise] = browser.browserAction.onClicked.addListener.yield({
-        id: tabId,
-        url
+        id: tabId
       });
       await promise;
+      if (resetHistory) {
+        browser.contextualIdentities.create.resetHistory();
+        browser.tabs.create.resetHistory();
+        browser.tabs.get.resetHistory();
+      }
     },
 
     request({
       requestId = 1,
       tabId = 1,
+      tabUrl,
       url,
       originContainer = 'firefox-default',
       createsContainer = 'firefox-tmp1',
@@ -48,7 +53,8 @@ module.exports = {
       };
       const fakeTab = {
         id: tabId,
-        cookieStoreId: originContainer
+        cookieStoreId: originContainer,
+        url: tabUrl
       };
       const fakeCreatedContainer = {
         cookieStoreId: createsContainer
