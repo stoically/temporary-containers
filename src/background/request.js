@@ -133,15 +133,6 @@ class Request {
       return;
     }
 
-    if (!this.mouseclick.linksClicked[request.url] && tab && tab.openerTabId) {
-      // TODO probably macLegacy-related
-      debug('[webRequestOnBeforeRequest] always open in tmpcontainer request, simulating click', request);
-      this.linkClicked(request.url, {
-        id: tab.openerTabId,
-        cookieStoreId: tab.cookieStoreId
-      });
-    }
-
     if (tab && tab.incognito) {
       debug('[webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
       return;
@@ -342,6 +333,9 @@ class Request {
 
 
   async maybeAlwaysOpenInTemporaryContainer(tab, request) {
+    if (!Object.keys(this.storage.local.preferences.alwaysOpenInDomain).length) {
+      return;
+    }
     if (!tab || !tab.url) {
       debug('[maybeAlwaysOpenInTemporaryContainer] we cant proceed without tab url information', request);
       return false;
