@@ -3,7 +3,6 @@ const Storage = require('./background/storage');
 const Container = require('./background/container');
 const Request = require('./background/request');
 const MouseClick = require('./background/mouseclick');
-const Emittery = require('emittery');
 const MultiAccountContainers = require('./background/mac');
 const { versionCompare } = require('./background/utils');
 const {
@@ -12,9 +11,8 @@ const {
 } = require('./background/log');
 
 
-class TemporaryContainers extends Emittery {
+class TemporaryContainers {
   constructor() {
-    super();
     this.noContainerTabs = {};
 
     this.storage = new Storage;

@@ -66,6 +66,7 @@ class Container {
     this.storage = background.storage;
     this.request = background.request;
     this.mouseclick = background.mouseclick;
+    this.mac = background.mac;
 
     browser.cookies.onChanged.addListener(this.cookieCount.bind(this));
 
@@ -245,7 +246,7 @@ class Container {
 
     if (tab.url.startsWith('moz-extension://')) {
       debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
-      await this.background.emit('handleMultiAccountContainersConfirmPage', tab);
+      await this.mac.handleConfirmPage(tab);
       return;
     }
 

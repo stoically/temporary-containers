@@ -10,7 +10,6 @@ class MultiAccountContainers {
   initialize(background) {
     this.storage = background.storage;
     this.container = background.container;
-    background.on('handleMultiAccountContainersConfirmPage', this.handleConfirmPage.bind(this));
   }
 
   handleConfirmPage(tab) {
