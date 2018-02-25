@@ -90,7 +90,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
             describe('follow up requests', () => {
               [
-                // 'current',
+                'current',
                 'target'
               ].map(macConfirmChoice => { describe(`variant: macConfirmChoice ${macConfirmChoice}`, () => {
 
@@ -268,8 +268,8 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                 it('should do the right thing', async () => {
                   switch (preferences.click.action) {
                   case 'always':
-                    browser.tabs.remove.should.have.been.called;
-                    browser.tabs.create.should.have.been.called;
+                    browser.tabs.remove.should.have.been.calledOnce;
+                    browser.tabs.create.should.have.been.calledOnce;
                     break;
                   case 'never':
                     browser.tabs.remove.should.not.have.been.called;
