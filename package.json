@@ -4,7 +4,7 @@
   "description": "Temporary Containers",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -rf tmpcontainer && npm run lint && npm test && npm run webpack && web-ext build --overwrite-dest --ignore-files src* test* package* webpack* coverage* && addons-linter web-ext-artifacts/temporary_containers-*.zip",
+    "build": "rm -rf build web-ext-artifacts && npm run lint && npm test && npm run webpack && web-ext build --overwrite-dest -s build && addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "dev-webpack": "webpack --watch",
     "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha ./test/setup.js test/*.test.js --timeout 10000",
