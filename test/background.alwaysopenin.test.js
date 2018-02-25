@@ -6,6 +6,9 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       background.storage.local.preferences.alwaysOpenInDomain = {
         'example.com': {
           allowedInPermanent: false
+        },
+        '*.notexample.com': {
+          allowedInPermanent: false
         }
       };
     });
@@ -19,6 +22,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       });
       browser.tabs.create.should.have.been.calledOnce;
     });
+
 
     it('should open in a new temporary container even when about:blank', async () => {
       await helper.browser.request({
@@ -79,6 +83,35 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       await helper.browser.request({
         tabId: 2,
         url: 'https://example.com',
+        originContainer: 'firefox-tmp1'
+      });
+      browser.tabs.create.should.not.have.been.called;
+    });
+
+
+    it('should not open in a new temporary container if the tab url belonging to the request matches the wildcard pattern', async () => {
+      await helper.browser.openNewTmpTab({
+        createsTabId: 2,
+        createsContainer: 'firefox-tmp1'
+      });
+      await helper.browser.request({
+        tabId: 2,
+        tabUrl: 'about:newtab',
+        url: 'https://foo.notexample.com',
+        originContainer: 'firefox-tmp1',
+        resetHistory: true
+      });
+
+      await helper.browser.request({
+        tabId: 2,
+        tabUrl: 'https://foo.notexample.com',
+        url: 'https://foo.notexample.com',
+        originContainer: 'firefox-tmp1',
+      });
+
+      await helper.browser.request({
+        tabId: 2,
+        url: 'https://bar.example.com',
         originContainer: 'firefox-tmp1'
       });
       browser.tabs.create.should.not.have.been.called;

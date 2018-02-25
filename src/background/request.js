@@ -382,7 +382,7 @@ class Request {
           reopen = true;
           break;
         }
-        if (parsedTabURL.hostname !== domainPattern ||
+        if (parsedTabURL.hostname !== domainPattern &&
             !parsedTabURL.hostname.match(globToRegexp(domainPattern))) {
           debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', parsedTabURL.hostname, domainPattern);
           reopen = true;
