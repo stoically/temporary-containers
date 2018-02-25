@@ -63,6 +63,53 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       clock.tick(600000);
       background.container.cleanup.should.have.been.calledOnce;
     });
+
+    describe('should catch early requests', () => {
+      it('wait for tmp to initialize, blocking the request until initialize', async () => {
+        const background = reload('../src/background');
+        sinon.stub(background.request, 'webRequestOnBeforeRequest');
+
+        const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
+        let waitingForPromise = true;
+        promise.then(() => {
+          waitingForPromise = false;
+        });
+        clock.tick(100);
+        await nextTick();
+        waitingForPromise.should.be.true;
+
+        await background.initialize();
+        await nextTick();
+        clock.tick(100);
+        await nextTick();
+        waitingForPromise.should.be.false;
+      });
+
+      it('wait for tmp to initialize, blocking the request until timeout and dont block the next requests anymore', async () => {
+        reload('../src/background');
+        const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
+        let waitingForPromise = true;
+        promise.then(() => {
+          waitingForPromise = false;
+        });
+        for (let i = 0; i < 20; i++) {
+          clock.tick(100);
+          await nextTick();
+          waitingForPromise.should.be.true;
+        }
+        clock.tick(100);
+        await nextTick();
+        waitingForPromise.should.be.false;
+
+        const [promise2] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
+        let waitingForPromise2 = true;
+        promise2.then(() => {
+          waitingForPromise2 = false;
+        });
+        await promise2;
+        waitingForPromise2.should.be.false;
+      });
+    });
   });
 
 

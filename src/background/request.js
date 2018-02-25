@@ -13,13 +13,7 @@ class Request {
     this.mouseclick = background.mouseclick;
     this.mac = background.mac;
 
-    browser.webRequest.onBeforeRequest.addListener(this.webRequestOnBeforeRequest.bind(this),  {
-      urls: ['<all_urls>'],
-      types: ['main_frame']
-    }, [
-      'blocking'
-    ]);
-
+    this.webRequestOnBeforeRequest.bind(this);
     browser.webRequest.onBeforeSendHeaders.addListener(async details => {
       return this.maybeSetAndAddCookiesToHeader(details);
     }, {
