@@ -382,7 +382,7 @@ class TemporaryContainers extends Emittery {
       }
     }
     if (versionCompare('0.59', previousVersion) >= 0) {
-      debug('updated from version <= 0.58, potentially migrate always open in preferences');
+      debug('updated from version <= 0.59, potentially migrate always open in preferences');
       const alwaysOpenInDomains = Object.keys(this.storage.local.preferences.alwaysOpenInDomain);
       if (alwaysOpenInDomains.length) {
         alwaysOpenInDomains.map(alwaysOpenInDomainPattern => {
