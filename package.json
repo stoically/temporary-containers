@@ -35,7 +35,8 @@
     "sinon": "^4.4.2",
     "sinon-chai": "^2.14.0",
     "web-ext": "^2.4.0",
-    "webpack": "^4.0.0"
+    "webpack": "^4.0.0",
+    "webpack-cli": "^2.0.9"
   },
   "peerDependencies": {
     "delay": "^2.0.0",
