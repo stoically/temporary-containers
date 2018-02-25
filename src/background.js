@@ -330,6 +330,7 @@ class TemporaryContainers extends Emittery {
     browser.browserAction.setIcon(icon);
   }
 
+  /* istanbul ignore next */
   async runtimeOnInstalled(details) {
     if (details.temporary) {
       log.DEBUG = true;
@@ -341,6 +342,7 @@ class TemporaryContainers extends Emittery {
     }
   }
 
+  /* istanbul ignore next */
   async onUpdateMigration(details) {
     if (!this.storage.local) {
       await this.storage.load();
@@ -414,6 +416,7 @@ browser.runtime.onInstalled.addListener(tmp.runtimeOnInstalled.bind(tmp));
 browser.runtime.onStartup.addListener(tmp.runtimeOnStartup.bind(tmp));
 
 
+/* istanbul ignore next */
 if (!browser.mochaTest) {
   window.log = log;
   window.tmp = tmp;
