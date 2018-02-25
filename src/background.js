@@ -120,7 +120,7 @@ class TemporaryContainers extends Emittery {
   }
 
 
-  browserActionOnClicked(tab, url) {
+  browserActionOnClicked(tab) {
     if (!this.storage.local.preferences.keyboardShortcuts.AltC) {
       return;
     }
@@ -128,7 +128,7 @@ class TemporaryContainers extends Emittery {
     if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
       deletesHistory = true;
     }
-    this.container.createTabInTempContainer({tab, url, deletesHistory});
+    this.container.createTabInTempContainer({tab, deletesHistory});
   }
 
 

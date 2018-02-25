@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "description": "Temporary Containers",
   "scripts": {
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "build": "rm -rf tmpcontainer && npm run lint && npm test && npm run webpack && web-ext build --overwrite-dest --ignore-files src* test* package* webpack* && addons-linter web-ext-artifacts/temporary_containers-*.zip",
+    "dev-webpack": "webpack --watch",
+    "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha ./test/setup.js test/*.test.js --timeout 10000",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "lint": "eslint src",
-    "build": "rm -rf tmpcontainer && npm run webpack && web-ext build --overwrite-dest --ignore-files src* test* package* webpack* && addons-linter web-ext-artifacts/temporary_containers-*.zip",
-    "webpack": "webpack",
-    "dev-webpack": "webpack --watch"
+    "webpack": "webpack"
   },
   "repository": {
     "type": "git",
@@ -40,5 +40,11 @@
     "delay": "^2.0.0",
     "emittery": "^0.2.0",
     "p-queue": "^2.3.0"
+  },
+  "nyc": {
+    "exclude": [
+      "test/**/*.js",
+      "src/background/utils.js"
+    ]
   }
 }

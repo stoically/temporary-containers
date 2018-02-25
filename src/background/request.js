@@ -373,6 +373,7 @@ class Request {
         if (!tab) {
           tab = await browser.tabs.get(details.tabId);
           if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
+            debug('[maybeSetAndAddCookiesToHeader] not a temporary container', tab);
             return;
           }
 

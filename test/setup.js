@@ -1,3 +1,22 @@
+global.preferencesTestSet = [
+  {
+    automaticMode: true,
+    automaticModeNewTab: 'created'
+  },
+  {
+    automaticMode: false,
+    automaticModeNewTab: 'created'
+  },
+  {
+    automaticMode: true,
+    automaticModeNewTab: 'navigation'
+  },
+  {
+    automaticMode: false,
+    automaticModeNewTab: 'navigation'
+  }
+];
+
 if (!process.listenerCount('unhandledRejection')) {
   // eslint-disable-next-line no-console
   process.on('unhandledRejection', r => console.log(r));
@@ -111,7 +130,9 @@ global.injectBrowser = () => {
     cookies: {
       onChanged: {
         addListener: sinon.stub()
-      }
+      },
+      set: sinon.stub(),
+      get: sinon.stub()
     },
     pageAction: {
       setIcon: sinon.stub(),
@@ -120,25 +141,6 @@ global.injectBrowser = () => {
     }
   };
 };
-
-global.preferencesTestSet = [
-  {
-    automaticMode: true,
-    automaticModeNewTab: 'created'
-  },
-  {
-    automaticMode: false,
-    automaticModeNewTab: 'created'
-  },
-  {
-    automaticMode: true,
-    automaticModeNewTab: 'navigation'
-  },
-  {
-    automaticMode: false,
-    automaticModeNewTab: 'navigation'
-  }
-];
 
 global.loadBackground = async (preferences = {}) => {
   const background = reload('../src/background');

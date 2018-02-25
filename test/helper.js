@@ -15,12 +15,15 @@ module.exports = {
       };
       browser.contextualIdentities.create.resolves(fakeCreatedContainer);
       browser.tabs.create.resolves(fakeCreatedTab);
-      browser.tabs.onUpdated.addListener.yield(tabId, { url }, {
+      browser.tabs.get.resolves({
         id: tabId,
-        url,
-        cookieStoreId: 'firefox-default'
+        cookieStoreId: createsContainer
       });
-      await nextTick();
+      const [promise] = browser.browserAction.onClicked.addListener.yield({
+        id: tabId,
+        url
+      });
+      await promise;
     },
 
     request({

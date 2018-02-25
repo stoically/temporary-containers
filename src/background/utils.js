@@ -1,3 +1,5 @@
+/* istanbul ignore next */
+
 /* eslint-disable */
 // --------------------------------------------------------------------------------
 // simplified version of https://github.com/fitzgen/glob-to-regexp
