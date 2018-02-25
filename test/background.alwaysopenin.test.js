@@ -20,6 +20,16 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.tabs.create.should.have.been.calledOnce;
     });
 
+    it('should open in a new temporary container even when about:blank', async () => {
+      await helper.browser.request({
+        tabId: 2,
+        tabUrl: 'about:blank',
+        url: 'https://example.com',
+        originContainer: 'firefox-default'
+      });
+      browser.tabs.create.should.have.been.calledOnce;
+    });
+
 
     it('should not open in a new temporary container if its a clean tmp tab', async () => {
       await helper.browser.openNewTmpTab({
@@ -81,19 +91,43 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         createsContainer: 'firefox-tmp1'
       });
       await helper.browser.request({
+        requestId: 1,
         tabId: 2,
-        url: 'https://notexample.com',
+        url: 'http://notexample.com',
         originContainer: 'firefox-tmp1',
         resetHistory: true
       });
 
-      await helper.browser.request({
+      const result = await helper.browser.request({
+        requestId: 2,
         tabId: 2,
-        tabUrl: 'https://notexample.com',
-        url: 'https://example.com',
-        originContainer: 'firefox-tmp1'
+        tabUrl: 'http://notexample.com',
+        url: 'http://example.com',
+        originContainer: 'firefox-tmp1',
+        createsTabId: 3,
+        createsContainer: 'firefox-tmp2'
       });
+      result.should.deep.equal({cancel: true});
       browser.tabs.create.should.have.been.calledOnce;
+
+      const result2 = await helper.browser.request({
+        requestId: 3,
+        tabId: 3,
+        tabUrl: 'about:blank',
+        url: 'http://example.com',
+        originContainer: 'firefox-tmp2',
+        resetHistory: true
+      });
+      const result3 = await helper.browser.request({
+        requestId: 3,
+        tabId: 3,
+        tabUrl: 'about:blank',
+        url: 'https://example.com',
+        originContainer: 'firefox-tmp2'
+      });
+      browser.tabs.create.should.not.have.been.called;
+      expect(result2).to.be.undefined;
+      expect(result3).to.be.undefined;
     });
   });
 

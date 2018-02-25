@@ -1,9 +1,11 @@
+const delay = require('./lib/delay');
 const globToRegexp = require('./lib/glob-to-regexp');
 const { debug } = require('./log');
 
 class Request {
   constructor() {
     this.canceledRequests = {};
+    this.requestsSeen = {};
   }
 
   async initialize(background) {
@@ -46,6 +48,14 @@ class Request {
   async webRequestOnBeforeRequest(request) {
     // TODO stop early if nothing is configured that requires request-intervention
     const returnVal = await this._webRequestOnBeforeRequest(request);
+
+    if (!this.requestsSeen[request.requestId]) {
+      this.requestsSeen[request.requestId] = true;
+      delay(5000).then(() => {
+        delete this.requestsSeen[request.requestId];
+      });
+    }
+
     if (returnVal && returnVal.cancel) {
       this.cancelRequest(request);
       return returnVal;
@@ -197,6 +207,8 @@ class Request {
 
 
   async handleNotClickedLink(request, tab, macAssignment) {
+    debug('[handleNotClickedLink] onBeforeRequest', request, tab);
+
     if (tab && tab.cookieStoreId === 'firefox-default' && tab.openerTabId) {
       debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
       const openerTab = await browser.tabs.get(tab.openerTabId);
@@ -348,6 +360,7 @@ class Request {
         debug('[maybeAlwaysOpenInTemporaryContainer] found pattern', domainPattern, preferences);
         if (this.storage.local.tempContainers[tab.cookieStoreId] &&
             this.storage.local.tempContainers[tab.cookieStoreId].clean) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
           break;
         }
 
@@ -355,15 +368,23 @@ class Request {
             !this.storage.local.tempContainers[tab.cookieStoreId] &&
             (typeof preferences !== 'object' ||
              preferences.allowedInPermanent)) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because not in tmp or default container and allowed to load in permanent container');
+          break;
+        }
+
+        if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
           break;
         }
 
         if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because not in a tmp container');
           reopen = true;
           break;
         }
         if (parsedTabURL.hostname !== domainPattern ||
             !parsedTabURL.hostname.match(globToRegexp(domainPattern))) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', parsedTabURL.hostname, domainPattern);
           reopen = true;
           break;
         }

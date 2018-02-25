@@ -59,7 +59,7 @@ const globToRegexp = (glob) => {
     }
   }
 
-  return new RegExp(reStr, flags);
+  return new RegExp('^' + reStr + '$', flags);
 };
 
 module.exports = globToRegexp;
