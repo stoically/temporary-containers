@@ -48,7 +48,7 @@
   "nyc": {
     "exclude": [
       "test/**/*.js",
-      "src/background/utils.js"
+      "src/background/lib/**/*.js"
     ]
   }
 }

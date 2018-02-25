@@ -1,10 +1,10 @@
-const { delay } = require('./background/utils');
+const delay = require('./background/lib/delay');
 const Storage = require('./background/storage');
 const Container = require('./background/container');
 const Request = require('./background/request');
 const MouseClick = require('./background/mouseclick');
 const MultiAccountContainers = require('./background/mac');
-const { versionCompare } = require('./background/utils');
+const versionCompare = require('./background/lib/semver-compare');
 const {
   log,
   debug

@@ -1,7 +1,5 @@
-const {
-  PQueue,
-  delay
-} = require('./utils');
+const delay = require('./lib/delay');
+const PQueue = require('./lib/p-queue');
 const { debug } = require('./log');
 
 class Container {

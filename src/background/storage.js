@@ -1,4 +1,4 @@
-const { delay } = require('./utils');
+const delay = require('./lib/delay');
 const { debug } = require('./log');
 
 class Storage {

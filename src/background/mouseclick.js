@@ -1,4 +1,4 @@
-const { globToRegexp } = require('./utils');
+const globToRegexp = require('./lib/glob-to-regexp');
 const { debug } = require('./log');
 
 class MouseClick {
