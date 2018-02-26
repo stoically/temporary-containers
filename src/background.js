@@ -154,14 +154,9 @@ class TemporaryContainers {
 
 
   browserActionOnClicked() {
-    if (!this.storage.local.preferences.keyboardShortcuts.AltC) {
-      return;
-    }
-    let deletesHistory = false;
-    if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
-      deletesHistory = true;
-    }
-    return this.container.createTabInTempContainer({deletesHistory});
+    return this.container.createTabInTempContainer({
+      deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic'
+    });
   }
 
 
@@ -280,6 +275,15 @@ class TemporaryContainers {
 
   async commandsOnCommand(name) {
     switch(name) {
+    case 'new_temporary_container_tab':
+      if (!this.storage.local.preferences.keyboardShortcuts.AltC) {
+        return;
+      }
+      this.container.createTabInTempContainer({
+        deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic'
+      });
+      break;
+
     case 'new_no_container_tab':
       if (!this.storage.local.preferences.keyboardShortcuts.AltN) {
         return;
@@ -325,6 +329,7 @@ class TemporaryContainers {
         return;
       }
       this.container.createTabInSameContainer();
+      break;
     }
   }
 

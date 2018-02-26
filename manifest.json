@@ -36,7 +36,7 @@
   },
 
   "commands": {
-    "_execute_browser_action": {
+    "new_temporary_container_tab": {
       "suggested_key": {
         "default": "Alt+C",
         "windows": "Alt+Shift+T"
