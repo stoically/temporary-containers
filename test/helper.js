@@ -30,8 +30,9 @@ module.exports = {
       }
     },
 
+    requestId: 1,
     request({
-      requestId = 1,
+      requestId = false,
       tabId = 1,
       tabUrl,
       url,
@@ -41,6 +42,9 @@ module.exports = {
       macWasFaster = false,
       resetHistory = false
     }) {
+      if (!requestId) {
+        requestId = this.requestId++;
+      }
       if (resetHistory) {
         browser.tabs.remove.resetHistory();
         browser.tabs.create.resetHistory();
