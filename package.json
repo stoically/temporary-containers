@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stoically/firefox-add-on-temporary-containers.git"
+    "url": "git+https://github.com/stoically/temporary-containers.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/stoically/firefox-add-on-temporary-containers/issues"
+    "url": "https://github.com/stoically/temporary-containers/issues"
   },
-  "homepage": "https://github.com/stoically/firefox-add-on-temporary-containers#readme",
+  "homepage": "https://github.com/stoically/temporary-containers#readme",
   "devDependencies": {
     "addons-linter": "^0.37.0",
     "chai": "^4.1.2",
