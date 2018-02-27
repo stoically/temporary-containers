@@ -87,10 +87,10 @@ const initialize = async () => {
 
 
   const domainPatternToolTip =
-    '<div style="width:400px;">' +
-    'Exact Match: <strong>example.com</strong><br>' +
-    'Glob Match: <strong>*.example.com</strong><br>' +
-    'Note: *.example.com would not match example.com, ' +
+    '<div style="width:600px;">' +
+    'Exact matches: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
+    'Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>' +
+    'Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>, ' +
     'so you might need two rules</div>';
 
   $('#linkClickDomainPatternDiv').popup({

@@ -13,11 +13,12 @@ Detailed informations about the [Add-on can be found on AMO](https://addons.mozi
 ### Run in Firefox
 
 1. `npm run dev-webpack`
-  * webpack watcher
-2. `web-ext run`
-  * starts the default system Firefox, loads the Add-on and watches for changes
-  * append `-p profilename` to start Firefox with a different profile
-  * check `about:debugging` and click `Debug` under Temporary Container to see the console
+    * webpack watcher
+
+2. `web-ext run -s build`
+    * starts the default system Firefox, loads the Add-on and watches for changes
+    * append `-p profilename` to start Firefox with a different profile
+    * check `about:debugging` and click `Debug` under Temporary Container to see the console
 
 ### Run the tests
 

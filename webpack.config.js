@@ -9,9 +9,9 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin([
-      'manifest.json',
       'README.md',
       'LICENSE',
+      'src/manifest.json',
       {from: 'icons', to: 'icons'},
       {from: 'src/contentscript.js', to: 'tmpcontainer'},
       {from: 'src/ui', to: 'tmpcontainer/ui'}
