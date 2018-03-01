@@ -124,6 +124,12 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
+    // const isolated = await this.maybeIsolate(tab, request);
+    // if (isolated) {
+    //   debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
+    //   return isolated;
+    // }
+
     const alwaysOpenIn = !macAssignment && await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
     if (alwaysOpenIn) {
       debug('[webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
@@ -334,6 +340,33 @@ class Request {
          this.canceledRequests[request.tabId].urls[request.url])) {
       return true;
     }
+    return false;
+  }
+
+
+  async maybeIsolate(tab, request) {
+    let reopen = false;
+    if (this.storage.local.preferences.isolationGlobal === 'always') {
+      debug('[maybeIsolate] decided to isolate based on global "always"', request);
+      reopen = true;
+    }
+
+    if (reopen) {
+      this.cancelRequest(request);
+      const params = {
+        tab,
+        active: true,
+        url: request.url,
+        request
+      };
+      if (tab.url === 'about:newtab' || tab.url === 'about:blank') {
+        await this.container.reloadTabInTempContainer(params);
+      } else {
+        await this.container.createTabInTempContainer(params);
+      }
+      return {cancel: true};
+    }
+
     return false;
   }
 

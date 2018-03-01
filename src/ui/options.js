@@ -14,6 +14,8 @@ const initialize = async () => {
     $('#containerRemoval').dropdown('set selected', preferences.containerRemoval);
     $('#iconColor').dropdown('set selected', preferences.iconColor);
 
+    $('#isolationGlobal').dropdown('set selected', preferences.isolationGlobal);
+    $('#isolationMac').dropdown('set selected', preferences.isolationMac);
 
     $('#linkClickGlobalMiddle').dropdown('set selected', preferences.linkClickGlobal.middle.action);
     $('#linkClickGlobalCtrlLeft').dropdown('set selected', preferences.linkClickGlobal.ctrlleft.action);
@@ -161,6 +163,7 @@ document.addEventListener('DOMContentLoaded', initialize);
 $('#saveContainerPreferences').on('click', saveContainerPreferences);
 $('#saveAdvancedGeneralPreferences').on('click', saveAdvancedPreferences);
 $('#saveAdvancedDeleteHistoryPreferences').on('click', saveAdvancedPreferences);
+$('#saveIsolationGlobalPreferences').on('click', saveIsolationGlobalPreferences);
 $('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);
 $('#saveStatisticsPreferences').on('click', saveStatisticsPreferences);
 $('#resetStatistics').on('click', resetStatistics);

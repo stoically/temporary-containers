@@ -58,6 +58,14 @@ window.saveContainerPreferences = async (event) => {
   await savePreferences();
 };
 
+window.saveIsolationGlobalPreferences = async (event) => {
+  event.preventDefault();
+
+  preferences.isolationGlobal = document.querySelector('#isolationGlobal').value;
+
+  await savePreferences();
+};
+
 window.saveLinkClickGlobalPreferences = async (event) => {
   event.preventDefault();
 

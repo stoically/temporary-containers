@@ -8,6 +8,10 @@ class Storage {
     this.preferencesDefault = {
       automaticMode: false,
       automaticModeNewTab: 'created',
+      // isolationGlobal: 'never',
+      // isolationDomain: {},
+      // isolationMac: 'disabled',
+      // isolationMacContainer: {},
       linkClickGlobal: {
         middle: {
           action: 'never',

@@ -13,10 +13,11 @@
 
   <body>
     <div class="ui container">
-      <div class="ui pointing secondary menu">
+      <div class="ui menu">
         <a class="item active" data-tab="general">General</a>
-        <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
         <a class="item" data-tab="alwaysopenin">Always per Website</a>
+        <!--<a class="item" data-tab="isolation">Isolation</a>-->
+        <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
         <a class="item" data-tab="advanced">Advanced</a>
         <a class="item" data-tab="statistics">Statistics</a>
       </div>
@@ -109,6 +110,79 @@
           </div>
         </form>
       </div>
+      <div class="ui tab segment" data-tab="isolation">
+        <div class="ui top attached tabular menu">
+          <a class="active item" data-tab="isolation/global">Global</a>
+          <a class="item" data-tab="isolation/perwebsite">Per Website</a>
+          <a class="item" data-tab="isolation/mac">Multi-Account Containers</a>
+        </div>
+        <div class="ui bottom attached active tab segment" data-tab="isolation/global">
+          <form class="ui form">
+            <h4>When navigating should open new Temporary Containers</h4>
+            <div class="field">
+              <select id="isolationGlobal" class="ui fluid dropdown">
+                <option value="always">Always</option>
+                <option value="notsamedomainexact">Only if the navigation target doesn't exactly match the Website Domain</option>
+                <option value="notsamedomain">Only if the navigation target doesn't match the Website Domain (includes Subdomains)</option>
+                <option value="never">Never</option>
+              </select>
+            </div>
+            <div class="field">
+              <button id="saveIsolationGlobalPreferences" class="ui button primary">Save</button>
+            </div>
+          </form>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="isolation/perwebsite">
+          <form class="ui form">
+            <h4 data-tooltip="Website Rules overwrite Global Preferences">
+              On which Website should navigating open new Temporary Containers
+            </h4>
+            <div id="isolationDomainPatternDiv" class="field">
+              <label>Website Pattern [?]</label>
+              <input id="isolationDomainPattern" type="text">
+            </div>
+            <div class="field">
+              <select id="isolationDomain" class="ui fluid dropdown">
+                <option value="always">Always</option>
+                <option value="notsamedomainexact">Only if the navigation target doesn't exactly match the Website Domain</option>
+                <option value="notsamedomain">Only if the navigation target doesn't match the Website Domain (includes Subdomains)</option>
+                <option value="never">Never</option>
+              </select>
+            </div>
+            <div class="field">
+              <button id="isolationDomainAddRule" class="ui button primary">Save</button>
+            </div>
+            <div>
+              <h3>Website Rules</h3>
+              <div class="ui bulleted list" id="isolationDomainRules">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="isolation/mac">
+          <form class="ui form">
+            <h4>Only allow Websites assigned to a container to load inside the container</h4>
+            <div class="field">
+              <select id="isolationMac" class="ui fluid dropdown">
+                <option value="disabled">Disabled</option>
+                <option value="enabled">Enabled</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>If enabled then disable for the these containers</label>
+            </div>
+            <div class="field" id="abc">
+              <div class="ui checkbox">
+                <input type="checkbox" id="abc">
+                <label>Personal</label>
+              </div>
+            </div>
+            <div class="field">
+              <button id="saveIsolationGlobalPreferences" class="ui button primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
       <div class="ui tab segment" data-tab="mouseclicks">
         <div class="ui top attached tabular menu">
           <a class="active item" data-tab="mouseclicks/global">Global</a>
@@ -141,7 +215,7 @@
               <select id="linkClickGlobalCtrlLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
+                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -150,7 +224,7 @@
               <select id="linkClickGlobalLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
+                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -173,7 +247,7 @@
               <select id="linkClickDomainMiddle" class="ui fluid dropdown">
                 <option value="always" selected="selected">Always</option>
                 <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
+                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -182,7 +256,7 @@
               <select id="linkClickDomainCtrlLeft" class="ui fluid dropdown">
                 <option value="always" selected="selected">Always</option>
                 <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
+                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -191,7 +265,7 @@
               <select id="linkClickDomainLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact" selected="selected">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
+                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -209,7 +283,7 @@
       <div class="ui tab segment" data-tab="alwaysopenin">
         <form class="ui form" id="alwaysOpenInDomainForm">
           <h4 data-tooltip="Regardless how they're opened. Will not work if the Website is assigned using Multi-Account Containers.">
-            Which Websites should always open in new Temporary Containers [?]
+            Websites that should always open in new Temporary Containers [?]
           </h4>
           <div id="alwaysOpenInDomainPatternDiv" class="field">
             <label>Website Pattern [?]</label>

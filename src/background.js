@@ -54,7 +54,6 @@ class TemporaryContainers {
     this.container = new Container;
     this.mouseclick = new MouseClick;
     this.mac = new MultiAccountContainers;
-    this.macLegacy = false;
   }
 
 

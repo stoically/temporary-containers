@@ -7,6 +7,7 @@ module.exports = {
     path: path.resolve(__dirname, './build'),
     filename: 'tmpcontainer/background.js'
   },
+  mode: 'production',
   plugins: [
     new CopyWebpackPlugin([
       'README.md',
@@ -15,8 +16,11 @@ module.exports = {
       {from: 'icons', to: 'icons'},
       {from: 'src/contentscript.js', to: 'tmpcontainer'},
       {from: 'src/ui', to: 'tmpcontainer/ui'}
-    ]),
+    ])
   ],
+  optimization: {
+    minimize: false
+  },
   node: {
     process: false
   }
