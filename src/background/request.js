@@ -405,21 +405,35 @@ class Request {
           break;
         }
 
-        if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
-          break;
-        }
-
         if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
           debug('[maybeAlwaysOpenInTemporaryContainer] reopening because not in a tmp container');
           reopen = true;
           break;
         }
+
+        if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
+          break;
+        }
+        
         if (parsedTabURL.hostname !== domainPattern &&
             !parsedTabURL.hostname.match(globToRegexp(domainPattern))) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', parsedTabURL.hostname, domainPattern);
-          reopen = true;
-          break;
+          let openerMatches = false;
+          if (tab.openerTabId) {
+            const openerTab = await browser.tabs.get(tab.openerTabId);
+            if (!openerTab.url.startsWith('about:')) {
+              const openerTabParsedURL = new URL(openerTab.url);
+              if (openerTabParsedURL.hostname === domainPattern ||
+                  openerTabParsedURL.hostname.match(globToRegexp(domainPattern))) {
+                openerMatches = true;
+              }
+            }
+          }
+          if (!openerMatches) {
+            debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', parsedTabURL.hostname, domainPattern);
+            reopen = true;
+            break;
+          }
         }
       }
     }
@@ -440,6 +454,7 @@ class Request {
       return {cancel: true};
     }
 
+    debug('[maybeAlwaysOpenInTemporaryContainer] nothing matched, we do nothing', request);
     return false;
   }
 
