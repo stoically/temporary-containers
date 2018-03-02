@@ -69,9 +69,7 @@ class TemporaryContainers {
     this.container.initialize(this);
     this.mouseclick.initialize(this);
     this.mac.initialize(this);
-    if (!this.storage.local) {
-      await this.storage.load();
-    }
+    await this.storage.load();
 
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
     browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
@@ -371,19 +369,24 @@ class TemporaryContainers {
   async runtimeOnInstalled(details) {
     if (details.temporary) {
       log.DEBUG = true;
-      return; // prevent update logic
     }
 
-    if (details.reason === 'update') {
-      delay(60000).then(() => this.onUpdateMigration(details));
+    switch (details.reason) {
+    case 'install':
+      this.storage.initializeStorageOnInstallation();
+      break;
+
+    case 'update':
+      await delay(60000);
+      this.onUpdateMigration(details);
+      break;
     }
   }
 
   /* istanbul ignore next */
   async onUpdateMigration(details) {
-    if (!this.storage.local) {
-      await this.storage.load();
-    }
+    await this.storage.load();
+
     const previousVersion = details.previousVersion.replace('beta', '.');
     debug('updated from version', details.previousVersion, previousVersion);
     if (versionCompare('0.16', previousVersion) >= 0) {
@@ -434,9 +437,7 @@ class TemporaryContainers {
 
 
   async runtimeOnStartup() {
-    if (!this.storage.local) {
-      await this.storage.load();
-    }
+    await this.storage.load();
 
     // queue a container cleanup
     delay(15000).then(() => {
