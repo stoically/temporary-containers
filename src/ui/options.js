@@ -27,6 +27,7 @@ const initialize = async () => {
 
     $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
     $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistoryContainerRemoval);
+    $('#deletesHistoryContainerAlwaysPerWebsite').dropdown('set selected', preferences.deletesHistoryContainerAlwaysPerWebsite);
     $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
     $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
     document.querySelector('#pageAction').checked = preferences.pageAction;

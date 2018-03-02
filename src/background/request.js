@@ -415,7 +415,7 @@ class Request {
           debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
           break;
         }
-        
+
         if (parsedTabURL.hostname !== domainPattern &&
             !parsedTabURL.hostname.match(globToRegexp(domainPattern))) {
           let openerMatches = false;
@@ -440,11 +440,14 @@ class Request {
 
     if (reopen) {
       this.cancelRequest(request);
+      const deletesHistory = this.storage.local.preferences.deletesHistoryContainer === 'automatic' &&
+                             this.storage.local.preferences.deletesHistoryContainerAlwaysPerWebsite === 'automatic';
       const params = {
         tab,
         active: true,
         url: request.url,
-        request
+        request,
+        deletesHistory
       };
       if (tab.url === 'about:newtab' || tab.url === 'about:blank') {
         await this.container.reloadTabInTempContainer(params);

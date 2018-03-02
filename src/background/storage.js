@@ -38,6 +38,7 @@ class Storage {
       iconColor: 'default',
       historyPermission: false,
       deletesHistoryContainer: 'never',
+      deletesHistoryContainerAlwaysPerWebsite: 'never',
       deletesHistoryContainerRemoval: 'instant',
       deletesHistoryContainerMouseClicks: 'never',
       keyboardShortcuts: {
