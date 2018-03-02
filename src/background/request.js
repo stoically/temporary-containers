@@ -122,6 +122,11 @@ class Request {
       debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
     }
 
+    if (tab && tab.incognito) {
+      debug('[webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
+      return;
+    }
+
     this.container.maybeAddHistory(tab, request.url);
 
     // const isolated = await this.maybeIsolate(tab, request);
@@ -140,11 +145,6 @@ class Request {
       return;
     } else if (this.mouseclick.unhandledLinksClicked[request.url]) {
       debug('[webRequestOnBeforeRequest] we saw an unhandled click for that url', request);
-      return;
-    }
-
-    if (tab && tab.incognito) {
-      debug('[webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
       return;
     }
 
