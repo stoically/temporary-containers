@@ -1,5 +1,3 @@
-// https://github.com/acvetkov/sinon-chrome/pull/75
-// https://github.com/acvetkov/sinon-chrome/pull/73
 const browser = require('sinon-chrome/webextensions');
 
 module.exports = () => {

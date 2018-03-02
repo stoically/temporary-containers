@@ -34,7 +34,7 @@
     "require-reload": "^0.2.2",
     "sinon": "^4.4.2",
     "sinon-chai": "^2.14.0",
-    "sinon-chrome": "stoically/sinon-chrome#build",
+    "sinon-chrome": "^2.3.0",
     "web-ext": "^2.4.0",
     "webpack": "^4.0.0",
     "webpack-cli": "^2.0.9"
