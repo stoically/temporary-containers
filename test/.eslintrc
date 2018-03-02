@@ -10,6 +10,7 @@
         "clock": false,
         "expect": false,
         "loadBackground": false,
+        "loadBareBackground": false,
         "injectBrowser": false,
         "background": true,
         "helper": false,

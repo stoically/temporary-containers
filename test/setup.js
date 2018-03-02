@@ -40,8 +40,19 @@ global.injectBrowser = () => {
   global.browser = require('./browser.mock')();
 };
 
+global.loadBareBackground = async () => {
+  const background = reload('../src/background');
+  await background.runtimeOnInstalled({
+    reason: 'install'
+  });
+  return background;
+};
+
 global.loadBackground = async (preferences = {}) => {
   const background = reload('../src/background');
+  await background.runtimeOnInstalled({
+    reason: 'install'
+  });
   await background.initialize();
   Object.assign(background.storage.local.preferences, preferences);
   background.storage.local.preferences.linkClickGlobal.middle.action = 'always';

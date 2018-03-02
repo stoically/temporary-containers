@@ -373,13 +373,11 @@ class TemporaryContainers {
 
     switch (details.reason) {
     case 'install':
-      this.storage.initializeStorageOnInstallation();
-      break;
+      return this.storage.initializeStorageOnInstallation();
 
     case 'update':
       await delay(60000);
-      this.onUpdateMigration(details);
-      break;
+      return this.onUpdateMigration(details);
     }
   }
 

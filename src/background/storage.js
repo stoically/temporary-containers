@@ -129,6 +129,7 @@ class Storage {
 
 
   async initializeStorageOnInstallation() {
+    this.loading = true;
     this.local = {
       tempContainerCounter: 0,
       tempContainers: {},
@@ -137,7 +138,9 @@ class Storage {
     };
     this.maybeInitializeMissingStatistics();
     await this.persist();
-    debug('storage initialized', this.local);
+    debug('storage initialized');
+    this.loaded = true;
+    this.loading = false;
   }
 
   async maybeInitializeMissingStatistics() {

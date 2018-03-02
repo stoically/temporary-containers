@@ -2,7 +2,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
   describe('on require', () => {
     it('should register event listeners', async () => {
-      const background = reload('../src/background');
+      const background = await loadBareBackground();
       sinon.stub(background, 'contextMenusOnClicked');
       sinon.stub(background, 'commandsOnCommand');
       sinon.stub(background, 'runtimeOnInstalled');
@@ -51,13 +51,8 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       background.request.webRequestOnBeforeRequest.should.have.been.calledOnce;
     });
 
-    it('should loadStorage', async () => {
-      await loadBackground(preferences);
-      browser.storage.local.get.should.have.been.calledOnce;
-    });
-
     it('should have registered a container cleanup interval', async () => {
-      const background = reload('../src/background');
+      const background = await loadBareBackground();
       sinon.stub(background.container, 'cleanup');
       await background.initialize();
       clock.tick(600000);
@@ -66,7 +61,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     describe('should catch early requests', () => {
       it('wait for tmp to initialize, blocking the request until initialize', async () => {
-        const background = reload('../src/background');
+        const background = await loadBareBackground();
         sinon.stub(background.request, 'webRequestOnBeforeRequest');
 
         const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
@@ -86,7 +81,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       });
 
       it('wait for tmp to initialize, blocking the request until timeout and dont block the next requests anymore', async () => {
-        reload('../src/background');
+        await loadBareBackground();
         const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
         let waitingForPromise = true;
         promise.then(() => {
