@@ -1,6 +1,4 @@
-# Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.org/stoically/temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/temporary-containers)
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/stoically/temporary-containers.svg)](https://greenkeeper.io/)
+# Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.org/stoically/temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/temporary-containers) [![Greenkeeper badge](https://badges.greenkeeper.io/stoically/temporary-containers.svg)](https://greenkeeper.io/)
 
 Detailed informations about the [Add-on can be found on AMO](https://addons.mozilla.org/firefox/addon/temporary-containers/). There's also this long-read [article](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21) and some informations are available in the [Wiki](https://github.com/stoically/temporary-containers/wiki).
 
