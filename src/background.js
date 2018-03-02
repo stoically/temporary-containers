@@ -159,16 +159,12 @@ class TemporaryContainers {
 
 
   async tabsOnCreated(tab) {
-    debug('[browser.tabs.onCreated] tab created', tab);
+    debug('[tabsOnCreated] tab created', tab);
     if (tab.incognito) {
-      // delay disabling of browseraction (firefox doesnt pickup disabling right after creation)
-      delay(200).then(() => {
-        debug('[browser.tabs.onCreated] tab is incognito, disabling browseraction', tab);
-        browser.browserAction.disable(tab.id);
-      });
+      debug('[tabsOnCreated] tab incognito, we ignore that', tab);
+      browser.browserAction.disable(tab.id);
       return;
     }
-
     if (tab && tab.cookieStoreId && !this.storage.local.tabContainerMap[tab.id] &&
         this.storage.local.tempContainers[tab.cookieStoreId]) {
       this.storage.local.tabContainerMap[tab.id] = tab.cookieStoreId;
@@ -179,9 +175,14 @@ class TemporaryContainers {
 
 
   async tabsOnUpdated(tabId, changeInfo, tab) {
-    debug('[browser.tabs.onUpdated] tab updated', tab);
+    debug('[tabsOnUpdated] tab updated', tab);
+    if (tab.incognito) {
+      debug('[tabsOnUpdated] tab incognito, we ignore that', tab);
+      browser.browserAction.disable(tab.id);
+      return;
+    }
     if (!changeInfo.url) {
-      debug('[browser.tabs.onUpdated] url didnt change, not relevant', tabId, changeInfo, tab);
+      debug('[tabsOnUpdated] url didnt change, not relevant', tabId, changeInfo, tab);
       return;
     }
     debug('[tabsOnUpdated] url changed', changeInfo, tab);
