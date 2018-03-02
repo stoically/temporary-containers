@@ -373,14 +373,29 @@ class TemporaryContainers {
       log.DEBUG = true;
     }
 
+    let promise;
     switch (details.reason) {
     case 'install':
-      return this.storage.initializeStorageOnInstallation();
+      promise = this.storage.initializeStorageOnInstallation();
+      break;
 
     case 'update':
-      await delay(60000);
-      return this.onUpdateMigration(details);
+      promise = delay(60000).then(() => {
+        this.onUpdateMigration(details);
+      });
+      break;
     }
+
+    // disable browseraction for all incognito tabs
+    // relevant if installed or updated in incognito window
+    const tabs = await browser.tabs.query({});
+    tabs.map(tab => {
+      if (tab.incognito) {
+        browser.browserAction.disable(tab.id);
+      }
+    });
+
+    return promise;
   }
 
   /* istanbul ignore next */
@@ -445,7 +460,7 @@ class TemporaryContainers {
     });
 
     // extension loads after the first tab opens most of the time
-    // lets see if we can reopen the first tab
+    // lets see if we can or should reopen the first tab
     const tempTabs = await browser.tabs.query({});
     // disable browseraction for all incognito tabs
     tempTabs.map(tab => {
