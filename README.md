@@ -1,6 +1,6 @@
 # Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.org/stoically/temporary-containers.svg?branch=master)](https://travis-ci.org/stoically/temporary-containers)
 
-Detailed informations about the [Add-on can be found on AMO](https://addons.mozilla.org/firefox/addon/temporary-containers/). There's also this long-read [article](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21) and some informations are available in the [Wiki](https://github.com/stoically/temporary-containers/wiki) (which you can edit, if you'd want).
+Detailed informations about the [Add-on can be found on AMO](https://addons.mozilla.org/firefox/addon/temporary-containers/). There's also this long-read [article](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21) and some informations are available in the [Wiki](https://github.com/stoically/temporary-containers/wiki).
 
 ## Development
 

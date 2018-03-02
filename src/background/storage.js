@@ -96,9 +96,14 @@ class Storage {
       }
       debug('storage loaded', this.local);
 
-      // initialize statistics if not present
-      if (this.maybeInitializeMissingStatistics() ||
-          this.maybeInitializeMissingPreferences()) {
+      let persist = false;
+      if (this.maybeInitializeMissingStatistics()) {
+        persist = true;
+      }
+      if (this.maybeInitializeMissingPreferences()) {
+        persist = true;
+      }
+      if (persist) {
         await this.persist();
       }
 
@@ -167,6 +172,7 @@ class Storage {
   async maybeInitializeMissingPreferences() {
     let storagePersistNeeded = false;
     if (!this.local.preferences) {
+      // legacy code
       debug('no preferences found, setting defaults', this.preferencesDefault);
       this.local.preferences = this.preferencesDefault;
       storagePersistNeeded = true;

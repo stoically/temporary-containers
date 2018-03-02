@@ -65,11 +65,12 @@ class TemporaryContainers {
       notifications: await browser.permissions.contains({permissions: ['notifications']})
     };
 
+    await this.storage.load();
+
     this.request.initialize(this);
     this.container.initialize(this);
     this.mouseclick.initialize(this);
     this.mac.initialize(this);
-    await this.storage.load();
 
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
     browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
