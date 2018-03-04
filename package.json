@@ -35,7 +35,7 @@
     "sinon": "^4.4.2",
     "sinon-chai": "^2.14.0",
     "web-ext": "^2.4.0",
-    "webextensions-jsdom": "^0.3.3",
+    "webextensions-jsdom": "^0.4.2",
     "webpack": "^4.0.0",
     "webpack-cli": "^2.0.9"
   },
