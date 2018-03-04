@@ -158,6 +158,9 @@ class Container {
           if (tab.pinned && !dontPin) {
             newTabOptions.pinned = true;
           }
+          if (tab.openerTabId) {
+            newTabOptions.openerTabId = tab.openerTabId;
+          }
         }
 
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);
