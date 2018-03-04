@@ -440,8 +440,7 @@ class Request {
 
     if (reopen) {
       this.cancelRequest(request);
-      const deletesHistory = this.storage.local.preferences.deletesHistoryContainer === 'automatic' &&
-                             this.storage.local.preferences.deletesHistoryContainerAlwaysPerWebsite === 'automatic';
+      const deletesHistory = this.storage.local.preferences.deletesHistoryContainerAlwaysPerWebsite === 'automatic';
       const params = {
         tab,
         active: true,
