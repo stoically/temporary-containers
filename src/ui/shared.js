@@ -15,7 +15,18 @@ window.showError = (error) => {
   messageBox.removeClass('positive');
   messageBox.removeClass('hidden');
 };
-window.showPreferencesError = () => {
+window.showPreferencesError = (error) => {
+
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    $('#preferenceserrordesc').html(`<br><br>
+      The following error was observed, would be really helpful
+      if you could file an <a href="https://github.com/stoically/temporary-containers/issues" target="_blank">issue on GitHub</a> with it:
+      <br><br>
+      ${error.toString()}
+    `);
+  }
   $('#preferenceserror')
     .modal({
       closable: false
