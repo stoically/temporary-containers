@@ -140,7 +140,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         createsTabId: 3,
         createsContainer: 'firefox-tmp2'
       });
-      result.should.deep.equal({cancel: true});
+      expect(result).to.deep.equal({cancel: true});
       browser.tabs.create.should.have.been.calledOnce;
 
       const result2 = await helper.browser.request({

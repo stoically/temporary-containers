@@ -21,9 +21,11 @@ if (!process.listenerCount('unhandledRejection')) {
   // eslint-disable-next-line no-console
   process.on('unhandledRejection', r => console.log(r));
 }
+const path = require('path');
+const webExtensionsJSDOM = require('webextensions-jsdom');
+const manifestPath = path.resolve(path.join(__dirname, '../build'));
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
-global.reload = require('require-reload')(require);
 global.sinon = require('sinon');
 global.expect = chai.expect;
 chai.should();
@@ -36,12 +38,32 @@ global.nextTick = () => {
 
 global.URL = require('url').URL;
 global.helper = require('./helper');
-global.injectBrowser = () => {
-  global.browser = require('./browser.mock')();
+
+const buildBackground = async () => {
+  const webExtension = await webExtensionsJSDOM.fromManifest(manifestPath, {
+    apiFake: true,
+    background: {
+      beforeParse(window) {
+        window.browser._mochaTest = true;
+      }
+    }
+  });
+  webExtension.background.browser.tabs.query.resolves([{},{}]);
+  webExtension.background.browser.storage.local.get.resolves({});
+  webExtension.background.browser.contextualIdentities.get.resolves({});
+  global.webExtension = webExtension;
+  global.browser = webExtension.background.browser;
+
+  if (process.argv[process.argv.length-1] === '--tmp-debug') {
+    webExtension.background.window.log.DEBUG = true;
+  }
+
+  global.background = global.webExtension.background.window.tmp;
+  global.clock = sinon.useFakeTimers();
 };
 
 global.loadBareBackground = async () => {
-  const background = reload('../src/background');
+  const background = global.background;
   await background.runtimeOnInstalled({
     reason: 'install'
   });
@@ -49,7 +71,7 @@ global.loadBareBackground = async () => {
 };
 
 global.loadBackground = async (preferences = {}) => {
-  const background = reload('../src/background');
+  const background = global.background;
   await background.runtimeOnInstalled({
     reason: 'install'
   });
@@ -60,11 +82,23 @@ global.loadBackground = async (preferences = {}) => {
   return background;
 };
 
-beforeEach(() => {
-  global.clock = sinon.useFakeTimers();
-  injectBrowser();
+
+beforeEach(async () => {
+  await buildBackground();
 });
 
 afterEach(() => {
-  clock.reset();
+  if (global.webExtension && global.webExtension.background) {
+    global.webExtension.background.destroy();
+    delete global.webExtension;
+  }
+  if (global.background) {
+    delete global.background;
+  }
+  if (global.browser) {
+    delete global.browser;
+  }
+  if (global.clock) {
+    clock.restore();
+  }
 });

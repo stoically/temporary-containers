@@ -479,16 +479,12 @@ const tmp = new TemporaryContainers();
 browser.runtime.onInstalled.addListener(tmp.runtimeOnInstalled.bind(tmp));
 browser.runtime.onStartup.addListener(tmp.runtimeOnStartup.bind(tmp));
 
+window.log = log;
+window.tmp = tmp;
+
 /* istanbul ignore next */
-if (!browser.mochaTest) {
-  window.log = log;
-  window.tmp = tmp;
+if (!browser._mochaTest) {
   tmp.initialize();
-} else {
-  /* eslint-disable no-undef */
-  if (process.argv[process.argv.length-1] === '--tmp-debug') {
-    log.DEBUG = true;
-  }
 }
 
 module.exports = tmp;

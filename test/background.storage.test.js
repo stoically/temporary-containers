@@ -1,19 +1,16 @@
 describe('storage', () => {
 
   it('should initialize storage on installation', async () => {
-    const background = reload('../src/background');
-    await background.runtimeOnInstalled({
-      reason: 'install'
-    });
-    background.storage.local.preferences.should.deep.equal(
+    const background = await loadBareBackground();
+    expect(background.storage.local.preferences).to.deep.equal(
       background.storage.preferencesDefault
     );
   });
 
   it('should not initialize on installation unless storage got written', async () => {
-    const background = reload('../src/background');
+    const background = global.background;
     background.initialize();
-    background.initialized.should.be.false;
+    expect(background.initialized).to.be.false;
     await nextTick();
     clock.tick(1000);
     await nextTick();
@@ -21,20 +18,20 @@ describe('storage', () => {
     await nextTick();
     clock.tick(1000);
     await nextTick();
-    background.initialized.should.be.false;
+    expect(background.initialized).to.be.false;
     await background.runtimeOnInstalled({
       reason: 'install'
     });
     await nextTick();
     clock.tick(1000);
     await nextTick();
-    background.initialized.should.be.true;
+    expect(background.initialized).to.be.true;
   });
 
   it('should not initialize on startup unless storage got loaded', async () => {
-    const background = reload('../src/background');
+    const background = global.background;
     background.initialize();
-    background.initialized.should.be.false;
+    expect(background.initialized).to.be.false;
     await nextTick();
     clock.tick(1000);
     await nextTick();
@@ -42,7 +39,7 @@ describe('storage', () => {
     await nextTick();
     clock.tick(1000);
     await nextTick();
-    background.initialized.should.be.false;
+    expect(background.initialized).to.be.false;
     browser.storage.local.get.resolves({
       tempContainerCounter: 0,
       tempContainers: {},
@@ -52,17 +49,17 @@ describe('storage', () => {
     });
     clock.tick(1000);
     await nextTick();
-    background.initialized.should.be.true;
+    expect(background.initialized).to.be.true;
   });
 
   it('should not load storage if its already loading', async () => {
-    const background = reload('../src/background');
+    const background = global.background;
     background.initialize();
     await nextTick();
     clock.tick(1000);
     const promise = background.storage.load();
     await nextTick();
-    browser.storage.local.get.should.have.been.calledOnce;
+    expect(browser.storage.local.get).to.have.been.calledOnce;
     browser.storage.local.get.resolves({
       tempContainerCounter: 0,
       tempContainers: {},
@@ -78,7 +75,7 @@ describe('storage', () => {
   });
 
   it('should add missing preferences', async () => {
-    const background = reload('../src/background');
+    const background = global.background;
     browser.storage.local.get.resolves({
       tempContainerCounter: 0,
       tempContainers: {},
@@ -88,7 +85,7 @@ describe('storage', () => {
     });
     background.storage.preferencesDefault.newPreference = true;
     await background.initialize();
-    background.storage.local.preferences.newPreference.should.be.true;
+    expect(background.storage.local.preferences.newPreference).to.be.true;
   });
 
 });

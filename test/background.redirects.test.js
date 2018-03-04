@@ -1,8 +1,9 @@
 preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(preferences)}`, () => {
 
   describe('addons that do redirects in automatic mode', () => {
+    let background;
     beforeEach(async () => {
-      global.background = await loadBackground(preferences);
+      background = await loadBackground(preferences);
     });
 
     describe('https everywhere', () => {
@@ -66,13 +67,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             resetHistory: true
           });
           await nextTick();
-          redirectRequest.should.deep.equal({cancel: true});
+          expect(redirectRequest).to.deep.equal({cancel: true});
           browser.contextualIdentities.create.should.have.been.calledOnce;
           browser.tabs.create.should.have.been.calledOnce;
           browser.tabs.remove.should.not.have.been.called;
 
           const initialClickRequest = await initialClickRequestPromise;
-          initialClickRequest.should.deep.equal({cancel: true});
+          expect(initialClickRequest).to.deep.equal({cancel: true});
         });
 
         it('should not keep loading the link in the same tab if redirects happen even when in temporary container', async () => {
@@ -95,13 +96,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             resetHistory: true
           });
           await nextTick();
-          redirectRequest.should.deep.equal({cancel: true});
+          expect(redirectRequest).to.deep.equal({cancel: true});
           browser.contextualIdentities.create.should.have.been.calledOnce;
           browser.tabs.create.should.have.been.calledOnce;
           browser.tabs.remove.should.not.have.been.called;
 
           const initialClickRequest = await initialClickRequestPromise;
-          initialClickRequest.should.deep.equal({cancel: true});
+          expect(initialClickRequest).to.deep.equal({cancel: true});
         });
       });
     });
@@ -141,21 +142,22 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             resetHistory: true
           });
           await nextTick();
-          redirectRequest.should.deep.equal({cancel: true});
+          expect(redirectRequest).to.deep.equal({cancel: true});
           browser.contextualIdentities.create.should.have.been.calledOnce;
           browser.tabs.create.should.have.been.calledOnce;
           browser.tabs.remove.should.not.have.been.called;
 
           const initialClickRequest = await initialClickRequestPromise;
-          initialClickRequest.should.deep.equal({cancel: true});
+          expect(initialClickRequest).to.deep.equal({cancel: true});
         });
       });
     });
   });
 
   describe('native firefox redirects with global left click always setting', () => {
+    let background;
     beforeEach(async () => {
-      global.background = await loadBackground(preferences);
+      background = await loadBackground(preferences);
     });
 
     describe('opening new tmptab and left clicking link with global always setting', () => {
@@ -207,16 +209,17 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         browser.tabs.create.should.have.been.calledOnce;
         browser.contextualIdentities.create.should.have.been.calledOnce;
         browser.tabs.remove.should.not.have.been.called;
-        (await request1).should.deep.equal({cancel: true});
-        (await request2).should.deep.equal({cancel: true});
-        (await request3).should.deep.equal({cancel: true});
+        expect(await request1).to.deep.equal({cancel: true});
+        expect(await request2).to.deep.equal({cancel: true});
+        expect(await request3).to.deep.equal({cancel: true});
       });
     });
   });
 
   describe('native firefox redirects with global left click never setting', () => {
+    let background;
     beforeEach(async () => {
-      global.background = await loadBackground(preferences);
+      background = await loadBackground(preferences);
     });
 
     describe('opening new tmptab and left clicking link', () => {

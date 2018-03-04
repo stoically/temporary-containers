@@ -9,6 +9,7 @@
         "sinon": false,
         "clock": false,
         "expect": false,
+        "buildBackground": false,
         "loadBackground": false,
         "loadBareBackground": false,
         "injectBrowser": false,

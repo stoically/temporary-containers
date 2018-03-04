@@ -44,7 +44,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.browserAction.onClicked.addListener.yield();
       await nextTick();
 
-      browser.contextualIdentities.create.should.have.been.calledWith({
+      expect(browser.contextualIdentities.create).to.have.been.calledWith({
         name: sinon.match.string,
         color: sinon.match.string,
         icon: sinon.match.string,
@@ -52,12 +52,12 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         deletesHistory: false,
         clean: true
       });
-      browser.tabs.create.should.have.been.calledWith({
+      expect(browser.tabs.create).to.have.been.calledWith(sinon.match({
         url: undefined,
         active: true,
         cookieStoreId: 'firefox-container-1'
-      });
-      browser.storage.local.set.should.have.been.calledWith(background.storage.local);
+      }));
+      expect(browser.storage.local.set).to.have.been.calledWith(background.storage.local);
     });
   });
 });});

@@ -19,7 +19,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
       const background = await loadBackground(preferences);
       await background.runtimeOnMessage(fakeMessage, fakeSender);
-      background.mouseclick.linksClicked[fakeMessage.payload.href].should.exist;
+      expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.exist;
     });
 
     it('global middle mouse same domain (ignore)', async () => {
