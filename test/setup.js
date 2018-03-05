@@ -41,7 +41,6 @@ global.helper = require('./helper');
 
 const buildBackground = async () => {
   const webExtension = await webExtensionsJSDOM.fromManifest(manifestPath, {
-    apiFake: true,
     sinon,
     background: {
       beforeParse(window) {
