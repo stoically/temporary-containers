@@ -101,12 +101,13 @@
 
   "background": {
     "scripts": [
+      "background/onbeforerequest.js",
       "background/lib/index.js",
       "background/lib/delay.js",
       "background/lib/glob-to-regexp.js",
       "background/lib/p-queue.js",
       "background/lib/semver-compare.js",
-      "background/index.js",
+      "background/lib.js",
       "background/log.js",
       "background/container.js",
       "background/mac.js",

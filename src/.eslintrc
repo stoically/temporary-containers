@@ -4,6 +4,7 @@
         "node": false
     },
     globals: {
+        "tmp": false,
         "debug": false,
         "log": false,
         "delay": false,
