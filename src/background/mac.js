@@ -1,6 +1,3 @@
-const delay = require('./lib/delay');
-const { debug } = require('./log');
-
 class MultiAccountContainers {
   constructor() {
     this.confirmPage = {};
@@ -124,4 +121,4 @@ class MultiAccountContainers {
   }
 }
 
-module.exports = MultiAccountContainers;
+window.MultiAccountContainers = MultiAccountContainers;

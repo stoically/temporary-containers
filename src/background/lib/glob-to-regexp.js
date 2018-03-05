@@ -18,48 +18,50 @@
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-const globToRegexp = (glob) => {
-  if (typeof glob !== 'string') {
-    throw new TypeError('Expected a string');
-  }
-
-  var str = String(glob);
-
-  // The regexp we are building, as a string.
-  var reStr = "";
-
-  // RegExp flags (eg "i" ) to pass in to RegExp constructor.
-  var flags = "i";
-
-  var c;
-  for (var i = 0, len = str.length; i < len; i++) {
-    c = str[i];
-
-    switch (c) {
-    case "/":
-    case "$":
-    case "^":
-    case "+":
-    case ".":
-    case "(":
-    case ")":
-    case "=":
-    case "!":
-    case "|":
-    case ",":
-      reStr += "\\" + c;
-      break;
-
-    case "*":
-      reStr += ".*";
-      break;
-
-    default:
-      reStr += c;
+window.lib.globToRegexp = () => {
+  const globToRegexp = (glob) => {
+    if (typeof glob !== 'string') {
+      throw new TypeError('Expected a string');
     }
-  }
 
-  return new RegExp('^' + reStr + '$', flags);
+    var str = String(glob);
+
+    // The regexp we are building, as a string.
+    var reStr = "";
+
+    // RegExp flags (eg "i" ) to pass in to RegExp constructor.
+    var flags = "i";
+
+    var c;
+    for (var i = 0, len = str.length; i < len; i++) {
+      c = str[i];
+
+      switch (c) {
+      case "/":
+      case "$":
+      case "^":
+      case "+":
+      case ".":
+      case "(":
+      case ")":
+      case "=":
+      case "!":
+      case "|":
+      case ",":
+        reStr += "\\" + c;
+        break;
+
+      case "*":
+        reStr += ".*";
+        break;
+
+      default:
+        reStr += c;
+      }
+    }
+
+    return new RegExp('^' + reStr + '$', flags);
+  };
+
+  return globToRegexp;
 };
-
-module.exports = globToRegexp;

@@ -28,7 +28,7 @@
   },
 
   "page_action": {
-    "default_popup": "tmpcontainer/ui/popup.html",
+    "default_popup": "ui/popup.html",
     "default_icon": {
       "19": "icons/pageaction-gray-19.svg",
       "38": "icons/pageaction-gray-38.svg"
@@ -70,7 +70,7 @@
   },
 
   "options_ui": {
-    "page": "tmpcontainer/ui/options.html",
+    "page": "ui/options.html",
     "open_in_tab": true
   },
 
@@ -93,14 +93,28 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["tmpcontainer/contentscript.js"],
+      "js": ["contentscript.js"],
       "run_at": "document_end",
       "all_frames": true
     }
   ],
 
   "background": {
-    "scripts": ["tmpcontainer/background.js"]
+    "scripts": [
+      "background/lib/index.js",
+      "background/lib/delay.js",
+      "background/lib/glob-to-regexp.js",
+      "background/lib/p-queue.js",
+      "background/lib/semver-compare.js",
+      "background/index.js",
+      "background/log.js",
+      "background/container.js",
+      "background/mac.js",
+      "background/mouseclick.js",
+      "background/request.js",
+      "background/storage.js",
+      "background.js"
+    ]
   },
 
   "applications": {

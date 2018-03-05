@@ -1,7 +1,3 @@
-const delay = require('./lib/delay');
-const globToRegexp = require('./lib/glob-to-regexp');
-const { debug } = require('./log');
-
 class Request {
   constructor() {
     this.canceledRequests = {};
@@ -564,4 +560,4 @@ class Request {
   }
 }
 
-module.exports = Request;
+window.Request = Request;

@@ -12,32 +12,19 @@ Detailed informations about the [Add-on can be found on AMO](https://addons.mozi
 
 ### Run in Firefox
 
-* `npm run dev-webpack`
-    * webpack watcher that you can keep running
-
-or
-
-* `npm run webpack`
-    * execute webpack once
-
-generates output in the `build` directory.
-
-Then either
-
-* `web-ext run -s build`
+* `web-ext run -s src`
     * starts the default system Firefox, loads the Add-on and watches for changes
     * append `-p profilename` to start Firefox with a different profile
 
 or
 
-* Open `about:debugging` and `Load Temporary Add-on` which is located in the `build` directory
+* Open `about:debugging` and `Load Temporary Add-on` which is located in the `src` directory
+
 
 Check `about:debugging` and click `Debug` under Temporary Container to see the console.
 
 
 ### Run the tests
-
-You need a running `npm run dev-webpack` or do `npm run webpack` first
 
 * Once: `npm test` - this also shows coverage summary and generates a detailed report to the `coverage` directory
 * Watcher: `npm run test-watch`

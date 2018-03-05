@@ -15,8 +15,5 @@ class Log {
 }
 
 const log = new Log;
-
-module.exports = {
-  log,
-  debug: log.debug
-};
+// eslint-disable-next-line
+const debug = log.debug;

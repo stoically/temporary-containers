@@ -1,6 +1,3 @@
-const delay = require('./lib/delay');
-const { debug } = require('./log');
-
 class Storage {
   constructor() {
     this.loaded = false;
@@ -196,4 +193,4 @@ class Storage {
   }
 }
 
-module.exports = Storage;
+window.Storage = Storage;

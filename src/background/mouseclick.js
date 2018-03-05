@@ -1,6 +1,3 @@
-const globToRegexp = require('./lib/glob-to-regexp');
-const { debug } = require('./log');
-
 class MouseClick {
   constructor() {
     this.linksClicked = {};
@@ -155,4 +152,4 @@ class MouseClick {
   }
 }
 
-module.exports = MouseClick;
+window.MouseClick = MouseClick;

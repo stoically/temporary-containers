@@ -1,0 +1,19 @@
+{
+    "env": {
+        "browser": true,
+        "node": false
+    },
+    globals: {
+        "debug": false,
+        "log": false,
+        "delay": false,
+        "globToRegexp": false,
+        "PQueue": false,
+        "versionCompare": false,
+        "Container": false,
+        "MultiAccountContainers": false,
+        "MouseClick": false,
+        "Request": false,
+        "Storage": false
+    }
+}

@@ -1,7 +1,3 @@
-const delay = require('./lib/delay');
-const PQueue = require('./lib/p-queue');
-const { debug } = require('./log');
-
 class Container {
   constructor() {
     this.containerColors = [
@@ -681,4 +677,4 @@ class Container {
   }
 }
 
-module.exports = Container;
+window.Container = Container;

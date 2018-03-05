@@ -26,38 +26,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+window.lib.delay = () => {
+  class CancelError extends Error {
+  	constructor(message) {
+  		super(message);
+  		this.name = 'CancelError';
+  	}
+  }
 
-class CancelError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'CancelError';
-	}
+  const createDelay = willResolve => (ms, value) => {
+  	let timeoutId;
+  	let internalReject;
+
+  	const delayPromise = new Promise((resolve, reject) => {
+  		internalReject = reject;
+
+  		timeoutId = setTimeout(() => {
+  			const settle = willResolve ? resolve : reject;
+  			settle(value);
+  		}, ms);
+  	});
+
+  	delayPromise.cancel = () => {
+  		if (timeoutId) {
+  			clearTimeout(timeoutId);
+  			timeoutId = null;
+  			internalReject(new CancelError('Delay canceled'));
+  		}
+  	};
+
+  	return delayPromise;
+  };
+
+  const delay = createDelay(true);
+  delay.reject = createDelay(false);
+  delay.CancelError = CancelError;
+  return delay;
 }
-
-const createDelay = willResolve => (ms, value) => {
-	let timeoutId;
-	let internalReject;
-
-	const delayPromise = new Promise((resolve, reject) => {
-		internalReject = reject;
-
-		timeoutId = setTimeout(() => {
-			const settle = willResolve ? resolve : reject;
-			settle(value);
-		}, ms);
-	});
-
-	delayPromise.cancel = () => {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-			timeoutId = null;
-			internalReject(new CancelError('Delay canceled'));
-		}
-	};
-
-	return delayPromise;
-};
-
-module.exports = createDelay(true);
-module.exports.reject = createDelay(false);
-module.exports.CancelError = CancelError;
