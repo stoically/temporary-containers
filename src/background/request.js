@@ -83,6 +83,12 @@ class Request {
 
     this.container.removeBrowserActionBadge(request.tabId);
 
+
+    if (request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org')) {
+      debug('[webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
+      return;
+    }
+
     let macAssignment;
     try {
       macAssignment = await this.mac.getAssignment(request.url);
