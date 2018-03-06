@@ -623,6 +623,14 @@ class Container {
   }
 
 
+  isPermanentContainer(cookieStoreId) {
+    if (cookieStoreId !== 'firefox-default' && !this.storage.local.tempContainers[cookieStoreId]) {
+      return true;
+    }
+    return false;
+  }
+
+
   getReusedContainerNumber() {
     const tempContainersNumbers = Object.values(this.storage.local.tempContainers)
       .reduce((accumulator, containerOptions) => {

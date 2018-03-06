@@ -125,11 +125,11 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    // const isolated = await this.maybeIsolate(tab, request);
-    // if (isolated) {
-    //   debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
-    //   return isolated;
-    // }
+    const isolated = await this.maybeIsolate(tab, request, macAssignment);
+    if (isolated) {
+      debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
+      return isolated;
+    }
 
     const alwaysOpenIn = !macAssignment && await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
     if (alwaysOpenIn) {
@@ -340,29 +340,123 @@ class Request {
   }
 
 
-  async maybeIsolate(tab, request) {
-    let reopen = false;
-    if (this.storage.local.preferences.isolationGlobal === 'always') {
-      debug('[maybeIsolate] decided to isolate based on global "always"', request);
-      reopen = true;
+  async maybeIsolate(tab, request, requestMacAssignment) {
+    if (!tab || !tab.url) {
+      debug('[maybeIsolate] we cant proceed without tab url information', tab, request);
+      return false;
     }
 
-    if (reopen) {
-      this.cancelRequest(request);
-      const params = {
-        tab,
-        active: true,
-        url: request.url,
-        request
-      };
-      if (tab.url === 'about:newtab' || tab.url === 'about:blank') {
-        await this.container.reloadTabInTempContainer(params);
-      } else {
-        await this.container.createTabInTempContainer(params);
+    if (!await this.shouldIsolate(tab, request, requestMacAssignment)) {
+      debug('[maybeIsolate] decided to not isolate', tab, request);
+      return false;
+    }
+
+    debug('[maybeIsolate] isolating', tab, request);
+    this.cancelRequest(request);
+
+    const params = {
+      tab,
+      active: true,
+      url: request.url,
+      request
+    };
+    if (tab.url === 'about:newtab' || tab.url === 'about:blank') {
+      await this.container.reloadTabInTempContainer(params);
+    } else {
+      await this.container.createTabInTempContainer(params);
+    }
+    return {cancel: true};
+  }
+
+
+  async shouldIsolate(tab, request, requestMacAssignment) {
+    debug('[shouldIsolate]', tab, request);
+    if (this.storage.local.tempContainers[tab.cookieStoreId] &&
+        this.storage.local.tempContainers[tab.cookieStoreId].clean) {
+      debug('[shouldIsolate] not isolating because the tmp container is still clean');
+      return false;
+    }
+
+    if (this.shouldIsolateMac(tab, requestMacAssignment)) {
+      debug('[shouldIsolate] mac isolation');
+      return true;
+    }
+
+    if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
+      debug('[shouldIsolate] not isolating because the tab url is blank and we seen this request before, probably redirect');
+      return false;
+    }
+
+    const parsedTabURL = new URL(tab.url);
+    const parsedRequestURL = new URL(request.url);
+
+    for (let domainPattern in this.storage.local.preferences.isolationDomain) {
+      if ((parsedTabURL.hostname === domainPattern ||
+          parsedTabURL.hostname.match(globToRegexp(domainPattern)))) {
+        const preferences = this.storage.local.preferences.isolationDomain[domainPattern];
+        debug('[shouldIsolate] found pattern', domainPattern, preferences);
+
+        if (await this.checkIsolationPreferenceAgainstUrl(
+          preferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
+        )) {
+          return true;
+        }
       }
-      return {cancel: true};
     }
 
+    if (await this.checkIsolationPreferenceAgainstUrl(
+      this.storage.local.preferences.isolationGlobal, parsedTabURL.hostname, parsedRequestURL.hostname, tab
+    )) {
+      return true;
+    }
+
+    debug('[shouldIsolate] not isolating');
+    return false;
+  }
+
+  shouldIsolateMac(tab, requestMacAssignment) {
+    if (this.storage.local.preferences.isolationMac === 'disabled') {
+      debug('[shouldIsolateMac] mac isolation disabled');
+      return false;
+    }
+    debug('[shouldIsolateMac] mac isolation enabled', tab, requestMacAssignment);
+    if (requestMacAssignment && requestMacAssignment.neverAsk) {
+      debug('[shouldIsolateMac] not mac isolating because of neverask assignment');
+      return false;
+    }
+    if (this.container.isPermanentContainer(tab.cookieStoreId) && !requestMacAssignment) {
+      debug('[shouldIsolateMac] mac isolating because request url is not assigned to the tabs permanent container');
+      return true;
+    }
+    if (this.container.isPermanentContainer(tab.cookieStoreId) && requestMacAssignment &&
+       tab.cookieStoreId !== `firefox-container-${requestMacAssignment.userContextId}`) {
+      debug('[shouldIsolateMac] mac isolating because request url is assigned to a different container then the tabs permanent container');
+      return true;
+    }
+    return false;
+  }
+
+  async checkIsolationPreferenceAgainstUrl(preference, origin, target, tab) {
+    switch (preference) {
+    case 'always':
+      debug('[shouldIsolate] isolating based on global "always"');
+      return true;
+
+    case 'notsamedomainexact':
+      if (target !== origin) {
+        debug('[shouldIsolate] isolating based on global "notsamedomainexact"');
+        return true;
+      }
+      break;
+
+    case 'notsamedomain':
+      if (!this.background.sameDomain(origin, target) &&
+          (!tab.openerTabId || !await this.background.sameDomainTabUrl(tab.openerTabId, target))) {
+        debug('[shouldIsolate] isolating based on global "notsamedomain"');
+        return true;
+      }
+      break;
+    }
     return false;
   }
 
@@ -372,7 +466,7 @@ class Request {
       return;
     }
     if (!tab || !tab.url) {
-      debug('[maybeAlwaysOpenInTemporaryContainer] we cant proceed without tab url information', request);
+      debug('[maybeAlwaysOpenInTemporaryContainer] we cant proceed without tab url information', tab, request);
       return false;
     }
     const parsedTabURL = new URL(tab.url);

@@ -341,6 +341,31 @@ class TemporaryContainers {
   }
 
 
+  sameDomain(origin, target) {
+    const splittedTarget = target.split('.');
+    const checkHostname = '.' + (splittedTarget.splice(-2).join('.'));
+    const dottedOrigin = '.' + origin;
+
+    if (target.length > 1 &&
+        (dottedOrigin.endsWith(checkHostname) ||
+         checkHostname.endsWith(dottedOrigin))) {
+      return true;
+    }
+    return false;
+  }
+
+  async sameDomainTabUrl(tabId, target) {
+    const tab = await browser.tabs.get(tabId);
+    if (!tab.url.startsWith('about:')) {
+      const tabParsedURL = new URL(tab.url);
+      if (this.sameDomain(tabParsedURL.hostname, target)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
   async runtimeOnInstalled(details) {
     if (details.temporary) {
       log.DEBUG = true;

@@ -16,7 +16,7 @@
       <div class="ui menu">
         <a class="item active" data-tab="general">General</a>
         <a class="item" data-tab="alwaysopenin">Always per Website</a>
-        <!--<a class="item" data-tab="isolation">Isolation</a>-->
+        <a class="item" data-tab="isolation">Isolation</a>
         <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
         <a class="item" data-tab="advanced">Advanced</a>
         <a class="item" data-tab="statistics">Statistics</a>
@@ -122,8 +122,8 @@
             <div class="field">
               <select id="isolationGlobal" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact">Only if the navigation target doesn't exactly match the Website Domain</option>
-                <option value="notsamedomain">Only if the navigation target doesn't match the Website Domain (includes Subdomains)</option>
+                <option value="notsamedomainexact">Only if the navigation target doesn't exactly match the Tabs Website Domain</option>
+                <option value="notsamedomain">Only if the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -133,19 +133,19 @@
           </form>
         </div>
         <div class="ui bottom attached tab segment" data-tab="isolation/perwebsite">
-          <form class="ui form">
+          <form class="ui form" id="isolationDomainForm">
             <h4 data-tooltip="Website Rules overwrite Global Preferences">
-              On which Website should navigating open new Temporary Containers
+              On which Website and when should navigating open new Temporary Containers
             </h4>
             <div id="isolationDomainPatternDiv" class="field">
               <label>Website Pattern [?]</label>
               <input id="isolationDomainPattern" type="text">
             </div>
             <div class="field">
-              <select id="isolationDomain" class="ui fluid dropdown">
+              <select id="isolationDomainAction" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact">Only if the navigation target doesn't exactly match the Website Domain</option>
-                <option value="notsamedomain">Only if the navigation target doesn't match the Website Domain (includes Subdomains)</option>
+                <option value="notsamedomainexact">Only if the navigation target doesn't exactly match the Tabs Website Domain</option>
+                <option value="notsamedomain">Only if the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -161,7 +161,16 @@
         </div>
         <div class="ui bottom attached tab segment" data-tab="isolation/mac">
           <form class="ui form">
-            <h4>Only allow Websites assigned to a container to load inside the container</h4>
+            <h4 data-tooltip="Only works if the Multi-Account Containers Add-on is installed">
+              Open a new Temporary Container if a permanent container Tab tries to load
+              a Website that isn't assigned to "Always open in" in that container [?]</h4>
+            <div class="ui message">
+              Enabling will prevent you from loading not assigned websites in permanent containers.
+              Still figuring out a more comfortable way to handle this, but until then you have to
+              disable to assign new sites and then enable again.<br>
+              <br>
+              If you have smart ideas how to handle this make sure to <a href="https://github.com/stoically/temporary-containers/issues" target="_blank">let me know</a>.
+            </div>
             <div class="field">
               <select id="isolationMac" class="ui fluid dropdown">
                 <option value="disabled">Disabled</option>
@@ -169,16 +178,7 @@
               </select>
             </div>
             <div class="field">
-              <label>If enabled then disable for the these containers</label>
-            </div>
-            <div class="field" id="abc">
-              <div class="ui checkbox">
-                <input type="checkbox" id="abc">
-                <label>Personal</label>
-              </div>
-            </div>
-            <div class="field">
-              <button id="saveIsolationGlobalPreferences" class="ui button primary">Save</button>
+              <button id="saveIsolationMacPreferences" class="ui button primary">Save</button>
             </div>
           </form>
         </div>
@@ -197,9 +197,7 @@
               which might open another website or a new tab without opening it in a new Temporary Container.<br>
               <br>
               If you want to make 100% sure that all tabs or websites are opened in a new Temporary
-              Container you'd need the Container Isolation feature - which is not yet implemented,
-              you can follow progress
-              <a href="https://github.com/stoically/firefox-add-on-temporary-containers/issues/56" target="_blank">here</a>.
+              Container you should use the Isolation feature instead.
             </div>
             <div class="field">
               <label>Middle Mouse</label>

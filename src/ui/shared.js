@@ -69,6 +69,14 @@ window.saveContainerPreferences = async (event) => {
   await savePreferences();
 };
 
+window.saveIsolationMacPreferences = async (event) => {
+  event.preventDefault();
+
+  preferences.isolationMac = document.querySelector('#isolationMac').value;
+
+  await savePreferences();
+};
+
 window.saveIsolationGlobalPreferences = async (event) => {
   event.preventDefault();
 
@@ -97,6 +105,59 @@ window.saveLinkClickGlobalPreferences = async (event) => {
 
   await savePreferences();
 };
+
+const isolationDomainAddRule = async () => {
+  const domainPattern = document.querySelector('#isolationDomainPattern').value;
+
+  preferences.isolationDomain[domainPattern] = {
+    action: document.querySelector('#isolationDomainAction').value
+  };
+  await savePreferences();
+  updateIsolationDomainRules();
+};
+
+
+let isolationDomainRulesClickEvent = false;
+window.updateIsolationDomainRules = () => {
+  const isolationDomainRules = $('#isolationDomainRules');
+  const domainRules = Object.keys(preferences.isolationDomain);
+  if (domainRules.length) {
+    isolationDomainRules.html('');
+    domainRules.map((domainPattern) => {
+      const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
+        `<span href="#" id="domainRule:${encodeURIComponent(domainPattern)}">🛈</span> ` +
+        '<a href="#" id="isolationRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
+        'data-position="right center">❌</a></div>');
+      isolationDomainRules.append(el);
+
+      const domainRuleTooltip =
+        '<div style="width:100%;">' +
+        `${preferences.isolationDomain[domainPattern].action}</div>`;
+      el.popup({
+        html: domainRuleTooltip,
+        inline: true
+      });
+    });
+
+    if (!isolationDomainRulesClickEvent) {
+      isolationDomainRules.on('click', async (event) => {
+        event.preventDefault();
+        const domainPattern = $(event.target).parent().attr('id');
+        if (domainPattern === 'isolationDomainRules') {
+          return;
+        }
+        delete preferences.isolationDomain[decodeURIComponent(domainPattern)];
+        // TODO show "rule deleted" instead of "preferences saved"
+        await savePreferences();
+        updateIsolationDomainRules();
+      });
+      isolationDomainRulesClickEvent = true;
+    }
+  } else {
+    isolationDomainRules.html('No Rules added');
+  }
+};
+
 
 const linkClickDomainAddRule = async () => {
   const domainPattern = document.querySelector('#linkClickDomainPattern').value;

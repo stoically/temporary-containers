@@ -46,6 +46,7 @@ const initialize = async () => {
 
       updateLinkClickDomainRules();
       updateAlwaysOpenInDomainRules();
+      updateIsolationDomainRules();
       updateSetCookiesDomainRules();
       updateStatistics();
       showDeletesHistoryStatistics();
@@ -79,6 +80,16 @@ const initialize = async () => {
       }
     });
 
+    $('#isolationDomainForm').form({
+      fields: {
+        isolationDomainPattern: 'empty'
+      },
+      onSuccess: (event) => {
+        event.preventDefault();
+        isolationDomainAddRule();
+      }
+    });
+
     $('#setCookiesDomainForm').form({
       fields: {
         setCookiesDomainPattern: 'empty',
@@ -109,6 +120,11 @@ const initialize = async () => {
     });
 
     $('#setCookiesDomainPatternDiv').popup({
+      html: domainPatternToolTip,
+      inline: true
+    });
+
+    $('#isolationDomainPattern').popup({
       html: domainPatternToolTip,
       inline: true
     });
@@ -170,6 +186,7 @@ $('#saveContainerPreferences').on('click', saveContainerPreferences);
 $('#saveAdvancedGeneralPreferences').on('click', saveAdvancedPreferences);
 $('#saveAdvancedDeleteHistoryPreferences').on('click', saveAdvancedPreferences);
 $('#saveIsolationGlobalPreferences').on('click', saveIsolationGlobalPreferences);
+$('#saveIsolationMacPreferences').on('click', saveIsolationMacPreferences);
 $('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);
 $('#saveStatisticsPreferences').on('click', saveStatisticsPreferences);
 $('#resetStatistics').on('click', resetStatistics);

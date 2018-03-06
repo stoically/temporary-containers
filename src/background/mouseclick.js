@@ -2,6 +2,8 @@ class MouseClick {
   constructor() {
     this.linksClicked = {};
     this.unhandledLinksClicked = {};
+
+    this.checkClickPreferences.bind(this);
   }
 
 
@@ -94,13 +96,7 @@ class MouseClick {
     }
 
     if (preferences.action === 'notsamedomain') {
-      const splittedClickedHostname = parsedClickedURL.hostname.split('.');
-      const checkHostname = '.' + (splittedClickedHostname.splice(-2).join('.'));
-      const dottedParsedSenderTabURL = '.' + parsedSenderTabURL.hostname;
-
-      if (parsedClickedURL.hostname.length > 1 &&
-          (dottedParsedSenderTabURL.endsWith(checkHostname) ||
-           checkHostname.endsWith(dottedParsedSenderTabURL))) {
+      if (this.background.sameDomain(parsedSenderTabURL.hostname, parsedClickedURL.hostname)) {
         debug('[checkClickPreferences] click not handled from preference "notsamedomain"',
           parsedClickedURL, parsedSenderTabURL);
         return false;
@@ -114,7 +110,6 @@ class MouseClick {
     debug('[checkClickPreferences] this should never happen');
     return false;
   }
-
 
   checkClick(type, message, sender) {
     const parsedSenderTabURL = new URL(sender.tab.url);
