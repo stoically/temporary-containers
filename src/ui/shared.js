@@ -281,8 +281,9 @@ window.saveAdvancedPreferences = async (event) => {
   event.preventDefault();
 
   preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
-  preferences.deletesHistoryContainerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
+  preferences.deletesHistoryContextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
   preferences.deletesHistoryContainerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
+  preferences.deletesHistoryContainerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
   preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
   preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
   preferences.pageAction = document.querySelector('#pageAction').checked;

@@ -374,7 +374,7 @@
               </div>
               <div data-tooltip='"Deletes History Temporary Containers" always reopen New Tabs to avoid leaving traces in recently closed tabs'>
                 <select id="automaticModeNewTab" class="ui fluid dropdown">
-                  <option value="created">Reopen New Tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected but it doesn't clutter recently closed tabs with "new tabs" (Default)</option>
+                  <option value="created">Reopen New Tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected but it prevents new tabs from writing and reading cookies in the default container and doesn't clutter recently closed tabs with "new tabs" (Default)</option>
                   <option value="navigation">Don't reopen New Tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening but New Tabs can set and read cookies in the default container</option>
                 </select>
               </div>
@@ -496,6 +496,13 @@
                 <option value="never">Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (Default)</option>
                 <option value="automatic">Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers</option>
               </select>
+            </div>
+            <div class="field">
+              <label>Context Menu</label>
+              <div class="ui checkbox">
+                <input type="checkbox" id="deletesHistoryContextMenu">
+                <label>Show additional "Deletes History Temporary Containers" entry in the right click on links context menu</label>
+              </div>
             </div>
             <div class="field" data-tooltip='"15minutes" lets you "undo close tabs" in that timeframe'>
               <label>Delete no longer needed "Deletes History Temporary Containers"</label>

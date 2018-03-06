@@ -27,6 +27,7 @@ const initialize = async () => {
       $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.left.container);
 
       $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
+      document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistoryContextMenu;
       $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistoryContainerRemoval);
       $('#deletesHistoryContainerAlwaysPerWebsite').dropdown('set selected', preferences.deletesHistoryContainerAlwaysPerWebsite);
       $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);

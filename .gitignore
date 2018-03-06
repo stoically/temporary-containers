@@ -5,3 +5,5 @@
 /.nyc_output
 /coverage
 /semantic
+/src/README.md
+/src/LICENSE
