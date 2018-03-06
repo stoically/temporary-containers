@@ -32,7 +32,7 @@
     "sinon": "^4.4.2",
     "sinon-chai": "^2.14.0",
     "web-ext": "^2.4.0",
-    "webextensions-jsdom": "^0.5.0"
+    "webextensions-jsdom": "^0.6.0"
   },
   "peerDependencies": {
     "delay": "^2.0.0",
