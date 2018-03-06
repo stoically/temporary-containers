@@ -382,6 +382,11 @@ class Request {
       return true;
     }
 
+    if (tab.url === 'about:blank') {
+      debug('[shouldIsolate] not isolating because the tab url is blank');
+      return false;
+    }
+
     if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
       debug('[shouldIsolate] not isolating because the tab url is blank and we seen this request before, probably redirect');
       return false;
