@@ -131,11 +131,13 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
+    /*
     const isolated = await this.maybeIsolate(tab, request, macAssignment);
     if (isolated) {
       debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
       return isolated;
     }
+    */
 
     const alwaysOpenIn = !macAssignment && await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
     if (alwaysOpenIn) {
@@ -375,7 +377,7 @@ class Request {
   }
 
 
-  async shouldIsolate(tab, request, requestMacAssignment) {
+  async shouldIsolate(tab, request, requestMacAssignment, openerCheck = false) {
     debug('[shouldIsolate]', tab, request);
     if (this.storage.local.tempContainers[tab.cookieStoreId] &&
         this.storage.local.tempContainers[tab.cookieStoreId].clean) {
@@ -388,9 +390,18 @@ class Request {
       return true;
     }
 
-    if (tab.url === 'about:blank') {
-      debug('[shouldIsolate] not isolating because the tab url is blank');
+    if (tab.url === 'about:blank' && !tab.openerTabId) {
+      debug('[shouldIsolate] not isolating because the tab url is blank and no openerTabId');
       return false;
+    }
+
+    if (!openerCheck && tab.url === 'about:blank' && tab.openerTabId) {
+      const openerTab = await browser.tabs.get(tab.openerTabId);
+      debug('[shouldIsolate] we have to check the opener against the request', openerTab);
+      if (this.shouldIsolate(openerTab, request, requestMacAssignment, true)) {
+        debug('[shouldIsolate] decided to isolate because of opener', openerTab);
+        return true;
+      }
     }
 
     if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
