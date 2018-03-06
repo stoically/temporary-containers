@@ -122,8 +122,8 @@
             <div class="field">
               <select id="isolationGlobal" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact">Only if the navigation target doesn't exactly match the Tabs Website Domain</option>
-                <option value="notsamedomain">Only if the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
+                <option value="notsamedomainexact">If the navigation target doesn't exactly match the Tabs Website Domain</option>
+                <option value="notsamedomain">If the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -144,8 +144,8 @@
             <div class="field">
               <select id="isolationDomainAction" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact" selected="selected">Only if the navigation target doesn't exactly match the Tabs Website Domain</option>
-                <option value="notsamedomain">Only if the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
+                <option value="notsamedomainexact" selected="selected">If the navigation target doesn't exactly match the Tabs Website Domain</option>
+                <option value="notsamedomain">If the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -203,8 +203,8 @@
               <label>Middle Mouse</label>
               <select id="linkClickGlobalMiddle" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
+                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -212,8 +212,8 @@
               <label>Ctrl/Cmd+Left Mouse</label>
               <select id="linkClickGlobalCtrlLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -221,8 +221,8 @@
               <label>Left Mouse</label>
               <select id="linkClickGlobalLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -244,8 +244,8 @@
               <label>Middle Mouse</label>
               <select id="linkClickDomainMiddle" class="ui fluid dropdown">
                 <option value="always" selected="selected">Always</option>
-                <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -253,8 +253,8 @@
               <label>Ctrl/Cmd+Left Mouse</label>
               <select id="linkClickDomainCtrlLeft" class="ui fluid dropdown">
                 <option value="always" selected="selected">Always</option>
-                <option value="notsamedomainexact">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -262,8 +262,8 @@
               <label>Left Mouse</label>
               <select id="linkClickDomainLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact" selected="selected">Only if the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">Only if the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="notsamedomainexact" selected="selected">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -394,7 +394,7 @@
             <div class="ui notice message">
               This will call <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/cookies/set" target="_blank">cookies.set</a>
               and add the cookie to the header (if allowed) during <a href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeSendHeaders" target="_blank">webRequest.onBeforeSendHeaders</a>.
-              Only if the request belongs to a Temporary Container and the website matches the given pattern. Make sure that the cookie name and value are correctly
+              If the request belongs to a Temporary Container and the website matches the given pattern. Make sure that the cookie name and value are correctly
               encoded, or you might break the header being sent.
             </div>
             <div id="setCookiesDomainPatternDiv" class="field">
