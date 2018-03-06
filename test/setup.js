@@ -43,8 +43,10 @@ const buildBackground = async () => {
   const webExtension = await webExtensionsJSDOM.fromManifest(manifestPath, {
     sinon,
     background: {
-      beforeParse(window) {
-        window.browser._mochaTest = true;
+      jsdom: {
+        beforeParse(window) {
+          window.browser._mochaTest = true;
+        }
       }
     }
   });

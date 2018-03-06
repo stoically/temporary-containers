@@ -3,11 +3,11 @@ class TemporaryContainers {
     this.initialized = false;
     this.noContainerTabs = {};
 
-    this.storage = new Storage;
-    this.request = new Request;
-    this.container = new Container;
-    this.mouseclick = new MouseClick;
-    this.mac = new MultiAccountContainers;
+    this.storage = new window.Storage;
+    this.request = new window.Request;
+    this.container = new window.Container;
+    this.mouseclick = new window.MouseClick;
+    this.mac = new window.MultiAccountContainers;
   }
 
 

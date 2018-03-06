@@ -24,21 +24,20 @@
     "addons-linter": "^0.37.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
+    "delay": "^2.0.0",
     "eslint": "^4.18.1",
+    "glob-to-regexp": "^0.4.0",
+    "jquery": "^3.3.1",
     "mocha": "^5.0.1",
     "npm-check-updates": "^2.14.0",
     "nyc": "^11.4.1",
-    "require-reload": "^0.2.2",
+    "p-queue": "^2.3.0",
+    "semantic-ui": "^2.3.0",
+    "semver-compare": "^1.0.0",
     "sinon": "^4.4.2",
     "sinon-chai": "^2.14.0",
     "web-ext": "^2.4.0",
-    "webextensions-jsdom": "^0.5.0"
-  },
-  "peerDependencies": {
-    "delay": "^2.0.0",
-    "glob-to-regexp": "^0.4.0",
-    "p-queue": "^2.3.0",
-    "semver-compare": "^1.0.0"
+    "webextensions-jsdom": "^0.6.0"
   },
   "private": true,
   "nyc": {
