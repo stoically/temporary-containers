@@ -35,7 +35,7 @@
     "semantic-ui": "^2.3.0",
     "semver-compare": "^1.0.0",
     "sinon": "^4.4.2",
-    "sinon-chai": "^2.14.0",
+    "sinon-chai": "^3.0.0",
     "web-ext": "^2.4.0",
     "webextensions-jsdom": "^0.6.0"
   },
