@@ -4,7 +4,7 @@
   "description": "Temporary Containers",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -rf build web-ext-artifacts && npm run lint && npm test && web-ext build --overwrite-dest -s src && addons-linter web-ext-artifacts/temporary_containers-*.zip",
+    "build": "rm -rf web-ext-artifacts && npm run lint && npm test && web-ext build --overwrite-dest -s src && addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha ./test/setup.js test/*.test.js --timeout 60000",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
@@ -43,7 +43,7 @@
   "nyc": {
     "exclude": [
       "test/**/*.js",
-      "src/background/lib/**/*.js"
+      "src/background/lib.js"
     ]
   }
 }

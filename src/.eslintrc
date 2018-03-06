@@ -6,6 +6,7 @@
     globals: {
         "tmp": false,
         "debug": false,
+        "lib": false,
         "log": false,
         "delay": false,
         "globToRegexp": false,
