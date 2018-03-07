@@ -129,7 +129,7 @@ class Request {
       return;
     }
 
-    const isolated = await this.maybeIsolate(tab, request, macAssignment);
+    const isolated = !macAssignment && await this.maybeIsolate(tab, request);
     if (isolated) {
       debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
       return isolated;
@@ -344,13 +344,13 @@ class Request {
   }
 
 
-  async maybeIsolate(tab, request, requestMacAssignment) {
+  async maybeIsolate(tab, request) {
     if (!tab || !tab.url) {
       debug('[maybeIsolate] we cant proceed without tab url information', tab, request);
       return false;
     }
 
-    if (!await this.shouldIsolate(tab, request, requestMacAssignment)) {
+    if (!await this.shouldIsolate(tab, request)) {
       debug('[maybeIsolate] decided to not isolate', tab, request);
       return false;
     }
@@ -358,20 +358,7 @@ class Request {
     debug('[maybeIsolate] isolating', tab, request);
     this.cancelRequest(request);
 
-    let deletesHistoryContainer = false;
-    if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
-      deletesHistoryContainer = true;
-    }
-
-    if (requestMacAssignment && tab.cookieStoreId !== requestMacAssignment.cookieStoreId) {
-      if (tab && tab.cookieStoreId && this.storage.local.tempContainers[tab.cookieStoreId]) {
-        debug('[maybeIsolate] mac assigned but we are already in a tmp container, we do nothing', request, tab, requestMacAssignment);
-        return;
-      }
-      debug('[maybeIsolate] decided to isolate but mac assigned and not loading in the target container, maybe reopen confirmpage', request, tab, requestMacAssignment);
-      return this.mac.maybeReopenConfirmPage(requestMacAssignment, request, tab, deletesHistoryContainer);
-    }
-
+    // TODO support deletes history containers based on preference
     const params = {
       tab,
       active: tab.active,
@@ -387,7 +374,7 @@ class Request {
   }
 
 
-  async shouldIsolate(tab, request, requestMacAssignment, openerCheck = false) {
+  async shouldIsolate(tab, request, openerCheck = false) {
     debug('[shouldIsolate]', tab, request);
     if (this.storage.local.tempContainers[tab.cookieStoreId] &&
         this.storage.local.tempContainers[tab.cookieStoreId].clean) {
@@ -395,14 +382,9 @@ class Request {
       return false;
     }
 
-    if (this.shouldIsolateMac(tab, requestMacAssignment)) {
+    if (this.shouldIsolateMac(tab)) {
       debug('[shouldIsolate] mac isolation');
       return true;
-    }
-
-    if (requestMacAssignment) {
-      debug('[shouldIsolate] requested url is mac assigned, we do nothing (yet)');
-      return false;
     }
 
     if (!openerCheck && tab.openerTabId) {
@@ -415,7 +397,7 @@ class Request {
         return false;
       }
 
-      if (await this.shouldIsolate(openerTab, request, requestMacAssignment, true)) {
+      if (await this.shouldIsolate(openerTab, request, true)) {
         debug('[shouldIsolate] decided to isolate because of opener', openerTab);
         return true;
       }
@@ -461,23 +443,13 @@ class Request {
     return false;
   }
 
-  shouldIsolateMac(tab, requestMacAssignment) {
+  shouldIsolateMac(tab) {
     if (this.storage.local.preferences.isolationMac === 'disabled') {
       debug('[shouldIsolateMac] mac isolation disabled');
       return false;
     }
-    debug('[shouldIsolateMac] mac isolation enabled', tab, requestMacAssignment);
-    if (requestMacAssignment && requestMacAssignment.neverAsk) {
-      debug('[shouldIsolateMac] not mac isolating because of neverask assignment');
-      return false;
-    }
-    if (this.container.isPermanentContainer(tab.cookieStoreId) && !requestMacAssignment) {
+    if (this.container.isPermanentContainer(tab.cookieStoreId)) {
       debug('[shouldIsolateMac] mac isolating because request url is not assigned to the tabs permanent container');
-      return true;
-    }
-    if (this.container.isPermanentContainer(tab.cookieStoreId) && requestMacAssignment &&
-        tab.cookieStoreId !== requestMacAssignment.cookieStoreId) {
-      debug('[shouldIsolateMac] mac isolating because request url is assigned to a different container then the tabs permanent container');
       return true;
     }
     return false;
