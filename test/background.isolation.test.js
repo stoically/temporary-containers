@@ -9,13 +9,14 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     const navigateTo = async (url) => {
       switch (navigatingIn) {
       case 'sametab':
-        await browser.tabs.update(tab.id, {
+        await browser.tabs._update(tab.id, {
           url
         });
         break;
 
       case 'newtab':
-        await browser.tabs.create({
+        await browser.tabs._create({
+          cookieStoreId: tab.cookieStoreId,
           openerTabId: tab.id,
           url
         });
@@ -27,9 +28,10 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       beforeEach(async () => {
         const background = await loadBareBackground(preferences, {apiFake: true});
         await background.initialize();
-        tab = await browser.tabs.create({
+        tab = await browser.tabs._create({
           active: true,
-          url: 'https://example.com'
+          url: 'https://example.com',
+          cookieStoreId: 'firefox-container-1'
         });
         browser.tabs.create.resetHistory();
       });
@@ -45,14 +47,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should not open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.not.have.been.called;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            }
+            browser.tabs.create.should.not.have.been.called;
           });
         });
 
@@ -62,14 +57,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should not open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.not.have.been.called;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            }
+            browser.tabs.create.should.not.have.been.called;
           });
         });
 
@@ -79,14 +67,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should not open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.not.have.been.called;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            }
+            browser.tabs.create.should.not.have.been.called;
           });
         });
       });
@@ -102,14 +83,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledTwice;
-              break;
-            }
+            browser.tabs.create.should.have.been.calledOnce;
           });
         });
 
@@ -119,14 +93,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledTwice;
-              break;
-            }
+            browser.tabs.create.should.have.been.calledOnce;
           });
         });
 
@@ -136,14 +103,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledTwice;
-              break;
-            }
+            browser.tabs.create.should.have.been.calledOnce;
           });
         });
       });
@@ -159,14 +119,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should not open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.not.have.been.called;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            }
+            browser.tabs.create.should.not.have.been.called;
           });
         });
 
@@ -176,14 +129,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should not open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.not.have.been.called;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            }
+            browser.tabs.create.should.not.have.been.called;
           });
         });
 
@@ -193,14 +139,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledTwice;
-              break;
-            }
+            browser.tabs.create.should.have.been.calledOnce;
           });
         });
       });
@@ -216,14 +155,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should not open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.not.have.been.called;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            }
+            browser.tabs.create.should.not.have.been.called;
           });
         });
 
@@ -233,14 +165,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledTwice;
-              break;
-            }
+            browser.tabs.create.should.have.been.calledOnce;
           });
         });
 
@@ -250,14 +175,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should open a new Temporary Container', async () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledTwice;
-              break;
-            }
+            browser.tabs.create.should.have.been.calledOnce;
           });
         });
       });
@@ -290,14 +208,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should not open a new Temporary Container', () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.not.have.been.called;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            }
+            browser.tabs.create.should.not.have.been.called;
           });
         });
 
@@ -308,14 +219,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           });
 
           it('should open a new Temporary Container', () => {
-            switch (navigatingIn) {
-            case 'sametab':
-              browser.tabs.create.should.have.been.calledOnce;
-              break;
-            case 'newtab':
-              browser.tabs.create.should.have.been.calledTwice;
-              break;
-            }
+            browser.tabs.create.should.have.been.calledOnce;
           });
         });
 
