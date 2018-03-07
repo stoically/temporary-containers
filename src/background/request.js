@@ -387,7 +387,7 @@ class Request {
       return true;
     }
 
-    if (!openerCheck && tab.openerTabId) {
+    if (!openerCheck && tab.url === 'about:blank' && tab.openerTabId) {
       const openerTab = await browser.tabs.get(tab.openerTabId);
       debug('[shouldIsolate] we have to check the opener against the request', openerTab);
 
