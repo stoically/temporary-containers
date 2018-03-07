@@ -16,7 +16,7 @@
       <div class="ui menu">
         <a class="item active" data-tab="general">General</a>
         <a class="item" data-tab="alwaysopenin">Always per Website</a>
-        <!--<a class="item" data-tab="isolation">Isolation</a>-->
+        <a class="item" data-tab="isolation">Isolation</a>
         <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
         <a class="item" data-tab="advanced">Advanced</a>
         <a class="item" data-tab="statistics">Statistics</a>
@@ -118,12 +118,14 @@
         </div>
         <div class="ui bottom attached active tab segment" data-tab="isolation/global">
           <form class="ui form">
-            <h4>When navigating should open new Temporary Containers</h4>
+            <h4 data-tooltip="Will not work if the navigation target is assigned with Multi-Account Containers">
+              When navigating on Websites should open new Temporary Containers [?]
+            </h4>
             <div class="field">
               <select id="isolationGlobal" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact">If the navigation target doesn't exactly match the Tabs Website Domain</option>
-                <option value="notsamedomain">If the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
+                <option value="notsamedomainexact">If the navigation target doesn't exactly match the current Tabs Website Domain</option>
+                <option value="notsamedomain">If the navigation target doesn't match the current Tabs Website Domain (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -144,8 +146,8 @@
             <div class="field">
               <select id="isolationDomainAction" class="ui fluid dropdown">
                 <option value="always">Always</option>
-                <option value="notsamedomainexact" selected="selected">If the navigation target doesn't exactly match the Tabs Website Domain</option>
-                <option value="notsamedomain">If the navigation target doesn't match the Tabs Website Domain (includes Subdomains)</option>
+                <option value="notsamedomainexact" selected="selected">If the navigation target doesn't exactly match the current Tabs Website Domain</option>
+                <option value="notsamedomain">If the navigation target doesn't match the current Tabs Website Domain (includes Subdomains)</option>
                 <option value="never">Never</option>
               </select>
             </div>
@@ -197,7 +199,7 @@
               which might open another website or a new tab without opening it in a new Temporary Container.<br>
               <br>
               If you want to make 100% sure that all tabs or websites are opened in a new Temporary
-              Container you should use the Isolation feature instead.
+              Container you should additionally configure the Isolation feature.
             </div>
             <div class="field">
               <label>Middle Mouse</label>

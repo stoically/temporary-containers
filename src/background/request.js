@@ -83,10 +83,9 @@ class Request {
 
     this.container.removeBrowserActionBadge(request.tabId);
 
-
-    if (request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org')) {
-      debug('[webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
-      return;
+    if (this.shouldCancelRequest(request)) {
+      debug('[webRequestOnBeforeRequest] canceling', request);
+      return { cancel: true };
     }
 
     let macAssignment;
@@ -94,18 +93,6 @@ class Request {
       macAssignment = await this.mac.getAssignment(request.url);
     } catch (error) {
       debug('[webRequestOnBeforeRequest] contacting mac failed, either not installed or old version', error);
-    }
-
-    if (this.shouldCancelRequest(request)) {
-      debug('[webRequestOnBeforeRequest] canceling', request);
-      return { cancel: true };
-    }
-
-    if (request.url.startsWith('https://getpocket.com')) {
-      // TODO consider "Decontain Websites" in the preferences
-      // getpocket.com is ignored because of #52
-      debug('[webRequestOnBeforeRequest] we are ignoring requests to getpocket.com because of #52', request);
-      return;
     }
 
     let tab;
@@ -131,13 +118,22 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    /*
+    if (request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org')) {
+      debug('[webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
+      return;
+    }
+
+    if (request.url.startsWith('https://getpocket.com')) {
+      // TODO consider "Exclude Websites" in the preferences
+      debug('[webRequestOnBeforeRequest] we are ignoring requests to getpocket.com because of #52', request);
+      return;
+    }
+
     const isolated = await this.maybeIsolate(tab, request, macAssignment);
     if (isolated) {
       debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
       return isolated;
     }
-    */
 
     const alwaysOpenIn = !macAssignment && await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
     if (alwaysOpenIn) {
@@ -362,9 +358,23 @@ class Request {
     debug('[maybeIsolate] isolating', tab, request);
     this.cancelRequest(request);
 
+    let deletesHistoryContainer = false;
+    if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
+      deletesHistoryContainer = true;
+    }
+
+    if (requestMacAssignment && tab.cookieStoreId !== requestMacAssignment.cookieStoreId) {
+      if (tab && tab.cookieStoreId && this.storage.local.tempContainers[tab.cookieStoreId]) {
+        debug('[maybeIsolate] mac assigned but we are already in a tmp container, we do nothing', request, tab, requestMacAssignment);
+        return;
+      }
+      debug('[maybeIsolate] decided to isolate but mac assigned and not loading in the target container, maybe reopen confirmpage', request, tab, requestMacAssignment);
+      return this.mac.maybeReopenConfirmPage(requestMacAssignment, request, tab, deletesHistoryContainer);
+    }
+
     const params = {
       tab,
-      active: true,
+      active: tab.active,
       url: request.url,
       request
     };
@@ -390,18 +400,33 @@ class Request {
       return true;
     }
 
-    if (tab.url === 'about:blank' && !tab.openerTabId) {
-      debug('[shouldIsolate] not isolating because the tab url is blank and no openerTabId');
+    if (requestMacAssignment) {
+      debug('[shouldIsolate] requested url is mac assigned, we do nothing (yet)');
       return false;
     }
 
-    if (!openerCheck && tab.url === 'about:blank' && tab.openerTabId) {
+    if (!openerCheck && tab.openerTabId) {
       const openerTab = await browser.tabs.get(tab.openerTabId);
       debug('[shouldIsolate] we have to check the opener against the request', openerTab);
-      if (this.shouldIsolate(openerTab, request, requestMacAssignment, true)) {
+
+      if (this.container.isPermanentContainer(tab.cookieStoreId) &&
+          openerTab.cookieStoreId !== tab.cookieStoreId) {
+        debug('[shouldIsolate] the tab loads a permanent container that is different from the openerTab, probaby explicitly selected in the context menu');
+        return false;
+      }
+
+      if (await this.shouldIsolate(openerTab, request, requestMacAssignment, true)) {
         debug('[shouldIsolate] decided to isolate because of opener', openerTab);
         return true;
       }
+
+      debug('[shouldIsolate] decided to not isolate because of opener', openerTab);
+      return false;
+    }
+
+    if (tab.url === 'about:blank' && !tab.openerTabId) {
+      debug('[shouldIsolate] not isolating because the tab url is blank and no openerTabId');
+      return false;
     }
 
     if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
@@ -451,7 +476,7 @@ class Request {
       return true;
     }
     if (this.container.isPermanentContainer(tab.cookieStoreId) && requestMacAssignment &&
-       tab.cookieStoreId !== `firefox-container-${requestMacAssignment.userContextId}`) {
+        tab.cookieStoreId !== requestMacAssignment.cookieStoreId) {
       debug('[shouldIsolateMac] mac isolating because request url is assigned to a different container then the tabs permanent container');
       return true;
     }
@@ -459,14 +484,15 @@ class Request {
   }
 
   async checkIsolationPreferenceAgainstUrl(preference, origin, target, tab) {
+    debug('[checkIsolationPreferenceAgainstUrl]', preference, origin, target, tab);
     switch (preference) {
     case 'always':
-      debug('[shouldIsolate] isolating based on global "always"');
+      debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "always"');
       return true;
 
     case 'notsamedomainexact':
       if (target !== origin) {
-        debug('[shouldIsolate] isolating based on global "notsamedomainexact"');
+        debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "notsamedomainexact"');
         return true;
       }
       break;
@@ -474,7 +500,7 @@ class Request {
     case 'notsamedomain':
       if (!this.background.sameDomain(origin, target) &&
           (!tab.openerTabId || !await this.background.sameDomainTabUrl(tab.openerTabId, target))) {
-        debug('[shouldIsolate] isolating based on global "notsamedomain"');
+        debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "notsamedomain"');
         return true;
       }
       break;

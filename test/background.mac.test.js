@@ -242,7 +242,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                     tabId: 3,
                     originContainer: 'firefox-tmp1',
                     targetContainer: 'firefox-container-1',
-                    url: 'http://example.com'
+                    url: 'http://notexample.com'
                   };
                   switch (confirmPage) {
                   case 'first':

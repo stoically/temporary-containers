@@ -345,7 +345,6 @@ class TemporaryContainers {
     const splittedTarget = target.split('.');
     const checkHostname = '.' + (splittedTarget.splice(-2).join('.'));
     const dottedOrigin = '.' + origin;
-
     if (target.length > 1 &&
         (dottedOrigin.endsWith(checkHostname) ||
          checkHostname.endsWith(dottedOrigin))) {
