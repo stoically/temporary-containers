@@ -78,10 +78,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     });
 
     it('should do nothing if its not a temporary container', async () => {
+      const background = await loadBareBackground(preferences);
       browser.tabs.get.resolves({
         cookieStoreId: 'firefox-default'
       });
-      const background = await loadBackground(preferences);
+      await background.initialize();
       background.storage.local.preferences.setCookiesDomain = {
         'example.com': [
           {name: 'example', value: 'content'}

@@ -2,6 +2,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
   describe('when triggering browseraction', () => {
     it('should open a new tab in a new temporary container', async () => {
+      const background = await loadBareBackground(preferences);
       browser.tabs.create.resolves({
         id: 1
       });
@@ -9,7 +10,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         cookieStoreId: 'firefox-container-1'
       });
 
-      const background = await loadBackground(preferences);
+      await background.initialize();
       browser.browserAction.onClicked.addListener.yield();
       await nextTick();
 
@@ -30,6 +31,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     });
 
     it('should open a new tab in a new temporary container with custom settings', async () => {
+      const background = await loadBareBackground(preferences);
       browser.tabs.create.resolves({
         id: 1
       });
@@ -37,7 +39,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         cookieStoreId: 'firefox-container-1'
       });
 
-      const background = await loadBackground(preferences);
+      await background.initialize();
       background.storage.local.preferences.containerColorRandom = true;
       background.storage.local.preferences.containerIconRandom = true;
       background.storage.local.preferences.containerNumberMode = 'reuse';

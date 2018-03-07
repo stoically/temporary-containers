@@ -8,7 +8,7 @@ describe('storage', () => {
   });
 
   it('should not initialize on installation unless storage got written', async () => {
-    const background = global.background;
+    const background = await loadUninstalledBackground();
     background.initialize();
     expect(background.initialized).to.be.false;
     await nextTick();
@@ -29,7 +29,7 @@ describe('storage', () => {
   });
 
   it('should not initialize on startup unless storage got loaded', async () => {
-    const background = global.background;
+    const background = await loadUninstalledBackground();
     background.initialize();
     expect(background.initialized).to.be.false;
     await nextTick();
@@ -53,13 +53,13 @@ describe('storage', () => {
   });
 
   it('should not load storage if its already loading', async () => {
-    const background = global.background;
+    const background = await loadUninstalledBackground();
     background.initialize();
     await nextTick();
     clock.tick(1000);
     const promise = background.storage.load();
     await nextTick();
-    expect(browser.storage.local.get).to.have.been.calledOnce;
+    expect(browser.storage.local.get).to.have.been.calledTwice;
     browser.storage.local.get.resolves({
       tempContainerCounter: 0,
       tempContainers: {},
@@ -75,7 +75,7 @@ describe('storage', () => {
   });
 
   it('should add missing preferences', async () => {
-    const background = global.background;
+    const background = await loadUninstalledBackground();
     browser.storage.local.get.resolves({
       tempContainerCounter: 0,
       tempContainers: {},

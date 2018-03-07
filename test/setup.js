@@ -1,10 +1,10 @@
 global.preferencesTestSet = [
   {
-    automaticMode: true,
+    automaticMode: false,
     automaticModeNewTab: 'created'
   },
   {
-    automaticMode: false,
+    automaticMode: true,
     automaticModeNewTab: 'created'
   },
   {
@@ -39,9 +39,10 @@ global.nextTick = () => {
 global.URL = require('url').URL;
 global.helper = require('./helper');
 
-const buildBackground = async () => {
+const buildWebExtension = async (build = {}) => {
   const webExtension = await webExtensionsJSDOM.fromManifest(manifestPath, {
     sinon,
+    apiFake: build.apiFake || undefined,
     background: {
       jsdom: {
         beforeParse(window) {
@@ -53,41 +54,60 @@ const buildBackground = async () => {
   webExtension.background.browser.tabs.query.resolves([{},{}]);
   webExtension.background.browser.storage.local.get.resolves({});
   webExtension.background.browser.contextualIdentities.get.resolves({});
-  global.webExtension = webExtension;
-  global.browser = webExtension.background.browser;
 
   if (process.argv[process.argv.length-1] === '--tmp-debug') {
     webExtension.background.window.log.DEBUG = true;
   }
 
-  global.background = global.webExtension.background.window.tmp;
-  global.clock = sinon.useFakeTimers();
+  return webExtension;
 };
 
-global.loadBareBackground = async () => {
+global.loadBareBackground = async (preferences = {}, build = {}) => {
+  const webExtension = await buildWebExtension(build);
+
+  global.webExtension = webExtension;
+  global.browser = webExtension.background.browser;
+  global.background = global.webExtension.background.window.tmp;
+  global.clock = sinon.useFakeTimers();
+
   const background = global.background;
   await background.runtimeOnInstalled({
     reason: 'install'
   });
+  Object.assign(background.storage.local.preferences, preferences);
   return background;
 };
 
 global.loadBackground = async (preferences = {}) => {
-  const background = global.background;
+  const webExtension = await buildWebExtension();
+
+  global.webExtension = webExtension;
+  global.browser = webExtension.background.browser;
+  global.background = global.webExtension.background.window.tmp;
+  global.clock = sinon.useFakeTimers();
+
   await background.runtimeOnInstalled({
     reason: 'install'
   });
-  await background.initialize();
   Object.assign(background.storage.local.preferences, preferences);
   background.storage.local.preferences.linkClickGlobal.middle.action = 'always';
   background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'always';
+  await background.initialize();
   return background;
 };
 
+global.loadUninstalledBackground = async () => {
+  const webExtension = await buildWebExtension();
 
-beforeEach(async () => {
-  await buildBackground();
-});
+  global.webExtension = webExtension;
+  global.browser = webExtension.background.browser;
+  global.background = global.webExtension.background.window.tmp;
+  global.clock = sinon.useFakeTimers();
+
+  const background = global.background;
+  return background;
+};
+
 
 afterEach(() => {
   if (global.webExtension && global.webExtension.background) {

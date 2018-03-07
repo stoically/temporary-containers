@@ -2,7 +2,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
   describe('on require', () => {
     it('should register event listeners', async () => {
-      const background = await loadBareBackground();
+      const background = await loadBareBackground(preferences);
       sinon.stub(background, 'contextMenusOnClicked');
       sinon.stub(background, 'commandsOnCommand');
       sinon.stub(background, 'runtimeOnInstalled');
@@ -52,7 +52,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     });
 
     it('should have registered a container cleanup interval', async () => {
-      const background = await loadBareBackground();
+      const background = await loadBareBackground(preferences);
       sinon.stub(background.container, 'cleanup');
       await background.initialize();
       clock.tick(600000);
@@ -61,7 +61,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     describe('should catch early requests', () => {
       it('wait for tmp to initialize, blocking the request until initialize', async () => {
-        const background = await loadBareBackground();
+        const background = await loadBareBackground(preferences);
         sinon.stub(background.request, 'webRequestOnBeforeRequest');
 
         const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
@@ -81,7 +81,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       });
 
       it('wait for tmp to initialize, blocking the request until timeout and dont block the next requests anymore', async () => {
-        await loadBareBackground();
+        await loadBareBackground(preferences);
         const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
         let waitingForPromise = true;
         promise.then(() => {
@@ -116,7 +116,8 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       cookieStoreId: 'fake'
     };
 
-    it('one open about:home should reopen in temporary container', done => {
+    it('one open about:home should reopen in temporary container', async () => {
+      await loadBareBackground(preferences);
       const fakeAboutHomeTab = {
         incognito: false,
         cookieStoreId: 'firefox-default',
@@ -126,38 +127,36 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.tabs.query.resolves([fakeAboutHomeTab]);
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves({id: 1});
-      loadBackground(preferences).then(background => {
-        background.storage.local.preferences.automaticModeNewTab = 'created';
-        background.runtimeOnStartup().then(() => {
-          browser.contextualIdentities.create.should.have.been.calledOnce;
-          browser.tabs.create.should.have.been.calledOnce;
+      await background.initialize();
+      background.storage.local.preferences.automaticModeNewTab = 'created';
+      await background.runtimeOnStartup();
+      browser.contextualIdentities.create.should.have.been.calledOnce;
+      browser.tabs.create.should.have.been.calledOnce;
 
-          browser.tabs.query.resolves([{},{}]);
-          clock.tick(500);
-          process.nextTick(() => {
-            browser.tabs.remove.should.have.been.calledOnce;
-            done();
-          });
-        });
-      });
+      browser.tabs.query.resolves([{},{}]);
+      clock.tick(500);
+      await nextTick();
+      browser.tabs.remove.should.have.been.calledOnce;
     });
 
     it('one open tab not in the default container should not reopen in temporary container', async () => {
+      const background = await loadBareBackground(preferences);
       const fakeNotDefaultTab = {
         incognito: false,
         cookieStoreId: 'not-default',
         url: 'about:home'
       };
       browser.tabs.query.resolves([fakeNotDefaultTab]);
-      const background = await loadBackground(preferences);
+      await background.initialize();
       await background.runtimeOnStartup();
 
       browser.contextualIdentities.create.should.not.have.been.called;
     });
 
     it('two open tabs should not reopen in temporary container', async () => {
+      const background = await loadBareBackground(preferences);
       browser.tabs.query.resolves([1,2]);
-      const background = await loadBackground(preferences);
+      await background.initialize();
       await background.runtimeOnStartup();
 
       browser.contextualIdentities.create.should.not.have.been.called;
@@ -170,6 +169,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       return;
     }
     it('should reopen about:home in temporary container', async () => {
+      const background = await loadBareBackground(preferences);
       const fakeTab = {
         url: 'about:home',
         cookieStoreId: 'firefox-default'
@@ -179,7 +179,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves({id: 1});
-      const background = await loadBackground(preferences);
+      await background.initialize();
       background.storage.local.preferences.automaticModeNewTab = 'created';
       await background.container.maybeReloadTabInTempContainer(fakeTab);
 
@@ -193,8 +193,8 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     if (!preferences.automaticMode) {
       return;
     }
-    let background;
     beforeEach(async () => {
+      const background = await loadBareBackground(preferences);
       const fakeRequest = {
         tabId: 1,
         url: 'https://example.com'
@@ -209,7 +209,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.tabs.get.resolves(fakeTab);
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves(fakeTab);
-      background = await loadBackground(preferences);
+      await background.initialize();
       await background.request.webRequestOnBeforeRequest(fakeRequest);
     });
 
@@ -223,6 +223,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
   describe('tabs requesting something in non-default and non-temporary containers', () => {
     it('should not be interrupted', async () => {
+      const background = await loadBareBackground(preferences);
       const fakeRequest = {
         tabId: 1,
         url: 'https://example.com'
@@ -232,7 +233,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         cookieStoreId: 'firefox-not-default'
       };
       browser.tabs.get.resolves(fakeTab);
-      const background = await loadBackground(preferences);
+      await background.initialize();
       await background.request.webRequestOnBeforeRequest(fakeRequest);
 
       browser.contextualIdentities.create.should.not.have.been.called;

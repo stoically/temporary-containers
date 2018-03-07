@@ -12,6 +12,7 @@
         "buildBackground": false,
         "loadBackground": false,
         "loadBareBackground": false,
+        "loadUninstalledBackground": false,
         "injectBrowser": false,
         "background": true,
         "helper": false,
