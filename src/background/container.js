@@ -288,7 +288,7 @@ class Container {
     debug('[maybeReloadTabInTempContainer] not a home/new/moz tab or disabled, we dont handle that', tab);
   }
 
-  addToRemoveQueue(tabId) {
+  async addToRemoveQueue(tabId) {
     if (!this.storage.local.tabContainerMap[tabId]) {
       debug('[addToRemoveQueue] removed tab that isnt in the tabContainerMap', tabId, this.storage.local.tabContainerMap);
       return;
@@ -304,35 +304,51 @@ class Container {
       this.storage.local.preferences.containerRemoval;
     debug('[addToRemoveQueue] queuing container removal because of tab removal', cookieStoreId, tabId);
     this.removeContainerFetchMassRemoval[containerType].push(cookieStoreId);
-    if (this.removeContainerFetchMassRemoval[containerType].length === 1) {
-      debug('[addToRemoveQueue] registering fetch mass removal delay', containerType, this.removeContainerFetchMassRemoval[containerType]);
-      this.removingContainerQueue = true;
-      delay(15000).then(() => {
-        const queue = this.removeContainerFetchMassRemoval[containerType].splice(0);
-        switch (containerRemoval) {
-        case 'instant':
-          debug('[addToRemoveQueue] trying to instant remove queue', containerType, queue);
-          this.removeContainerQueue.add(() => this.tryToRemoveQueue(queue))
-            .then(this.removeContainerQueueMaybeDone);
-          break;
-
-        case '15minutes':
-          debug('[addToRemoveQueue] registering 15minutes delay for queue removal', containerType, queue);
-          this.maybeShowNotification(`Queued ${queue.length} Temporary Containers for removal in 15minutes`);
-          this.removeContainerDelayQueue.add(() => delay(900000).then(() => {
-            debug('[addToRemoveQueue] trying to remove queue after 15minutes timeout', containerType, queue);
-            this.removeContainerQueue.add(() => this.tryToRemoveQueue(queue))
-              .then(this.removeContainerQueueMaybeDone);
-          }));
-          break;
-
-        default:
-          debug('[addToRemoveQueue] this should never happen', containerRemoval);
-          this.removeContainerQueueMaybeDone();
-          break;
-        }
-      });
+    if (this.removeContainerFetchMassRemoval[containerType].length > 1) {
+      return;
     }
+    debug('[addToRemoveQueue] registering fetch mass removal delay', containerType, this.removeContainerFetchMassRemoval[containerType]);
+    this.removingContainerQueue = true;
+    await delay(15000);
+
+
+
+    const queue = this.removeContainerFetchMassRemoval[containerType].splice(0);
+    switch (containerRemoval) {
+    case 'instant':
+      debug('[addToRemoveQueue] trying to instant remove queue', containerType, queue);
+      this.removeContainerQueue.add(() => this.tryToRemoveQueue(queue))
+        .then(this.removeContainerQueueMaybeDone);
+      break;
+
+    case '2minutes':
+      this.delayedRemoveQueue(containerType, queue, 120000);
+      break;
+
+    case '5minutes':
+      this.delayedRemoveQueue(containerType, queue, 300000);
+      break;
+
+    case '15minutes':
+      this.delayedRemoveQueue(containerType, queue, 900000);
+      break;
+
+    default:
+      debug('[addToRemoveQueue] this should never happen', containerRemoval);
+      this.removeContainerQueueMaybeDone();
+      break;
+    }
+  }
+
+  async delayedRemoveQueue(containerType, queue, delayTime) {
+    debug('[addToRemoveQueue] registering 15minutes delay for queue removal', containerType, queue);
+    this.maybeShowNotification(`Queued ${queue.length} Temporary Containers for removal in ${delayTime/1000/60}minutes`);
+    this.removeContainerDelayQueue.add(async () => {
+      await delay(delayTime);
+      debug('[addToRemoveQueue] trying to remove queue after timeout', delayTime, containerType, queue);
+      this.removeContainerQueue.add(() => this.tryToRemoveQueue(queue))
+        .then(this.removeContainerQueueMaybeDone);
+    });
   }
 
 

@@ -38,10 +38,10 @@ class MouseClick {
       }
       if (!this.checkClick(clickType, message, sender)) {
         this.unhandledLinksClicked[url] = {};
-        setTimeout(() => {
+        delay(1000).then(() => {
           debug('[linkClicked] cleaning up unhandledLinksClicked', url);
           delete this.unhandledLinksClicked[url];
-        }, 1000);
+        });
         return;
       }
     }
@@ -63,11 +63,11 @@ class MouseClick {
     this.linksClicked[url].containers[tab.cookieStoreId] = true;
     this.linksClicked[url].count++;
 
-    setTimeout(() => {
+    delay(1000).then(() => {
       debug('[linkClicked] cleaning up linksClicked', url);
       delete this.linksClicked[url];
       delete this.container.urlCreatedContainer[url];
-    }, 1000);
+    });
   }
 
 

@@ -33,7 +33,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           url: 'https://example.com',
           cookieStoreId: 'firefox-container-1'
         });
-        browser.tabs.create.resetHistory();
       });
 
       describe('navigating with preference "never"', () => {

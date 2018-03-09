@@ -88,10 +88,12 @@
               <option value="reuse">Reuse available numbers</option>
             </select>
           </div>
-          <div class="field" data-tooltip='"15minutes" lets you "undo close tabs" in that timeframe'>
+          <div class="field" data-tooltip='"X minutes" lets you "undo close tabs" in that timeframe'>
             <label>Delete no longer needed Temporary Containers</label>
             <select id="containerRemoval" class="ui fluid dropdown">
               <option value="15minutes">15 minutes after the last tab in it closes (default)</option>
+              <option value="5minutes">5 minutes after the last tab in it closes</option>
+              <option value="2minutes">2 minutes after the last tab in it closes</option>
               <option value="instant">After the last tab in it closes</option>
             </select>
           </div>
@@ -118,8 +120,8 @@
         </div>
         <div class="ui bottom attached active tab segment" data-tab="isolation/global">
           <form class="ui form">
-            <h4 data-tooltip="Will not work if the navigation target is assigned with Multi-Account Containers">
-              When navigating on Websites should open new Temporary Containers [?]
+            <h4 data-tooltip="Also applies to Tabs opened by the current Tab. Will not work if the navigation target is assigned with Multi-Account Containers">
+              When navigating in Tabs should open new Temporary Containers [?]
             </h4>
             <div class="field">
               <select id="isolationGlobal" class="ui fluid dropdown">
@@ -136,8 +138,8 @@
         </div>
         <div class="ui bottom attached tab segment" data-tab="isolation/perwebsite">
           <form class="ui form" id="isolationDomainForm">
-            <h4 data-tooltip="Will not work if the navigation target is assigned with Multi-Account Containers">
-              On which Website and when should navigating open new Temporary Containers [?]
+            <h4 data-tooltip="Also applies to Tabs opened by the current Tab. Will not work if the navigation target is assigned with Multi-Account Containers">
+              When navigating in Tabs that have a given Website loaded should open new Temporary Containers  [?]
             </h4>
             <div id="isolationDomainPatternDiv" class="field">
               <label>Website Pattern [?]</label>
