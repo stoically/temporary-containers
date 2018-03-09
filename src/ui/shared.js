@@ -355,6 +355,7 @@ window.saveAdvancedPreferences = async (event) => {
   preferences.deletesHistoryContextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
   preferences.deletesHistoryContainerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
   preferences.deletesHistoryContainerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
+  preferences.deletesHistoryContainerIsolation = document.querySelector('#deletesHistoryContainerIsolation').value;
   preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
 
   // TODO this might cause saving preferences that got selected on global mouseclicks but not saved

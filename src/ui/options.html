@@ -504,7 +504,7 @@
               </div>
             </div>
             <div class="field" data-tooltip="This affects Automatic Mode, Toolbar Icon and the right-click context menu entry">
-              <label>Automatically create "Deletes History Temporary Containers"</label>
+              <label>Automatically create "Deletes History Temporary Containers" [?]</label>
               <select id="deletesHistoryContainer" class="ui fluid dropdown">
                 <option value="never">Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (Default)</option>
                 <option value="automatic">Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers</option>
@@ -529,6 +529,14 @@
               <select id="deletesHistoryContainerAlwaysPerWebsite" class="ui fluid dropdown">
                 <option value="never">Default</option>
                 <option value="automatic">Open New "Deletes History Temporary Containers" for Website patterns configured in "Always per Website" instead of normal
+                  Temporary Containers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Isolation</label>
+              <select id="deletesHistoryContainerIsolation" class="ui fluid dropdown">
+                <option value="never">Default</option>
+                <option value="automatic">Open New "Deletes History Temporary Containers" when Isolation takes place instead of normal
                   Temporary Containers</option>
               </select>
             </div>

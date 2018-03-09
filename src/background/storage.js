@@ -38,6 +38,7 @@ class Storage {
       deletesHistoryContainer: 'never',
       deletesHistoryContextMenu: false,
       deletesHistoryContainerAlwaysPerWebsite: 'never',
+      deletesHistoryContainerIsolation: 'never',
       deletesHistoryContainerRemoval: 'instant',
       deletesHistoryContainerMouseClicks: 'never',
       keyboardShortcuts: {

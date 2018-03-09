@@ -30,6 +30,7 @@ const initialize = async () => {
       document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistoryContextMenu;
       $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistoryContainerRemoval);
       $('#deletesHistoryContainerAlwaysPerWebsite').dropdown('set selected', preferences.deletesHistoryContainerAlwaysPerWebsite);
+      $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistoryContainerIsolation);
       $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
 
       document.querySelector('#pageAction').checked = preferences.pageAction;

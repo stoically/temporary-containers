@@ -359,12 +359,12 @@ class Request {
     debug('[maybeIsolate] isolating', tab, request);
     this.cancelRequest(request);
 
-    // TODO support deletes history containers based on preference
     const params = {
       tab,
       active: tab.active,
       url: request.url,
-      request
+      request,
+      deletesHistory: this.storage.local.preferences.deletesHistoryContainerIsolation === 'automatic'
     };
     if (tab.url === 'about:newtab' || tab.url === 'about:blank' ||
         this.storage.local.preferences.replaceTabs) {
