@@ -118,12 +118,14 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    if (request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org')) {
+    if (request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org') &&
+        this.storage.local.preferences.ignoreRequestsToAMO) {
       debug('[webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
       return;
     }
 
-    if (request.url.startsWith('https://getpocket.com')) {
+    if (request.url.startsWith('https://getpocket.com') &&
+        this.storage.local.preferences.ignoreRequestsToPocket) {
       // TODO consider "Exclude Websites" in the preferences
       debug('[webRequestOnBeforeRequest] we are ignoring requests to getpocket.com because of #52', request);
       return;

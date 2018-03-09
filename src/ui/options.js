@@ -41,6 +41,8 @@ const initialize = async () => {
       document.querySelector('#keyboardShortcutsAltShiftC').checked = preferences.keyboardShortcuts.AltShiftC;
       document.querySelector('#keyboardShortcutsAltX').checked = preferences.keyboardShortcuts.AltX;
       document.querySelector('#replaceTabs').checked = preferences.replaceTabs;
+      document.querySelector('#ignoreRequestsToAMO').checked = preferences.ignoreRequestsToAMO;
+      document.querySelector('#ignoreRequestsToPocket').checked = preferences.ignoreRequestsToPocket;
       $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
 
       document.querySelector('#statisticsCheckbox').checked = preferences.statistics;

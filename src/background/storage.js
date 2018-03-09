@@ -54,7 +54,9 @@ class Storage {
       setCookiesDomain: {},
       contextMenu: true,
       pageAction: false,
-      replaceTabs: false
+      replaceTabs: false,
+      ignoreRequestsToAMO: true,
+      ignoreRequestsToPocket: true
     };
   }
 

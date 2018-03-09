@@ -349,6 +349,8 @@ window.saveAdvancedPreferences = async (event) => {
   preferences.keyboardShortcuts.AltShiftC = document.querySelector('#keyboardShortcutsAltShiftC').checked;
   preferences.keyboardShortcuts.AltX = document.querySelector('#keyboardShortcutsAltX').checked;
   preferences.replaceTabs = document.querySelector('#replaceTabs').checked;
+  preferences.ignoreRequestsToAMO = document.querySelector('#ignoreRequestsToAMO').checked;
+  preferences.ignoreRequestsToPocket = document.querySelector('#ignoreRequestsToPocket').checked;
   preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
 
   preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
