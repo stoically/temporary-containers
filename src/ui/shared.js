@@ -341,20 +341,21 @@ window.updateStatistics = async () => {
 window.saveAdvancedPreferences = async (event) => {
   event.preventDefault();
 
-  preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
-  preferences.deletesHistoryContextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
-  preferences.deletesHistoryContainerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
-  preferences.deletesHistoryContainerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
-  preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
-  preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
   preferences.pageAction = document.querySelector('#pageAction').checked;
   preferences.contextMenu = document.querySelector('#contextMenu').checked;
-
   preferences.keyboardShortcuts.AltC = document.querySelector('#keyboardShortcutsAltC').checked;
   preferences.keyboardShortcuts.AltP = document.querySelector('#keyboardShortcutsAltP').checked;
   preferences.keyboardShortcuts.AltN = document.querySelector('#keyboardShortcutsAltN').checked;
   preferences.keyboardShortcuts.AltShiftC = document.querySelector('#keyboardShortcutsAltShiftC').checked;
   preferences.keyboardShortcuts.AltX = document.querySelector('#keyboardShortcutsAltX').checked;
+  preferences.replaceTabs = document.querySelector('#replaceTabs').checked;
+  preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
+
+  preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
+  preferences.deletesHistoryContextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
+  preferences.deletesHistoryContainerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
+  preferences.deletesHistoryContainerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
+  preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
 
   // TODO this might cause saving preferences that got selected on global mouseclicks but not saved
   saveLinkClickGlobalPreferences(event);

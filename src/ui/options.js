@@ -31,18 +31,20 @@ const initialize = async () => {
       $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistoryContainerRemoval);
       $('#deletesHistoryContainerAlwaysPerWebsite').dropdown('set selected', preferences.deletesHistoryContainerAlwaysPerWebsite);
       $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
-      $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
+
       document.querySelector('#pageAction').checked = preferences.pageAction;
       document.querySelector('#contextMenu').checked = preferences.contextMenu;
-
-      document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
-      document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistoryStatistics;
-
       document.querySelector('#keyboardShortcutsAltC').checked = preferences.keyboardShortcuts.AltC;
       document.querySelector('#keyboardShortcutsAltP').checked = preferences.keyboardShortcuts.AltP;
       document.querySelector('#keyboardShortcutsAltN').checked = preferences.keyboardShortcuts.AltN;
       document.querySelector('#keyboardShortcutsAltShiftC').checked = preferences.keyboardShortcuts.AltShiftC;
       document.querySelector('#keyboardShortcutsAltX').checked = preferences.keyboardShortcuts.AltX;
+      document.querySelector('#replaceTabs').checked = preferences.replaceTabs;
+      $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
+
+      document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
+      document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistoryStatistics;
+
 
       updateLinkClickDomainRules();
       updateAlwaysOpenInDomainRules();

@@ -52,7 +52,8 @@ class Storage {
       deletesHistoryStatistics: false,
       setCookiesDomain: {},
       contextMenu: true,
-      pageAction: false
+      pageAction: false,
+      replaceTabs: false
     };
   }
 

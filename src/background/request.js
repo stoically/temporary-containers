@@ -191,7 +191,8 @@ class Request {
 
     let newTab;
     if (this.mouseclick.linksClicked[request.url] &&
-        this.mouseclick.linksClicked[request.url].clickType === 'left') {
+        this.mouseclick.linksClicked[request.url].clickType === 'left' &&
+        !this.storage.local.preferences.replaceTabs) {
       debug('[handleClickedLink] creating new container because request got left clicked', this.mouseclick.linksClicked[request.url], tab);
       newTab = await this.container.createTabInTempContainer({tab, active: true, url: request.url, deletesHistory: deletesHistoryContainer, request});
       if (tab && this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
@@ -365,7 +366,8 @@ class Request {
       url: request.url,
       request
     };
-    if (tab.url === 'about:newtab' || tab.url === 'about:blank') {
+    if (tab.url === 'about:newtab' || tab.url === 'about:blank' ||
+        this.storage.local.preferences.replaceTabs) {
       await this.container.reloadTabInTempContainer(params);
     } else {
       await this.container.createTabInTempContainer(params);
