@@ -243,7 +243,7 @@ class Container {
       return;
     }
 
-    if (tab.url.startsWith('moz-extension://')) {
+    if (tab.url && tab.url.startsWith('moz-extension://')) {
       debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
       await this.mac.handleConfirmPage(tab);
       return;
@@ -279,7 +279,7 @@ class Container {
       return;
     }
 
-    if (!tab.url.startsWith('about:') && !tab.url.startsWith('moz-extension:') &&
+    if (tab.url && !tab.url.startsWith('about:') && !tab.url.startsWith('moz-extension:') &&
         this.storage.local.tempContainers[tab.cookieStoreId] &&
         this.storage.local.tempContainers[tab.cookieStoreId].clean) {
       debug('[maybeReloadTabInTempContainer] marking tmp container as not clean anymore', tab);

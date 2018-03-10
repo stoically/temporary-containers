@@ -354,4 +354,104 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       expect(background.mouseclick.linksClicked).to.deep.equal({});
     });
   });
+
+  describe('runtime.onMessage savePreferences', () => {
+    it('should save the given preferences to storage.local', async () => {
+      const background = await loadBackground(preferences);
+      const fakeMessage = {
+        method: 'savePreferences',
+        payload: {
+          preferences: Object.assign({}, background.storage.local.preferences, {
+            automaticMode: true
+          })
+        }
+      };
+      await background.runtimeOnMessage(fakeMessage);
+      browser.storage.local.set.should.have.been.calledWithMatch({
+        preferences: {
+          automaticMode: true
+        }
+      });
+    });
+  });
+
+  describe('runtime.onInstalled', () => {
+    it('should call migration on updated', async () => {
+      const background = await loadUninstalledBackground(preferences);
+      const onUpdateMigrationStub = sinon.stub(background, 'onUpdateMigration');
+      browser.runtime.onInstalled.addListener.yield({
+        reason: 'update'
+      });
+      onUpdateMigrationStub.should.have.been.called;
+    });
+  });
+
+  describe('commands', () => {
+    describe('New Temporary Container Tab', () => {
+      it('should open a new temporary container tab', async () => {
+        const background = await loadBareBackground(preferences, {apiFake: true});
+        await background.initialize();
+        browser.commands.onCommand.addListener.yield('new_temporary_container_tab');
+        await nextTick();
+        browser.tabs.create.should.have.been.called;
+      });
+    });
+
+    describe('New No Container Tab', () => {
+      it('should open a new no container tab', async () => {
+        const background = await loadBareBackground(preferences, {apiFake: true});
+        await background.initialize();
+        background.storage.local.preferences.keyboardShortcuts.AltN = true;
+        browser.commands.onCommand.addListener.yield('new_no_container_tab');
+        await nextTick();
+        browser.tabs.create.should.have.been.calledWith({
+          active: true,
+          url: 'about:blank'
+        });
+      });
+    });
+
+    describe('New No Container Window Tab', () => {
+      it('should open a new no container tab', async () => {
+        const background = await loadBareBackground(preferences, {apiFake: true});
+        await background.initialize();
+        background.storage.local.preferences.keyboardShortcuts.AltShiftC = true;
+        browser.commands.onCommand.addListener.yield('new_no_container_window_tab');
+        await nextTick();
+        browser.windows.create.should.have.been.calledWith({
+          url: 'about:blank'
+        });
+      });
+    });
+
+    describe('New Deletes History Container Tab', () => {
+      it('should open a new no container tab', async () => {
+        const background = await loadBareBackground(preferences, {apiFake: true});
+        await background.initialize();
+        background.permissions.history = true;
+        browser.commands.onCommand.addListener.yield('new_no_history_tab');
+        await nextTick();
+        browser.tabs.create.should.have.been.called;
+        browser.contextualIdentities.create.should.have.been.calledWithMatch({
+          name: sinon.match('-deletes-history')
+        });
+      });
+    });
+
+    describe('New Same Container Tab', () => {
+      it('should open a new no container tab', async () => {
+        const background = await loadBareBackground(preferences, {apiFake: true});
+        await background.initialize();
+        background.storage.local.preferences.keyboardShortcuts.AltX = true;
+        await browser.tabs._create({
+          cookieStoreId: 'firefox-container-123'
+        });
+        browser.commands.onCommand.addListener.yield('new_same_container_tab');
+        await nextTick();
+        browser.tabs.create.should.have.been.calledWithMatch({
+          cookieStoreId: 'firefox-container-123'
+        });
+      });
+    });
+  });
 });});

@@ -377,9 +377,7 @@ class TemporaryContainers {
       break;
 
     case 'update':
-      promise = delay(60000).then(() => {
-        this.onUpdateMigration(details);
-      });
+      this.onUpdateMigration(details);
       break;
     }
 

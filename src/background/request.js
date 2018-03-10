@@ -118,7 +118,7 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    if (request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org') &&
+    if ((request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org')) &&
         this.storage.local.preferences.ignoreRequestsToAMO) {
       debug('[webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
       return;
