@@ -410,8 +410,8 @@ class Request {
       return false;
     }
 
-    if (tab.url === 'about:blank' && !tab.openerTabId) {
-      debug('[shouldIsolate] not isolating because the tab url is blank and no openerTabId');
+    if ((tab.url === 'about:blank' || tab.url === 'about:home') && !tab.openerTabId) {
+      debug('[shouldIsolate] not isolating because the tab url is blank/home and no openerTabId');
       return false;
     }
 
