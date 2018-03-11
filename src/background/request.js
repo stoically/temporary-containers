@@ -42,7 +42,6 @@ class Request {
 
 
   async webRequestOnBeforeRequest(request) {
-    // TODO stop early if nothing is configured that requires request-intervention
     const returnVal = await this._webRequestOnBeforeRequest(request);
 
     if (!this.requestsSeen[request.requestId]) {
@@ -56,12 +55,7 @@ class Request {
       this.cancelRequest(request);
       return returnVal;
     } else if (!returnVal || (returnVal && !returnVal.clean)) {
-      const cookieStoreId = this.storage.local.tabContainerMap[request.tabId];
-      if (cookieStoreId && this.storage.local.tempContainers[cookieStoreId] &&
-          this.storage.local.tempContainers[cookieStoreId].clean) {
-        debug('[webRequestOnBeforeRequest] marking tmp container as not clean anymore', cookieStoreId, request);
-        this.storage.local.tempContainers[cookieStoreId].clean = false;
-      }
+      this.container.markUnclean(request.tabId);
     }
 
     // make sure we shouldnt cancel anyway
@@ -359,7 +353,10 @@ class Request {
     }
 
     debug('[maybeIsolate] isolating', tab, request);
-    this.cancelRequest(request);
+    if (this.cancelRequest(request)) {
+      debug('[maybeIsolate] canceling request');
+      return { cancel: true };
+    }
 
     const params = {
       tab,
@@ -553,7 +550,11 @@ class Request {
     }
 
     if (reopen) {
-      this.cancelRequest(request);
+      if (this.cancelRequest(request)) {
+        debug('[maybeAlwaysOpenInTemporaryContainer] canceling request');
+        return { cancel: true };
+      }
+
       const deletesHistory = this.storage.local.preferences.deletesHistoryContainerAlwaysPerWebsite === 'automatic';
       const params = {
         tab,

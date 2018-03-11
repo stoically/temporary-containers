@@ -13,6 +13,7 @@
         "loadBackground": false,
         "loadBareBackground": false,
         "loadUninstalledBackground": false,
+        "webExtension": false,
         "injectBrowser": false,
         "background": true,
         "helper": false,

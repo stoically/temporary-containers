@@ -646,6 +646,15 @@ class Container {
     return false;
   }
 
+  markUnclean(tabId) {
+    const cookieStoreId = this.storage.local.tabContainerMap[tabId];
+    if (cookieStoreId && this.storage.local.tempContainers[cookieStoreId] &&
+    this.storage.local.tempContainers[cookieStoreId].clean) {
+      debug('[webRequestOnBeforeRequest] marking tmp container as not clean anymore', cookieStoreId);
+      this.storage.local.tempContainers[cookieStoreId].clean = false;
+    }
+  }
+
 
   getReusedContainerNumber() {
     const tempContainersNumbers = Object.values(this.storage.local.tempContainers)

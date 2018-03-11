@@ -7,26 +7,26 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   ].map(navigatingIn => { describe(`navigatingIn: ${navigatingIn}`, () => {
 
     const navigateTo = async (url) => {
+      webExtension.background.window.log.DEBUG = true;
       switch (navigatingIn) {
       case 'sametab':
-        await browser.tabs._update(tab.id, {
+        return browser.tabs._update(tab.id, {
           url
         });
-        break;
 
       case 'newtab':
-        await browser.tabs._create({
+        return browser.tabs._create({
           cookieStoreId: tab.cookieStoreId,
           openerTabId: tab.id,
           url
         });
-        break;
       }
     };
 
     describe('Isolation', () => {
       beforeEach(async () => {
         const background = await loadBareBackground(preferences, {apiFake: true});
+        webExtension.background.window.log.DEBUG = false;
         await background.initialize();
         tab = await browser.tabs._create({
           active: true,
@@ -177,6 +177,20 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             browser.tabs.create.should.have.been.calledOnce;
           });
         });
+
+        describe('follow-up redirects to the exact same domain after isolating', () => {
+
+          beforeEach(async () => {
+            browser.tabs._registerRedirects('http://notexample.com', [
+              'https://notexample.com'
+            ]);
+            await navigateTo('http://notexample.com');
+          });
+
+          it.skip('should not open a new Temporary Container', async () => {
+            browser.tabs.create.should.have.been.calledOnce;
+          });
+        });
       });
     });
 
@@ -185,12 +199,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       beforeEach(async () => {
         const background = await loadBareBackground(preferences, {apiFake: true});
         await background.initialize();
-        tab = await browser.tabs.create({
+        tab = await browser.tabs._create({
           active: true,
           url: 'https://example.com',
           cookieStoreId: 'firefox-container-1'
         });
-        browser.tabs.create.resetHistory();
       });
 
       describe('navigating with "enabled"', () => {

@@ -54,7 +54,7 @@ const buildWebExtension = async (build = {}) => {
   if (!build.apiFake) {
     webExtension.background.browser.tabs.query.resolves([{},{}]);
     webExtension.background.browser.storage.local.get.resolves({});
-    webExtension.background.browser.contextualIdentities.get.resolves({});    
+    webExtension.background.browser.contextualIdentities.get.resolves({});
   }
 
   if (process.argv[process.argv.length-1] === '--tmp-debug') {
