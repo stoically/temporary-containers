@@ -353,17 +353,6 @@ class TemporaryContainers {
     return false;
   }
 
-  async sameDomainTabUrl(tabId, target) {
-    const tab = await browser.tabs.get(tabId);
-    if (!tab.url.startsWith('about:')) {
-      const tabParsedURL = new URL(tab.url);
-      if (this.sameDomain(tabParsedURL.hostname, target)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
 
   async runtimeOnInstalled(details) {
     if (details.temporary) {

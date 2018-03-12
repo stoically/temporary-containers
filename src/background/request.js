@@ -426,11 +426,9 @@ class Request {
         const preferences = this.storage.local.preferences.isolationDomain[domainPattern];
         debug('[shouldIsolate] found pattern', domainPattern, preferences);
 
-        if (await this.checkIsolationPreferenceAgainstUrl(
+        return await this.checkIsolationPreferenceAgainstUrl(
           preferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
-        )) {
-          return true;
-        }
+        );
       }
     }
 
@@ -471,8 +469,7 @@ class Request {
       break;
 
     case 'notsamedomain':
-      if (!this.background.sameDomain(origin, target) &&
-          (!tab.openerTabId || !await this.background.sameDomainTabUrl(tab.openerTabId, target))) {
+      if (!this.background.sameDomain(origin, target)) {
         debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "notsamedomain"');
         return true;
       }
