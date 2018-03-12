@@ -29,7 +29,7 @@
     "semver-compare": "^1.0.0"
   },
   "devDependencies": {
-    "addons-linter": "^0.37.0",
+    "addons-linter": "^0.38.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
     "eslint": "^4.18.1",
