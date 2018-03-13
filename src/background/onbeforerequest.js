@@ -5,19 +5,19 @@ let waitingForInitializingFailed = false;
 browser.webRequest.onBeforeRequest.addListener(async (request) => {
   if (!tmp || !tmp.initialized) {
     /* eslint-disable no-console */
-    console.log('[webRequest.onBeforeRequest] incoming request but tmp not initialized yet, probably startup', request);
+    console.log('[onBeforeRequest] incoming request but tmp not initialized yet, probably startup', request);
     if (waitingForInitializingFailed) {
-      console.log('[webRequest.onBeforeRequest] we waited for tmp to initialize before', request);
+      console.log('[onBeforeRequest] we waited for tmp to initialize before', request);
       return;
     }
-    console.log('[webRequest.onBeforeRequest] we wait for tmp to initialize', request);
+    console.log('[onBeforeRequest] we wait for tmp to initialize', request);
     let retry = 0;
     while (!tmp || !tmp.initialized) {
-      console.log('[webRequest.onBeforeRequest] tmp not yet initialized, waiting', request);
+      console.log('[onBeforeRequest] tmp not yet initialized, waiting', request);
       await new Promise(resolve => setTimeout(resolve, 100));
       retry++;
       if (retry > MAX_RETRIES) {
-        console.log('[webRequest.onBeforeRequest] max retries reached, giving up', request);
+        console.log('[onBeforeRequest] max retries reached, giving up', request);
         waitingForInitializingFailed = true;
         return;
       }

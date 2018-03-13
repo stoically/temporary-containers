@@ -19,6 +19,8 @@ class TemporaryContainers {
       notifications: await browser.permissions.contains({permissions: ['notifications']})
     };
 
+    browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
+
     await this.storage.load();
 
     this.request.initialize(this);
@@ -30,7 +32,6 @@ class TemporaryContainers {
     browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
     browser.tabs.onActivated.addListener(this.tabsOnActivated.bind(this));
     browser.windows.onFocusChanged.addListener(this.windowsOnFocusChanged.bind(this));
-    browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
     browser.runtime.onMessageExternal.addListener(this.runtimeOnMessageExternal.bind(this));
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
@@ -45,18 +46,19 @@ class TemporaryContainers {
   }
 
   async runtimeOnMessage(message, sender) {
+    debug('[runtimeOnMessage] message received', message, sender);
     if (typeof message !== 'object') {
       return;
     }
 
     switch (message.method) {
     case 'linkClicked':
-      debug('[browser.runtime.onMessage] message from userscript received', message, sender);
+      debug('[runtimeOnMessage] link clicked');
       this.mouseclick.linkClicked(message.payload, sender);
       break;
 
     case 'savePreferences':
-      debug('[browser.runtime.onMessage] saving preferences', message, sender);
+      debug('[runtimeOnMessage] saving preferences');
       if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
         this.setIcon(message.payload.preferences.iconColor);
       }
@@ -68,6 +70,7 @@ class TemporaryContainers {
       break;
 
     case 'resetStatistics':
+      debug('[runtimeOnMessage] resetting statistics');
       this.storage.local.statistics = {
         startTime: new Date,
         containersDeleted: 0,
@@ -82,8 +85,13 @@ class TemporaryContainers {
       break;
 
     case 'historyPermissionAllowed':
+      debug('[runtimeOnMessage] history permission');
       this.permissions.history = true;
       break;
+
+    case 'resetStorage':
+      debug('[runtimeOnMessage] resetting storage');
+      return this.storage.initializeStorageOnInstallation();
     }
 
   }

@@ -58,6 +58,8 @@ class Storage {
       ignoreRequestsToAMO: true,
       ignoreRequestsToPocket: true
     };
+    this.loadErrorRetryTime = 1000;
+    this.loadErrorCount = 0;
   }
 
   async load() {
@@ -68,8 +70,8 @@ class Storage {
     if (this.loading) {
       debug('[load] we are already loading storage, just wait until its loaded');
       while (!this.loaded) {
-        debug('[load] waiting 1s');
-        await delay(1000);
+        debug('[load] waiting', this.loadErrorRetryTime);
+        await delay(this.loadErrorRetryTime);
       }
       return;
     }
@@ -82,8 +84,8 @@ class Storage {
         this.loaded = true;
         this.loading = false;
       } else {
-        debug('[load] couldnt load storage, retrying in 1s');
-        await delay(1000);
+        debug('[load] couldnt load storage, retrying', this.loadErrorRetryTime);
+        await delay(this.loadErrorRetryTime);
       }
     }
   }
@@ -92,11 +94,21 @@ class Storage {
     try {
       this.local = await browser.storage.local.get();
       if (!this.local || !Object.keys(this.local).length) {
+        this.loadErrorCount++;
         // eslint-disable-next-line no-console
-        console.error('empty storage loaded, this should never happen');
+        console.error('[_load] empty storage loaded, this should never happen', this.loadErrorCount);
+        if (this.loadErrorCount === 10) {
+          // eslint-disable-next-line no-console
+          console.error('[_load] storage seems to not get initialized correctly, showing preferences', this.loadErrorCount);
+          this.loadErrorRetryTime = 5000;
+          const optionsUrl = browser.runtime.getURL('ui/options.html');
+          await browser.tabs.create({
+            url: optionsUrl
+          });
+        }
         return false;
       }
-      debug('storage loaded', this.local);
+      debug('[_load] storage loaded', this.local);
 
       let persist = false;
       if (this.maybeInitializeMissingStatistics()) {
@@ -112,25 +124,27 @@ class Storage {
       return true;
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('error while loading local storage', error);
+      console.error('[_load] error while loading local storage', error);
       return false;
     }
   }
 
   async persist() {
     try {
-      if (!this.local ||
+      if ((!this.local || !Object.keys(this.local).length) ||
           !this.local.tempContainers ||
           !this.local.preferences ||
           !this.local.statistics) {
         debug('[persist] tried to persist corrupt storage, try to load whats in storage and dont persist', this.local);
-        await this.load();
-        return;
+        this.load();
+        return false;
       }
       await browser.storage.local.set(this.local);
-      debug('storage persisted');
+      debug('[persist] storage persisted');
+      return true;
     } catch (error) {
-      debug('something went wrong while trying to persist the storage', error);
+      debug('[persist] something went wrong while trying to persist the storage', error);
+      return false;
     }
   }
 
@@ -144,10 +158,16 @@ class Storage {
       preferences: this.preferencesDefault
     };
     this.maybeInitializeMissingStatistics();
-    await this.persist();
-    debug('storage initialized');
-    this.loaded = true;
-    this.loading = false;
+    const persisted = await this.persist();
+    if (!persisted) {
+      debug('[initializeStorageOnInstallation] something went wrong while initializing storage');
+      return false;
+    } else {
+      debug('[initializeStorageOnInstallation] storage initialized');
+      this.loaded = true;
+      this.loading = false;
+      return true;
+    }
   }
 
   async maybeInitializeMissingStatistics() {

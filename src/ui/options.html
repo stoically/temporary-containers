@@ -656,15 +656,20 @@
       <div id="message" class="ui positive message hidden"></div>
       <div id="preferenceserror" class="ui tiny modal">
         <h2 class="ui header">
-          <div class="content">
-            Error while loading preferences. If you just installed the Add-on you need to
-            reinstall because something went wrong while initializing. If you already had
-            the Add-on installed you probably just need to disable and enable again.
-            Sorry about that.
-          </div>
+          Error while loading preferences.
+        </h2>
+        <div id="preferenceserrorcontent" class="content">
+           If you just installed the Temporary Containers Add-on you need to
+          reset its storage by pressing the following button.<br><br>
+          <button id="resetStorage" class="ui button negative primary" data-tooltip="No confirmation">Reset storage</button><br><br>
+          If you already had the Add-on installed you probably just need to
+          restart Firefox. If the Error persists you might need to reset the
+          storage.<br>
+          <br>Sorry about that. You can read about why this can happen
+          <a href="https://github.com/stoically/temporary-containers/issues/68" target="_blank">here</a>.
           <div class="content" id="preferenceserrordesc">
           </div>
-        </h2>
+        </div>
       </div>
     </div>
     <script src="jquery-3.3.1.min.js"></script>

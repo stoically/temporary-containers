@@ -1,10 +1,13 @@
 window.preferences = {};
 const messageBox = $('#message');
-window.showMessage = (message) => {
+window.showMessage = (message, keepOpen = false) => {
   messageBox.html(message);
   messageBox.addClass('positive');
   messageBox.removeClass('negative');
   messageBox.removeClass('hidden');
+  if (keepOpen) {
+    return;
+  }
   setTimeout(() => {
     messageBox.addClass('hidden');
   }, 3000);
