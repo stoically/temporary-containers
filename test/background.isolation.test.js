@@ -7,7 +7,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   ].map(navigatingIn => { describe(`navigatingIn: ${navigatingIn}`, () => {
 
     const navigateTo = async (url) => {
-      webExtension.background.window.log.DEBUG = true;
       switch (navigatingIn) {
       case 'sametab':
         return browser.tabs._update(tab.id, {
@@ -26,7 +25,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     describe('Isolation', () => {
       beforeEach(async () => {
         const background = await loadBareBackground(preferences, {apiFake: true});
-        webExtension.background.window.log.DEBUG = false;
         await background.initialize();
         tab = await browser.tabs._create({
           active: true,
