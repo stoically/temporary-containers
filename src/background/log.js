@@ -1,16 +1,23 @@
+/* eslint-disable no-console */
+
 class Log {
   constructor() {
     this.DEBUG = false;
+    this.temporary = false;
 
     this.debug = this.debug.bind(this);
   }
 
-  debug() {
+  debug(...args) {
     if (!this.DEBUG) {
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log(...arguments);
+    if (!browser._mochaTest && !this.temporary) {
+      console.log(...args.slice(0).map(JSON.stringify));
+      console.trace();
+    } else {
+      console.log(...args.slice(0));
+    }
   }
 }
 

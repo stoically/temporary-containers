@@ -67,7 +67,7 @@ class Container {
     browser.cookies.onChanged.addListener(this.cookieCount.bind(this));
 
     setInterval(() => {
-      debug('[interval] container removal interval', this.storage.local.tempContainers);
+      debug('[interval] container removal interval');
       this.cleanup();
     }, 600000);
   }

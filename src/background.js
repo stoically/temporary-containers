@@ -139,15 +139,15 @@ class TemporaryContainers {
   async tabsOnUpdated(tabId, changeInfo, tab) {
     debug('[tabsOnUpdated] tab updated', tab);
     if (tab.incognito) {
-      debug('[tabsOnUpdated] tab incognito, we ignore that', tab);
+      debug('[tabsOnUpdated] tab incognito, we ignore that');
       browser.browserAction.disable(tab.id);
       return;
     }
     if (!changeInfo.url) {
-      debug('[tabsOnUpdated] url didnt change, not relevant', tabId, changeInfo, tab);
+      debug('[tabsOnUpdated] url didnt change, not relevant', tabId, changeInfo);
       return;
     }
-    debug('[tabsOnUpdated] url changed', changeInfo, tab);
+    debug('[tabsOnUpdated] url changed', changeInfo);
     await this.container.maybeAddHistory(tab, changeInfo.url);
     await this.showOrHidePageAction(tab);
     await this.container.maybeReloadTabInTempContainer(tab);
@@ -365,6 +365,7 @@ class TemporaryContainers {
   async runtimeOnInstalled(details) {
     if (details.temporary) {
       log.DEBUG = true;
+      log.temporary = true;
     }
 
     let promise;
