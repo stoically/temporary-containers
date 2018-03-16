@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "{c607c8df-14a7-4f28-894f-29e8722976af}": {
+      "updates": [
+        {
+          "version": "0.74beta3",
+          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.74beta3/temporary_containers-0.74beta3-an.fx.xpi"
+        }
+      ]
+    }
+  }
+}

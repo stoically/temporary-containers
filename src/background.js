@@ -113,13 +113,12 @@ class TemporaryContainers {
 
 
   async runtimeOnMessageResetStorage(message, sender) {
-    debug('[runtimeOnMessageResetStorage] reset storage message received', message, sender);
     if (typeof message !== 'object') {
       return;
     }
     switch (message.method) {
     case 'resetStorage':
-      debug('[runtimeOnMessageResetStorage] resetting storage');
+      debug('[runtimeOnMessageResetStorage] resetting storage', message, sender);
       return this.storage.initializeStorage();
     }
   }

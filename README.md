@@ -30,6 +30,19 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 * Watcher: `npm run test-watch`
 
 
+### Publish on AMO and/or self hosted channel
+
+* Set API Key/Secret Env Vars
+* Bump manifest version as usual or as beta
+* Commit and push
+* `npm run build` (not if beta)
+* Upload zip web-ext-artifact to AMO (not if beta)
+* `npm run build-sign` - Adds `update_url` to manifest and reverts with `git checkout -- manifest.json`
+* Create and publish (pre-)release with generated xpi web-ext-artifact
+* Add new version with link to web-ext-artifact to `updates.json`
+* Commit and push
+
+
 ## Libraries
 The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are **only** used for the preferences&popup UI, not for the background and contentscript.
 

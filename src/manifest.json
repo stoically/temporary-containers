@@ -7,7 +7,6 @@
   "icons": {
     "48": "icons/tmpcontainer-48.png"
   },
-
   "browser_action": {
     "browser_style": true,
     "default_area": "tabstrip",
@@ -16,17 +15,19 @@
       "16": "icons/page-d-16.svg",
       "32": "icons/page-d-32.svg"
     },
-    "theme_icons": [{
-      "light": "icons/page-d-16.svg",
-      "dark": "icons/page-w-16.svg",
-      "size": 16
-    }, {
-      "light": "icons/page-d-32.svg",
-      "dark": "icons/page-w-32.svg",
-      "size": 32
-    }]
+    "theme_icons": [
+      {
+        "light": "icons/page-d-16.svg",
+        "dark": "icons/page-w-16.svg",
+        "size": 16
+      },
+      {
+        "light": "icons/page-d-32.svg",
+        "dark": "icons/page-w-32.svg",
+        "size": 32
+      }
+    ]
   },
-
   "page_action": {
     "default_popup": "ui/popup.html",
     "default_icon": {
@@ -34,7 +35,6 @@
       "38": "icons/pageaction-gray-38.svg"
     }
   },
-
   "commands": {
     "new_temporary_container_tab": {
       "suggested_key": {
@@ -68,12 +68,10 @@
       "description": "Open a new Tab in the same Container as the currently active Tab"
     }
   },
-
   "options_ui": {
     "page": "ui/options.html",
     "open_in_tab": true
   },
-
   "permissions": [
     "<all_urls>",
     "contextMenus",
@@ -84,21 +82,22 @@
     "webRequest",
     "webRequestBlocking"
   ],
-
   "optional_permissions": [
     "history",
     "notifications"
   ],
-
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["contentscript.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentscript.js"
+      ],
       "run_at": "document_end",
       "all_frames": true
     }
   ],
-
   "background": {
     "scripts": [
       "background/onbeforerequest.js",
@@ -112,7 +111,6 @@
       "background.js"
     ]
   },
-
   "applications": {
     "gecko": {
       "id": "{c607c8df-14a7-4f28-894f-29e8722976af}",
