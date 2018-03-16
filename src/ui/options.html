@@ -165,20 +165,9 @@
         </div>
         <div class="ui bottom attached tab segment" data-tab="isolation/mac">
           <form class="ui form">
-            <h4>
+            <h4 data-tooltip="Will not work if the navigation target (loading Website) is assigned to 'Always open in' with Multi-Account Containers">
               Open new Temporary Containers if a permanent container Tab tries to load
-              a Website that isn't assigned to "Always open in" in that container</h4>
-            <div class="ui message">
-              Only works if the Multi-Account Containers Add-on is installed and will not work if
-              the navigation target (loading Website) is assigned to "Always open in" with
-              Multi-Account Containers, because that will trigger the Confirm Page.<br>
-              <br>
-              Also, enabling will prevent you from loading not assigned websites in permanent containers.
-              Still figuring out a more comfortable way to handle this, but until then you have to
-              disable to assign new sites and then enable again.<br>
-              <br>
-              If you have smart ideas how to handle this make sure to <a href="https://github.com/stoically/temporary-containers/issues/56" target="_blank">let me know</a>.
-            </div>
+              a Website that isn't assigned to "Always open in" in that container [?]</h4>
             <div class="field">
               <select id="isolationMac" class="ui fluid dropdown">
                 <option value="disabled">Disabled</option>
