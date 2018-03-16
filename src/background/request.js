@@ -112,7 +112,8 @@ class Request {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    if ((request.url.startsWith('http://addons.mozilla.org') || request.url.startsWith('https://addons.mozilla.org')) &&
+    if ((request.url.startsWith('http://addons.mozilla.org') ||
+        request.url.startsWith('https://addons.mozilla.org')) &&
         this.storage.local.preferences.ignoreRequestsToAMO) {
       debug('[webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
       return;
@@ -120,7 +121,6 @@ class Request {
 
     if (request.url.startsWith('https://getpocket.com') &&
         this.storage.local.preferences.ignoreRequestsToPocket) {
-      // TODO consider "Exclude Websites" in the preferences
       debug('[webRequestOnBeforeRequest] we are ignoring requests to getpocket.com because of #52', request);
       return;
     }
@@ -131,12 +131,16 @@ class Request {
       return isolated;
     }
 
-    const alwaysOpenIn = !macAssignment && await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
+    const alwaysOpenIn = !macAssignment &&
+      await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
     if (alwaysOpenIn) {
       debug('[webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
       return alwaysOpenIn;
     } else if (!this.storage.local.preferences.automaticMode &&
-               !this.mouseclick.linksClicked[request.url]) {
+               (!this.mouseclick.linksClicked[request.url] &&
+               (!tab || !this.storage.local.tempContainers[tab.cookieStoreId] ||
+                (this.storage.local.tempContainers[tab.cookieStoreId] &&
+                request.originUrl !== 'about:newtab')))) {
       debug('[webRequestOnBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
     } else if (this.mouseclick.unhandledLinksClicked[request.url]) {
@@ -190,7 +194,12 @@ class Request {
         this.mouseclick.linksClicked[request.url].clickType === 'left' &&
         !this.storage.local.preferences.replaceTabs) {
       debug('[handleClickedLink] creating new container because request got left clicked', this.mouseclick.linksClicked[request.url], tab);
-      newTab = await this.container.createTabInTempContainer({tab, url: request.url, deletesHistory: deletesHistoryContainer, request});
+      newTab = await this.container.createTabInTempContainer({
+        tab,
+        url: request.url,
+        deletesHistory: deletesHistoryContainer,
+        request
+      });
       if (tab && this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
         debug('[handleClickedLink] looks like the left clicked opened a new tab, remove it', tab);
         await this.container.removeTab(tab);
@@ -213,18 +222,13 @@ class Request {
     debug('[handleNotClickedLink] onBeforeRequest', request, tab);
 
     if (tab && tab.cookieStoreId === 'firefox-default' && tab.openerTabId) {
-      debug('[webRequestOnBeforeRequest] default container and openerTabId set', tab);
+      debug('[handleNotClickedLink] default container and openerTabId set', tab);
       const openerTab = await browser.tabs.get(tab.openerTabId);
       if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
-        debug('[webRequestOnBeforeRequest] request didnt came from about/moz-extension page, we do nothing', openerTab);
+        debug('[handleNotClickedLink] request didnt came from about/moz-extension page, we do nothing', openerTab);
         return;
       }
     }
-    if (!this.storage.local.preferences.automaticMode) {
-      debug('[browser.webRequest.onBeforeRequest] got not clicked request but automatic mode is off, ignoring', request);
-      return;
-    }
-
 
     if (!macAssignment) {
       let containerExists = false;
@@ -237,7 +241,8 @@ class Request {
           debug('[handleNotClickedLink] container doesnt exist anymore', tab);
         }
       }
-      if (tab && tab.cookieStoreId !== 'firefox-default' && containerExists) {
+      if (tab && tab.cookieStoreId !== 'firefox-default' && containerExists &&
+          request.originUrl !== 'about:newtab') {
         debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
         return;
       }
@@ -247,7 +252,7 @@ class Request {
       if (tab.cookieStoreId === macAssignment.cookieStoreId &&
           parsedTabUrl.hostname === parsedRequestUrl.hostname &&
           tab.id === request.tabId) {
-        debug('[webRequestOnBeforeRequest] the request url is mac assigned to this container, we do nothing');
+        debug('[handleNotClickedLink] the request url is mac assigned to this container, we do nothing');
         return;
       }
     }
@@ -258,7 +263,9 @@ class Request {
     }
 
     if (macAssignment) {
-      if (tab && tab.cookieStoreId && this.storage.local.tempContainers[tab.cookieStoreId]) {
+      if (tab && tab.cookieStoreId &&
+          this.storage.local.tempContainers[tab.cookieStoreId] &&
+          request.originUrl !== 'about:newtab') {
         debug('[handleNotClickedLink] mac assigned but we are already in a tmp container, we do nothing', request, tab, macAssignment);
         return;
       }
@@ -342,6 +349,7 @@ class Request {
 
   async maybeIsolate(tab, request) {
     if (!tab || !tab.url) {
+      // TODO check if we can use request.originUrl instead
       debug('[maybeIsolate] we cant proceed without tab url information', tab, request);
       return false;
     }
@@ -431,7 +439,10 @@ class Request {
     }
 
     if (await this.checkIsolationPreferenceAgainstUrl(
-      this.storage.local.preferences.isolationGlobal, parsedTabURL.hostname, parsedRequestURL.hostname, tab
+      this.storage.local.preferences.isolationGlobal,
+      parsedTabURL.hostname,
+      parsedRequestURL.hostname,
+      tab
     )) {
       return true;
     }
