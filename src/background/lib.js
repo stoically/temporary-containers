@@ -62,7 +62,7 @@ window.lib.delay = () => {
   const delay = createDelay(true);
   delay.reject = createDelay(false);
   delay.CancelError = CancelError;
-  return delay;
+  window.delay = delay;
 }
 
 /* istanbul ignore next */
@@ -127,7 +127,7 @@ window.lib.globToRegexp = () => {
     return new RegExp('^' + reStr + '$', flags);
   };
 
-  return globToRegexp;
+  window.globToRegexp = globToRegexp;
 };
 
 /* istanbul ignore next */
@@ -322,7 +322,7 @@ window.lib.PQueue = () => {
     }
   }
 
-  return PQueue;
+  window.PQueue = PQueue;
 };
 
 /* istanbul ignore next */
@@ -363,7 +363,7 @@ window.lib.versionCompare = () => {
     return 0;
   };
 
-  return versionCompare;
+  window.versionCompare = versionCompare;
 };
 
 /* istanbul ignore next */
@@ -1192,12 +1192,10 @@ window.lib.psl = () => {
   }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
   },{}]},{},[2])(2)
   });
-
-  return self.psl;
 }
 
-window.delay = window.lib.delay();
-window.globToRegexp = window.lib.globToRegexp();
-window.versionCompare = window.lib.versionCompare();
-window.PQueue = window.lib.PQueue();
+window.lib.delay();
+window.lib.globToRegexp();
+window.lib.PQueue();
+window.lib.versionCompare();
 window.lib.psl();
