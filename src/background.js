@@ -101,8 +101,8 @@ class TemporaryContainers {
     switch (message.method) {
     case 'createTabInTempContainer':
       return this.container.createTabInTempContainer({
-        url: message.url ? message.url : null,
-        active: typeof message.active === 'undefined' ? true : message.active,
+        url: message.url || null,
+        active: message.active,
         deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic' ? true : false
       });
     case 'isTempContainer':
@@ -209,7 +209,6 @@ class TemporaryContainers {
     this.removeContextMenu();
     try {
       const activeTab = await browser.tabs.query({
-        active: true,
         windowId: windowId
       });
       if (!activeTab[0].incognito) {
@@ -260,7 +259,6 @@ class TemporaryContainers {
       }
       try {
         const tab = await browser.tabs.create({
-          active: true,
           url: 'about:blank'
         });
         this.noContainerTabs[tab.id] = true;
@@ -468,12 +466,10 @@ class TemporaryContainers {
   }
 }
 
-const tmp = new TemporaryContainers();
+window.TemporaryContainers = TemporaryContainers;
+window.tmp = new TemporaryContainers();
 browser.runtime.onInstalled.addListener(tmp.runtimeOnInstalled.bind(tmp));
 browser.runtime.onStartup.addListener(tmp.runtimeOnStartup.bind(tmp));
-
-window.log = log;
-window.tmp = tmp;
 
 /* istanbul ignore next */
 if (!browser._mochaTest) {

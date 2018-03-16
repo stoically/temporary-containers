@@ -24,7 +24,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       });
       browser.tabs.create.should.have.been.calledWith({
         url: undefined,
-        active: true,
         cookieStoreId: 'firefox-container-1'
       });
       browser.storage.local.set.should.have.been.calledWith(background.storage.local);
@@ -56,7 +55,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       });
       expect(browser.tabs.create).to.have.been.calledWith(sinon.match({
         url: undefined,
-        active: true,
         cookieStoreId: 'firefox-container-1'
       }));
       expect(browser.storage.local.set).to.have.been.calledWith(background.storage.local);

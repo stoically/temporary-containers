@@ -76,8 +76,8 @@ class Container {
   async createTabInTempContainer({
     tab,
     url,
+    active,
     request = false,
-    active = false,
     dontPin = true,
     deletesHistory = false,
     macConfirmPage = false
@@ -141,13 +141,12 @@ class Container {
       await this.storage.persist();
 
       try {
-        const newTabActive = active || !url;
         const newTabOptions = {
           url,
-          active: newTabActive,
           cookieStoreId: contextualIdentity.cookieStoreId,
         };
         if (tab) {
+          newTabOptions.active = tab.active;
           if (tab.index >= 0) {
             newTabOptions.index = tab.index + 1;
           }
@@ -157,6 +156,9 @@ class Container {
           if (tab.openerTabId) {
             newTabOptions.openerTabId = tab.openerTabId;
           }
+        }
+        if (active === false) {
+          newTabOptions.active = false;
         }
 
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);

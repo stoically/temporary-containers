@@ -190,7 +190,7 @@ class Request {
         this.mouseclick.linksClicked[request.url].clickType === 'left' &&
         !this.storage.local.preferences.replaceTabs) {
       debug('[handleClickedLink] creating new container because request got left clicked', this.mouseclick.linksClicked[request.url], tab);
-      newTab = await this.container.createTabInTempContainer({tab, active: true, url: request.url, deletesHistory: deletesHistoryContainer, request});
+      newTab = await this.container.createTabInTempContainer({tab, url: request.url, deletesHistory: deletesHistoryContainer, request});
       if (tab && this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
         debug('[handleClickedLink] looks like the left clicked opened a new tab, remove it', tab);
         await this.container.removeTab(tab);
@@ -275,7 +275,6 @@ class Request {
     await this.container.reloadTabInTempContainer({
       tab,
       url: request.url,
-      active: true,
       deletesHistory: deletesHistoryContainer,
       request,
       dontPin: false
@@ -360,7 +359,6 @@ class Request {
 
     const params = {
       tab,
-      active: tab.active,
       url: request.url,
       request,
       deletesHistory: this.storage.local.preferences.deletesHistoryContainerIsolation === 'automatic'
@@ -555,7 +553,6 @@ class Request {
       const deletesHistory = this.storage.local.preferences.deletesHistoryContainerAlwaysPerWebsite === 'automatic';
       const params = {
         tab,
-        active: true,
         url: request.url,
         request,
         deletesHistory

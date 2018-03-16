@@ -405,7 +405,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         browser.commands.onCommand.addListener.yield('new_no_container_tab');
         await nextTick();
         browser.tabs.create.should.have.been.calledWith({
-          active: true,
           url: 'about:blank'
         });
       });

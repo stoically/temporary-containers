@@ -93,9 +93,8 @@ class MultiAccountContainers {
     }
 
     await this.container.reloadTabInTempContainer({
-      tab: confirmPage.tab ? confirmPage.tab : undefined,
+      tab: confirmPage.tab,
       url: request.url,
-      active: confirmPage.tab ? confirmPage.tab.active : undefined,
       deletesHistory: deletesHistoryContainer,
       request,
       macConfirmPage: true

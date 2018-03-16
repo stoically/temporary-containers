@@ -13,7 +13,7 @@ class Log {
       return;
     }
     if (!browser._mochaTest && !this.temporary) {
-      console.log(...args.slice(0).map(JSON.stringify));
+      console.log(...args.map(JSON.stringify));
       console.trace();
     } else {
       console.log(...args.slice(0));
@@ -21,6 +21,6 @@ class Log {
   }
 }
 
-const log = new Log;
+window.log = new Log;
 // eslint-disable-next-line
-const debug = log.debug;
+window.debug = log.debug;
