@@ -1,7 +1,7 @@
-/* istanbul ignore next */
 /* eslint-disable */
 window.lib = {};
 
+/* istanbul ignore next */
 window.lib.delay = () => {
   // https://github.com/sindresorhus/delay
   // version 2.0.0
@@ -65,7 +65,7 @@ window.lib.delay = () => {
   return delay;
 }
 
-
+/* istanbul ignore next */
 window.lib.globToRegexp = () => {
   // --------------------------------------------------------------------------------
   // modified and simplified version of https://github.com/fitzgen/glob-to-regexp
@@ -130,6 +130,7 @@ window.lib.globToRegexp = () => {
   return globToRegexp;
 };
 
+/* istanbul ignore next */
 window.lib.PQueue = () => {
   // https://github.com/sindresorhus/p-queue
   // version 2.3.0
@@ -324,6 +325,7 @@ window.lib.PQueue = () => {
   return PQueue;
 };
 
+/* istanbul ignore next */
 window.lib.versionCompare = () => {
   // https://github.com/substack/semver-compare
   // https://github.com/substack/semver-compare/pull/4
@@ -364,6 +366,7 @@ window.lib.versionCompare = () => {
   return versionCompare;
 };
 
+/* istanbul ignore next */
 window.lib.psl = () => {
   // https://github.com/wrangr/psl
 

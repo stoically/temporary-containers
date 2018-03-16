@@ -4,12 +4,12 @@
   "description": "Temporary Containers",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -rf web-ext-artifacts && cp README.md LICENSE src && npm run lint && npm test && web-ext build -s src && addons-linter web-ext-artifacts/temporary_containers-*.zip",
-    "build-sign": "rm -rf web-ext-artifacts && cp README.md LICENSE src && node build-sign.js && npm run lint && npm test && web-ext sign --channel unlisted -s src && git checkout -- src/manifest.json",
+    "build": "rm -rf web-ext-artifacts && cp README.md LICENSE src && npm run lint && npm test && web-ext build -s src && addons-linter web-ext-artifacts/temporary_containers-*.zip && ncu",
+    "build-sign": "rm -rf web-ext-artifacts && cp README.md LICENSE src && node build-sign.js && npm run lint && npm test && web-ext sign --channel unlisted -s src && git checkout -- src/manifest.json && ncu",
     "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha --reporter=dot ./test/setup.js test/*.test.js --timeout 60000",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
-    "check-dependencies": "ncu --peer --dev"
+    "check-dependencies": "ncu"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "coveralls": "^3.0.0",
     "eslint": "^4.18.1",
     "mocha": "^5.0.1",
-    "npm-check-updates": "^2.14.0",
+    "npm-check-updates": "^2.14.1",
     "nyc": "^11.4.1",
     "sinon": "^4.4.2",
     "sinon-chai": "^3.0.0",
@@ -46,8 +46,7 @@
   "private": true,
   "nyc": {
     "exclude": [
-      "test/**/*.js",
-      "src/background/lib.js"
+      "test/**/*.js"
     ]
   }
 }
