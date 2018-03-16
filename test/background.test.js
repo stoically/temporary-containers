@@ -109,7 +109,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
 
   describe('runtime.onStartup should sometimes reload already open Tab in Temporary Container', () => {
-    if (!preferences.automaticMode) {
+    if (!preferences.automaticMode || preferences.automaticModeNewTab === 'navigation') {
       return;
     }
     const fakeContainer = {
@@ -130,6 +130,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       await background.initialize();
       background.storage.local.preferences.automaticModeNewTab = 'created';
       await background.runtimeOnStartup();
+      await nextTick();
       browser.contextualIdentities.create.should.have.been.calledOnce;
       browser.tabs.create.should.have.been.calledOnce;
 

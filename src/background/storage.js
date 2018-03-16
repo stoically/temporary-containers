@@ -111,7 +111,7 @@ class Storage {
       debug('[_load] storage loaded', this.local);
 
       let persist = false;
-      if (this.maybeInitializeMissingStatistics()) {
+      if (this.maybeInitializeMissingStorage()) {
         persist = true;
       }
       if (this.maybeInitializeMissingPreferences()) {
@@ -149,28 +149,28 @@ class Storage {
   }
 
 
-  async initializeStorageOnInstallation() {
+  async initializeStorage() {
     this.loading = true;
     this.local = {
       tempContainerCounter: 0,
       tempContainers: {},
-      tabContainerMap: {},
+      noContainerTabs: {},
       preferences: this.preferencesDefault
     };
-    this.maybeInitializeMissingStatistics();
+    this.maybeInitializeMissingStorage();
     const persisted = await this.persist();
     if (!persisted) {
-      debug('[initializeStorageOnInstallation] something went wrong while initializing storage');
+      debug('[initializeStorage] something went wrong while initializing storage');
       return false;
     } else {
-      debug('[initializeStorageOnInstallation] storage initialized');
+      debug('[initializeStorage] storage initialized');
       this.loaded = true;
       this.loading = false;
       return true;
     }
   }
 
-  async maybeInitializeMissingStatistics() {
+  async maybeInitializeMissingStorage() {
     let storagePersistNeeded = false;
     if (!this.local.statistics) {
       this.local.statistics = {
@@ -186,6 +186,10 @@ class Storage {
         cookiesDeleted: 0,
         urlsDeleted: 0
       };
+      storagePersistNeeded = true;
+    }
+    if (!this.local.noContainerTabs) {
+      this.local.noContainerTabs = {};
       storagePersistNeeded = true;
     }
     return storagePersistNeeded;

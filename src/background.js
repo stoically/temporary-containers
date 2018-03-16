@@ -1,7 +1,6 @@
 class TemporaryContainers {
   constructor() {
     this.initialized = false;
-    this.noContainerTabs = {};
 
     this.storage = new window.Storage;
     this.request = new window.Request;
@@ -12,14 +11,15 @@ class TemporaryContainers {
 
 
   async initialize() {
+    // register reset storage message listener
+    browser.runtime.onMessage.addListener(this.runtimeOnMessageResetStorage.bind(this));
+
     // TODO cache history permission in storage when firefox bug is fixed
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1283320
     this.permissions = {
       history: await browser.permissions.contains({permissions: ['history']}),
       notifications: await browser.permissions.contains({permissions: ['notifications']})
     };
-
-    browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
 
     await this.storage.load();
 
@@ -28,6 +28,24 @@ class TemporaryContainers {
     this.mouseclick.initialize(this);
     this.mac.initialize(this);
 
+    const tabs = await browser.tabs.query({});
+    tabs.map(tab => {
+      if (this.storage.local.tempContainers[tab.cookieStoreId]) {
+        // build tabContainerMap
+        this.container.tabContainerMap[tab.id] = tab.cookieStoreId;
+      }
+
+      if (tab.incognito) {
+        // disable browseraction for all incognito tabs
+        // relevant if installed, updated or disabled+enabled in incognito window
+        browser.browserAction.disable(tab.id);
+      }
+
+      // maybe reload or set badge
+      this.container.maybeReloadTabInTempContainer(tab);
+    });
+
+    browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
     browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
     browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
     browser.tabs.onActivated.addListener(this.tabsOnActivated.bind(this));
@@ -42,8 +60,10 @@ class TemporaryContainers {
     if (this.storage.local.preferences.iconColor !== 'default') {
       this.setIcon(this.storage.local.preferences.iconColor);
     }
+
     this.initialized = true;
   }
+
 
   async runtimeOnMessage(message, sender) {
     debug('[runtimeOnMessage] message received', message, sender);
@@ -88,13 +108,22 @@ class TemporaryContainers {
       debug('[runtimeOnMessage] history permission');
       this.permissions.history = true;
       break;
-
-    case 'resetStorage':
-      debug('[runtimeOnMessage] resetting storage');
-      return this.storage.initializeStorageOnInstallation();
     }
-
   }
+
+
+  async runtimeOnMessageResetStorage(message, sender) {
+    debug('[runtimeOnMessageResetStorage] reset storage message received', message, sender);
+    if (typeof message !== 'object') {
+      return;
+    }
+    switch (message.method) {
+    case 'resetStorage':
+      debug('[runtimeOnMessageResetStorage] resetting storage');
+      return this.storage.initializeStorage();
+    }
+  }
+
 
   async runtimeOnMessageExternal(message, sender) {
     debug('[runtimeOnMessageExternal] got external message', message, sender);
@@ -127,9 +156,9 @@ class TemporaryContainers {
       browser.browserAction.disable(tab.id);
       return;
     }
-    if (tab && tab.cookieStoreId && !this.storage.local.tabContainerMap[tab.id] &&
+    if (tab && tab.cookieStoreId && !this.container.tabContainerMap[tab.id] &&
         this.storage.local.tempContainers[tab.cookieStoreId]) {
-      this.storage.local.tabContainerMap[tab.id] = tab.cookieStoreId;
+      this.container.tabContainerMap[tab.id] = tab.cookieStoreId;
     }
 
     await this.container.maybeReloadTabInTempContainer(tab);
@@ -155,8 +184,8 @@ class TemporaryContainers {
 
 
   async tabsOnRemoved(tabId) {
-    if (this.noContainerTabs[tabId]) {
-      delete this.noContainerTabs[tabId];
+    if (this.storage.local.noContainerTabs[tabId]) {
+      delete this.storage.local.noContainerTabs[tabId];
     }
     if (this.container.tabCreatedAsMacConfirmPage[tabId]) {
       delete this.tabCreatedAsMacConfirmPage[tabId];
@@ -261,8 +290,8 @@ class TemporaryContainers {
         const tab = await browser.tabs.create({
           url: 'about:blank'
         });
-        this.noContainerTabs[tab.id] = true;
-        debug('[commandsOnCommand] new no container tab created', this.noContainerTabs);
+        this.storage.local.noContainerTabs[tab.id] = true;
+        debug('[commandsOnCommand] new no container tab created', this.storage.local.noContainerTabs);
       } catch (error) {
         debug('[commandsOnCommand] couldnt create tab', error);
       }
@@ -276,8 +305,8 @@ class TemporaryContainers {
         const window = await browser.windows.create({
           url: 'about:blank'
         });
-        this.noContainerTabs[window.tabs[0].id] = true;
-        debug('[commandsOnCommand] new no container tab created in window', window, this.noContainerTabs);
+        this.storage.local.noContainerTabs[window.tabs[0].id] = true;
+        debug('[commandsOnCommand] new no container tab created in window', window, this.storage.local.noContainerTabs);
       } catch (error) {
         debug('[commandsOnCommand] couldnt create tab in window', error);
       }
@@ -366,27 +395,13 @@ class TemporaryContainers {
       log.temporary = true;
     }
 
-    let promise;
     switch (details.reason) {
     case 'install':
-      promise = this.storage.initializeStorageOnInstallation();
-      break;
+      return this.storage.initializeStorage();
 
     case 'update':
-      this.onUpdateMigration(details);
-      break;
+      return this.onUpdateMigration(details);
     }
-
-    // disable browseraction for all incognito tabs
-    // relevant if installed or updated in incognito window
-    const tabs = await browser.tabs.query({});
-    tabs.map(tab => {
-      if (tab.incognito) {
-        browser.browserAction.disable(tab.id);
-      }
-    });
-
-    return promise;
   }
 
   /* istanbul ignore next */
@@ -439,6 +454,11 @@ class TemporaryContainers {
         await this.storage.persist();
       }
     }
+    if (versionCompare('0.73', previousVersion) >= 0) {
+      debug('updated from version <= 0.73, remove tabContainerMap from storage');
+      delete this.storage.local.tabContainerMap;
+      await this.storage.persist();
+    }
   }
 
 
@@ -449,20 +469,6 @@ class TemporaryContainers {
     delay(15000).then(() => {
       this.container.cleanup(true);
     });
-
-    // extension loads after the first tab opens most of the time
-    // lets see if we can or should reopen the first tab
-    const tempTabs = await browser.tabs.query({});
-    // disable browseraction for all incognito tabs
-    tempTabs.map(tab => {
-      if (tab.incognito) {
-        browser.browserAction.disable(tab.id);
-      }
-    });
-    if (tempTabs.length !== 1) {
-      return;
-    }
-    await this.container.maybeReloadTabInTempContainer(tempTabs[0]);
   }
 }
 

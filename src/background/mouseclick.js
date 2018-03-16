@@ -66,7 +66,6 @@ class MouseClick {
     delay(1000).then(() => {
       debug('[linkClicked] cleaning up linksClicked', url);
       delete this.linksClicked[url];
-      delete this.container.urlCreatedContainer[url];
     });
   }
 

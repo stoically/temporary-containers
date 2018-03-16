@@ -26,6 +26,7 @@ class Container {
       'chill',
     ];
 
+    this.tabContainerMap = {};
     this.urlCreatedContainer = {};
     this.requestCreatedTab = {};
     this.tabCreatedAsMacConfirmPage = {};
@@ -166,8 +167,12 @@ class Container {
         debug('[createTabInTempContainer] new tab in temp container created', newTab);
         if (url) {
           this.urlCreatedContainer[url] = contextualIdentity.cookieStoreId;
+          delay(1000).then(() => {
+            debug('[createTabInTempContainer] cleaning up urlCreatedContainer', url);
+            delete this.urlCreatedContainer[url];
+          });
         }
-        this.storage.local.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
+        this.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
         if (macConfirmPage) {
           this.tabCreatedAsMacConfirmPage[newTab.id] = true;
         }
@@ -245,6 +250,11 @@ class Container {
       return;
     }
 
+    if (this.storage.local.noContainerTabs[tab.id]) {
+      debug('[maybeReloadTabInTempContainer] nocontainer tab, ignore');
+      return;
+    }
+
     if (tab.url && tab.url.startsWith('moz-extension://')) {
       debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
       await this.mac.handleConfirmPage(tab);
@@ -291,11 +301,11 @@ class Container {
   }
 
   async addToRemoveQueue(tabId) {
-    if (!this.storage.local.tabContainerMap[tabId]) {
-      debug('[addToRemoveQueue] removed tab that isnt in the tabContainerMap', tabId, this.storage.local.tabContainerMap);
+    if (!this.tabContainerMap[tabId]) {
+      debug('[addToRemoveQueue] removed tab that isnt in the tabContainerMap', tabId, this.tabContainerMap);
       return;
     }
-    const cookieStoreId = this.storage.local.tabContainerMap[tabId];
+    const cookieStoreId = this.tabContainerMap[tabId];
     if (!this.storage.local.tempContainers[cookieStoreId]) {
       debug('[addToRemoveQueue] container from the tabContainerMap is unknown', tabId, cookieStoreId);
       return;
@@ -471,9 +481,9 @@ class Container {
       } else {
         debug('[tryToRemoveContainer] container removed', cookieStoreId);
       }
-      Object.keys(this.storage.local.tabContainerMap).map((tabId) => {
-        if (this.storage.local.tabContainerMap[tabId] === cookieStoreId) {
-          delete this.storage.local.tabContainerMap[tabId];
+      Object.keys(this.tabContainerMap).map((tabId) => {
+        if (this.tabContainerMap[tabId] === cookieStoreId) {
+          delete this.tabContainerMap[tabId];
         }
       });
       return true;
@@ -537,7 +547,6 @@ class Container {
       }
       try {
         const newTab = await browser.tabs.create({
-          active: true,
           index: activeTab.index + 1,
           cookieStoreId: activeTab.cookieStoreId
         });
@@ -649,7 +658,7 @@ class Container {
   }
 
   markUnclean(tabId) {
-    const cookieStoreId = this.storage.local.tabContainerMap[tabId];
+    const cookieStoreId = this.tabContainerMap[tabId];
     if (cookieStoreId && this.storage.local.tempContainers[cookieStoreId] &&
     this.storage.local.tempContainers[cookieStoreId].clean) {
       debug('[webRequestOnBeforeRequest] marking tmp container as not clean anymore', cookieStoreId);

@@ -144,7 +144,7 @@ class Request {
       return;
     }
 
-    if (this.background.noContainerTabs[request.tabId]) {
+    if (this.storage.local.noContainerTabs[request.tabId]) {
       debug('[webRequestOnBeforeRequest] no container tab, we ignore that', tab);
       return;
     }
