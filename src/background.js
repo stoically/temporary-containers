@@ -376,15 +376,7 @@ class TemporaryContainers {
 
 
   sameDomain(origin, target) {
-    const splittedTarget = target.split('.');
-    const checkHostname = '.' + (splittedTarget.splice(-2).join('.'));
-    const dottedOrigin = '.' + origin;
-    if (target.length > 1 &&
-        (dottedOrigin.endsWith(checkHostname) ||
-         checkHostname.endsWith(dottedOrigin))) {
-      return true;
-    }
-    return false;
+    return psl.parse(origin).domain === psl.parse(target).domain;
   }
 
 
