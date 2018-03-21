@@ -19,8 +19,8 @@ class TemporaryContainers {
 
 
   async initialize() {
-    // register reset storage message listener
-    browser.runtime.onMessage.addListener(this.runtime.onMessageResetStorage.bind(this));
+    // register message listener
+    browser.runtime.onMessage.addListener(this.runtime.onMessage.bind(this));
 
     // TODO cache history permission in storage when firefox bug is fixed
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1283320

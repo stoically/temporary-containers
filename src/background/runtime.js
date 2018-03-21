@@ -12,8 +12,6 @@ class Runtime {
     this.migration = this.background.migration;
     this.permissions = this.background.permissions;
 
-    browser.runtime.onMessage.addListener(this.onMessage.bind(this));
-    browser.runtime.onMessage.addListener(this.onMessageResetStorage.bind(this));
     browser.runtime.onMessageExternal.addListener(this.onMessageExternal.bind(this));
   }
 
@@ -61,6 +59,10 @@ class Runtime {
       debug('[onMessage] history permission');
       this.permissions.history = true;
       break;
+
+    case 'resetStorage':
+      debug('[onMessage] resetting storage', message, sender);
+      return this.storage.install();
     }
   }
 
@@ -78,18 +80,6 @@ class Runtime {
       return this.storage.local.tempContainers[message.cookieStoreId] ? true : false;
     default:
       throw new Error('Unknown message.method');
-    }
-  }
-
-
-  async onMessageResetStorage(message, sender) {
-    if (typeof message !== 'object') {
-      return;
-    }
-    switch (message.method) {
-    case 'resetStorage':
-      debug('[onMessageResetStorage] resetting storage', message, sender);
-      return this.storage.install();
     }
   }
 

@@ -106,7 +106,6 @@ const initialize = async () => {
       }
     });
 
-
     const domainPatternToolTip =
       '<div style="width:600px;">' +
       'Exact matches: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
