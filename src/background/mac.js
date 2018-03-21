@@ -81,9 +81,12 @@ class MultiAccountContainers {
     }
     const currentContainer = confirmPage.currentContainer;
     if (currentContainer) {
-      if (this.storage.local.tempContainers[currentContainer] &&
+      if (this.container.isPermanentContainer(currentContainer)) {
+        debug('[_maybeReopenConfirmPage] currentContainer is permanent, we do nothing');
+        return false;
+      } else if (this.storage.local.tempContainers[currentContainer] &&
           this.storage.local.tempContainers[currentContainer].clean) {
-        debug('[_maybeReopenConfirmPage] the currentContainer mac confirm wants to open is a clean tmp container, we do nothing');
+        debug('[_maybeReopenConfirmPage] the currentContainer mac confirm wants to open is a clean tmp container, we just cancel');
         return {clean: true};
       } else {
         debug('[_maybeReopenConfirmPage] currentContainer not clean, reopen in new tmp container');

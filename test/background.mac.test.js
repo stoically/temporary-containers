@@ -52,6 +52,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                 macWasFaster,
                 resetHistory: true
               };
+              let promises = [];
               switch (confirmPage) {
               case 'first':
                 await helper.browser.openMacConfirmPage(confirmPageOptions);
@@ -62,14 +63,15 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                 await helper.browser.openMacConfirmPage(confirmPageOptions);
                 break;
               case 'firstrace':
-                helper.browser.openMacConfirmPage(confirmPageOptions);
-                helper.browser.request(request);
+                promises.push(helper.browser.openMacConfirmPage(confirmPageOptions));
+                promises.push(helper.browser.request(request));
                 break;
               case 'lastrace':
-                helper.browser.request(request);
-                helper.browser.openMacConfirmPage(confirmPageOptions);
+                promises.push(helper.browser.request(request));
+                promises.push(helper.browser.openMacConfirmPage(confirmPageOptions));
                 break;
               }
+              await Promise.all(promises);
               await nextTick();
             });
 
@@ -143,6 +145,60 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                   browser.tabs.remove.should.not.have.been.called;
                 });
               });});
+            });
+          });
+        });
+
+        describe('navigating in a permanent container tab', () => {
+          describe('and opening a mac assigned website with not "remember my choice"', () => {
+            const originContainer = 'firefox-container-1';
+            beforeEach(async () => {
+              browser.runtime.sendMessage.resolves({
+                userContextId: '2',
+                neverAsk: false
+              });
+              const request = {
+                requestId: 1,
+                tabId: 2,
+                createsTabId: 3,
+                originContainer,
+                url: 'http://example.com',
+                macWasFaster
+              };
+              const confirmPageOptions = {
+                tabId: 3,
+                originContainer,
+                targetContainer: 'firefox-container-2',
+                url: 'http://example.com',
+                macWasFaster,
+                resetHistory: true
+              };
+              let promises = [];
+              switch (confirmPage) {
+              case 'first':
+                await helper.browser.openMacConfirmPage(confirmPageOptions);
+                await helper.browser.request(request);
+                break;
+              case 'last':
+                await helper.browser.request(request);
+                await helper.browser.openMacConfirmPage(confirmPageOptions);
+                break;
+              case 'firstrace':
+                promises.push(helper.browser.openMacConfirmPage(confirmPageOptions));
+                promises.push(helper.browser.request(request));
+                break;
+              case 'lastrace':
+                promises.push(helper.browser.request(request));
+                promises.push(helper.browser.openMacConfirmPage(confirmPageOptions));
+                break;
+              }
+              await Promise.all(promises);
+              await nextTick();
+            });
+
+            it('should not reopen the confirm page', async () => {
+              browser.tabs.create.should.not.have.been.called;
+              browser.tabs.remove.should.not.have.been.called;
             });
           });
         });
@@ -244,6 +300,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                     targetContainer: 'firefox-container-1',
                     url: 'http://notexample.com'
                   };
+                  let promises = [];
                   switch (confirmPage) {
                   case 'first':
                     await helper.browser.openMacConfirmPage(confirmPageOptions);
@@ -254,14 +311,15 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
                     await helper.browser.openMacConfirmPage(confirmPageOptions);
                     break;
                   case 'firstrace':
-                    helper.browser.openMacConfirmPage(confirmPageOptions);
-                    helper.browser.request(request);
+                    promises.push(helper.browser.openMacConfirmPage(confirmPageOptions));
+                    promises.push(helper.browser.request(request));
                     break;
                   case 'lastrace':
-                    helper.browser.request(request);
-                    helper.browser.openMacConfirmPage(confirmPageOptions);
+                    promises.push(helper.browser.request(request));
+                    promises.push(helper.browser.openMacConfirmPage(confirmPageOptions));
                     break;
                   }
+                  await Promise.all(promises);
                   await nextTick();
                 });
 

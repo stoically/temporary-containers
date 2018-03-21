@@ -270,7 +270,6 @@ class Request {
         return;
       }
       debug('[handleNotClickedLink] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
-      // we dont know here whether to cancel or not, just let it fall through
       return this.mac.maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer);
     }
 
