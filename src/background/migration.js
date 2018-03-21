@@ -35,7 +35,7 @@ class Migration {
         this.storage.local.preferences.automaticModeNewTab = 'created';
         await this.storage.persist();
 
-        const url = browser.runtime.getURL('tmpcontainer/ui/notifications/update_from_0.57_and_below.html');
+        const url = browser.runtime.getURL('ui/notifications/update_from_0.57_and_below.html');
         browser.tabs.create({
           url
         });
