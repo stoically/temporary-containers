@@ -11,6 +11,7 @@ class MouseClick {
     this.background = background;
     this.storage = background.storage;
     this.container = background.container;
+    this.utils = background.utils;
   }
 
 
@@ -95,7 +96,7 @@ class MouseClick {
     }
 
     if (preferences.action === 'notsamedomain') {
-      if (this.background.sameDomain(parsedSenderTabURL.hostname, parsedClickedURL.hostname)) {
+      if (this.utils.sameDomain(parsedSenderTabURL.hostname, parsedClickedURL.hostname)) {
         debug('[checkClickPreferences] click not handled from preference "notsamedomain"',
           parsedClickedURL, parsedSenderTabURL);
         return false;

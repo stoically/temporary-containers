@@ -17,6 +17,14 @@
         "MultiAccountContainers": false,
         "MouseClick": false,
         "Request": false,
-        "Storage": false
+        "Storage": false,
+        "Tabs": false,
+        "Runtime": false,
+        "BrowserAction": false,
+        "PageAction": false,
+        "ContextMenu": false,
+        "Commands": false,
+        "Migration": false,
+        "Utils": false
     }
 }

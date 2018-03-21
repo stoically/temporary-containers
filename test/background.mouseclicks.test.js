@@ -18,7 +18,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         }
       };
       const background = await loadBackground(preferences);
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.exist;
     });
 
@@ -41,7 +41,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomain';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -64,7 +64,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomain';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 
@@ -87,7 +87,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -110,7 +110,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 
@@ -132,7 +132,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         }
       };
       const background = await loadBackground(preferences);
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -154,7 +154,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         }
       };
       const background = await loadBackground(preferences);
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -178,7 +178,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -202,7 +202,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 
@@ -226,7 +226,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -250,7 +250,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       const background = await loadBackground(preferences);
       background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
   });
@@ -279,7 +279,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'never'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 
@@ -306,7 +306,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'notsamedomainexact'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -333,7 +333,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'notsamedomainexact'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 
@@ -360,7 +360,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'notsamedomain'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 
@@ -387,7 +387,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'notsamedomain'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -415,7 +415,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'always'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 
@@ -443,7 +443,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'always'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
 
@@ -470,7 +470,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           action: 'never'
         }
       };
-      await background.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
 

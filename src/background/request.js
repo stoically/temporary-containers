@@ -10,6 +10,7 @@ class Request {
     this.container = background.container;
     this.mouseclick = background.mouseclick;
     this.mac = background.mac;
+    this.utils = background.utils;
 
     this.webRequestOnBeforeRequest.bind(this);
     browser.webRequest.onBeforeSendHeaders.addListener(async details => {
@@ -473,7 +474,7 @@ class Request {
       break;
 
     case 'notsamedomain':
-      if (!this.background.sameDomain(origin, target)) {
+      if (!this.utils.sameDomain(origin, target)) {
         debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "notsamedomain"');
         return true;
       }

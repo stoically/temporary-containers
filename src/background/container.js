@@ -38,20 +38,6 @@ class Container {
     };
     this.removeContainerQueue = new PQueue({concurrency: 1});
     this.removeContainerDelayQueue = new PQueue();
-    this.removeContainerQueueMaybeDone = () => {
-      debug('[removeContainerQueueMaybeDone] maybe queue is done',
-        this.removeContainerQueue.size, this.removeContainerQueue.pending,
-        this.removeContainerDelayQueue.size, this.removeContainerDelayQueue.pending);
-      if (this.removeContainerQueue.size === 0 &&
-          this.removeContainerQueue.pending === 0 &&
-          this.removeContainerDelayQueue.size === 0 &&
-          this.removeContainerDelayQueue.pending === 0) {
-        debug('[removeContainerQueueMaybeDone] yep');
-        this.removingContainerQueue = false;
-      } else {
-        debug('[removeContainerQueueMaybeDone] nope');
-      }
-    };
     this.removedContainerCount = 0;
     this.removedContainerCookiesCount = 0;
     this.removedContainerHistoryCount = 0;
@@ -442,6 +428,22 @@ class Container {
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();
     return true;
+  }
+
+
+  removeContainerQueueMaybeDone() {
+    debug('[removeContainerQueueMaybeDone] maybe queue is done',
+      this.removeContainerQueue.size, this.removeContainerQueue.pending,
+      this.removeContainerDelayQueue.size, this.removeContainerDelayQueue.pending);
+    if (this.removeContainerQueue.size === 0 &&
+        this.removeContainerQueue.pending === 0 &&
+        this.removeContainerDelayQueue.size === 0 &&
+        this.removeContainerDelayQueue.pending === 0) {
+      debug('[removeContainerQueueMaybeDone] yep');
+      this.removingContainerQueue = false;
+    } else {
+      debug('[removeContainerQueueMaybeDone] nope');
+    }
   }
 
 
