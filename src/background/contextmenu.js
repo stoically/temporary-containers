@@ -11,7 +11,7 @@ class ContextMenu {
     browser.contextMenus.onClicked.addListener(this.onClicked.bind(this));
     browser.windows.onFocusChanged.addListener(this.windowsOnFocusChanged.bind(this));
 
-    this.addContextMenu();
+    this.add();
   }
 
 
@@ -37,7 +37,7 @@ class ContextMenu {
   }
 
 
-  async addContextMenu() {
+  async add() {
     if (this.storage.local.preferences.contextMenu) {
       browser.contextMenus.create({
         id: 'open-link-in-new-temporary-container-tab',
@@ -63,7 +63,7 @@ class ContextMenu {
   }
 
 
-  async removeContextMenu() {
+  async remove() {
     browser.contextMenus.removeAll();
   }
 
@@ -72,13 +72,13 @@ class ContextMenu {
     if (windowId === browser.windows.WINDOW_ID_NONE) {
       return;
     }
-    this.removeContextMenu();
+    this.remove();
     try {
       const activeTab = await browser.tabs.query({
         windowId: windowId
       });
       if (!activeTab[0].incognito) {
-        this.addContextMenu();
+        this.add();
       }
     } catch (error) {
       debug('failed to get the active tab from window');

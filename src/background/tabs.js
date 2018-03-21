@@ -8,6 +8,7 @@ class Tabs {
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.pageaction = this.background.pageaction;
+    this.contextmenu = this.background.contextmenu;
 
     const tabs = await browser.tabs.query({});
     tabs.map(tab => {
@@ -82,7 +83,7 @@ class Tabs {
     this.removeContextMenu();
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     if (!activatedTab.incognito) {
-      this.addContextMenu();
+      this.contextmenu.add();
 
       this.pageaction.showOrHide(activatedTab);
     }

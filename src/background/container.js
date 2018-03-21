@@ -42,6 +42,7 @@ class Container {
     this.removedContainerCount = 0;
     this.removedContainerCookiesCount = 0;
     this.removedContainerHistoryCount = 0;
+    this.removeContainerQueueMaybeDone = this.removeContainerQueueMaybeDone.bind(this);
   }
 
 
