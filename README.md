@@ -35,7 +35,6 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 #### AMO and GitHub
 
 * Bump manifest version
-* Commit and push
 * `npm run build`
 * Upload zip web-ext-artifact to AMO
 * Download published AMO xpi
@@ -48,6 +47,7 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 
 * Set API Key/Secret Env Vars
 * Bump manifest version as beta
+* Commit
 * `npm run build-sign` (Adds `update_url` to manifest and reverts with `git checkout -- manifest.json`)
 * Create and publish GitHub pre-release with generated xpi web-ext-artifact
 * Add new version with link to GitHub xpi to `updates.json`
