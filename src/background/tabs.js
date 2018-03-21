@@ -20,7 +20,7 @@ class Tabs {
       // maybe reload or set badge
       this.container.maybeReloadTabInTempContainer(tab);
     });
-    
+
     browser.tabs.onActivated.addListener(this.tabsOnActivated.bind(this));
     browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
     browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));

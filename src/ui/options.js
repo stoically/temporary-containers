@@ -112,7 +112,7 @@ const initialize = async () => {
       'Exact matches: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
       'Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>' +
       'Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>, ' +
-      'so you might need two rules</div>';
+      'so you might need two rules. Website Rules overwrite Global Rules.</div>';
 
     $('#linkClickDomainPatternDiv').popup({
       html: domainPatternToolTip,
