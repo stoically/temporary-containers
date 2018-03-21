@@ -9,6 +9,10 @@
         {
           "version": "0.75beta2",
           "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.75beta2/temporary_containers-0.75beta2-an.fx.xpi"
+        },
+        {
+          "version": "0.77",
+          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.77/temporary_containers-0.77-an.fx.xpi"
         }
       ]
     }
