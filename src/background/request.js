@@ -139,8 +139,7 @@ class Request {
     } else if (!this.storage.local.preferences.automaticMode &&
                (!this.mouseclick.linksClicked[request.url] &&
                (!tab || !this.storage.local.tempContainers[tab.cookieStoreId] ||
-                (this.storage.local.tempContainers[tab.cookieStoreId] &&
-                request.originUrl !== 'about:newtab')))) {
+                (this.storage.local.tempContainers[tab.cookieStoreId])))) {
       debug('[webRequestOnBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
     } else if (this.mouseclick.unhandledLinksClicked[request.url]) {
@@ -241,8 +240,7 @@ class Request {
           debug('[handleNotClickedLink] container doesnt exist anymore', tab);
         }
       }
-      if (tab && tab.cookieStoreId !== 'firefox-default' && containerExists &&
-          request.originUrl !== 'about:newtab') {
+      if (tab && tab.cookieStoreId !== 'firefox-default' && containerExists) {
         debug('[handleNotClickedLink] onBeforeRequest tab belongs to a non-default container', tab, request);
         return;
       }
@@ -264,8 +262,7 @@ class Request {
 
     if (macAssignment) {
       if (tab && tab.cookieStoreId &&
-          this.storage.local.tempContainers[tab.cookieStoreId] &&
-          request.originUrl !== 'about:newtab') {
+          this.storage.local.tempContainers[tab.cookieStoreId]) {
         debug('[handleNotClickedLink] mac assigned but we are already in a tmp container, we do nothing', request, tab, macAssignment);
         return;
       }
@@ -348,7 +345,6 @@ class Request {
 
   async maybeIsolate(tab, request) {
     if (!tab || !tab.url) {
-      // TODO check if we can use request.originUrl instead
       debug('[maybeIsolate] we cant proceed without tab url information', tab, request);
       return false;
     }
