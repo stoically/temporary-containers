@@ -2,6 +2,7 @@ class Runtime {
   initialize(background) {
     this.storage = background.storage;
     this.mouseclick = background.mouseclick;
+    this.browseraction = background.browseraction;
     this.permissions = background.permissions;
 
     browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
@@ -23,7 +24,7 @@ class Runtime {
     case 'savePreferences':
       debug('[runtimeOnMessage] saving preferences');
       if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
-        this.setIcon(message.payload.preferences.iconColor);
+        this.browseraction.setIcon(message.payload.preferences.iconColor);
       }
       if (message.payload.preferences.notifications) {
         this.permissions.notifications = true;
