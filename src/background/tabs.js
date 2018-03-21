@@ -1,8 +1,13 @@
 class Tabs {
-  async initialize(background) {
-    this.storage = background.storage;
-    this.container = background.container;
-    this.pageaction = background.pageaction;
+  constructor(background) {
+    this.background = background;
+  }
+
+
+  async initialize() {
+    this.storage = this.background.storage;
+    this.container = this.background.container;
+    this.pageaction = this.background.pageaction;
 
     const tabs = await browser.tabs.query({});
     tabs.map(tab => {
@@ -21,16 +26,17 @@ class Tabs {
       this.container.maybeReloadTabInTempContainer(tab);
     });
 
-    browser.tabs.onActivated.addListener(this.tabsOnActivated.bind(this));
-    browser.tabs.onCreated.addListener(this.tabsOnCreated.bind(this));
-    browser.tabs.onUpdated.addListener(this.tabsOnUpdated.bind(this));
-    browser.tabs.onRemoved.addListener(this.tabsOnRemoved.bind(this));
+    browser.tabs.onActivated.addListener(this.onActivated.bind(this));
+    browser.tabs.onCreated.addListener(this.onCreated.bind(this));
+    browser.tabs.onUpdated.addListener(this.onUpdated.bind(this));
+    browser.tabs.onRemoved.addListener(this.onRemoved.bind(this));
   }
 
-  async tabsOnCreated(tab) {
-    debug('[tabsOnCreated] tab created', tab);
+
+  async onCreated(tab) {
+    debug('[onCreated] tab created', tab);
     if (tab.incognito) {
-      debug('[tabsOnCreated] tab incognito, we ignore that', tab);
+      debug('[onCreated] tab incognito, we ignore that', tab);
       browser.browserAction.disable(tab.id);
       return;
     }
@@ -43,25 +49,25 @@ class Tabs {
   }
 
 
-  async tabsOnUpdated(tabId, changeInfo, tab) {
-    debug('[tabsOnUpdated] tab updated', tab);
+  async onUpdated(tabId, changeInfo, tab) {
+    debug('[onUpdated] tab updated', tab);
     if (tab.incognito) {
-      debug('[tabsOnUpdated] tab incognito, we ignore that');
+      debug('[onUpdated] tab incognito, we ignore that');
       browser.browserAction.disable(tab.id);
       return;
     }
     if (!changeInfo.url) {
-      debug('[tabsOnUpdated] url didnt change, not relevant', tabId, changeInfo);
+      debug('[onUpdated] url didnt change, not relevant', tabId, changeInfo);
       return;
     }
-    debug('[tabsOnUpdated] url changed', changeInfo);
+    debug('[onUpdated] url changed', changeInfo);
     await this.container.maybeAddHistory(tab, changeInfo.url);
-    await this.pageaction.showOrHidePageAction(tab);
+    await this.pageaction.showOrHide(tab);
     await this.container.maybeReloadTabInTempContainer(tab);
   }
 
 
-  async tabsOnRemoved(tabId) {
+  async onRemoved(tabId) {
     if (this.storage.local.noContainerTabs[tabId]) {
       delete this.storage.local.noContainerTabs[tabId];
     }
@@ -72,13 +78,13 @@ class Tabs {
   }
 
 
-  async tabsOnActivated(activeInfo) {
+  async onActivated(activeInfo) {
     this.removeContextMenu();
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     if (!activatedTab.incognito) {
       this.addContextMenu();
 
-      this.pageaction.showOrHidePageAction(activatedTab);
+      this.pageaction.showOrHide(activatedTab);
     }
   }
 }

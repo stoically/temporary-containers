@@ -1,33 +1,21 @@
 class ContextMenu {
-  initialize(background) {
-    this.storage = background.storage;
-    this.container = background.container;
+  constructor(background) {
+    this.background = background;
+  }
 
-    browser.contextMenus.onClicked.addListener(this.contextMenusOnClicked.bind(this));
+
+  initialize() {
+    this.storage = this.background.storage;
+    this.container = this.background.container;
+
+    browser.contextMenus.onClicked.addListener(this.onClicked.bind(this));
     browser.windows.onFocusChanged.addListener(this.windowsOnFocusChanged.bind(this));
 
     this.addContextMenu();
   }
 
-  async windowsOnFocusChanged(windowId) {
-    if (windowId === browser.windows.WINDOW_ID_NONE) {
-      return;
-    }
-    this.removeContextMenu();
-    try {
-      const activeTab = await browser.tabs.query({
-        windowId: windowId
-      });
-      if (!activeTab[0].incognito) {
-        this.addContextMenu();
-      }
-    } catch (error) {
-      debug('failed to get the active tab from window');
-    }
-  }
 
-
-  async contextMenusOnClicked(info, tab) {
+  async onClicked(info, tab) {
     switch (info.menuItemId)  {
     case 'open-link-in-new-temporary-container-tab':
       this.container.createTabInTempContainer({
@@ -79,6 +67,23 @@ class ContextMenu {
     browser.contextMenus.removeAll();
   }
 
+
+  async windowsOnFocusChanged(windowId) {
+    if (windowId === browser.windows.WINDOW_ID_NONE) {
+      return;
+    }
+    this.removeContextMenu();
+    try {
+      const activeTab = await browser.tabs.query({
+        windowId: windowId
+      });
+      if (!activeTab[0].incognito) {
+        this.addContextMenu();
+      }
+    } catch (error) {
+      debug('failed to get the active tab from window');
+    }
+  }
 }
 
 window.ContextMenu = ContextMenu;

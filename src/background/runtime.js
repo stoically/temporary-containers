@@ -1,28 +1,37 @@
 class Runtime {
-  initialize(background) {
+  constructor(background) {
+    this.background = background;
     this.storage = background.storage;
-    this.mouseclick = background.mouseclick;
-    this.browseraction = background.browseraction;
-    this.permissions = background.permissions;
-
-    browser.runtime.onMessage.addListener(this.runtimeOnMessage.bind(this));
-    browser.runtime.onMessageExternal.addListener(this.runtimeOnMessageExternal.bind(this));
   }
 
-  async runtimeOnMessage(message, sender) {
-    debug('[runtimeOnMessage] message received', message, sender);
+
+  initialize() {
+    this.container = this.background.container;
+    this.mouseclick = this.background.mouseclick;
+    this.browseraction = this.background.browseraction;
+    this.migration = this.background.migration;
+    this.permissions = this.background.permissions;
+
+    browser.runtime.onMessage.addListener(this.onMessage.bind(this));
+    browser.runtime.onMessage.addListener(this.onMessageResetStorage.bind(this));
+    browser.runtime.onMessageExternal.addListener(this.onMessageExternal.bind(this));
+  }
+
+
+  async onMessage(message, sender) {
+    debug('[onMessage] message received', message, sender);
     if (typeof message !== 'object') {
       return;
     }
 
     switch (message.method) {
     case 'linkClicked':
-      debug('[runtimeOnMessage] link clicked');
+      debug('[onMessage] link clicked');
       this.mouseclick.linkClicked(message.payload, sender);
       break;
 
     case 'savePreferences':
-      debug('[runtimeOnMessage] saving preferences');
+      debug('[onMessage] saving preferences');
       if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
         this.browseraction.setIcon(message.payload.preferences.iconColor);
       }
@@ -34,7 +43,7 @@ class Runtime {
       break;
 
     case 'resetStatistics':
-      debug('[runtimeOnMessage] resetting statistics');
+      debug('[onMessage] resetting statistics');
       this.storage.local.statistics = {
         startTime: new Date,
         containersDeleted: 0,
@@ -49,15 +58,15 @@ class Runtime {
       break;
 
     case 'historyPermissionAllowed':
-      debug('[runtimeOnMessage] history permission');
+      debug('[onMessage] history permission');
       this.permissions.history = true;
       break;
     }
   }
 
 
-  async runtimeOnMessageExternal(message, sender) {
-    debug('[runtimeOnMessageExternal] got external message', message, sender);
+  async onMessageExternal(message, sender) {
+    debug('[onMessageExternal] got external message', message, sender);
     switch (message.method) {
     case 'createTabInTempContainer':
       return this.container.createTabInTempContainer({
@@ -70,6 +79,44 @@ class Runtime {
     default:
       throw new Error('Unknown message.method');
     }
+  }
+
+
+  async onMessageResetStorage(message, sender) {
+    if (typeof message !== 'object') {
+      return;
+    }
+    switch (message.method) {
+    case 'resetStorage':
+      debug('[onMessageResetStorage] resetting storage', message, sender);
+      return this.storage.install();
+    }
+  }
+
+
+  async onInstalled(details) {
+    if (details.temporary) {
+      log.DEBUG = true;
+      log.temporary = true;
+    }
+
+    switch (details.reason) {
+    case 'install':
+      return this.storage.install();
+
+    case 'update':
+      return this.migration.onUpdate(details);
+    }
+  }
+
+
+  async onStartup() {
+    await this.storage.load();
+
+    // queue a container cleanup
+    delay(15000).then(() => {
+      this.container.cleanup(true);
+    });
   }
 }
 

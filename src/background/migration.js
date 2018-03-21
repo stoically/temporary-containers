@@ -1,10 +1,16 @@
 class Migration {
-  initialize(background) {
-    this.storage = background;
+  constructor(background) {
+    this.background = background;
   }
 
+
+  initialize() {
+    this.storage = this.background;
+  }
+
+
   /* istanbul ignore next */
-  async onUpdateMigration(details) {
+  async onUpdate(details) {
     await this.storage.load();
 
     const previousVersion = details.previousVersion.replace('beta', '.');

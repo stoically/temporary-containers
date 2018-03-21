@@ -1,12 +1,13 @@
 class MultiAccountContainers {
-  constructor() {
+  constructor(background) {
+    this.background = background;
     this.confirmPage = {};
     this.waitingForConfirmPage = {};
   }
 
-  initialize(background) {
-    this.storage = background.storage;
-    this.container = background.container;
+  initialize() {
+    this.storage = this.background.storage;
+    this.container = this.background.container;
   }
 
   handleConfirmPage(tab) {

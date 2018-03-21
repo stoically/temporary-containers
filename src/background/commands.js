@@ -1,13 +1,19 @@
 class Commands {
-  initialize(background) {
-    this.storage = background.storage;
-    this.container = background.container;
-    this.permissions = background.permissions;
-
-    browser.commands.onCommand.addListener(this.commandsOnCommand.bind(this));
+  constructor(background) {
+    this.background = background;
   }
 
-  async commandsOnCommand(name) {
+
+  initialize() {
+    this.storage = this.background.storage;
+    this.container = this.background.container;
+    this.permissions = this.background.permissions;
+
+    browser.commands.onCommand.addListener(this.onCommand.bind(this));
+  }
+
+
+  async onCommand(name) {
     switch(name) {
     case 'new_temporary_container_tab':
       if (!this.storage.local.preferences.keyboardShortcuts.AltC) {
@@ -27,9 +33,9 @@ class Commands {
           url: 'about:blank'
         });
         this.storage.local.noContainerTabs[tab.id] = true;
-        debug('[commandsOnCommand] new no container tab created', this.storage.local.noContainerTabs);
+        debug('[onCommand] new no container tab created', this.storage.local.noContainerTabs);
       } catch (error) {
-        debug('[commandsOnCommand] couldnt create tab', error);
+        debug('[onCommand] couldnt create tab', error);
       }
       break;
 
@@ -42,9 +48,9 @@ class Commands {
           url: 'about:blank'
         });
         this.storage.local.noContainerTabs[window.tabs[0].id] = true;
-        debug('[commandsOnCommand] new no container tab created in window', window, this.storage.local.noContainerTabs);
+        debug('[onCommand] new no container tab created in window', window, this.storage.local.noContainerTabs);
       } catch (error) {
-        debug('[commandsOnCommand] couldnt create tab in window', error);
+        debug('[onCommand] couldnt create tab in window', error);
       }
       break;
 
@@ -65,7 +71,6 @@ class Commands {
       break;
     }
   }
-
 }
 
 window.Commands = Commands;

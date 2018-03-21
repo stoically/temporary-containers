@@ -73,7 +73,7 @@ global.loadBareBackground = async (preferences = {}, build = {}) => {
   global.clock = sinon.useFakeTimers();
 
   const background = global.background;
-  await background.runtimeOnInstalled({
+  await background.runtime.onInstalled({
     reason: 'install'
   });
   Object.assign(background.storage.local.preferences, preferences);
@@ -88,7 +88,7 @@ global.loadBackground = async (preferences = {}) => {
   global.background = global.webExtension.background.window.tmp;
   global.clock = sinon.useFakeTimers();
 
-  await background.runtimeOnInstalled({
+  await background.runtime.onInstalled({
     reason: 'install'
   });
   Object.assign(background.storage.local.preferences, preferences);

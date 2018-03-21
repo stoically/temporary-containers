@@ -1,5 +1,6 @@
 class MouseClick {
-  constructor() {
+  constructor(background) {
+    this.background = background;
     this.linksClicked = {};
     this.unhandledLinksClicked = {};
 
@@ -7,11 +8,10 @@ class MouseClick {
   }
 
 
-  initialize(background) {
-    this.background = background;
-    this.storage = background.storage;
-    this.container = background.container;
-    this.utils = background.utils;
+  initialize() {
+    this.storage = this.background.storage;
+    this.container = this.background.container;
+    this.utils = this.background.utils;
   }
 
 

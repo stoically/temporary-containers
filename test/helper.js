@@ -119,7 +119,7 @@ module.exports = {
           event: clickEvent
         }
       };
-      return await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
+      return await background.runtime.onMessage(fakeMessage, fakeSender);
     },
 
     openMacConfirmPage({
@@ -149,7 +149,7 @@ module.exports = {
         url: confirmPageUrl
       };
 
-      return background.tabs.tabsOnUpdated(tabId, changeInfo, tab);
+      return background.tabs.onUpdated(tabId, changeInfo, tab);
     }
   }
 };

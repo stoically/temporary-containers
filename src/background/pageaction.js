@@ -1,9 +1,15 @@
 class PageAction {
-  initialize(background) {
-    this.storage = background.storage;
+  constructor(background) {
+    this.background = background;
   }
 
-  async showOrHidePageAction(activatedTab) {
+
+  initialize() {
+    this.storage = this.background.storage;
+  }
+
+
+  async showOrHide(activatedTab) {
     let color;
     if (activatedTab.cookieStoreId === 'firefox-default') {
       color = 'gray';

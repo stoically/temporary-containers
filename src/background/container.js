@@ -1,5 +1,6 @@
 class Container {
-  constructor() {
+  constructor(background) {
+    this.background = background;
     this.containerColors = [
       'blue',      // #37ADFF
       'turquoise', // #00C79A
@@ -44,12 +45,12 @@ class Container {
   }
 
 
-  initialize(background) {
-    this.background = background;
-    this.storage = background.storage;
-    this.request = background.request;
-    this.mouseclick = background.mouseclick;
-    this.mac = background.mac;
+  initialize() {
+    this.storage = this.background.storage;
+    this.request = this.background.request;
+    this.mouseclick = this.background.mouseclick;
+    this.mac = this.background.mac;
+    this.permissions = this.background.permissions;
 
     browser.cookies.onChanged.addListener(this.cookieCount.bind(this));
 
@@ -97,7 +98,7 @@ class Container {
       deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
     }
     if (deletesHistory) {
-      if (this.background.permissions.history) {
+      if (this.permissions.history) {
         containerName += '-deletes-history';
       } else {
         deletesHistory = false;
@@ -388,7 +389,7 @@ class Container {
 
   maybeShowNotification(message) {
     if (this.storage.local.preferences.notifications &&
-        this.background.permissions.notifications) {
+        this.permissions.notifications) {
       debug('[maybeShowNotification] showing notification');
       browser.notifications.create({
         type: 'basic',

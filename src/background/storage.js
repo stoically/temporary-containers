@@ -111,10 +111,10 @@ class Storage {
       debug('[_load] storage loaded', this.local);
 
       let persist = false;
-      if (this.maybeInitializeMissingStorage()) {
+      if (this.maybeAddMissingStorage()) {
         persist = true;
       }
-      if (this.maybeInitializeMissingPreferences()) {
+      if (this.maybeAddMissingPreferences()) {
         persist = true;
       }
       if (persist) {
@@ -149,7 +149,7 @@ class Storage {
   }
 
 
-  async initializeStorage() {
+  async install() {
     this.loading = true;
     this.local = {
       tempContainerCounter: 0,
@@ -157,20 +157,20 @@ class Storage {
       noContainerTabs: {},
       preferences: this.preferencesDefault
     };
-    this.maybeInitializeMissingStorage();
+    this.maybeAddMissingStorage();
     const persisted = await this.persist();
     if (!persisted) {
-      debug('[initializeStorage] something went wrong while initializing storage');
+      debug('[install] something went wrong while initializing storage');
       return false;
     } else {
-      debug('[initializeStorage] storage initialized');
+      debug('[install] storage initialized');
       this.loaded = true;
       this.loading = false;
       return true;
     }
   }
 
-  async maybeInitializeMissingStorage() {
+  async maybeAddMissingStorage() {
     let storagePersistNeeded = false;
     if (!this.local.statistics) {
       this.local.statistics = {
@@ -195,7 +195,7 @@ class Storage {
     return storagePersistNeeded;
   }
 
-  async maybeInitializeMissingPreferences() {
+  async maybeAddMissingPreferences() {
     let storagePersistNeeded = false;
     if (!this.local.preferences) {
       // legacy code

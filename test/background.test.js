@@ -3,16 +3,16 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   describe('on require', () => {
     it('should register event listeners', async () => {
       const background = await loadBareBackground(preferences);
-      sinon.stub(background, 'runtimeOnInstalled');
-      sinon.stub(background, 'runtimeOnStartup');
-      sinon.stub(background.commands, 'commandsOnCommand');
-      sinon.stub(background.runtime, 'runtimeOnMessage');
-      sinon.stub(background.contextmenu, 'contextMenusOnClicked');
+      sinon.stub(background.runtime, 'onInstalled');
+      sinon.stub(background.runtime, 'onStartup');
+      sinon.stub(background.runtime, 'onMessage');
+      sinon.stub(background.commands, 'onCommand');
+      sinon.stub(background.contextmenu, 'onClicked');
       sinon.stub(background.contextmenu, 'windowsOnFocusChanged');
-      sinon.stub(background.tabs, 'tabsOnCreated');
-      sinon.stub(background.tabs, 'tabsOnUpdated');
-      sinon.stub(background.tabs, 'tabsOnRemoved');
-      sinon.stub(background.tabs, 'tabsOnActivated');
+      sinon.stub(background.tabs, 'onCreated');
+      sinon.stub(background.tabs, 'onUpdated');
+      sinon.stub(background.tabs, 'onRemoved');
+      sinon.stub(background.tabs, 'onActivated');
       sinon.stub(background.container, 'createTabInTempContainer');
       sinon.stub(background.request, 'webRequestOnBeforeRequest');
       await background.initialize();
@@ -21,31 +21,31 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       background.container.createTabInTempContainer.should.have.been.calledOnce;
 
       browser.contextMenus.onClicked.addListener.yield();
-      background.contextmenu.contextMenusOnClicked.should.have.been.calledOnce;
+      background.contextmenu.onClicked.should.have.been.calledOnce;
 
       browser.commands.onCommand.addListener.yield();
-      background.commands.commandsOnCommand.should.have.been.calledOnce;
+      background.commands.onCommand.should.have.been.calledOnce;
 
       browser.runtime.onInstalled.addListener.should.have.been.calledOnce;
       browser.runtime.onStartup.addListener.should.have.been.calledOnce;
 
       browser.runtime.onMessage.addListener.yield();
-      background.runtime.runtimeOnMessage.should.have.been.calledOnce;
+      background.runtime.onMessage.should.have.been.calledOnce;
 
       browser.windows.onFocusChanged.addListener.yield();
       background.contextmenu.windowsOnFocusChanged.should.have.been.calledOnce;
 
       browser.tabs.onCreated.addListener.yield();
-      background.tabs.tabsOnCreated.should.have.been.calledOnce;
+      background.tabs.onCreated.should.have.been.calledOnce;
 
       browser.tabs.onUpdated.addListener.yield();
-      background.tabs.tabsOnUpdated.should.have.been.calledOnce;
+      background.tabs.onUpdated.should.have.been.calledOnce;
 
       browser.tabs.onRemoved.addListener.yield();
-      background.tabs.tabsOnRemoved.should.have.been.calledOnce;
+      background.tabs.onRemoved.should.have.been.calledOnce;
 
       browser.tabs.onActivated.addListener.yield();
-      background.tabs.tabsOnActivated.should.have.been.calledOnce;
+      background.tabs.onActivated.should.have.been.calledOnce;
 
       browser.webRequest.onBeforeRequest.addListener.yield();
       background.request.webRequestOnBeforeRequest.should.have.been.calledOnce;
@@ -129,7 +129,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.tabs.create.resolves({id: 1});
       await background.initialize();
       background.storage.local.preferences.automaticModeNewTab = 'created';
-      await background.runtimeOnStartup();
+      await background.runtime.onStartup();
       await nextTick();
       browser.contextualIdentities.create.should.have.been.calledOnce;
       browser.tabs.create.should.have.been.calledOnce;
@@ -149,7 +149,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
       browser.tabs.query.resolves([fakeNotDefaultTab]);
       await background.initialize();
-      await background.runtimeOnStartup();
+      await background.runtime.onStartup();
 
       browser.contextualIdentities.create.should.not.have.been.called;
     });
@@ -158,7 +158,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       const background = await loadBareBackground(preferences);
       browser.tabs.query.resolves([1,2]);
       await background.initialize();
-      await background.runtimeOnStartup();
+      await background.runtime.onStartup();
 
       browser.contextualIdentities.create.should.not.have.been.called;
     });
@@ -270,7 +270,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         }
       };
       background = await loadBackground(preferences);
-      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.onMessage(fakeMessage, fakeSender);
 
       // now the request
       const fakeRequest = {
@@ -347,7 +347,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         }
       };
       const background = await loadBackground(preferences);
-      await background.runtime.runtimeOnMessage(fakeMessage, fakeSender);
+      await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.exist;
 
       clock.tick(1000);
@@ -367,7 +367,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           })
         }
       };
-      await background.runtime.runtimeOnMessage(fakeMessage);
+      await background.runtime.onMessage(fakeMessage);
       browser.storage.local.set.should.have.been.calledWithMatch({
         preferences: {
           automaticMode: true
@@ -379,7 +379,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   describe('runtime.onInstalled', () => {
     it('should call migration on updated', async () => {
       const background = await loadUninstalledBackground(preferences);
-      const onUpdateMigrationStub = sinon.stub(background.migration, 'onUpdateMigration');
+      const onUpdateMigrationStub = sinon.stub(background.migration, 'onUpdate');
       browser.runtime.onInstalled.addListener.yield({
         reason: 'update'
       });

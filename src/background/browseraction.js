@@ -1,9 +1,14 @@
 class BrowserAction {
-  initialize(background) {
-    this.storage = background.storage;
-    this.container = background.container;
+  constructor(background) {
+    this.background = background;
+  }
 
-    browser.browserAction.onClicked.addListener(this.browserActionOnClicked.bind(this));
+
+  initialize() {
+    this.storage = this.background.storage;
+    this.container = this.background.container;
+
+    browser.browserAction.onClicked.addListener(this.onClicked.bind(this));
 
     if (this.storage.local.preferences.iconColor !== 'default') {
       this.setIcon(this.storage.local.preferences.iconColor);
@@ -11,7 +16,7 @@ class BrowserAction {
   }
 
 
-  browserActionOnClicked() {
+  onClicked() {
     return this.container.createTabInTempContainer({
       deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic'
     });

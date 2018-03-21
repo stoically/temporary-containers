@@ -19,7 +19,7 @@ describe('storage', () => {
     clock.tick(1000);
     await nextTick();
     expect(background.initialized).to.be.false;
-    await background.runtimeOnInstalled({
+    await background.runtime.onInstalled({
       reason: 'install'
     });
     await nextTick();

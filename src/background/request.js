@@ -1,16 +1,16 @@
 class Request {
-  constructor() {
+  constructor(background) {
+    this.background = background;
     this.canceledRequests = {};
     this.requestsSeen = {};
   }
 
-  async initialize(background) {
-    this.background = background;
-    this.storage = background.storage;
-    this.container = background.container;
-    this.mouseclick = background.mouseclick;
-    this.mac = background.mac;
-    this.utils = background.utils;
+  async initialize() {
+    this.storage = this.background.storage;
+    this.container = this.background.container;
+    this.mouseclick = this.background.mouseclick;
+    this.mac = this.background.mac;
+    this.utils = this.background.utils;
 
     this.webRequestOnBeforeRequest.bind(this);
     browser.webRequest.onBeforeSendHeaders.addListener(async details => {
