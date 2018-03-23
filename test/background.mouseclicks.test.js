@@ -40,7 +40,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomain';
+      background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'notsamedomain';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
@@ -63,7 +63,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomain';
+      background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'notsamedomain';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
@@ -86,7 +86,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
+      background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'notsamedomainexact';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
@@ -109,7 +109,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.middle.action = 'notsamedomainexact';
+      background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'notsamedomainexact';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
@@ -177,7 +177,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
+      background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'notsamedomain';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
@@ -201,7 +201,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomain';
+      background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'notsamedomain';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
@@ -225,7 +225,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
+      background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'notsamedomainexact';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).not.to.be.undefined;
     });
@@ -249,7 +249,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'notsamedomainexact';
+      background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'notsamedomainexact';
       await background.runtime.onMessage(fakeMessage, fakeSender);
       expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.be.undefined;
     });
@@ -274,9 +274,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickDomain['example.com'] = {
-        middle: {
-          action: 'never'
+      background.storage.local.preferences.isolation.domain['example.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'never'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -301,9 +303,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickDomain['example.com'] = {
-        middle: {
-          action: 'notsamedomainexact'
+      background.storage.local.preferences.isolation.domain['example.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'notsamedomainexact'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -328,9 +332,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickDomain['example.com'] = {
-        middle: {
-          action: 'notsamedomainexact'
+      background.storage.local.preferences.isolation.domain['example.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'notsamedomainexact'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -355,9 +361,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickDomain['example.com'] = {
-        middle: {
-          action: 'notsamedomain'
+      background.storage.local.preferences.isolation.domain['example.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'notsamedomain'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -382,9 +390,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickDomain['example.com'] = {
-        middle: {
-          action: 'notsamedomain'
+      background.storage.local.preferences.isolation.domain['example.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'notsamedomain'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -409,10 +419,12 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.middle.action = 'never';
-      background.storage.local.preferences.linkClickDomain['whynotexample.com'] = {
-        middle: {
-          action: 'always'
+      background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'never';
+      background.storage.local.preferences.isolation.domain['whynotexample.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'always'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -437,10 +449,12 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickGlobal.middle.action = 'never';
-      background.storage.local.preferences.linkClickDomain['example.com'] = {
-        middle: {
-          action: 'always'
+      background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'never';
+      background.storage.local.preferences.isolation.domain['example.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'always'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -465,9 +479,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
 
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.linkClickDomain['*.example.com'] = {
-        middle: {
-          action: 'never'
+      background.storage.local.preferences.isolation.domain['*.example.com'] = {
+        mouseClick: {
+          middle: {
+            action: 'never'
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage, fakeSender);

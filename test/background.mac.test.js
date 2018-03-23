@@ -28,7 +28,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
           describe('and opening a mac assigned website with not "remember my choice"', () => {
             let originContainer = 'firefox-tmp1';
-            if (preferences.automaticModeNewTab === 'navigation') {
+            if (preferences.automaticMode.newTab === 'navigation') {
               originContainer = 'firefox-default';
             }
             beforeEach(async () => {
@@ -266,7 +266,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
               describe('clicks on links in the loaded website that are mac assigned with not "remember my choice"', () => {
                 beforeEach(async () => {
-                  background.storage.local.preferences.linkClickGlobal[preferences.click.type].action = preferences.click.action;
+                  background.storage.local.preferences.isolation.global.mouseClick[preferences.click.type].action = preferences.click.action;
                   let tabId;
                   switch (preferences.click.action) {
                   case 'middle':

@@ -86,14 +86,14 @@ class Container {
     }
 
     let tempContainerNumber;
-    if (this.storage.local.preferences.containerNumberMode === 'keep') {
+    if (this.storage.local.preferences.container.numberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
       tempContainerNumber = this.storage.local.tempContainerCounter;
     }
-    if (this.storage.local.preferences.containerNumberMode === 'reuse') {
+    if (this.storage.local.preferences.container.numberMode === 'reuse') {
       tempContainerNumber = this.getReusedContainerNumber();
     }
-    let containerName = `${this.storage.local.preferences.containerNamePrefix}${tempContainerNumber}`;
+    let containerName = `${this.storage.local.preferences.container.namePrefix}${tempContainerNumber}`;
 
     if (!deletesHistory) {
       deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
@@ -106,13 +106,13 @@ class Container {
       }
     }
     try {
-      let containerColor = this.storage.local.preferences.containerColor;
-      if (this.storage.local.preferences.containerColorRandom) {
+      let containerColor = this.storage.local.preferences.container.color;
+      if (this.storage.local.preferences.container.colorRandom) {
         const containerColors = this.getAvailableContainerColors();
         containerColor = containerColors[Math.floor(Math.random() * containerColors.length)];
       }
-      let containerIcon = this.storage.local.preferences.containerIcon;
-      if (this.storage.local.preferences.containerIconRandom) {
+      let containerIcon = this.storage.local.preferences.container.icon;
+      if (this.storage.local.preferences.container.iconRandom) {
         containerIcon = this.containerIcons[Math.floor(Math.random() * this.containerIcons.length)];
       }
       const containerOptions = {
@@ -249,15 +249,15 @@ class Container {
       return;
     }
 
-    if (!this.storage.local.preferences.automaticMode) {
+    if (!this.storage.local.preferences.automaticMode.active) {
       debug('[maybeReloadTabInTempContainer] automatic mode not active and not a moz page, we ignore that', tab);
       return;
     }
 
-    const deletesHistoryContainer = this.storage.local.preferences.deletesHistoryContainer === 'automatic';
+    const deletesHistoryContainer = this.storage.local.preferences.deletesHistory.automaticMode === 'automatic';
 
     if (!deletesHistoryContainer &&
-        this.storage.local.preferences.automaticModeNewTab === 'navigation' &&
+        this.storage.local.preferences.automaticMode.newTab === 'navigation' &&
         tab.cookieStoreId === 'firefox-default' &&
        (tab.url === 'about:home' ||
         tab.url === 'about:newtab')) {
@@ -266,7 +266,7 @@ class Container {
       return;
     }
 
-    if ((this.storage.local.preferences.automaticModeNewTab === 'created' || deletesHistoryContainer) &&
+    if ((this.storage.local.preferences.automaticMode.newTab === 'created' || deletesHistoryContainer) &&
         tab.cookieStoreId === 'firefox-default' &&
        (tab.url === 'about:home' ||
         tab.url === 'about:newtab')) {
@@ -300,8 +300,8 @@ class Container {
     }
     const containerType = this.storage.local.tempContainers[cookieStoreId].deletesHistory ? 'deletesHistory' : 'regular';
     const containerRemoval = containerType === 'deletesHistory' ?
-      this.storage.local.preferences.deletesHistoryContainerRemoval :
-      this.storage.local.preferences.containerRemoval;
+      this.storage.local.preferences.deletesHistory.containerRemoval :
+      this.storage.local.preferences.container.removal;
     debug('[addToRemoveQueue] queuing container removal because of tab removal', cookieStoreId, tabId);
     this.removeContainerFetchMassRemoval[containerType].push(cookieStoreId);
     if (this.removeContainerFetchMassRemoval[containerType].length > 1) {
@@ -456,7 +456,7 @@ class Container {
     if (this.storage.local.preferences.statistics) {
       this.storage.local.statistics.containersDeleted++;
     }
-    if (this.storage.local.preferences.deletesHistoryStatistics &&
+    if (this.storage.local.preferences.deletesHistory.statistics &&
         this.storage.local.tempContainers[cookieStoreId] &&
         this.storage.local.tempContainers[cookieStoreId].deletesHistory) {
       this.storage.local.statistics.deletesHistory.containersDeleted++;
@@ -623,7 +623,7 @@ class Container {
 
   async cookieCount(changeInfo) {
     if (!this.storage.local.preferences.statistics &&
-        !this.storage.local.preferences.deletesHistoryStatistics &&
+        !this.storage.local.preferences.deletesHistory.statistics &&
         !this.storage.local.preferences.notifications) {
       return;
     }

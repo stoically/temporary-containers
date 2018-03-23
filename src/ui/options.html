@@ -15,10 +15,7 @@
     <div class="ui container">
       <div class="ui menu">
         <a class="item active" data-tab="general">General</a>
-        <a class="item" data-tab="rules">Rules</a>
-        <a class="item" data-tab="alwaysopenin">Always per Website</a>
         <a class="item" data-tab="isolation">Isolation</a>
-        <a class="item" data-tab="mouseclicks">Mouse Clicks</a>
         <a class="item" data-tab="advanced">Advanced</a>
         <a class="item" data-tab="statistics">Statistics</a>
       </div>
@@ -113,19 +110,17 @@
           </div>
         </form>
       </div>
-      <div class="ui tab segment" data-tab="rules">
+      <div class="ui tab segment" data-tab="isolation">
         <div class="ui top attached tabular menu">
-          <a class="active item" data-tab="rules/global">Global</a>
-          <a class="item" data-tab="rules/perwebsite">Per Website</a>
-          <a class="item" data-tab="rules/mac">Multi-Account Containers</a>
+          <a class="active item" data-tab="isolation/global">Global</a>
+          <a class="item" data-tab="isolation/perwebsite">Per Website</a>
+          <a class="item" data-tab="isolation/mac">Multi-Account Containers</a>
         </div>
-        <div class="ui bottom attached active tab segment" data-tab="rules/global">
+        <div class="ui bottom attached active tab segment" data-tab="isolation/global">
           <form class="ui form">
-            <h4>
-              Navigating should open new Temporary Containers
-            </h4>
+            <h4>Navigating in Tabs should open new Temporary Containers</h4>
             <div class="field">
-              <select id="rulesIsolationGlobal" class="ui fluid dropdown">
+              <select id="isolationGlobal" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact">If the navigation target doesn't exactly match the current Tabs Website Domain</option>
                 <option value="notsamedomain">If the navigation target doesn't match the current Tabs Website Domain (includes Subdomains)</option>
@@ -136,7 +131,7 @@
             <h4>Mouse Clicks on Links should open new Temporary Containers</h4>
             <div class="field">
               <label>Middle Mouse</label>
-              <select id="rulesLinkClickGlobalMiddle" class="ui fluid dropdown">
+              <select id="isolationLinkClickGlobalMiddle" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
                 <option value="notsamedomain">If the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
@@ -145,7 +140,7 @@
             </div>
             <div class="field">
               <label>Ctrl/Cmd+Left Mouse</label>
-              <select id="rulesLinkClickGlobalCtrlLeft" class="ui fluid dropdown">
+              <select id="isolationLinkClickGlobalCtrlLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
                 <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
@@ -154,7 +149,7 @@
             </div>
             <div class="field">
               <label>Left Mouse</label>
-              <select id="rulesLinkClickGlobalLeft" class="ui fluid dropdown">
+              <select id="isolationLinkClickGlobalLeft" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
                 <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
@@ -166,141 +161,67 @@
             </div>
           </form>
         </div>
-        <div class="ui bottom attached tab segment" data-tab="rules/perwebsite">
+        <div class="ui bottom attached tab segment" data-tab="isolation/perwebsite">
           <form class="ui form" id="isolationDomainForm">
-            <div id="rulesDomainPatternDiv" class="field">
+            <div id="isolationDomainPatternDiv" class="field">
               <label>Website Pattern [?]</label>
-              <input id="rulesDomainPattern" type="text">
+              <input id="isolationDomainPattern" type="text">
             </div>
-            <h4>
-              Always open in new Temporary Container
-            </h4>
+            <h4>Always open in new Temporary Container</h4>
             <div class="field">
-              <select id="rulesIsolationDomainAction" class="ui fluid dropdown">
+              <select id="isolationDomainAction" class="ui fluid dropdown">
                 <option value="enabled">Enabled</option>
                 <option value="allowpermanent">Enabled, but allow to load in Permanent Containers</option>
                 <option value="disabled">Disabled</option>
               </select>
             </div>
-            <h4>
-              Navigating should open new Temporary Containers
-            </h4>
-            <div class="field">
-              <select id="rulesIsolationDomainAction" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact" selected="selected">If the navigation target doesn't exactly match the current Tabs Website Domain</option>
-                <option value="notsamedomain">If the navigation target doesn't match the current Tabs Website Domain (includes Subdomains)</option>
-                <option value="never">Never</option>
-                <option value="global">Global</option>
-              </select>
-            </div>
-            <h4>
-              Mouse Clicks on Links should open new Temporary Containers
-            </h4>
-            <div class="field">
-              <label>Middle Mouse</label>
-              <select id="rulesLinkClickDomainMiddle" class="ui fluid dropdown">
-                <option value="always" selected="selected">Always</option>
-                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-                <option value="global">Global</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Ctrl/Cmd+Left Mouse</label>
-              <select id="rulesLinkClickDomainCtrlLeft" class="ui fluid dropdown">
-                <option value="always" selected="selected">Always</option>
-                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-                <option value="global">Global</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Left Mouse</label>
-              <select id="rulesLinkClickDomainLeft" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact" selected="selected">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-                <option value="global">Global</option>
-              </select>
-            </div>
-            <div class="field">
-              <button id="rulesDomainAdd" class="ui button primary">Save</button>
-            </div>
-            <div>
-              <h3>Website Rules</h3>
-              <div class="ui bulleted list" id="rulesDomain">
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="rules/mac">
-          <form class="ui form">
-            <h4 data-tooltip="Will not work if the navigation target (loading Website) is assigned to 'Always open in' with Multi-Account Containers">
-              Open new Temporary Containers if a permanent container Tab tries to load
-              a Website that isn't assigned to "Always open in" in that container [?]</h4>
-            <div class="field">
-              <select id="rulesIsolationMac" class="ui fluid dropdown">
-                <option value="disabled">Disabled</option>
-                <option value="enabled">Enabled</option>
-              </select>
-            </div>
-            <div class="field">
-              <button id="saveRulesIsolationMacPreferences" class="ui button primary">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div class="ui tab segment" data-tab="isolation">
-        <div class="ui top attached tabular menu">
-          <a class="active item" data-tab="isolation/global">Global</a>
-          <a class="item" data-tab="isolation/perwebsite">Per Website</a>
-          <a class="item" data-tab="isolation/mac">Multi-Account Containers</a>
-        </div>
-        <div class="ui bottom attached active tab segment" data-tab="isolation/global">
-          <form class="ui form">
-            <h4>
-              Navigating in Tabs should open new Temporary Containers [?]
-            </h4>
-            <div class="field">
-              <select id="isolationGlobal" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the navigation target doesn't exactly match the current Tabs Website Domain</option>
-                <option value="notsamedomain">If the navigation target doesn't match the current Tabs Website Domain (includes Subdomains)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <button id="saveIsolationGlobalPreferences" class="ui button primary">Save</button>
-            </div>
-          </form>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="isolation/perwebsite">
-          <form class="ui form" id="isolationDomainForm">
-            <h4>
-              Navigating in Tabs that have a given Website loaded should open new Temporary Containers [?]
-            </h4>
-            <div id="isolationDomainPatternDiv" class="field">
-              <label>Website Pattern [?]</label>
-              <input id="isolationDomainPattern" type="text">
-            </div>
+            <h4>Navigating in Tabs should open new Temporary Containers</h4>
             <div class="field">
               <select id="isolationDomainAction" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact" selected="selected">If the navigation target doesn't exactly match the current Tabs Website Domain</option>
                 <option value="notsamedomain">If the navigation target doesn't match the current Tabs Website Domain (includes Subdomains)</option>
                 <option value="never">Never</option>
+                <option value="global">Use Global</option>
+              </select>
+            </div>
+            <h4>Mouse Clicks on Links should open new Temporary Containers</h4>
+            <div class="field">
+              <label>Middle Mouse</label>
+              <select id="isolationLinkClickDomainMiddle" class="ui fluid dropdown">
+                <option value="always" selected="selected">Always</option>
+                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="never">Never</option>
+                <option value="global">Use Global</option>
               </select>
             </div>
             <div class="field">
-              <button id="isolationDomainAddRule" class="ui button primary">Save</button>
+              <label>Ctrl/Cmd+Left Mouse</label>
+              <select id="isolationLinkClickDomainCtrlLeft" class="ui fluid dropdown">
+                <option value="always" selected="selected">Always</option>
+                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="never">Never</option>
+                <option value="global">Use Global</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Left Mouse</label>
+              <select id="isolationLinkClickDomainLeft" class="ui fluid dropdown">
+                <option value="always">Always</option>
+                <option value="notsamedomainexact" selected="selected">If the clicked Link is not the exact same Domain as the Website</option>
+                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
+                <option value="never">Never</option>
+                <option value="global">Use Global</option>
+              </select>
+            </div>
+            <div class="field">
+              <button id="isolationDomainAdd" class="ui button primary">Save</button>
             </div>
             <div>
               <h3>Website Rules</h3>
-              <div class="ui bulleted list" id="isolationDomainRules">
+              <div class="ui bulleted list" id="isolationDomain">
               </div>
             </div>
           </form>
@@ -317,130 +238,10 @@
               </select>
             </div>
             <div class="field">
-              <button id="saveIsolationMacPreferences" class="ui button primary">Save</button>
+              <button id="saveRulesIsolationMacPreferences" class="ui button primary">Save</button>
             </div>
           </form>
         </div>
-      </div>
-      <div class="ui tab segment" data-tab="mouseclicks">
-        <div class="ui top attached tabular menu">
-          <a class="active item" data-tab="mouseclicks/global">Global</a>
-          <a class="item" data-tab="mouseclicks/perwebsite">Per Website</a>
-        </div>
-        <div class="ui bottom attached active tab segment" data-tab="mouseclicks/global">
-          <form class="ui form">
-            <h4>Mouse Clicks on Links should open new Temporary Containers</h4>
-            <div class="ui message">
-              Not all Mouse Clicks can get catched since on some websites you don't actually click
-              links, but instead other HTML elements and the website then executes arbitrary JavaScript
-              which might open another website or a new tab without opening it in a new Temporary Container.<br>
-              <br>
-              If you want to make sure that all tabs or websites are opened in a new Temporary
-              Container you should additionally configure the Isolation feature.
-            </div>
-            <div class="field">
-              <label>Middle Mouse</label>
-              <select id="linkClickGlobalMiddle" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain (includes Subdomains) as the Website</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Ctrl/Cmd+Left Mouse</label>
-              <select id="linkClickGlobalCtrlLeft" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Left Mouse</label>
-              <select id="linkClickGlobalLeft" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <button id="saveLinkClickGlobalPreferences" class="ui button primary">Save</button>
-            </div>
-          </form>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="mouseclicks/perwebsite">
-          <form class="ui form" id="linkClickDomainForm">
-            <h4 data-tooltip="Website Rules overwrite Global Preferences">
-              On which Websites should Mouse Clicks on Links open new Temporary Containers [?]
-            </h4>
-            <div id="linkClickDomainPatternDiv" class="field">
-              <label>Website Pattern [?]</label>
-              <input id="linkClickDomainPattern" type="text">
-            </div>
-            <div class="field">
-              <label>Middle Mouse</label>
-              <select id="linkClickDomainMiddle" class="ui fluid dropdown">
-                <option value="always" selected="selected">Always</option>
-                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Ctrl/Cmd+Left Mouse</label>
-              <select id="linkClickDomainCtrlLeft" class="ui fluid dropdown">
-                <option value="always" selected="selected">Always</option>
-                <option value="notsamedomainexact">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Left Mouse</label>
-              <select id="linkClickDomainLeft" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact" selected="selected">If the clicked Link is not the exact same Domain as the Website</option>
-                <option value="notsamedomain">If the clicked Link is not the same Domain as the Website (includes Subdomains)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <button id="linkClickDomainAddRule" class="ui button primary">Save</button>
-            </div>
-            <div>
-              <h3>Website Rules</h3>
-              <div class="ui bulleted list" id="linkClickDomainRules">
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div class="ui tab segment" data-tab="alwaysopenin">
-        <form class="ui form" id="alwaysOpenInDomainForm">
-          <h4 data-tooltip="Regardless how they're opened. Will not work if the Website is assigned using Multi-Account Containers.">
-            Websites that should always open in new Temporary Containers [?]
-          </h4>
-          <div id="alwaysOpenInDomainPatternDiv" class="field">
-            <label>Website Pattern [?]</label>
-            <input id="alwaysOpenInDomainPattern" type="text">
-          </div>
-          <div class="field" id="alwaysOpenInDomainAllowedInPermanentDiv">
-            <div class="ui checkbox" data-tooltip="This will not reopen websites matching the pattern if they load in a permanent container">
-              <input type="checkbox" id="alwaysOpenInDomainAllowedInPermanent">
-              <label>Allow the Website to load in permanent Containers [?]</label>
-            </div>
-          </div>
-          <div class="field">
-            <button id="alwaysOpenInDomainAddRule" class="ui button primary">Save</button>
-          </div>
-          <div>
-            <h3>Website Rules</h3>
-            <div class="ui bulleted list" id="alwaysOpenInDomainRules">
-            </div>
-          </div>
-        </form>
       </div>
       <div class="ui tab segment" data-tab="advanced">
         <div class="ui top attached tabular menu">

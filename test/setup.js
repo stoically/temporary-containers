@@ -1,19 +1,27 @@
 global.preferencesTestSet = [
   {
-    automaticMode: false,
-    automaticModeNewTab: 'created'
+    automaticMode: {
+      active: false,
+      newTab: 'created'
+    }
   },
   {
-    automaticMode: true,
-    automaticModeNewTab: 'created'
+    automaticMode: {
+      active: true,
+      newTab: 'created'
+    }
   },
   {
-    automaticMode: true,
-    automaticModeNewTab: 'navigation'
+    automaticMode: {
+      active: true,
+      newTab: 'navigation'
+    }
   },
   {
-    automaticMode: false,
-    automaticModeNewTab: 'navigation'
+    automaticMode: {
+      active: false,
+      newTab: 'navigation'
+    }
   }
 ];
 
@@ -92,8 +100,8 @@ global.loadBackground = async (preferences = {}) => {
     reason: 'install'
   });
   Object.assign(background.storage.local.preferences, preferences);
-  background.storage.local.preferences.linkClickGlobal.middle.action = 'always';
-  background.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'always';
+  background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'always';
+  background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'always';
   await background.initialize();
   return background;
 };

@@ -20,7 +20,7 @@ class Commands {
         return;
       }
       this.container.createTabInTempContainer({
-        deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic'
+        deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
       });
       break;
 

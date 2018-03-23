@@ -22,7 +22,7 @@ class ContextMenu {
         tab,
         url: info.linkUrl,
         active: false,
-        deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic'
+        deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
       });
       break;
     case 'open-link-in-new-deletes-history-temporary-container-tab':
@@ -49,7 +49,7 @@ class ContextMenu {
         }
       });
     }
-    if (this.storage.local.preferences.deletesHistoryContextMenu) {
+    if (this.storage.local.preferences.deletesHistory.contextMenu) {
       browser.contextMenus.create({
         id: 'open-link-in-new-deletes-history-temporary-container-tab',
         title: 'Open Link in New "Deletes History Temporary Container" Tab',

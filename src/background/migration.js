@@ -5,7 +5,7 @@ class Migration {
 
 
   initialize() {
-    this.storage = this.background;
+    this.storage = this.background.storage;
   }
 
 
@@ -63,6 +63,109 @@ class Migration {
       debug('updated from version <= 0.73, remove tabContainerMap from storage');
       delete this.storage.local.tabContainerMap;
       await this.storage.persist();
+    }
+    if (versionCompare('0.77', previousVersion) >= 0) {
+      debug('updated from version <= 0.77, migrate preferences');
+      const preferences = this.storage.local.preferences;
+      const newPreferences = {
+        automaticMode: {
+          active: preferences.automaticMode,
+          newTab: preferences.automaticModeNewTab
+        },
+        notifications: preferences.notifications,
+        container: {
+          namePrefix: preferences.containerNamePrefix,
+          color: preferences.containerColor,
+          colorRandom: preferences.containerColorRandom,
+          icon: preferences.containerIcon,
+          iconRandom: preferences.containerIconRandom,
+          numberMode: preferences.containerNumberMode,
+          removal: preferences.containerRemoval
+        },
+        iconColor: preferences.iconColor,
+        isolation: {
+          global: {
+            navigation: {
+              action: preferences.isolationGlobal
+            },
+            mouseClick: preferences.linkClickGlobal
+          },
+          domain: {},
+          mac: {
+            action: preferences.isolationMac
+          }
+        },
+        pageAction: preferences.pageAction,
+        contextMenu: preferences.contextMenu,
+        keyboardShortcuts: preferences.keyboardShortcuts,
+        replaceTabs: preferences.replaceTabs,
+        ignoreRequestsToAMO: preferences.ignoreRequestsToAMO,
+        ignoreRequestsToPocket: preferences.ignoreRequestsToPocket,
+        cookies: {
+          domain: preferences.setCookiesDomain
+        },
+        deletesHistory: {
+          automaticMode: preferences.deletesHistoryContainer,
+          contextMenu: preferences.deletesHistoryContextMenu,
+          containerAlwaysPerWebsite: preferences.deletesHistoryContainerAlwaysPerWebsite,
+          containerIsolation: preferences.deletesHistoryContainerIsolation,
+          containerRemoval: preferences.deletesHistoryContainerRemoval,
+          containerMouseClicks: preferences.deletesHistoryContainerMouseClicks,
+          statistics: preferences.deletesHistoryStatistics
+        },
+        statistics: preferences.statistics,
+      };
+
+      const initIsolationDomain = (pattern) => {
+        if (newPreferences.isolation.domain[pattern]) {
+          return;
+        }
+        newPreferences.isolation.domain[pattern] = {
+          always: {
+            action: 'disabled',
+            allowedInPermanent: false
+          },
+          navigation: {
+            action: 'global'
+          },
+          mouseClick: {
+            middle: {
+              action: 'global',
+              container: 'default'
+            },
+            ctrlleft: {
+              action: 'global',
+              container: 'default'
+            },
+            left: {
+              action: 'global',
+              container: 'default'
+            }
+          }
+        };
+      };
+
+      Object.keys(preferences.alwaysOpenInDomain).map((pattern) => {
+        initIsolationDomain(pattern);
+        const _preferences = preferences.alwaysOpenInDomain[pattern];
+        newPreferences.isolation.domain[pattern].always = {
+          action: 'enabled',
+          allowedInPermanent: _preferences.allowedInPermanent
+        };
+      });
+      Object.keys(preferences.isolationDomain).map((pattern) => {
+        initIsolationDomain(pattern);
+        const _preferences = preferences.isolationDomain[pattern];
+        newPreferences.isolation.domain[pattern].navigation = _preferences;
+      });
+      Object.keys(preferences.linkClickDomain).map((pattern) => {
+        initIsolationDomain(pattern);
+        const _preferences = preferences.linkClickDomain[pattern];
+        newPreferences.isolation.domain[pattern].mouseClick = _preferences;
+      });
+
+      this.storage.local.preferences = newPreferences;
+      this.storage.persist();
     }
   }
 }

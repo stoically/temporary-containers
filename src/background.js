@@ -22,8 +22,9 @@ class TemporaryContainers {
     // register message listener
     browser.runtime.onMessage.addListener(this.runtime.onMessage.bind(this));
 
-    // TODO cache history permission in storage when firefox bug is fixed
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1283320
+    // TODO cache history permission in storage based on firefox version >=60.0b1
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1402850
+    // https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/runtime/getBrowserInfo
     this.permissions = {
       history: await browser.permissions.contains({permissions: ['history']}),
       notifications: await browser.permissions.contains({permissions: ['notifications']})

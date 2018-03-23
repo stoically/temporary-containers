@@ -116,12 +116,12 @@ class MouseClick {
     const parsedClickedURL = new URL(message.href);
     debug('[checkClick] checking click', type, message, sender);
 
-    for (let domainPattern in this.storage.local.preferences.linkClickDomain) {
+    for (let domainPattern in this.storage.local.preferences.isolation.domain) {
       if (parsedSenderTabURL.hostname !== domainPattern &&
           !parsedSenderTabURL.hostname.match(globToRegexp(domainPattern))) {
         continue;
       }
-      const domainPatternPreferences = this.storage.local.preferences.linkClickDomain[domainPattern];
+      const domainPatternPreferences = this.storage.local.preferences.isolation.domain[domainPattern].mouseClick;
       if (!domainPatternPreferences[type]) {
         continue;
       }
@@ -130,7 +130,7 @@ class MouseClick {
         parsedClickedURL, parsedSenderTabURL);
     }
     debug('[checkClick] no website pattern found, checking global preferences');
-    return this.checkClickPreferences(this.storage.local.preferences.linkClickGlobal[type],
+    return this.checkClickPreferences(this.storage.local.preferences.isolation.global.mouseClick[type],
       parsedClickedURL, parsedSenderTabURL);
   }
 
@@ -139,7 +139,7 @@ class MouseClick {
     if (this.linksClicked[url] &&
         this.linksClicked[url].clickType) {
       const clickType = this.linksClicked[url].clickType;
-      if (this.storage.local.preferences.linkClickGlobal[clickType].container === 'deleteshistory') {
+      if (this.storage.local.preferences.isolation.global.mouseClick[clickType].container === 'deleteshistory') {
         return true;
       }
     }

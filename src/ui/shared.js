@@ -58,15 +58,15 @@ const savePreferences = async () => {
 window.saveContainerPreferences = async (event) => {
   event.preventDefault();
 
-  preferences.automaticMode = document.querySelector('#automaticMode').checked;
+  preferences.automaticMode.active = document.querySelector('#automaticMode').checked;
   preferences.notifications = document.querySelector('#notificationsCheckbox').checked;
-  preferences.containerNamePrefix = document.querySelector('#containerNamePrefix').value;
-  preferences.containerColor = document.querySelector('#containerColor').value;
-  preferences.containerColorRandom = document.querySelector('#containerColorRandom').checked;
-  preferences.containerIcon = document.querySelector('#containerIcon').value;
-  preferences.containerIconRandom = document.querySelector('#containerIconRandom').checked;
-  preferences.containerNumberMode = document.querySelector('#containerNumberMode').value;
-  preferences.containerRemoval = document.querySelector('#containerRemoval').value;
+  preferences.container.namePrefix = document.querySelector('#containerNamePrefix').value;
+  preferences.container.color = document.querySelector('#containerColor').value;
+  preferences.container.colorRandom = document.querySelector('#containerColorRandom').checked;
+  preferences.container.icon = document.querySelector('#containerIcon').value;
+  preferences.container.iconRandom = document.querySelector('#containerIconRandom').checked;
+  preferences.container.numberMode = document.querySelector('#containerNumberMode').value;
+  preferences.container.removal = document.querySelector('#containerRemoval').value;
   preferences.iconColor = document.querySelector('#iconColor').value;
 
   await savePreferences();
@@ -277,24 +277,24 @@ window.setCookiesDomainAddRule = async () => {
     value: document.querySelector('#setCookiesDomainValue').value
   };
 
-  if (!preferences.setCookiesDomain[domainPattern]) {
-    preferences.setCookiesDomain[domainPattern] = [];
+  if (!preferences.cookies.domain[domainPattern]) {
+    preferences.cookies.domain[domainPattern] = [];
   }
-  preferences.setCookiesDomain[domainPattern].push(setCookieRule);
+  preferences.cookies.domain[domainPattern].push(setCookieRule);
   await savePreferences();
   updateSetCookiesDomainRules();
 };
 
 window.updateSetCookiesDomainRules = () => {
   const setCookiesDomainCookies = $('#setCookiesDomainCookies');
-  const domainRules = Object.keys(preferences.setCookiesDomain);
+  const domainRules = Object.keys(preferences.cookies.domain);
   if (!domainRules.length) {
     setCookiesDomainCookies.html('No Cookies added');
     return;
   }
   setCookiesDomainCookies.html('');
   domainRules.map((domainPattern) => {
-    const domainPatternCookies = preferences.setCookiesDomain[domainPattern];
+    const domainPatternCookies = preferences.cookies.domain[domainPattern];
     domainPatternCookies.map((domainPatternCookie, index) => {
       if (!domainPatternCookie) {
         return;
@@ -312,14 +312,14 @@ window.updateSetCookiesDomainRules = () => {
     const domainPattern = $(event.target).parent().attr('id');
     const domainPatternIndex = $(event.target).parent().attr('idIndex');
     if (domainPattern === 'setCookiesDomainCookies' ||
-        !preferences.setCookiesDomain[decodeURIComponent(domainPattern)]) {
+        !preferences.cookies.domain[decodeURIComponent(domainPattern)]) {
       return;
     }
 
-    delete preferences.setCookiesDomain[decodeURIComponent(domainPattern)][domainPatternIndex];
-    const cookies = preferences.setCookiesDomain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie === 'object');
+    delete preferences.cookies.domain[decodeURIComponent(domainPattern)][domainPatternIndex];
+    const cookies = preferences.cookies.domain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie === 'object');
     if (!cookies.length) {
-      delete preferences.setCookiesDomain[decodeURIComponent(domainPattern)];
+      delete preferences.cookies.domain[decodeURIComponent(domainPattern)];
     }
     await savePreferences();
     updateSetCookiesDomainRules();
@@ -354,14 +354,14 @@ window.saveAdvancedPreferences = async (event) => {
   preferences.replaceTabs = document.querySelector('#replaceTabs').checked;
   preferences.ignoreRequestsToAMO = document.querySelector('#ignoreRequestsToAMO').checked;
   preferences.ignoreRequestsToPocket = document.querySelector('#ignoreRequestsToPocket').checked;
-  preferences.automaticModeNewTab = document.querySelector('#automaticModeNewTab').value;
+  preferences.automaticMode.newTab = document.querySelector('#automaticModeNewTab').value;
 
-  preferences.deletesHistoryContainer = document.querySelector('#deletesHistoryContainer').value;
-  preferences.deletesHistoryContextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
-  preferences.deletesHistoryContainerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
-  preferences.deletesHistoryContainerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
-  preferences.deletesHistoryContainerIsolation = document.querySelector('#deletesHistoryContainerIsolation').value;
-  preferences.deletesHistoryContainerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
+  preferences.deletesHistory.automaticMode = document.querySelector('#deletesHistoryContainer').value;
+  preferences.deletesHistory.contextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
+  preferences.deletesHistory.containerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
+  preferences.deletesHistory.containerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
+  preferences.deletesHistory.containerIsolation = document.querySelector('#deletesHistoryContainerIsolation').value;
+  preferences.deletesHistory.containerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
 
   // TODO this might cause saving preferences that got selected on global mouseclicks but not saved
   saveLinkClickGlobalPreferences(event);

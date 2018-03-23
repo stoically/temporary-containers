@@ -3,7 +3,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   describe('Container Removal', () => {
     it('when the last tab in a container closes it should get removed eventually (15minutes)', async () => {
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.containerRemoval = '15minutes';
+      background.storage.local.preferences.container.removal = '15minutes';
       await helper.browser.openNewTmpTab({
         createsTabId: 2,
         createsContainer: 'firefox-tmp1'
@@ -27,7 +27,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     it('when the last tab in a container closes it should get removed eventually (5minutes)', async () => {
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.containerRemoval = '5minutes';
+      background.storage.local.preferences.container.removal = '5minutes';
       await helper.browser.openNewTmpTab({
         createsTabId: 2,
         createsContainer: 'firefox-tmp1'
@@ -51,7 +51,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     it('when the last tab in a container closes it should get removed eventually (2minutes)', async () => {
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.containerRemoval = '2minutes';
+      background.storage.local.preferences.container.removal = '2minutes';
       await helper.browser.openNewTmpTab({
         createsTabId: 2,
         createsContainer: 'firefox-tmp1'
@@ -75,7 +75,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     it('when the last tab in a container closes it should get removed eventually (instant)', async () => {
       const background = await loadBackground(preferences);
-      background.storage.local.preferences.containerRemoval = 'instant';
+      background.storage.local.preferences.container.removal = 'instant';
       await helper.browser.openNewTmpTab({
         createsTabId: 2,
         createsContainer: 'firefox-tmp1'

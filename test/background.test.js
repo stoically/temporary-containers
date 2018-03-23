@@ -109,7 +109,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
 
   describe('runtime.onStartup should sometimes reload already open Tab in Temporary Container', () => {
-    if (!preferences.automaticMode || preferences.automaticModeNewTab === 'navigation') {
+    if (!preferences.automaticMode.active || preferences.automaticMode.newTab === 'navigation') {
       return;
     }
     const fakeContainer = {
@@ -128,7 +128,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves({id: 1});
       await background.initialize();
-      background.storage.local.preferences.automaticModeNewTab = 'created';
+      background.storage.local.preferences.automaticMode.newTab = 'created';
       await background.runtime.onStartup();
       await nextTick();
       browser.contextualIdentities.create.should.have.been.calledOnce;
@@ -166,7 +166,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
 
   describe('tabs loading about:home or about:newtab in the default container', () => {
-    if (!preferences.automaticMode) {
+    if (!preferences.automaticMode.active) {
       return;
     }
     it('should reopen about:home in temporary container', async () => {
@@ -181,7 +181,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves({id: 1});
       await background.initialize();
-      background.storage.local.preferences.automaticModeNewTab = 'created';
+      background.storage.local.preferences.automaticMode.newTab = 'created';
       await background.container.maybeReloadTabInTempContainer(fakeTab);
 
       browser.contextualIdentities.create.should.have.been.calledOnce;
@@ -191,7 +191,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
 
   describe('tabs loading URLs in default-container', () => {
-    if (!preferences.automaticMode) {
+    if (!preferences.automaticMode.active) {
       return;
     }
     beforeEach(async () => {
@@ -246,7 +246,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
   describe('tabs requesting a previously clicked url in a temporary container', () => {
     // TODO refactor me
-    if (!preferences.automaticMode) {
+    if (!preferences.automaticMode.active) {
       return;
     }
     let background, fakeMessage;

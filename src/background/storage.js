@@ -4,43 +4,48 @@ class Storage {
     this.loading = false;
     this.local = null;
     this.preferencesDefault = {
-      automaticMode: false,
-      automaticModeNewTab: 'created',
-      isolationGlobal: 'never',
-      isolationDomain: {},
-      isolationMac: 'disabled',
-      isolationMacContainer: {},
-      linkClickGlobal: {
-        middle: {
-          action: 'never',
-          container: 'default'
+      automaticMode: {
+        active: true,
+        newTab: 'created'
+      },
+      notifications: false,
+      container: {
+        namePrefix: 'tmp',
+        color: 'red',
+        colorRandom: false,
+        icon: 'circle',
+        iconRandom: false,
+        numberMode: 'keep',
+        removal: '15minutes'
+      },
+      iconColor: 'default',
+      isolation: {
+        global: {
+          navigation: {
+            action: 'never'
+          },
+          mouseClick: {
+            middle: {
+              action: 'never',
+              container: 'default'
+            },
+            ctrlleft: {
+              action: 'never',
+              container: 'default'
+            },
+            left: {
+              action: 'never',
+              container: 'default'
+            }
+          }
         },
-        ctrlleft: {
-          action: 'never',
-          container: 'default'
-        },
-        left: {
-          action: 'never',
-          container: 'default'
+        domain: {},
+        mac: {
+          action: 'disabled',
         }
       },
-      linkClickDomain: {},
-      alwaysOpenInDomain: {},
-      containerNamePrefix: 'tmp',
-      containerColor: 'red',
-      containerColorRandom: false,
-      containerIcon: 'circle',
-      containerIconRandom: false,
-      containerNumberMode: 'keep',
-      containerRemoval: '15minutes',
-      iconColor: 'default',
-      historyPermission: false,
-      deletesHistoryContainer: 'never',
-      deletesHistoryContextMenu: false,
-      deletesHistoryContainerAlwaysPerWebsite: 'never',
-      deletesHistoryContainerIsolation: 'never',
-      deletesHistoryContainerRemoval: 'instant',
-      deletesHistoryContainerMouseClicks: 'never',
+      pageAction: false,
+      contextMenu: true,
       keyboardShortcuts: {
         AltC: true,
         AltP: true,
@@ -48,16 +53,79 @@ class Storage {
         AltShiftC: false,
         AltX: false
       },
-      notifications: false,
-      statistics: false,
-      deletesHistoryStatistics: false,
-      setCookiesDomain: {},
-      contextMenu: true,
-      pageAction: false,
       replaceTabs: false,
       ignoreRequestsToAMO: true,
-      ignoreRequestsToPocket: true
+      ignoreRequestsToPocket: true,
+      cookies: {
+        domain: {}
+      },
+      deletesHistory: {
+        automaticMode: 'never',
+        contextMenu: false,
+        containerAlwaysPerWebsite: 'never',
+        containerIsolation: 'never',
+        containerRemoval: 'instant',
+        containerMouseClicks: 'never',
+        statistics: false
+      },
+      statistics: false,
     };
+    // TODO remove me
+    // this.preferencesDefault = {
+    //   automaticMode: false,
+    //   automaticModeNewTab: 'created',
+    //   isolationGlobal: 'never',
+    //   isolationDomain: {},
+    //   isolationMac: 'disabled',
+    //   isolationMacContainer: {},
+    //   linkClickGlobal: {
+    //     middle: {
+    //       action: 'never',
+    //       container: 'default'
+    //     },
+    //     ctrlleft: {
+    //       action: 'never',
+    //       container: 'default'
+    //     },
+    //     left: {
+    //       action: 'never',
+    //       container: 'default'
+    //     }
+    //   },
+    //   linkClickDomain: {},
+    //   alwaysOpenInDomain: {},
+    //   containerNamePrefix: 'tmp',
+    //   containerColor: 'red',
+    //   containerColorRandom: false,
+    //   containerIcon: 'circle',
+    //   containerIconRandom: false,
+    //   containerNumberMode: 'keep',
+    //   containerRemoval: '15minutes',
+    //   iconColor: 'default',
+    //   historyPermission: false,
+    //   deletesHistoryContainer: 'never',
+    //   deletesHistoryContextMenu: false,
+    //   deletesHistoryContainerAlwaysPerWebsite: 'never',
+    //   deletesHistoryContainerIsolation: 'never',
+    //   deletesHistoryContainerRemoval: 'instant',
+    //   deletesHistoryContainerMouseClicks: 'never',
+    //   keyboardShortcuts: {
+    //     AltC: true,
+    //     AltP: true,
+    //     AltN: false,
+    //     AltShiftC: false,
+    //     AltX: false
+    //   },
+    //   notifications: false,
+    //   statistics: false,
+    //   deletesHistoryStatistics: false,
+    //   setCookiesDomain: {},
+    //   contextMenu: true,
+    //   pageAction: false,
+    //   replaceTabs: false,
+    //   ignoreRequestsToAMO: true,
+    //   ignoreRequestsToPocket: true
+    // };
     this.loadErrorRetryTime = 1000;
     this.loadErrorCount = 0;
   }

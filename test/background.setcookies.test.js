@@ -17,7 +17,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         value: 'value'
       };
       browser.cookies.get.resolves(cookie);
-      background.storage.local.preferences.setCookiesDomain = {
+      background.storage.local.preferences.cookies.domain = {
         'example.com': [cookie]
       };
       const [promise] = browser.webRequest.onBeforeSendHeaders.addListener.yield({
@@ -62,7 +62,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         value: 'value'
       };
       browser.cookies.get.resolves(null);
-      background.storage.local.preferences.setCookiesDomain = {
+      background.storage.local.preferences.cookies.domain = {
         'example.com': [cookie]
       };
       const [promise] = browser.webRequest.onBeforeSendHeaders.addListener.yield({
@@ -83,7 +83,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         cookieStoreId: 'firefox-default'
       });
       await background.initialize();
-      background.storage.local.preferences.setCookiesDomain = {
+      background.storage.local.preferences.cookies.domain = {
         'example.com': [
           {name: 'example', value: 'content'}
         ]

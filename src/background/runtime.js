@@ -74,7 +74,7 @@ class Runtime {
       return this.container.createTabInTempContainer({
         url: message.url || null,
         active: message.active,
-        deletesHistory: this.storage.local.preferences.deletesHistoryContainer === 'automatic' ? true : false
+        deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic' ? true : false
       });
     case 'isTempContainer':
       return this.storage.local.tempContainers[message.cookieStoreId] ? true : false;

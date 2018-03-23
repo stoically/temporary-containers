@@ -35,7 +35,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "never"', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.isolationGlobal = 'never';
+          background.storage.local.preferences.isolation.global.navigation.action = 'never';
         });
 
         describe('if its the exact same domain', () => {
@@ -71,7 +71,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "always"', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.isolationGlobal = 'always';
+          background.storage.local.preferences.isolation.global.navigation.action = 'always';
         });
 
         describe('if its the exact same domain', () => {
@@ -107,7 +107,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "notsamedomain"', () => {
         beforeEach(() => {
-          background.storage.local.preferences.isolationGlobal = 'notsamedomain';
+          background.storage.local.preferences.isolation.global.navigation.action = 'notsamedomain';
         });
 
         describe('if its the exact same domain', () => {
@@ -143,7 +143,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "notsamedomainexact"', () => {
         beforeEach(() => {
-          background.storage.local.preferences.isolationGlobal = 'notsamedomainexact';
+          background.storage.local.preferences.isolation.global.navigation.action = 'notsamedomainexact';
         });
 
         describe('if its the exact same domain', () => {
@@ -206,7 +206,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with "enabled"', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.isolationMac = 'enabled';
+          background.storage.local.preferences.isolation.mac.action = 'enabled';
         });
         describe('if the navigation target is assigned to the current container', () => {
           beforeEach(async () => {

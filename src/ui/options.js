@@ -4,34 +4,34 @@ const initialize = async () => {
   $('.ui.checkbox').checkbox();
   try {
     const setCurrentPreferences = () => {
-      document.querySelector('#automaticMode').checked = preferences.automaticMode;
+      document.querySelector('#automaticMode').checked = preferences.automaticMode.active;
       document.querySelector('#notificationsCheckbox').checked = preferences.notifications;
-      document.querySelector('#containerNamePrefix').value = preferences.containerNamePrefix;
-      $('#containerColor').dropdown('set selected', preferences.containerColor);
-      document.querySelector('#containerColorRandom').checked = preferences.containerColorRandom;
-      $('#containerIcon').dropdown('set selected', preferences.containerIcon);
-      document.querySelector('#containerIconRandom').checked = preferences.containerIconRandom;
-      $('#containerNumberMode').dropdown('set selected', preferences.containerNumberMode);
-      $('#containerRemoval').dropdown('set selected', preferences.containerRemoval);
+      document.querySelector('#containerNamePrefix').value = preferences.container.namePrefix;
+      $('#containerColor').dropdown('set selected', preferences.container.color);
+      document.querySelector('#containerColorRandom').checked = preferences.container.colorRandom;
+      $('#containerIcon').dropdown('set selected', preferences.container.icon);
+      document.querySelector('#containerIconRandom').checked = preferences.container.iconRandom;
+      $('#containerNumberMode').dropdown('set selected', preferences.container.numberMode);
+      $('#containerRemoval').dropdown('set selected', preferences.container.removal);
       $('#iconColor').dropdown('set selected', preferences.iconColor);
 
-      $('#isolationGlobal').dropdown('set selected', preferences.isolationGlobal);
-      $('#isolationMac').dropdown('set selected', preferences.isolationMac);
+      $('#isolationGlobal').dropdown('set selected', preferences.isolation.global.navigation.action);
+      $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
 
-      $('#linkClickGlobalMiddle').dropdown('set selected', preferences.linkClickGlobal.middle.action);
-      $('#linkClickGlobalCtrlLeft').dropdown('set selected', preferences.linkClickGlobal.ctrlleft.action);
-      $('#linkClickGlobalLeft').dropdown('set selected', preferences.linkClickGlobal.left.action);
+      $('#isolationLinkClickGlobalMiddle').dropdown('set selected', preferences.isolation.global.mouseClick.middle.action);
+      $('#isolationLinkClickGlobalCtrlLeft').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.action);
+      $('#isolationLinkClickGlobalLeft').dropdown('set selected', preferences.isolation.global.mouseClick.left.action);
 
-      $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.middle.container);
-      $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.ctrlleft.container);
-      $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', preferences.linkClickGlobal.left.container);
+      $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.middle.container);
+      $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.container);
+      $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.left.container);
 
-      $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistoryContainer);
-      document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistoryContextMenu;
-      $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistoryContainerRemoval);
-      $('#deletesHistoryContainerAlwaysPerWebsite').dropdown('set selected', preferences.deletesHistoryContainerAlwaysPerWebsite);
-      $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistoryContainerIsolation);
-      $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistoryContainerMouseClicks);
+      $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistory.automaticMode);
+      document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistory.contextMenu;
+      $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistory.containerRemoval);
+      $('#deletesHistoryContainerAlwaysPerWebsite').dropdown('set selected', preferences.deletesHistory.containerAlwaysPerWebsite);
+      $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistory.containerIsolation);
+      $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistory.containerMouseClicks);
 
       document.querySelector('#pageAction').checked = preferences.pageAction;
       document.querySelector('#contextMenu').checked = preferences.contextMenu;
@@ -43,15 +43,15 @@ const initialize = async () => {
       document.querySelector('#replaceTabs').checked = preferences.replaceTabs;
       document.querySelector('#ignoreRequestsToAMO').checked = preferences.ignoreRequestsToAMO;
       document.querySelector('#ignoreRequestsToPocket').checked = preferences.ignoreRequestsToPocket;
-      $('#automaticModeNewTab').dropdown('set selected', preferences.automaticModeNewTab);
+      $('#automaticModeNewTab').dropdown('set selected', preferences.automaticMode.newTab);
 
       document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
       document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistoryStatistics;
 
 
-      updateLinkClickDomainRules();
-      updateAlwaysOpenInDomainRules();
-      updateIsolationDomainRules();
+      // updateLinkClickDomainRules();
+      // updateAlwaysOpenInDomainRules();
+      // updateIsolationDomainRules();
       updateSetCookiesDomainRules();
       updateStatistics();
       showDeletesHistoryStatistics();

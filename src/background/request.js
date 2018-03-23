@@ -137,7 +137,7 @@ class Request {
     if (alwaysOpenIn) {
       debug('[webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
       return alwaysOpenIn;
-    } else if (!this.storage.local.preferences.automaticMode &&
+    } else if (!this.storage.local.preferences.automaticMode.active &&
                (!this.mouseclick.linksClicked[request.url] &&
                (!tab || !this.storage.local.tempContainers[tab.cookieStoreId] ||
                 (this.storage.local.tempContainers[tab.cookieStoreId])))) {
@@ -179,7 +179,7 @@ class Request {
     if (tab &&
         this.storage.local.tempContainers[tab.cookieStoreId] &&
         this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory &&
-        this.storage.local.preferences.deletesHistoryContainerMouseClicks === 'automatic') {
+        this.storage.local.preferences.deletesHistory.containerMouseClicks === 'automatic') {
       deletesHistoryContainer = true;
     }
 
@@ -257,7 +257,7 @@ class Request {
     }
 
     let deletesHistoryContainer = false;
-    if (this.storage.local.preferences.deletesHistoryContainer === 'automatic') {
+    if (this.storage.local.preferences.deletesHistory.automaticMode === 'automatic') {
       deletesHistoryContainer = true;
     }
 
@@ -365,7 +365,7 @@ class Request {
       tab,
       url: request.url,
       request,
-      deletesHistory: this.storage.local.preferences.deletesHistoryContainerIsolation === 'automatic'
+      deletesHistory: this.storage.local.preferences.deletesHistory.containerIsolation === 'automatic'
     };
     if (tab.url === 'about:newtab' || tab.url === 'about:blank' ||
         this.storage.local.preferences.replaceTabs) {
@@ -422,10 +422,13 @@ class Request {
     const parsedTabURL = new URL(tab.url);
     const parsedRequestURL = new URL(request.url);
 
-    for (let domainPattern in this.storage.local.preferences.isolationDomain) {
+    for (let domainPattern in this.storage.local.preferences.isolation.domain) {
       if ((parsedTabURL.hostname === domainPattern ||
           parsedTabURL.hostname.match(globToRegexp(domainPattern)))) {
-        const preferences = this.storage.local.preferences.isolationDomain[domainPattern];
+        const preferences = this.storage.local.preferences.isolation.domain[domainPattern].navigation;
+        if (!preferences) {
+          continue;
+        }
         debug('[shouldIsolate] found pattern', domainPattern, preferences);
 
         return await this.checkIsolationPreferenceAgainstUrl(
@@ -435,7 +438,7 @@ class Request {
     }
 
     if (await this.checkIsolationPreferenceAgainstUrl(
-      this.storage.local.preferences.isolationGlobal,
+      this.storage.local.preferences.isolation.global.navigation.action,
       parsedTabURL.hostname,
       parsedRequestURL.hostname,
       tab
@@ -448,7 +451,7 @@ class Request {
   }
 
   shouldIsolateMac(tab) {
-    if (this.storage.local.preferences.isolationMac === 'disabled') {
+    if (this.storage.local.preferences.isolation.mac.action === 'disabled') {
       debug('[shouldIsolateMac] mac isolation disabled');
       return false;
     }
@@ -485,7 +488,7 @@ class Request {
 
 
   async maybeAlwaysOpenInTemporaryContainer(tab, request) {
-    if (!Object.keys(this.storage.local.preferences.alwaysOpenInDomain).length) {
+    if (!Object.keys(this.storage.local.preferences.isolation.domain).length) {
       return;
     }
     if (!tab || !tab.url) {
@@ -498,12 +501,16 @@ class Request {
     debug('[maybeAlwaysOpenInTemporaryContainer]',
       tab, request, parsedTabURL.hostname, parsedRequestURL.hostname);
 
-    for (let domainPattern in this.storage.local.preferences.alwaysOpenInDomain) {
+    for (let domainPattern in this.storage.local.preferences.isolation.domain) {
       if ((parsedRequestURL.hostname === domainPattern ||
           parsedRequestURL.hostname.match(globToRegexp(domainPattern)))) {
 
-        const preferences = this.storage.local.preferences.alwaysOpenInDomain[domainPattern];
+        const preferences = this.storage.local.preferences.isolation.domain[domainPattern].always;
         debug('[maybeAlwaysOpenInTemporaryContainer] found pattern', domainPattern, preferences);
+        if (preferences.action === 'disabled') {
+          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because always disabled');
+          break;
+        }
         if (this.storage.local.tempContainers[tab.cookieStoreId] &&
             this.storage.local.tempContainers[tab.cookieStoreId].clean) {
           debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
@@ -557,7 +564,7 @@ class Request {
         return { cancel: true };
       }
 
-      const deletesHistory = this.storage.local.preferences.deletesHistoryContainerAlwaysPerWebsite === 'automatic';
+      const deletesHistory = this.storage.local.preferences.deletesHistory.containerAlwaysPerWebsite === 'automatic';
       const params = {
         tab,
         url: request.url,
@@ -577,7 +584,7 @@ class Request {
   }
 
   async maybeSetAndAddCookiesToHeader(details) {
-    if (details.tabId < 0 || !Object.keys(this.storage.local.preferences.setCookiesDomain).length) {
+    if (details.tabId < 0 || !Object.keys(this.storage.local.preferences.cookies.domain).length) {
       return;
     }
 
@@ -587,7 +594,7 @@ class Request {
       let cookieHeader;
       let cookiesHeader = {};
       let cookieHeaderChanged = false;
-      for (let domainPattern in this.storage.local.preferences.setCookiesDomain) {
+      for (let domainPattern in this.storage.local.preferences.cookies.domain) {
         if (parsedRequestURL.hostname !== domainPattern &&
             !parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
           continue;
@@ -612,7 +619,7 @@ class Request {
           debug('[maybeAddCookiesToHeader] found temp tab and header', details, cookieHeader, cookiesHeader);
         }
 
-        for (let cookie of this.storage.local.preferences.setCookiesDomain[domainPattern]) {
+        for (let cookie of this.storage.local.preferences.cookies.domain[domainPattern]) {
           if (!cookie) {
             continue;
           }

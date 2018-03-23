@@ -39,9 +39,9 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       });
 
       await background.initialize();
-      background.storage.local.preferences.containerColorRandom = true;
-      background.storage.local.preferences.containerIconRandom = true;
-      background.storage.local.preferences.containerNumberMode = 'reuse';
+      background.storage.local.preferences.container.colorRandom = true;
+      background.storage.local.preferences.container.iconRandom = true;
+      background.storage.local.preferences.container.numberMode = 'reuse';
       browser.browserAction.onClicked.addListener.yield();
       await nextTick();
 

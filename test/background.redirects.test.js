@@ -8,7 +8,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     describe('https everywhere', () => {
       it('should not open two tabs if redirects happen', async () => {
-        if (!preferences.automaticMode) {
+        if (!preferences.automaticMode.active) {
           return;
         }
         // we get a http request, cancel it and create a new tab with id 2 (the http version)
@@ -37,7 +37,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('opening new tmptab and left clicking link with global always setting', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.linkClickGlobal.left.action = 'always';
+          background.storage.local.preferences.isolation.global.mouseClick.left.action = 'always';
           await helper.browser.openNewTmpTab({
             tabId: 1,
             createsTabId: 2
@@ -110,7 +110,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     describe('link cleaner', () => {
       describe('opening new tmptab and left clicking link with global always setting', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.linkClickGlobal.left.action = 'always';
+          background.storage.local.preferences.isolation.global.mouseClick.left.action = 'always';
           await helper.browser.openNewTmpTab({
             tabId: 1,
             createsTabId: 2
@@ -162,7 +162,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     describe('opening new tmptab and left clicking link with global always setting', () => {
       beforeEach(async () => {
-        background.storage.local.preferences.linkClickGlobal.left.action = 'always';
+        background.storage.local.preferences.isolation.global.mouseClick.left.action = 'always';
         await helper.browser.openNewTmpTab({
           tabId: 1,
           createsTabId: 2
@@ -224,7 +224,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
     describe('opening new tmptab and left clicking link', () => {
       beforeEach(async () => {
-        background.storage.local.preferences.linkClickGlobal.left.action = 'never';
+        background.storage.local.preferences.isolation.global.mouseClick.left.action = 'never';
         await helper.browser.openNewTmpTab({
           tabId: 1,
           createsTabId: 2
