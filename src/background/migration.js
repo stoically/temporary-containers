@@ -165,6 +165,7 @@ class Migration {
       });
 
       this.storage.local.preferences = newPreferences;
+      delete this.storage.local.noContainerTabs;
       this.storage.persist();
     }
   }

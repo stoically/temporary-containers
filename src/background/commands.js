@@ -32,8 +32,8 @@ class Commands {
         const tab = await browser.tabs.create({
           url: 'about:blank'
         });
-        this.storage.local.noContainerTabs[tab.id] = true;
-        debug('[onCommand] new no container tab created', this.storage.local.noContainerTabs);
+        this.container.noContainerTabs[tab.id] = true;
+        debug('[onCommand] new no container tab created', this.container.noContainerTabs);
       } catch (error) {
         debug('[onCommand] couldnt create tab', error);
       }
@@ -47,8 +47,8 @@ class Commands {
         const window = await browser.windows.create({
           url: 'about:blank'
         });
-        this.storage.local.noContainerTabs[window.tabs[0].id] = true;
-        debug('[onCommand] new no container tab created in window', window, this.storage.local.noContainerTabs);
+        this.container.noContainerTabs[window.tabs[0].id] = true;
+        debug('[onCommand] new no container tab created in window', window, this.container.noContainerTabs);
       } catch (error) {
         debug('[onCommand] couldnt create tab in window', error);
       }

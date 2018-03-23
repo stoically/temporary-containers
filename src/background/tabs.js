@@ -69,8 +69,8 @@ class Tabs {
 
 
   async onRemoved(tabId) {
-    if (this.storage.local.noContainerTabs[tabId]) {
-      delete this.storage.local.noContainerTabs[tabId];
+    if (this.container.noContainerTabs[tabId]) {
+      delete this.container.noContainerTabs[tabId];
     }
     if (this.container.tabCreatedAsMacConfirmPage[tabId]) {
       delete this.tabCreatedAsMacConfirmPage[tabId];

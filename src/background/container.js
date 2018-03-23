@@ -43,6 +43,7 @@ class Container {
     this.removedContainerCookiesCount = 0;
     this.removedContainerHistoryCount = 0;
     this.removeContainerQueueMaybeDone = this.removeContainerQueueMaybeDone.bind(this);
+    this.noContainerTabs = {};
   }
 
 
@@ -238,7 +239,7 @@ class Container {
       return;
     }
 
-    if (this.storage.local.noContainerTabs[tab.id]) {
+    if (this.noContainerTabs[tab.id]) {
       debug('[maybeReloadTabInTempContainer] nocontainer tab, ignore');
       return;
     }
