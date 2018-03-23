@@ -5,7 +5,7 @@ class Storage {
     this.local = null;
     this.preferencesDefault = {
       automaticMode: {
-        active: true,
+        active: false,
         newTab: 'created'
       },
       notifications: false,
@@ -70,62 +70,6 @@ class Storage {
       },
       statistics: false,
     };
-    // TODO remove me
-    // this.preferencesDefault = {
-    //   automaticMode: false,
-    //   automaticModeNewTab: 'created',
-    //   isolationGlobal: 'never',
-    //   isolationDomain: {},
-    //   isolationMac: 'disabled',
-    //   isolationMacContainer: {},
-    //   linkClickGlobal: {
-    //     middle: {
-    //       action: 'never',
-    //       container: 'default'
-    //     },
-    //     ctrlleft: {
-    //       action: 'never',
-    //       container: 'default'
-    //     },
-    //     left: {
-    //       action: 'never',
-    //       container: 'default'
-    //     }
-    //   },
-    //   linkClickDomain: {},
-    //   alwaysOpenInDomain: {},
-    //   containerNamePrefix: 'tmp',
-    //   containerColor: 'red',
-    //   containerColorRandom: false,
-    //   containerIcon: 'circle',
-    //   containerIconRandom: false,
-    //   containerNumberMode: 'keep',
-    //   containerRemoval: '15minutes',
-    //   iconColor: 'default',
-    //   historyPermission: false,
-    //   deletesHistoryContainer: 'never',
-    //   deletesHistoryContextMenu: false,
-    //   deletesHistoryContainerAlwaysPerWebsite: 'never',
-    //   deletesHistoryContainerIsolation: 'never',
-    //   deletesHistoryContainerRemoval: 'instant',
-    //   deletesHistoryContainerMouseClicks: 'never',
-    //   keyboardShortcuts: {
-    //     AltC: true,
-    //     AltP: true,
-    //     AltN: false,
-    //     AltShiftC: false,
-    //     AltX: false
-    //   },
-    //   notifications: false,
-    //   statistics: false,
-    //   deletesHistoryStatistics: false,
-    //   setCookiesDomain: {},
-    //   contextMenu: true,
-    //   pageAction: false,
-    //   replaceTabs: false,
-    //   ignoreRequestsToAMO: true,
-    //   ignoreRequestsToPocket: true
-    // };
     this.loadErrorRetryTime = 1000;
     this.loadErrorCount = 0;
   }
