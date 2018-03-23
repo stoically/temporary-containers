@@ -13,6 +13,7 @@ class TemporaryContainers {
     this.browseraction = new window.BrowserAction(this);
     this.pageaction = new window.PageAction(this);
     this.contextmenu = new window.ContextMenu(this);
+    this.cookies = new window.Cookies(this);
     this.mac = new window.MultiAccountContainers(this);
     this.migration = new window.Migration(this);
   }
@@ -37,9 +38,10 @@ class TemporaryContainers {
     this.container.initialize();
     this.mouseclick.initialize();
     this.commands.initialize();
-    this.contextmenu.initialize();
     this.browseraction.initialize();
     this.pageaction.initialize();
+    this.contextmenu.initialize();
+    this.cookies.initialize();
     this.mac.initialize();
     this.migration.initialize();
     await this.tabs.initialize();

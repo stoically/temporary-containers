@@ -36,6 +36,35 @@ class BrowserAction {
     };
     browser.browserAction.setIcon(icon);
   }
+
+
+  addBadge(tabId) {
+    browser.browserAction.setBadgeBackgroundColor({
+      color: '#FF613D',
+      tabId: tabId
+    });
+    browser.browserAction.setTitle({
+      title: 'Automatic Mode active. The next website you navigate to will be reopened ' +
+             'in a Temporay Container. Click to open a new Tab in a new Temporary Container (Alt+C)',
+      tabId: tabId
+    });
+    browser.browserAction.setBadgeText({
+      text: 'A',
+      tabId: tabId
+    });
+  }
+
+
+  removeBadge(tabId) {
+    browser.browserAction.setTitle({
+      title: 'Open a new Tab in a new Temporary Container (Alt+C)',
+      tabId
+    });
+    browser.browserAction.setBadgeText({
+      text: '',
+      tabId
+    });
+  }
 }
 
 window.BrowserAction = BrowserAction;

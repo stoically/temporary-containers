@@ -182,7 +182,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.tabs.create.resolves({id: 1});
       await background.initialize();
       background.storage.local.preferences.automaticMode.newTab = 'created';
-      await background.container.maybeReloadTabInTempContainer(fakeTab);
+      await background.tabs.maybeReloadInTempContainer(fakeTab);
 
       browser.contextualIdentities.create.should.have.been.calledOnce;
       browser.tabs.create.should.have.been.calledOnce;

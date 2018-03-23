@@ -107,6 +107,7 @@
       "background/commands.js",
       "background/container.js",
       "background/contextmenu.js",
+      "background/cookies.js",
       "background/mac.js",
       "background/migration.js",
       "background/mouseclick.js",

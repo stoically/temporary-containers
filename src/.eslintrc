@@ -25,6 +25,7 @@
         "ContextMenu": false,
         "Commands": false,
         "Migration": false,
-        "Utils": false
+        "Utils": false,
+        "Cookies": false
     }
 }

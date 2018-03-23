@@ -31,7 +31,6 @@ class Container {
     this.urlCreatedContainer = {};
     this.requestCreatedTab = {};
     this.tabCreatedAsMacConfirmPage = {};
-    this.creatingTabInSameContainer = false;
     this.removingContainerQueue = false;
     this.removeContainerFetchMassRemoval = {
       regular: [],
@@ -51,10 +50,8 @@ class Container {
     this.storage = this.background.storage;
     this.request = this.background.request;
     this.mouseclick = this.background.mouseclick;
-    this.mac = this.background.mac;
     this.permissions = this.background.permissions;
-
-    browser.cookies.onChanged.addListener(this.cookieCount.bind(this));
+    this.tabs = this.background.tabs;
 
     setInterval(() => {
       debug('[interval] container removal interval');
@@ -198,96 +195,10 @@ class Container {
     if (!tab) {
       return newTab;
     }
-    await this.removeTab(tab);
+    await this.tabs.remove(tab);
     return newTab;
   }
 
-
-  async removeTab(tab) {
-    try {
-      // make sure we dont close the window by removing this tab
-      // TODO implement actual queue for removal, race-condition (and with that window-closing) is possible
-      const tabs = await browser.tabs.query({windowId: browser.windows.WINDOW_ID_CURRENT});
-      if (tabs.length > 1) {
-        try {
-          await browser.tabs.remove(tab.id);
-          debug('[removeTab] removed old tab', tab.id);
-        } catch (error) {
-          debug('[removeTab] error while removing old tab', tab, error);
-        }
-      } else {
-        debug('[removeTab] queuing removal of tab to prevent closing of window', tab, tabs);
-        delay(500).then(() => {
-          this.removeTab(tab);
-        });
-      }
-    } catch (error) {
-      debug('[removeTab] couldnt query tabs', tab, error);
-    }
-  }
-
-
-  async maybeReloadTabInTempContainer(tab) {
-    if (tab.incognito) {
-      debug('[maybeReloadTabInTempContainer] tab is incognito, ignore it and disable browseraction', tab);
-      browser.browserAction.disable(tab.id);
-      return;
-    }
-
-    if (this.creatingTabInSameContainer) {
-      debug('[maybeReloadTabInTempContainer] we are in the process of creating a tab in same container, ignore');
-      return;
-    }
-
-    if (this.noContainerTabs[tab.id]) {
-      debug('[maybeReloadTabInTempContainer] nocontainer tab, ignore');
-      return;
-    }
-
-    if (tab.url && tab.url.startsWith('moz-extension://')) {
-      debug('[maybeReloadTabInTempContainer] moz-extension:// tab, do something special', tab);
-      await this.mac.handleConfirmPage(tab);
-      return;
-    }
-
-    if (!this.storage.local.preferences.automaticMode.active) {
-      debug('[maybeReloadTabInTempContainer] automatic mode not active and not a moz page, we ignore that', tab);
-      return;
-    }
-
-    const deletesHistoryContainer = this.storage.local.preferences.deletesHistory.automaticMode === 'automatic';
-
-    if (!deletesHistoryContainer &&
-        this.storage.local.preferences.automaticMode.newTab === 'navigation' &&
-        tab.cookieStoreId === 'firefox-default' &&
-       (tab.url === 'about:home' ||
-        tab.url === 'about:newtab')) {
-      debug('[maybeReloadTabInTempContainer] automatic mode on navigation, setting icon badge', tab);
-      this.addBrowserActionBadge(tab.id);
-      return;
-    }
-
-    if ((this.storage.local.preferences.automaticMode.newTab === 'created' || deletesHistoryContainer) &&
-        tab.cookieStoreId === 'firefox-default' &&
-       (tab.url === 'about:home' ||
-        tab.url === 'about:newtab')) {
-      debug('[maybeReloadTabInTempContainer] about:home/new tab in firefox-default container, reload in temp container', tab);
-
-      await this.reloadTabInTempContainer({
-        tab,
-        deletesHistory: deletesHistoryContainer
-      });
-      return;
-    }
-
-    if (tab.url && !tab.url.startsWith('about:') && !tab.url.startsWith('moz-extension:') &&
-        this.storage.local.tempContainers[tab.cookieStoreId] &&
-        this.storage.local.tempContainers[tab.cookieStoreId].clean) {
-      debug('[maybeReloadTabInTempContainer] marking tmp container as not clean anymore', tab);
-      this.storage.local.tempContainers[tab.cookieStoreId].clean = false;
-    }
-    debug('[maybeReloadTabInTempContainer] not a home/new/moz tab or disabled, we dont handle that', tab);
-  }
 
   async addToRemoveQueue(tabId) {
     if (!this.tabContainerMap[tabId]) {
@@ -311,8 +222,6 @@ class Container {
     debug('[addToRemoveQueue] registering fetch mass removal delay', containerType, this.removeContainerFetchMassRemoval[containerType]);
     this.removingContainerQueue = true;
     await delay(15000);
-
-
 
     const queue = this.removeContainerFetchMassRemoval[containerType].splice(0);
     switch (containerRemoval) {
@@ -340,6 +249,7 @@ class Container {
       break;
     }
   }
+
 
   async delayedRemoveQueue(containerType, queue, delayTime) {
     debug('[addToRemoveQueue] registering 15minutes delay for queue removal', containerType, queue);
@@ -404,7 +314,7 @@ class Container {
 
 
   async tryToRemove(cookieStoreId) {
-    if (await this.onlyIncognitoOrNoTabs()) {
+    if (await this.tabs.onlyIncognitoOrNone()) {
       debug('[tryToRemove] canceling, only incognito or no tabs');
       return false;
     }
@@ -509,7 +419,7 @@ class Container {
       debug('[cleanup] canceling, no containers at all');
       return;
     }
-    if (await this.onlyIncognitoOrNoTabs()) {
+    if (await this.tabs.onlyIncognitoOrNone()) {
       debug('[cleanup] canceling, only incognito or no tabs');
       return;
     }
@@ -517,54 +427,6 @@ class Container {
     this.removingContainerQueue = true;
     this.removeContainerQueue.add(() => this.tryToRemoveQueue(containers))
       .then(this.removeContainerQueueMaybeDone);
-  }
-
-
-  async onlyIncognitoOrNoTabs() {
-    // don't do a cleanup if there are none or only incognito-tabs
-    try {
-      const tabs = await browser.tabs.query({});
-      if (!tabs.length) {
-        return true;
-      }
-      if (!tabs.filter(tab => !tab.incognito).length) {
-        return true;
-      }
-      return false;
-    } catch (error) {
-      debug('[onlyIncognitoOrNoTabs] failed to query tabs', error);
-      return false;
-    }
-  }
-
-
-  async createTabInSameContainer() {
-    this.creatingTabInSameContainer = true;
-    try {
-      const tabs = await browser.tabs.query({
-        active: true,
-        currentWindow: true
-      });
-      const activeTab = tabs[0];
-      if (!activeTab) {
-        debug('[createTabInSameContainer] couldnt find an active tab', activeTab);
-        return;
-      }
-      try {
-        const newTab = await browser.tabs.create({
-          index: activeTab.index + 1,
-          cookieStoreId: activeTab.cookieStoreId
-        });
-        this.creatingTabInSameContainer = false;
-        debug('[createTabInSameContainer] new same container tab created', activeTab, newTab);
-      } catch (error) {
-        debug('[createTabInSameContainer] couldnt create tab', error);
-        this.creatingTabInSameContainer = false;
-      }
-    } catch (error) {
-      debug('[createTabInSameContainer] couldnt query tabs', error);
-      this.creatingTabInSameContainer = false;
-    }
   }
 
 
@@ -602,56 +464,6 @@ class Container {
       });
     }
     return count;
-  }
-
-
-  addBrowserActionBadge(tabId) {
-    browser.browserAction.setBadgeBackgroundColor({
-      color: '#FF613D',
-      tabId: tabId
-    });
-    browser.browserAction.setTitle({
-      title: 'Automatic Mode active. The next website you navigate to will be reopened ' +
-             'in a Temporay Container. Click to open a new Tab in a new Temporary Container (Alt+C)',
-      tabId: tabId
-    });
-    browser.browserAction.setBadgeText({
-      text: 'A',
-      tabId: tabId
-    });
-  }
-
-
-  async cookieCount(changeInfo) {
-    if (!this.storage.local.preferences.statistics &&
-        !this.storage.local.preferences.deletesHistory.statistics &&
-        !this.storage.local.preferences.notifications) {
-      return;
-    }
-    debug('[cookieCount]', changeInfo);
-    if (changeInfo.removed) {
-      return;
-    }
-    if (!this.storage.local.tempContainers[changeInfo.cookie.storeId]) {
-      return;
-    }
-    if (!this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount) {
-      this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount = 0;
-    }
-    this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount++;
-    await this.storage.persist();
-  }
-
-
-  removeBrowserActionBadge(tabId) {
-    browser.browserAction.setTitle({
-      title: 'Open a new Tab in a new Temporary Container (Alt+C)',
-      tabId
-    });
-    browser.browserAction.setBadgeText({
-      text: '',
-      tabId
-    });
   }
 
 

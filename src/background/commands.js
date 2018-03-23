@@ -8,6 +8,7 @@ class Commands {
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.permissions = this.background.permissions;
+    this.tabs = this.background.tabs;
 
     browser.commands.onCommand.addListener(this.onCommand.bind(this));
   }
@@ -67,7 +68,7 @@ class Commands {
       if (!this.storage.local.preferences.keyboardShortcuts.AltX) {
         return;
       }
-      this.container.createTabInSameContainer();
+      this.tabs.createInSameContainer();
       break;
     }
   }
