@@ -170,8 +170,8 @@ window.updateIsolationDomains = () => {
     if (!isolationDomainRulesClickEvent) {
       isolationDomainRules.on('click', async (event) => {
         event.preventDefault();
-        const targetId = $(event.target).attr('id');
-        const domainPattern = $(event.target).parent().attr('id');
+        const targetId = $(event.target).parent().attr('id');
+        const domainPattern = $(event.target).parent().parent().attr('id');
         if (targetId === 'editDomainRule') {
           isolationDomainEditRule(domainPattern);
           return;
