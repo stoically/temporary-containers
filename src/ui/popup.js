@@ -27,7 +27,8 @@ const initialize = async () => {
     isolationDomainEditRule(tabParsedUrl.hostname);
 
     let actionsAvailable = false;
-    if (storage.tempContainers[activeTab.cookieStoreId].deletesHistory) {
+    if (storage.tempContainers[activeTab.cookieStoreId] &&
+        storage.tempContainers[activeTab.cookieStoreId].deletesHistory) {
       $('#actionConvertToRegular').on('click', () => {
         browser.runtime.sendMessage({
           method: 'convertTempContainerToRegular',
