@@ -424,6 +424,11 @@ class Request {
         }
         debug('[shouldIsolate] found pattern', domainPattern, preferences);
 
+        if (preferences.action === 'global') {
+          debug('[shouldIsolate] breaking because "global"');
+          break;
+        }
+
         return await this.checkIsolationPreferenceAgainstUrl(
           preferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
         );

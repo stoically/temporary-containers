@@ -125,8 +125,13 @@ class MouseClick {
       if (!domainPatternPreferences[type]) {
         continue;
       }
-      debug('[checkClick] per website pattern found', domainPatternPreferences[type]);
-      return this.checkClickPreferences(domainPatternPreferences[type],
+      const preferences = domainPatternPreferences[type];
+      debug('[checkClick] per website pattern found', );
+      if (preferences.action === 'global') {
+        debug('[checkClick] breaking because "global"');
+        break;
+      }
+      return this.checkClickPreferences(preferences,
         parsedClickedURL, parsedSenderTabURL);
     }
     debug('[checkClick] no website pattern found, checking global preferences');
