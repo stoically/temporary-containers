@@ -167,7 +167,7 @@ window.updateIsolationDomains = () => {
       isolationDomainRulesClickEvent = true;
     }
   } else {
-    isolationDomainRules.html('No Websites added');
+    isolationDomainRules.html('No Domains added');
   }
 };
 
@@ -266,7 +266,7 @@ window.saveAdvancedPreferences = async (event) => {
   preferences.deletesHistory.automaticMode = document.querySelector('#deletesHistoryContainer').value;
   preferences.deletesHistory.contextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
   preferences.deletesHistory.containerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
-  preferences.deletesHistory.containerAlwaysPerWebsite = document.querySelector('#deletesHistoryContainerAlwaysPerWebsite').value;
+  preferences.deletesHistory.containerAlwaysPerDomain = document.querySelector('#deletesHistorycontainerAlwaysPerDomain').value;
   preferences.deletesHistory.containerIsolation = document.querySelector('#deletesHistoryContainerIsolation').value;
   preferences.deletesHistory.containerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
 

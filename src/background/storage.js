@@ -62,7 +62,7 @@ class Storage {
       deletesHistory: {
         automaticMode: 'never',
         contextMenu: false,
-        containerAlwaysPerWebsite: 'never',
+        containerAlwaysPerDomain: 'never',
         containerIsolation: 'never',
         containerRemoval: 'instant',
         containerMouseClicks: 'never',

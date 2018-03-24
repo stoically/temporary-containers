@@ -562,7 +562,7 @@ class Request {
         return { cancel: true };
       }
 
-      const deletesHistory = this.storage.local.preferences.deletesHistory.containerAlwaysPerWebsite === 'automatic';
+      const deletesHistory = this.storage.local.preferences.deletesHistory.containerAlwaysPerDomain === 'automatic';
       const params = {
         tab,
         url: request.url,

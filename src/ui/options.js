@@ -32,7 +32,7 @@ const initialize = async () => {
       $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistory.automaticMode);
       document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistory.contextMenu;
       $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistory.containerRemoval);
-      $('#deletesHistoryContainerAlwaysPerWebsite').dropdown('set selected', preferences.deletesHistory.containerAlwaysPerWebsite);
+      $('#deletesHistorycontainerAlwaysPerDomain').dropdown('set selected', preferences.deletesHistory.containerAlwaysPerDomain);
       $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistory.containerIsolation);
       $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistory.containerMouseClicks);
 
@@ -91,7 +91,7 @@ const initialize = async () => {
       'Exact matches: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
       'Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>' +
       'Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>, ' +
-      'so you might need two rules. Website Rules overwrite Global Rules.</div>';
+      'so you might need two rules. Domain Rules overwrite Global Rules.</div>';
 
     $('#setCookiesDomainPatternDiv').popup({
       html: domainPatternToolTip,

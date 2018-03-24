@@ -107,7 +107,7 @@ class Migration {
         deletesHistory: {
           automaticMode: preferences.deletesHistoryContainer,
           contextMenu: preferences.deletesHistoryContextMenu,
-          containerAlwaysPerWebsite: preferences.deletesHistoryContainerAlwaysPerWebsite,
+          containerAlwaysPerDomain: preferences.deletesHistoryContainerAlwaysPerWebsite,
           containerIsolation: preferences.deletesHistoryContainerIsolation,
           containerRemoval: preferences.deletesHistoryContainerRemoval,
           containerMouseClicks: preferences.deletesHistoryContainerMouseClicks,

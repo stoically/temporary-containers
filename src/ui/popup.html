@@ -14,7 +14,7 @@
     <div class="ui container">
       <form class="ui form" id="isolationDomainForm">
         <div id="isolationDomainPatternDiv" class="field">
-          <label>Website Pattern</label>
+          <label>Domain Pattern</label>
           <input id="isolationDomainPattern" type="text">
         </div>
         <h4>Always open in</h4>
@@ -27,55 +27,55 @@
         <div class="field">
           <div class="ui checkbox">
             <input type="checkbox" id="isolationDomainAlwaysAllowedInPermanent">
-            <label>Allow to load in Permanent Containers</label>
+            <label>Allow in Permanent Containers</label>
           </div>
         </div>
         <h4>Navigating</h4>
         <div class="field">
           <select id="isolationDomainNavigation" class="ui fluid dropdown">
+            <option value="global" selected="selected">Use Global</option>
             <option value="always">Always</option>
             <option value="notsamedomainexact">Not exact same Domain</option>
             <option value="notsamedomain">Not same Domain</option>
             <option value="never">Never</option>
-            <option value="global" selected="selected">Use Global</option>
           </select>
         </div>
         <h4>Mouse Clicks</h4>
         <div class="field">
           <label>Middle Mouse</label>
           <select id="isolationDomainMouseClickMiddle" class="ui fluid dropdown">
+            <option value="global" selected="selected">Use Global</option>
             <option value="always">Always</option>
             <option value="notsamedomainexact">Not exact same Domain</option>
             <option value="notsamedomain">Not same Domain</option>
             <option value="never">Never</option>
-            <option value="global" selected="selected">Use Global</option>
           </select>
         </div>
         <div class="field">
           <label>Ctrl/Cmd+Left Mouse</label>
           <select id="isolationDomainMouseClickCtrlLeft" class="ui fluid dropdown">
+            <option value="global" selected="selected">Use Global</option>
             <option value="always">Always</option>
             <option value="notsamedomainexact">Not exact same Domain</option>
             <option value="notsamedomain">Not same Domain</option>
             <option value="never">Never</option>
-            <option value="global" selected="selected">Use Global</option>
           </select>
         </div>
         <div class="field">
           <label>Left Mouse</label>
           <select id="isolationDomainMouseClickLeft" class="ui fluid dropdown">
+            <option value="global" selected="selected">Use Global</option>
             <option value="always">Always</option>
             <option value="notsamedomainexact">Not exact same Domain</option>
             <option value="notsamedomain">Not same Domain</option>
             <option value="never">Never</option>
-            <option value="global" selected="selected">Use Global</option>
           </select>
         </div>
         <div class="field">
           <button id="isolationDomainSave" class="ui button primary">Save</button>
         </div>
         <div>
-          <h3>Websites</h3>
+          <h3>Domains</h3>
           <div class="ui bulleted list" id="isolationDomains">
           </div>
         </div>
