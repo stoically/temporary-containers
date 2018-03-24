@@ -123,6 +123,20 @@ const isolationDomainAddRule = async () => {
   updateIsolationDomains();
 };
 
+window.isolationDomainEditRule = (domainPattern) => {
+  document.querySelector('#isolationDomainPattern').value = domainPattern;
+
+  if (preferences.isolation.domain[domainPattern]) {
+    const domainRules = preferences.isolation.domain[domainPattern];
+
+    $('#isolationDomainAlways').dropdown('set selected', domainRules.always.action);
+    document.querySelector('#isolationDomainAlwaysAllowedInPermanent').checked = domainRules.always.allowedInPermanent;
+    $('#isolationDomainNavigation').dropdown('set selected', domainRules.navigation.action);
+    $('#isolationDomainMouseClickMiddle').dropdown('set selected', domainRules.mouseClick.middle.action);
+    $('#isolationDomainMouseClickCtrlLeft').dropdown('set selected', domainRules.mouseClick.ctrlleft.action);
+    $('#isolationDomainMouseClickLeft').dropdown('set selected', domainRules.mouseClick.left.action);
+  }
+};
 
 let isolationDomainRulesClickEvent = false;
 window.updateIsolationDomains = () => {
@@ -131,9 +145,10 @@ window.updateIsolationDomains = () => {
   if (domainRules.length) {
     isolationDomainRules.html('');
     domainRules.map((domainPattern) => {
-      const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
-        `<span href="#" id="domainRule:${encodeURIComponent(domainPattern)}">🛈</span> ` +
-        '<a href="#" id="isolationRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
+      const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
+        `<span id="infoDomainRule" href="#">${domainPattern} 🛈</span> ` +
+        '<a href="#" id="editDomainRule" data-tooltip="Edit">🖊️</a> ' +
+        '<a href="#" id="removeDomainRule" data-tooltip="Remove Rule (no confirmation)" ' +
         'data-position="right center">❌</a></div>');
       isolationDomainRules.append(el);
 
@@ -146,7 +161,7 @@ window.updateIsolationDomains = () => {
         `Middle: ${preferences.isolation.domain[domainPattern].mouseClick.middle.action} <br>` +
         `Ctrl+Left: ${preferences.isolation.domain[domainPattern].mouseClick.ctrlleft.action} <br>` +
         `Left: ${preferences.isolation.domain[domainPattern].mouseClick.left.action}</div>`;
-      el.popup({
+      el.find('#infoDomainRule').popup({
         html: domainRuleTooltip,
         inline: true
       });
@@ -155,14 +170,18 @@ window.updateIsolationDomains = () => {
     if (!isolationDomainRulesClickEvent) {
       isolationDomainRules.on('click', async (event) => {
         event.preventDefault();
+        const targetId = $(event.target).attr('id');
         const domainPattern = $(event.target).parent().attr('id');
-        if (domainPattern === 'isolationDomains') {
+        if (targetId === 'editDomainRule') {
+          isolationDomainEditRule(domainPattern);
           return;
         }
-        delete preferences.isolation.domain[decodeURIComponent(domainPattern)];
-        // TODO show "rule deleted" instead of "preferences saved"
-        await savePreferences();
-        updateIsolationDomains();
+        if (targetId === 'removeDomainRule') {
+          delete preferences.isolation.domain[decodeURIComponent(domainPattern)];
+          // TODO show "rule deleted" instead of "preferences saved"
+          await savePreferences();
+          updateIsolationDomains();
+        }
       });
       isolationDomainRulesClickEvent = true;
     }
