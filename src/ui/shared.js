@@ -146,10 +146,10 @@ window.updateIsolationDomains = () => {
     isolationDomainRules.html('');
     domainRules.map((domainPattern) => {
       const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
-        `<span id="infoDomainRule" href="#">${domainPattern} 🛈</span> ` +
-        '<a href="#" id="editDomainRule" data-tooltip="Edit">🖊️</a> ' +
-        '<a href="#" id="removeDomainRule" data-tooltip="Remove Rule (no confirmation)" ' +
-        'data-position="right center">❌</a></div>');
+        `<span id="infoDomainRule" href="#">${domainPattern} <i class="icon-info-circled"></i></span> ` +
+        '<a href="#" id="editDomainRule" data-tooltip="Edit"><i class="icon-pencil"></i>️</a> ' +
+        '<a href="#" id="removeDomainRule" data-tooltip="Remove (no confirmation)" ' +
+        '><i class="icon-trash-empty"></i>️</a></div>');
       isolationDomainRules.append(el);
 
       const domainRuleTooltip =
@@ -229,7 +229,7 @@ window.updateSetCookiesDomainRules = () => {
         `<div class="item" id="${encodeURIComponent(domainPattern)}" idIndex="${index}">${domainPattern} [${index}]: ` +
         ` ${domainPatternCookie.name} ${domainPatternCookie.value} ` +
         '<a href="#" id="setCookiesRemoveDomainRules" data-tooltip="Remove Cookie (no confirmation)" ' +
-        'data-position="right center">❌</a></div>');
+        '><i class="icon-trash-empty"></i></a></div>');
     });
   });
 

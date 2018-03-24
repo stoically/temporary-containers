@@ -63,6 +63,11 @@ class Runtime {
     case 'resetStorage':
       debug('[onMessage] resetting storage', message, sender);
       return this.storage.install();
+
+    case 'createTabInTempContainer':
+      return this.container.createTabInTempContainer({
+        deletesHistory: message.payload.deletesHistory
+      });
     }
   }
 

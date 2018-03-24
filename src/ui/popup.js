@@ -24,6 +24,22 @@ const initialize = async () => {
     const tabs = await browser.tabs.query({active: true});
     const tabParsedUrl = new URL(tabs[0].url);
     isolationDomainEditRule(tabParsedUrl.hostname);
+
+
+    const historyPermission = await browser.permissions.contains({permissions: ['history']});
+    if (historyPermission) {
+      $('#deletesHistoryButton').on('click', () => {
+        browser.runtime.sendMessage({
+          method: 'createTabInTempContainer',
+          payload: {
+            deletesHistory: true
+          }
+        });
+      });
+      $('#deletesHistoryButton').addClass('item');
+      $('#deletesHistoryButton').removeClass('hidden');
+    }
+    $.tab('change tab', 'general');
   } catch (error) {
     showPreferencesError(error);
   }
