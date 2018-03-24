@@ -68,6 +68,21 @@ class Runtime {
       return this.container.createTabInTempContainer({
         deletesHistory: message.payload.deletesHistory
       });
+
+    case 'convertTempContainerToPermanent':
+      return this.container.convertTempContainerToPermanent({
+        cookieStoreId: message.payload.cookieStoreId,
+        tabId: message.payload.tabId,
+        name: message.payload.name,
+        url: message.payload.url
+      });
+
+    case 'convertTempContainerToRegular':
+      return this.container.convertTempContainerToRegular({
+        cookieStoreId: message.payload.cookieStoreId,
+        tabId: message.payload.tabId,
+        url: message.payload.url
+      });
     }
   }
 

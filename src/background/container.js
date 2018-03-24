@@ -210,6 +210,13 @@ class Container {
       debug('[addToRemoveQueue] container from the tabContainerMap is unknown', tabId, cookieStoreId);
       return;
     }
+    const tempTabs = await browser.tabs.query({
+      cookieStoreId
+    });
+    if (tempTabs.length > 0) {
+      debug('[addToRemoveQueue] not queuing removal because container still has tabs', cookieStoreId, tempTabs.length);
+      return;
+    }
     const containerType = this.storage.local.tempContainers[cookieStoreId].deletesHistory ? 'deletesHistory' : 'regular';
     const containerRemoval = containerType === 'deletesHistory' ?
       this.storage.local.preferences.deletesHistory.containerRemoval :
@@ -473,6 +480,36 @@ class Container {
     }
     return false;
   }
+
+
+  async convertTempContainerToPermanent({cookieStoreId, tabId, name, url}) {
+    delete this.storage.local.tempContainers[cookieStoreId];
+    await this.storage.persist();
+    await browser.contextualIdentities.update(cookieStoreId, {
+      name,
+      color: 'blue'
+    });
+    await browser.tabs.create({
+      cookieStoreId,
+      url
+    });
+    await this.tabs.remove({id: tabId});
+  }
+
+
+  async convertTempContainerToRegular({cookieStoreId, tabId, url}) {
+    this.storage.local.tempContainers[cookieStoreId].deletesHistory = false;
+    delete this.storage.local.tempContainers[cookieStoreId].history;
+    await this.storage.persist();
+    const name = this.storage.local.tempContainers[cookieStoreId].name.replace('-deletes-history', '');
+    await browser.contextualIdentities.update(cookieStoreId, {name});
+    await browser.tabs.create({
+      cookieStoreId,
+      url
+    });
+    await this.tabs.remove({id: tabId});
+  }
+
 
   markUnclean(tabId) {
     const cookieStoreId = this.tabContainerMap[tabId];
