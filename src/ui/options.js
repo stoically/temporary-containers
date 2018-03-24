@@ -49,7 +49,7 @@ const initialize = async () => {
       $('#automaticModeNewTab').dropdown('set selected', preferences.automaticMode.newTab);
 
       document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
-      document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistoryStatistics;
+      document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistory.statistics;
 
       updateIsolationDomains();
       updateSetCookiesDomainRules();

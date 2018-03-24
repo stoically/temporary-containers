@@ -278,7 +278,7 @@ window.saveAdvancedPreferences = async (event) => {
 window.saveStatisticsPreferences = async (event) => {
   event.preventDefault();
   preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
-  preferences.deletesHistoryStatistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
+  preferences.deletesHistory.statistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
   await savePreferences();
 };
 
