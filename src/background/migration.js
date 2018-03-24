@@ -160,6 +160,7 @@ class Migration {
 
       this.storage.local.preferences = newPreferences;
       delete this.storage.local.noContainerTabs;
+      delete this.storage.local.tabContainerMap;
       this.storage.persist();
     }
   }
