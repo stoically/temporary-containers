@@ -130,16 +130,13 @@ class Migration {
           },
           mouseClick: {
             middle: {
-              action: 'global',
-              container: 'default'
+              action: 'global'
             },
             ctrlleft: {
-              action: 'global',
-              container: 'default'
+              action: 'global'
             },
             left: {
-              action: 'global',
-              container: 'default'
+              action: 'global'
             }
           }
         };

@@ -72,39 +72,25 @@ window.saveContainerPreferences = async (event) => {
   await savePreferences();
 };
 
-window.saveIsolationMacPreferences = async (event) => {
-  event.preventDefault();
-
-  preferences.isolationMac = document.querySelector('#isolationMac').value;
-
-  await savePreferences();
-};
-
 window.saveIsolationGlobalPreferences = async (event) => {
   event.preventDefault();
 
-  preferences.isolationGlobal = document.querySelector('#isolationGlobal').value;
-
-  await savePreferences();
-};
-
-window.saveLinkClickGlobalPreferences = async (event) => {
-  event.preventDefault();
-
-  preferences.linkClickGlobal = {
+  preferences.isolation.global.navigation.action = document.querySelector('#isolationGlobal').value;
+  preferences.isolation.global.mouseClick = {
     middle: {
-      action: document.querySelector('#linkClickGlobalMiddle').value,
+      action: document.querySelector('#isolationGlobalMouseClickMiddle').value,
       container: document.querySelector('#linkClickGlobalMiddleCreatesContainer').value
     },
     ctrlleft: {
-      action: document.querySelector('#linkClickGlobalCtrlLeft').value,
+      action: document.querySelector('#isolationGlobalMouseClickCtrlLeft').value,
       container: document.querySelector('#linkClickGlobalCtrlLeftCreatesContainer').value
     },
     left: {
-      action: document.querySelector('#linkClickGlobalLeft').value,
+      action: document.querySelector('#isolationGlobalMouseClickLeft').value,
       container: document.querySelector('#linkClickGlobalLeftCreatesContainer').value
     }
   };
+  preferences.isolation.mac.action = document.querySelector('#isolationMac').value;
 
   await savePreferences();
 };
@@ -112,18 +98,36 @@ window.saveLinkClickGlobalPreferences = async (event) => {
 const isolationDomainAddRule = async () => {
   const domainPattern = document.querySelector('#isolationDomainPattern').value;
 
-  preferences.isolationDomain[domainPattern] = {
-    action: document.querySelector('#isolationDomainAction').value
+  preferences.isolation.domain[domainPattern] = {
+    always: {
+      action: document.querySelector('#isolationDomainAlways').value,
+      allowedInPermanent: document.querySelector('#isolationDomainAlwaysAllowedInPermanent').checked
+    },
+    navigation: {
+      action: document.querySelector('#isolationDomainNavigation').value
+    },
+    mouseClick: {
+      middle: {
+        action: document.querySelector('#isolationDomainMouseClickMiddle').value
+      },
+      ctrlleft: {
+        action: document.querySelector('#isolationDomainMouseClickCtrlLeft').value
+      },
+      left: {
+        action: document.querySelector('#isolationDomainMouseClickLeft').value
+      }
+    }
   };
+
   await savePreferences();
-  updateIsolationDomainRules();
+  updateIsolationDomains();
 };
 
 
 let isolationDomainRulesClickEvent = false;
-window.updateIsolationDomainRules = () => {
-  const isolationDomainRules = $('#isolationDomainRules');
-  const domainRules = Object.keys(preferences.isolationDomain);
+window.updateIsolationDomains = () => {
+  const isolationDomainRules = $('#isolationDomains');
+  const domainRules = Object.keys(preferences.isolation.domain);
   if (domainRules.length) {
     isolationDomainRules.html('');
     domainRules.map((domainPattern) => {
@@ -134,8 +138,14 @@ window.updateIsolationDomainRules = () => {
       isolationDomainRules.append(el);
 
       const domainRuleTooltip =
-        '<div style="width:100%;">' +
-        `${preferences.isolationDomain[domainPattern].action}</div>`;
+        '<div style="width:200%;">' +
+        `Always: ${preferences.isolation.domain[domainPattern].always.action} <br>` +
+        `> Permanent allowed: ${preferences.isolation.domain[domainPattern].always.allowedInPermanent} <br><br>` +
+        `Navigation: ${preferences.isolation.domain[domainPattern].navigation.action} <br><br>` +
+        'Mouse Clicks<br>' +
+        `Middle: ${preferences.isolation.domain[domainPattern].mouseClick.middle.action} <br>` +
+        `Ctrl+Left: ${preferences.isolation.domain[domainPattern].mouseClick.ctrlleft.action} <br>` +
+        `Left: ${preferences.isolation.domain[domainPattern].mouseClick.left.action}</div>`;
       el.popup({
         html: domainRuleTooltip,
         inline: true
@@ -146,121 +156,18 @@ window.updateIsolationDomainRules = () => {
       isolationDomainRules.on('click', async (event) => {
         event.preventDefault();
         const domainPattern = $(event.target).parent().attr('id');
-        if (domainPattern === 'isolationDomainRules') {
+        if (domainPattern === 'isolationDomains') {
           return;
         }
-        delete preferences.isolationDomain[decodeURIComponent(domainPattern)];
+        delete preferences.isolation.domain[decodeURIComponent(domainPattern)];
         // TODO show "rule deleted" instead of "preferences saved"
         await savePreferences();
-        updateIsolationDomainRules();
+        updateIsolationDomains();
       });
       isolationDomainRulesClickEvent = true;
     }
   } else {
-    isolationDomainRules.html('No Rules added');
-  }
-};
-
-
-const linkClickDomainAddRule = async () => {
-  const domainPattern = document.querySelector('#linkClickDomainPattern').value;
-  const domainRule = {
-    middle: {
-      action: document.querySelector('#linkClickDomainMiddle').value
-    },
-    ctrlleft: {
-      action: document.querySelector('#linkClickDomainCtrlLeft').value
-    },
-    left: {
-      action: document.querySelector('#linkClickDomainLeft').value
-    }
-  };
-
-  preferences.linkClickDomain[domainPattern] = domainRule;
-  await savePreferences();
-  updateLinkClickDomainRules();
-};
-
-let linkClickDomainRulesClickEvent = false;
-window.updateLinkClickDomainRules = () => {
-  const linkClickDomainRules = $('#linkClickDomainRules');
-  const domainRules = Object.keys(preferences.linkClickDomain);
-  if (domainRules.length) {
-    linkClickDomainRules.html('');
-    domainRules.map((domainPattern) => {
-      const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
-        `<span href="#" id="domainRule:${encodeURIComponent(domainPattern)}">🛈</span> ` +
-        '<a href="#" id="linkClickRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
-        'data-position="right center">❌</a></div>');
-      linkClickDomainRules.append(el);
-
-      const domainRuleTooltip =
-        '<div style="width:100%;">' +
-        `Middle: ${preferences.linkClickDomain[domainPattern].middle.action} <br>` +
-        `Ctrl+Left: ${preferences.linkClickDomain[domainPattern].ctrlleft.action} <br>` +
-        `Left: ${preferences.linkClickDomain[domainPattern].left.action}</div>`;
-      el.popup({
-        html: domainRuleTooltip,
-        inline: true
-      });
-    });
-
-    if (!linkClickDomainRulesClickEvent) {
-      linkClickDomainRules.on('click', async (event) => {
-        event.preventDefault();
-        const domainPattern = $(event.target).parent().attr('id');
-        if (domainPattern === 'linkClickDomainRules') {
-          return;
-        }
-        delete preferences.linkClickDomain[decodeURIComponent(domainPattern)];
-        // TODO show "rule deleted" instead of "preferences saved"
-        await savePreferences();
-        updateLinkClickDomainRules();
-      });
-      linkClickDomainRulesClickEvent = true;
-    }
-  } else {
-    linkClickDomainRules.html('No Rules added');
-  }
-};
-
-window.alwaysOpenInDomainAddRule = async () => {
-  const domainPattern = document.querySelector('#alwaysOpenInDomainPattern').value;
-  const allowedInPermanent = document.querySelector('#alwaysOpenInDomainAllowedInPermanent').checked;
-
-  preferences.alwaysOpenInDomain[domainPattern] = {
-    allowedInPermanent
-  };
-  await savePreferences();
-  updateAlwaysOpenInDomainRules();
-};
-
-window.updateAlwaysOpenInDomainRules = () => {
-  const alwaysOpenInDomainRules = $('#alwaysOpenInDomainRules');
-  const domainRules = Object.keys(preferences.alwaysOpenInDomain);
-  if (domainRules.length) {
-    alwaysOpenInDomainRules.html('');
-    domainRules.map((domainPattern) => {
-      const alwaysOpenInDomainPreferences = preferences.alwaysOpenInDomain[domainPattern];
-      const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">${domainPattern} ` +
-        `<span href="#" data-tooltip="Allow in permanent Container: ${alwaysOpenInDomainPreferences.allowedInPermanent}">🛈</span> ` +
-        '<a href="#" id="alwaysOpenInRemoveDomainRules" data-tooltip="Remove Rule (no confirmation)" ' +
-        'data-position="right center">❌</a></div>');
-      alwaysOpenInDomainRules.append(el);
-    });
-
-    alwaysOpenInDomainRules.on('click', async (event) => {
-      event.preventDefault();
-      const domainPattern = $(event.target).parent().attr('id');
-      if (domainPattern === 'alwaysOpenInDomainRules') {
-        return;
-      }
-      delete preferences.alwaysOpenInDomain[decodeURIComponent(domainPattern)];
-      await savePreferences();
-      updateAlwaysOpenInDomainRules();
-    });
-  } else {
-    alwaysOpenInDomainRules.html('No Rules added');
+    isolationDomainRules.html('No Websites added');
   }
 };
 
@@ -364,7 +271,7 @@ window.saveAdvancedPreferences = async (event) => {
   preferences.deletesHistory.containerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
 
   // TODO this might cause saving preferences that got selected on global mouseclicks but not saved
-  saveLinkClickGlobalPreferences(event);
+  saveIsolationGlobalPreferences(event);
 };
 
 

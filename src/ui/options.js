@@ -1,5 +1,8 @@
 const initialize = async () => {
-  $('.menu .item').tab();
+  $('.menu .item').tab({
+    history: true,
+    historyType: 'hash'
+  });
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
   try {
@@ -18,9 +21,9 @@ const initialize = async () => {
       $('#isolationGlobal').dropdown('set selected', preferences.isolation.global.navigation.action);
       $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
 
-      $('#isolationLinkClickGlobalMiddle').dropdown('set selected', preferences.isolation.global.mouseClick.middle.action);
-      $('#isolationLinkClickGlobalCtrlLeft').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.action);
-      $('#isolationLinkClickGlobalLeft').dropdown('set selected', preferences.isolation.global.mouseClick.left.action);
+      $('#isolationGlobalMouseClickMiddle').dropdown('set selected', preferences.isolation.global.mouseClick.middle.action);
+      $('#isolationGlobalMouseClickCtrlLeft').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.action);
+      $('#isolationGlobalMouseClickLeft').dropdown('set selected', preferences.isolation.global.mouseClick.left.action);
 
       $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.middle.container);
       $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.container);
@@ -48,10 +51,7 @@ const initialize = async () => {
       document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
       document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistoryStatistics;
 
-
-      // updateLinkClickDomainRules();
-      // updateAlwaysOpenInDomainRules();
-      // updateIsolationDomainRules();
+      updateIsolationDomains();
       updateSetCookiesDomainRules();
       updateStatistics();
       showDeletesHistoryStatistics();
@@ -64,26 +64,6 @@ const initialize = async () => {
     }
     preferences = storage.preferences;
     setCurrentPreferences();
-
-    $('#linkClickDomainForm').form({
-      fields: {
-        linkClickDomainPattern: 'empty'
-      },
-      onSuccess: (event) => {
-        event.preventDefault();
-        linkClickDomainAddRule();
-      }
-    });
-
-    $('#alwaysOpenInDomainForm').form({
-      fields: {
-        alwaysOpenInDomainPattern: 'empty'
-      },
-      onSuccess: (event) => {
-        event.preventDefault();
-        alwaysOpenInDomainAddRule();
-      }
-    });
 
     $('#isolationDomainForm').form({
       fields: {
@@ -112,16 +92,6 @@ const initialize = async () => {
       'Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>' +
       'Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>, ' +
       'so you might need two rules. Website Rules overwrite Global Rules.</div>';
-
-    $('#linkClickDomainPatternDiv').popup({
-      html: domainPatternToolTip,
-      inline: true
-    });
-
-    $('#alwaysOpenInDomainPatternDiv').popup({
-      html: domainPatternToolTip,
-      inline: true
-    });
 
     $('#setCookiesDomainPatternDiv').popup({
       html: domainPatternToolTip,
@@ -180,6 +150,10 @@ const initialize = async () => {
       $('#notifications')
         .checkbox('uncheck');
     }
+
+    if (!window.location.hash) {
+      $('.menu .item').tab('change tab', 'general');
+    }
   } catch (error) {
     showPreferencesError(error);
   }
@@ -190,8 +164,7 @@ $('#saveContainerPreferences').on('click', saveContainerPreferences);
 $('#saveAdvancedGeneralPreferences').on('click', saveAdvancedPreferences);
 $('#saveAdvancedDeleteHistoryPreferences').on('click', saveAdvancedPreferences);
 $('#saveIsolationGlobalPreferences').on('click', saveIsolationGlobalPreferences);
-$('#saveIsolationMacPreferences').on('click', saveIsolationMacPreferences);
-$('#saveLinkClickGlobalPreferences').on('click', saveLinkClickGlobalPreferences);
+$('#saveIsolationMacPreferences').on('click', saveIsolationGlobalPreferences);
 $('#saveStatisticsPreferences').on('click', saveStatisticsPreferences);
 $('#resetStatistics').on('click', resetStatistics);
 $('#deletesHistoryStatisticsField').on('click', showDeletesHistoryStatistics);
