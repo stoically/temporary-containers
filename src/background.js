@@ -43,7 +43,6 @@ class TemporaryContainers {
     this.contextmenu.initialize();
     this.cookies.initialize();
     this.mac.initialize();
-    this.migration.initialize();
     await this.tabs.initialize();
 
     this.initialized = true;

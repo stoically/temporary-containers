@@ -85,6 +85,7 @@ class Runtime {
 
 
   async onInstalled(details) {
+    debug('[onInstalled]', details);
     if (details.temporary) {
       log.DEBUG = true;
       log.temporary = true;
