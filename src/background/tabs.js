@@ -84,7 +84,8 @@ class Tabs {
 
 
   async onActivated(activeInfo) {
-    this.removeContextMenu();
+    debug('[onActivated]', activeInfo);
+    this.contextmenu.remove();
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     if (!activatedTab.incognito) {
       this.contextmenu.add();
