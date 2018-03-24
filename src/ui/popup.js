@@ -1,5 +1,4 @@
 const initialize = async () => {
-  $('.menu .item').tab();
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
 
@@ -10,27 +9,31 @@ const initialize = async () => {
       return;
     }
     preferences = storage.preferences;
-    updateLinkClickDomainRules();
+    updateIsolationDomains();
 
-    $('#linkClickDomainForm').form({
+    $('#isolationDomainForm').form({
       fields: {
-        linkClickDomainPattern: 'empty'
+        isolationDomainPattern: 'empty'
       },
       onSuccess: (event) => {
         event.preventDefault();
-        linkClickDomainAddRule();
+        isolationDomainAddRule();
       }
     });
 
     const tabs = await browser.tabs.query({active: true});
     const tabParsedUrl = new URL(tabs[0].url);
-    document.querySelector('#linkClickDomainPattern').value = tabParsedUrl.hostname;
+    document.querySelector('#isolationDomainPattern').value = tabParsedUrl.hostname;
 
-    if (preferences.linkClickDomain[tabParsedUrl.hostname]) {
-      const domainRules = preferences.linkClickDomain[tabParsedUrl.hostname];
-      $('#linkClickDomainMiddle').dropdown('set selected', domainRules.middle.action);
-      $('#linkClickDomainCtrlLeft').dropdown('set selected', domainRules.ctrlleft.action);
-      $('#linkClickDomainLeft').dropdown('set selected', domainRules.left.action);
+    if (preferences.isolation.domain[tabParsedUrl.hostname]) {
+      const domainRules = preferences.isolation.domain[tabParsedUrl.hostname];
+
+      $('#isolationDomainAlways').dropdown('set selected', domainRules.always.action);
+      document.querySelector('#isolationDomainAlwaysAllowedInPermanent').checked = domainRules.always.allowedInPermanent;
+      $('#isolationDomainNavigation').dropdown('set selected', domainRules.navigation.action);
+      $('#isolationDomainMouseClickMiddle').dropdown('set selected', domainRules.mouseClick.middle.action);
+      $('#isolationDomainMouseClickCtrlLeft').dropdown('set selected', domainRules.mouseClick.ctrlleft.action);
+      $('#isolationDomainMouseClickLeft').dropdown('set selected', domainRules.mouseClick.left.action);
     }
   } catch (error) {
     showPreferencesError(error);

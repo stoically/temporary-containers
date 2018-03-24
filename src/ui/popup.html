@@ -11,50 +11,72 @@
   </head>
 
   <body>
-    <div class="ui top attached tabular menu">
-      <a class="active item">
-        Mouse Clicks
-      </a>
-    </div>
-    <div class="ui bottom attached segment">
-      <form class="ui form" id="linkClickDomainForm">
-        <div id="linkClickDomainPatternDiv" class="field">
+    <div class="ui container">
+      <form class="ui form" id="isolationDomainForm">
+        <div id="isolationDomainPatternDiv" class="field">
           <label>Website Pattern</label>
-          <input id="linkClickDomainPattern" type="text">
+          <input id="isolationDomainPattern" type="text">
+        </div>
+        <h4>Always open in</h4>
+        <div class="field">
+          <select id="isolationDomainAlways" class="ui fluid dropdown">
+            <option value="enabled">Enabled</option>
+            <option value="disabled" selected="selected">Disabled</option>
+          </select>
         </div>
         <div class="field">
-          <label>Middle Mouse</label>
-          <select id="linkClickDomainMiddle" class="ui fluid dropdown">
-            <option value="always" selected="selected">Always</option>
-            <option value="notsamedomainexact">Link not exact same Domain</option>
-            <option value="notsamedomain">Link not same Domain</option>
+          <div class="ui checkbox">
+            <input type="checkbox" id="isolationDomainAlwaysAllowedInPermanent">
+            <label>Allow to load in Permanent Containers</label>
+          </div>
+        </div>
+        <h4>Navigating</h4>
+        <div class="field">
+          <select id="isolationDomainNavigation" class="ui fluid dropdown">
+            <option value="always">Always</option>
+            <option value="notsamedomainexact">Not exact same Domain</option>
+            <option value="notsamedomain">Not same Domain</option>
             <option value="never">Never</option>
+            <option value="global" selected="selected">Use Global</option>
+          </select>
+        </div>
+        <h4>Mouse Clicks</h4>
+        <div class="field">
+          <label>Middle Mouse</label>
+          <select id="isolationDomainMouseClickMiddle" class="ui fluid dropdown">
+            <option value="always">Always</option>
+            <option value="notsamedomainexact">Not exact same Domain</option>
+            <option value="notsamedomain">Not same Domain</option>
+            <option value="never">Never</option>
+            <option value="global" selected="selected">Use Global</option>
           </select>
         </div>
         <div class="field">
           <label>Ctrl/Cmd+Left Mouse</label>
-          <select id="linkClickDomainCtrlLeft" class="ui fluid dropdown">
-            <option value="always" selected="selected">Always</option>
-            <option value="notsamedomainexact">Link not exact same Domain</option>
-            <option value="notsamedomain">Link not same Domain</option>
+          <select id="isolationDomainMouseClickCtrlLeft" class="ui fluid dropdown">
+            <option value="always">Always</option>
+            <option value="notsamedomainexact">Not exact same Domain</option>
+            <option value="notsamedomain">Not same Domain</option>
             <option value="never">Never</option>
+            <option value="global" selected="selected">Use Global</option>
           </select>
         </div>
         <div class="field">
           <label>Left Mouse</label>
-          <select id="linkClickDomainLeft" class="ui fluid dropdown">
-            <option value="always" selected="selected">Always</option>
-            <option value="notsamedomainexact" selected="selected">Link not exact same Domain</option>
-            <option value="notsamedomain">Link not same Domain</option>
+          <select id="isolationDomainMouseClickLeft" class="ui fluid dropdown">
+            <option value="always">Always</option>
+            <option value="notsamedomainexact">Not exact same Domain</option>
+            <option value="notsamedomain">Not same Domain</option>
             <option value="never">Never</option>
+            <option value="global" selected="selected">Use Global</option>
           </select>
         </div>
         <div class="field">
-          <button id="linkClickDomainAddRule" class="ui button primary">Save</button>
+          <button id="isolationDomainSave" class="ui button primary">Save</button>
         </div>
         <div>
-          <h3>Website Rules</h3>
-          <div class="ui bulleted list" id="linkClickDomainRules">
+          <h3>Websites</h3>
+          <div class="ui bulleted list" id="isolationDomains">
           </div>
         </div>
       </form>
