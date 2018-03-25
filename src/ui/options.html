@@ -264,11 +264,19 @@
         </div>
         <div class="ui bottom attached active tab segment" data-tab="advanced/general">
           <form class="ui form">
-            <div class="field" id="pageActionField">
-              <label>Address Bar Icon Popup</label>
-              <div class="ui checkbox" data-tooltip="The popup lets you configure Isolation per Domain">
-                <input type="checkbox" id="pageAction">
-                <label>Show Additional Icon in the address bar that reveals a popup [?]</label>
+            <div class="field" id="popupField">
+              <div class="field">
+                <label>Icon Popup [?]</label>
+                <div class="ui checkbox">
+                  <input type="checkbox" id="browserActionPopup">
+                  <label>Show the popup when pressing the Toolbar Icon instead of opening Temporary Container</label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui checkbox">
+                  <input type="checkbox" id="pageAction">
+                  <label>Show additional Icon in the address bar that reveals the popup</label>
+                </div>
               </div>
             </div>
             <div class="field">

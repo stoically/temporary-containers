@@ -33,6 +33,13 @@ class Runtime {
       if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
         this.browseraction.setIcon(message.payload.preferences.iconColor);
       }
+      if (this.storage.local.preferences.browserActionPopup !== message.payload.preferences.browserActionPopup) {
+        if (message.payload.preferences.browserActionPopup) {
+          this.browseraction.setPopup();
+        } else {
+          this.browseraction.unsetPopup();
+        }
+      }
       if (message.payload.preferences.notifications) {
         this.permissions.notifications = true;
       }
@@ -66,7 +73,7 @@ class Runtime {
 
     case 'createTabInTempContainer':
       return this.container.createTabInTempContainer({
-        deletesHistory: message.payload.deletesHistory
+        deletesHistory: message.payload ? message.payload.deletesHistory : undefined
       });
 
     case 'convertTempContainerToPermanent':

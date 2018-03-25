@@ -270,6 +270,7 @@ window.updateStatistics = async () => {
 window.saveAdvancedPreferences = async (event) => {
   event.preventDefault();
 
+  preferences.browserActionPopup = document.querySelector('#browserActionPopup').checked;
   preferences.pageAction = document.querySelector('#pageAction').checked;
   preferences.contextMenu = document.querySelector('#contextMenu').checked;
   preferences.keyboardShortcuts.AltC = document.querySelector('#keyboardShortcutsAltC').checked;

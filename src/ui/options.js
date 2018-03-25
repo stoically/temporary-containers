@@ -36,6 +36,7 @@ const initialize = async () => {
       $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistory.containerIsolation);
       $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistory.containerMouseClicks);
 
+      document.querySelector('#browserActionPopup').checked = preferences.browserActionPopup;
       document.querySelector('#pageAction').checked = preferences.pageAction;
       document.querySelector('#contextMenu').checked = preferences.contextMenu;
       document.querySelector('#keyboardShortcutsAltC').checked = preferences.keyboardShortcuts.AltC;
@@ -133,6 +134,24 @@ const initialize = async () => {
 
     $('#deletesHistoryStatisticsField').popup({
       html: deletesHistoryStatisticsToolTip,
+      inline: true
+    });
+
+
+    const popupToolTip =
+      '<div style="width:500px;">' +
+      'The popup lets you<ul>' +
+      '<li> Configure Isolation per Domain' +
+      '<li> Convert Temporary to Permanent Container' +
+      '<li> Convert Permanent to Temporary Container' +
+      '<li> Open current Tab URL in new Temporary Container' +
+      '<li> Open current Tab URL in new "Deletes History Temporary Container"' +
+      '<li> Open Preferences/Options' +
+      '<li> Open new "Deletes History Temporary Container"' +
+      '</ul></div>';
+
+    $('#popupField').popup({
+      html: popupToolTip,
       inline: true
     });
 

@@ -64,7 +64,7 @@ class Migration {
     if (versionCompare('0.77', previousVersion) >= 0) {
       debug('updated from version <= 0.77, migrate preferences');
       const preferences = this.storage.local.preferences;
-      const newPreferences = {
+      const newPreferences = Object.assign(this.storage.preferencesDefault, {
         automaticMode: {
           active: preferences.automaticMode,
           newTab: preferences.automaticModeNewTab
@@ -111,7 +111,7 @@ class Migration {
           statistics: preferences.deletesHistoryStatistics
         },
         statistics: preferences.statistics,
-      };
+      });
 
       const initIsolationDomain = (pattern) => {
         if (newPreferences.isolation.domain[pattern]) {

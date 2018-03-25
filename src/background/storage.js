@@ -44,6 +44,7 @@ class Storage {
           action: 'disabled',
         }
       },
+      browserActionPopup: false,
       pageAction: false,
       contextMenu: true,
       keyboardShortcuts: {

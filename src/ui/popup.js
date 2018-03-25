@@ -21,8 +21,42 @@ const initialize = async () => {
       }
     });
 
+    $('#tmpButton').on('click', () => {
+      browser.runtime.sendMessage({
+        method: 'createTabInTempContainer'
+      });
+      window.close();
+    });
+
+    $('#preferences').on('click', () => {
+      browser.tabs.create({
+        url: browser.runtime.getURL('ui/options.html')
+      });
+      window.close();
+    });
+
+    const historyPermission = await browser.permissions.contains({permissions: ['history']});
+    if (historyPermission) {
+      $('#deletesHistoryButton').on('click', () => {
+        browser.runtime.sendMessage({
+          method: 'createTabInTempContainer',
+          payload: {
+            deletesHistory: true
+          }
+        });
+        window.close();
+      });
+      $('#deletesHistoryButton').addClass('item');
+      $('#deletesHistoryButton').removeClass('hidden');
+    }
+
     const tabs = await browser.tabs.query({active: true});
     const activeTab = tabs[0];
+    if (!activeTab.url.startsWith('http')) {
+      $('#menu').addClass('hidden');
+      $('#menu').removeClass('item');
+      return;
+    }
     const tabParsedUrl = new URL(activeTab.url);
     isolationDomainEditRule(tabParsedUrl.hostname);
 
@@ -38,6 +72,7 @@ const initialize = async () => {
             url: activeTab.url
           }
         });
+        window.close();
       });
       $('#actionConvertToRegularDiv').removeClass('hidden');
       actionsAvailable = true;
@@ -53,6 +88,7 @@ const initialize = async () => {
             url: activeTab.url
           }
         });
+        window.close();
       });
       $('#actionConvertToPermanentDiv').removeClass('hidden');
       actionsAvailable = true;
@@ -61,19 +97,6 @@ const initialize = async () => {
       $('#actionsNonAvailabe').addClass('hidden');
     }
 
-    const historyPermission = await browser.permissions.contains({permissions: ['history']});
-    if (historyPermission) {
-      $('#deletesHistoryButton').on('click', () => {
-        browser.runtime.sendMessage({
-          method: 'createTabInTempContainer',
-          payload: {
-            deletesHistory: true
-          }
-        });
-      });
-      $('#deletesHistoryButton').addClass('item');
-      $('#deletesHistoryButton').removeClass('hidden');
-    }
     $('.ui.sidebar').sidebar({
       transition: 'overlay'
     });

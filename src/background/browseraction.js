@@ -10,6 +10,9 @@ class BrowserAction {
 
     browser.browserAction.onClicked.addListener(this.onClicked.bind(this));
 
+    if (this.storage.local.preferences.browserActionPopup) {
+      this.setPopup();
+    }
     if (this.storage.local.preferences.iconColor !== 'default') {
       this.setIcon(this.storage.local.preferences.iconColor);
     }
@@ -19,6 +22,20 @@ class BrowserAction {
   onClicked() {
     return this.container.createTabInTempContainer({
       deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
+    });
+  }
+
+
+  setPopup() {
+    browser.browserAction.setPopup({
+      popup: 'ui/popup.html'
+    });
+  }
+
+
+  unsetPopup() {
+    browser.browserAction.setPopup({
+      popup: null
     });
   }
 
