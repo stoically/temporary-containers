@@ -48,6 +48,7 @@ const initialize = async () => {
       });
       $('#deletesHistoryButton').addClass('item');
       $('#deletesHistoryButton').removeClass('hidden');
+      $('#actionOpenInDeletesHistoryTmpDiv').removeClass('hidden');
     }
 
     const tabs = await browser.tabs.query({active: true});
@@ -60,7 +61,27 @@ const initialize = async () => {
     const tabParsedUrl = new URL(activeTab.url);
     isolationDomainEditRule(tabParsedUrl.hostname);
 
-    let actionsAvailable = false;
+    $('#actionOpenInTmp').on('click', () => {
+      browser.runtime.sendMessage({
+        method: 'createTabInTempContainer',
+        payload: {
+          url: activeTab.url
+        }
+      });
+      window.close();
+    });
+
+    $('#actionOpenInDeletesHistoryTmp').on('click', () => {
+      browser.runtime.sendMessage({
+        method: 'createTabInTempContainer',
+        payload: {
+          url: activeTab.url,
+          deletesHistory: true
+        }
+      });
+      window.close();
+    });
+
     if (storage.tempContainers[activeTab.cookieStoreId] &&
         storage.tempContainers[activeTab.cookieStoreId].deletesHistory) {
       $('#actionConvertToRegular').on('click', () => {
@@ -75,7 +96,6 @@ const initialize = async () => {
         window.close();
       });
       $('#actionConvertToRegularDiv').removeClass('hidden');
-      actionsAvailable = true;
     }
     if (storage.tempContainers[activeTab.cookieStoreId]) {
       $('#actionConvertToPermanent').on('click', async () => {
@@ -91,10 +111,22 @@ const initialize = async () => {
         window.close();
       });
       $('#actionConvertToPermanentDiv').removeClass('hidden');
-      actionsAvailable = true;
     }
-    if (actionsAvailable) {
-      $('#actionsNonAvailabe').addClass('hidden');
+
+    if (activeTab.cookieStoreId !== 'firefox-default' &&
+        !storage.tempContainers[activeTab.cookieStoreId]) {
+      $('#actionConvertToTemporary').on('click', () => {
+        browser.runtime.sendMessage({
+          method: 'convertPermanentToTempContainer',
+          payload: {
+            cookieStoreId: activeTab.cookieStoreId,
+            tabId: activeTab.id,
+            url: activeTab.url
+          }
+        });
+        window.close();
+      });
+      $('#actionConvertToTemporaryDiv').removeClass('hidden');
     }
 
     $('.ui.sidebar').sidebar({

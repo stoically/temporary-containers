@@ -73,6 +73,7 @@ class Runtime {
 
     case 'createTabInTempContainer':
       return this.container.createTabInTempContainer({
+        url: message.payload ? message.payload.url : undefined,
         deletesHistory: message.payload ? message.payload.deletesHistory : undefined
       });
 
@@ -86,6 +87,13 @@ class Runtime {
 
     case 'convertTempContainerToRegular':
       return this.container.convertTempContainerToRegular({
+        cookieStoreId: message.payload.cookieStoreId,
+        tabId: message.payload.tabId,
+        url: message.payload.url
+      });
+
+    case 'convertPermanentToTempContainer':
+      return this.container.convertPermanentToTempContainer({
         cookieStoreId: message.payload.cookieStoreId,
         tabId: message.payload.tabId,
         url: message.payload.url

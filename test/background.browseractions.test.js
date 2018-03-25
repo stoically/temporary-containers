@@ -17,10 +17,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.contextualIdentities.create.should.have.been.calledWith({
         name: 'tmp1',
         color: 'red',
-        icon: 'circle',
-        number: 1,
-        deletesHistory: false,
-        clean: true
+        icon: 'circle'
       });
       browser.tabs.create.should.have.been.calledWith({
         url: undefined,
@@ -48,10 +45,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       expect(browser.contextualIdentities.create).to.have.been.calledWith({
         name: sinon.match.string,
         color: sinon.match.string,
-        icon: sinon.match.string,
-        number: 1,
-        deletesHistory: false,
-        clean: true
+        icon: sinon.match.string
       });
       expect(browser.tabs.create).to.have.been.calledWith(sinon.match({
         url: undefined,

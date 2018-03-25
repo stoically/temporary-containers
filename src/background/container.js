@@ -83,47 +83,29 @@ class Container {
       });
     }
 
-    let tempContainerNumber;
-    if (this.storage.local.preferences.container.numberMode === 'keep') {
-      this.storage.local.tempContainerCounter++;
-      tempContainerNumber = this.storage.local.tempContainerCounter;
-    }
-    if (this.storage.local.preferences.container.numberMode === 'reuse') {
-      tempContainerNumber = this.getReusedContainerNumber();
-    }
-    let containerName = `${this.storage.local.preferences.container.namePrefix}${tempContainerNumber}`;
+    const containerOptions = this.getContainerNameIconColor();
 
     if (!deletesHistory) {
       deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
     }
     if (deletesHistory) {
       if (this.permissions.history) {
-        containerName += '-deletes-history';
+        containerOptions.name += '-deletes-history';
       } else {
         deletesHistory = false;
       }
     }
+    containerOptions.deletesHistory = deletesHistory;
+
     try {
-      let containerColor = this.storage.local.preferences.container.color;
-      if (this.storage.local.preferences.container.colorRandom) {
-        const containerColors = this.getAvailableContainerColors();
-        containerColor = containerColors[Math.floor(Math.random() * containerColors.length)];
-      }
-      let containerIcon = this.storage.local.preferences.container.icon;
-      if (this.storage.local.preferences.container.iconRandom) {
-        containerIcon = this.containerIcons[Math.floor(Math.random() * this.containerIcons.length)];
-      }
-      const containerOptions = {
-        name: containerName,
-        color: containerColor,
-        icon: containerIcon
-      };
       debug('[createTabInTempContainer] creating new container', containerOptions);
-      const contextualIdentity = await browser.contextualIdentities.create(containerOptions);
+      const contextualIdentity = await browser.contextualIdentities.create({
+        name: containerOptions.name,
+        icon: containerOptions.icon,
+        color: containerOptions.color
+      });
       debug('[createTabInTempContainer] contextualIdentity created', contextualIdentity);
-      containerOptions.number = tempContainerNumber;
-      containerOptions.deletesHistory = deletesHistory;
-      containerOptions.clean = true;
+
       this.storage.local.tempContainers[contextualIdentity.cookieStoreId] = containerOptions;
       await this.storage.persist();
 
@@ -169,7 +151,7 @@ class Container {
         debug('[createTabInTempContainer] error while creating new tab', error);
       }
     } catch (error) {
-      debug('[createTabInTempContainer] error while creating container', containerName, error);
+      debug('[createTabInTempContainer] error while creating container', containerOptions.name, error);
     }
   }
 
@@ -197,6 +179,36 @@ class Container {
     }
     await this.tabs.remove(tab);
     return newTab;
+  }
+
+
+  getContainerNameIconColor() {
+    let tempContainerNumber;
+    if (this.storage.local.preferences.container.numberMode === 'keep') {
+      this.storage.local.tempContainerCounter++;
+      tempContainerNumber = this.storage.local.tempContainerCounter;
+    }
+    if (this.storage.local.preferences.container.numberMode === 'reuse') {
+      tempContainerNumber = this.getReusedContainerNumber();
+    }
+    let containerName = `${this.storage.local.preferences.container.namePrefix}${tempContainerNumber}`;
+
+    let containerColor = this.storage.local.preferences.container.color;
+    if (this.storage.local.preferences.container.colorRandom) {
+      const containerColors = this.getAvailableContainerColors();
+      containerColor = containerColors[Math.floor(Math.random() * containerColors.length)];
+    }
+    let containerIcon = this.storage.local.preferences.container.icon;
+    if (this.storage.local.preferences.container.iconRandom) {
+      containerIcon = this.containerIcons[Math.floor(Math.random() * this.containerIcons.length)];
+    }
+    return {
+      name: containerName,
+      color: containerColor,
+      icon: containerIcon,
+      number: tempContainerNumber,
+      clean: true
+    };
   }
 
 
@@ -503,6 +515,25 @@ class Container {
     await this.storage.persist();
     const name = this.storage.local.tempContainers[cookieStoreId].name.replace('-deletes-history', '');
     await browser.contextualIdentities.update(cookieStoreId, {name});
+    await browser.tabs.create({
+      cookieStoreId,
+      url
+    });
+    await this.tabs.remove({id: tabId});
+  }
+
+
+  async convertPermanentToTempContainer({cookieStoreId, tabId, url}) {
+    const containerOptions = this.getContainerNameIconColor();
+    await browser.contextualIdentities.update(
+      cookieStoreId, {
+        name: containerOptions.name,
+        icon: containerOptions.icon,
+        color: containerOptions.color
+      }
+    );
+    this.storage.local.tempContainers[cookieStoreId] = containerOptions;
+    await this.storage.persist();
     await browser.tabs.create({
       cookieStoreId,
       url

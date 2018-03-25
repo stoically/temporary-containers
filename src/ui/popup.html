@@ -128,18 +128,33 @@
             </div>
           </div>
           <div class="ui tab" data-tab="actions">
-            <div id="actionsNonAvailabe">
-              No Actions available for this Tab
+            <div id="actionOpenInTmpDiv">
+              <button id="actionOpenInTmp" class="ui primary button">
+                Open Tab URL in new Temporary Container
+              </button>
+              <br><br>
             </div>
             <div id="actionConvertToPermanentDiv" data-tooltip="No confirmation" class="hidden">
               <button id="actionConvertToPermanent" class="ui primary button">
                 Convert to Permanent Container
               </button>
+              <br><br>
             </div>
-            <br>
             <div id="actionConvertToRegularDiv" data-tooltip="No confirmation. History isn't deleted." class="hidden">
-              <button id="actionConvertToRegular" class="ui primary button">
+              <button id="actionConvertToRegular" class="ui negative button">
                 Convert to Regular Temporary Container
+              </button>
+              <br><br>
+            </div>
+            <div id="actionConvertToTemporaryDiv" data-tooltip="No confirmation" class="hidden">
+              <button id="actionConvertToTemporary" class="ui negative button">
+                Convert to Temporary Container
+              </button>
+              <br><br>
+            </div>
+            <div id="actionOpenInDeletesHistoryTmpDiv" data-tooltip="No confirmation" class="hidden">
+              <button id="actionOpenInDeletesHistoryTmp" class="ui negative button">
+                Open Tab URL in new "Deletes History Temporary Container"
               </button>
             </div>
           </div>
