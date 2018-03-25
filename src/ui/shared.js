@@ -348,4 +348,3 @@ window.requestNotificationsPermissions = async () => {
       .checkbox('uncheck');
   }
 };
-
