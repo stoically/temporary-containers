@@ -120,22 +120,109 @@
       </div>
       <div class="ui tab segment" data-tab="isolation">
         <div class="ui top attached tabular menu">
-          <a class="active item" data-tab="isolation/global">Global</a>
           <a class="item" data-tab="isolation/perdomain">Per Domain</a>
+          <a class="active item" data-tab="isolation/global">Global</a>
           <a class="item" data-tab="isolation/mac">Multi-Account Containers</a>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="isolation/perdomain">
+          <form class="ui form" id="isolationDomainForm">
+            <div id="isolationDomainPatternDiv" class="field">
+              <label>Domain Pattern [?]</label>
+              <input id="isolationDomainPattern" type="text">
+            </div>
+            <div class="ui accordion">
+              <div class="title active">
+                <h4><i class="dropdown icon"></i>
+                  Always open in new Temporary Container
+                </h4>
+              </div>
+              <div class="content active">
+                <div class="field">
+                  <select id="isolationDomainAlways" class="ui fluid dropdown">
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled" selected="selected">Disabled</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <div class="ui checkbox">
+                    <input type="checkbox" id="isolationDomainAlwaysAllowedInPermanent">
+                    <label>Allow to load in Permanent Containers</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="ui accordion">
+              <div class="title">
+                <h4><i class="dropdown icon"></i>
+                  Mouse Clicks on Links should open new Temporary Containers
+                </h4>
+              </div>
+              <div class="content">
+                <div class="field">
+                  <label>Middle Mouse</label>
+                  <select id="isolationDomainMouseClickMiddle" class="ui fluid dropdown">
+                    <option value="global" selected="selected">Use Global</option>
+                    <option value="always">Always</option>
+                    <option value="notsamedomainexact">If the clicked Link Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
+                    <option value="notsamedomain">If the clicked Link Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
+                    <option value="never">Never</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Ctrl/Cmd+Left Mouse</label>
+                  <select id="isolationDomainMouseClickCtrlLeft" class="ui fluid dropdown">
+                    <option value="global" selected="selected">Use Global</option>
+                    <option value="always">Always</option>
+                    <option value="notsamedomainexact">If the clicked Link Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
+                    <option value="notsamedomain">If the clicked Link Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
+                    <option value="never">Never</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Left Mouse</label>
+                  <select id="isolationDomainMouseClickLeft" class="ui fluid dropdown">
+                    <option value="global" selected="selected">Use Global</option>
+                    <option value="always">Always</option>
+                    <option value="notsamedomainexact">If the clicked Link Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
+                    <option value="notsamedomain">If the clicked Link Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
+                    <option value="never">Never</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="ui accordion">
+              <div class="title">
+                <h4><i class="dropdown icon"></i>
+                  Navigating in Tabs should open new Temporary Containers
+                </h4>
+              </div>
+              <div class="content">
+                <div class="field">
+                  <select id="isolationDomainNavigation" class="ui fluid dropdown">
+                    <option value="global" selected="selected">Use Global</option>
+                    <option value="always">Always</option>
+                    <option value="notsamedomainexact">If the Navigation Target Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
+                    <option value="notsamedomain">If the Navigation Target Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
+                    <option value="never">Never</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="field">
+              <button id="isolationDomainSave" class="ui button primary">Save</button>
+            </div>
+            <div>
+              <h3>Domains</h3>
+              <div class="ui bulleted list" id="isolationDomains">
+              </div>
+            </div>
+          </form>
         </div>
         <div class="ui bottom attached active tab segment" data-tab="isolation/global">
           <form class="ui form">
-            <h4>Navigating in Tabs should open new Temporary Containers</h4>
-            <div class="field">
-              <select id="isolationGlobal" class="ui fluid dropdown">
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the Navigation Target Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
-                <option value="notsamedomain">If the Navigation Target Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-
             <h4>Mouse Clicks on Links should open new Temporary Containers</h4>
             <div class="field">
               <label>Middle Mouse</label>
@@ -164,78 +251,17 @@
                 <option value="never">Never</option>
               </select>
             </div>
-            <div class="field">
-              <button id="saveIsolationGlobalPreferences" class="ui button primary">Save</button>
-            </div>
-          </form>
-        </div>
-        <div class="ui bottom attached tab segment" data-tab="isolation/perdomain">
-          <form class="ui form" id="isolationDomainForm">
-            <div id="isolationDomainPatternDiv" class="field">
-              <label>Domain Pattern [?]</label>
-              <input id="isolationDomainPattern" type="text">
-            </div>
-            <h4>Always open in new Temporary Container</h4>
-            <div class="field">
-              <select id="isolationDomainAlways" class="ui fluid dropdown">
-                <option value="enabled">Enabled</option>
-                <option value="disabled" selected="selected">Disabled</option>
-              </select>
-            </div>
-            <div class="field">
-              <div class="ui checkbox">
-                <input type="checkbox" id="isolationDomainAlwaysAllowedInPermanent">
-                <label>Allow to load in Permanent Containers</label>
-              </div>
-            </div>
             <h4>Navigating in Tabs should open new Temporary Containers</h4>
             <div class="field">
-              <select id="isolationDomainNavigation" class="ui fluid dropdown">
-                <option value="global" selected="selected">Use Global</option>
+              <select id="isolationGlobal" class="ui fluid dropdown">
                 <option value="always">Always</option>
                 <option value="notsamedomainexact">If the Navigation Target Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
                 <option value="notsamedomain">If the Navigation Target Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
                 <option value="never">Never</option>
               </select>
             </div>
-            <h4>Mouse Clicks on Links should open new Temporary Containers</h4>
             <div class="field">
-              <label>Middle Mouse</label>
-              <select id="isolationDomainMouseClickMiddle" class="ui fluid dropdown">
-                <option value="global" selected="selected">Use Global</option>
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the clicked Link Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
-                <option value="notsamedomain">If the clicked Link Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Ctrl/Cmd+Left Mouse</label>
-              <select id="isolationDomainMouseClickCtrlLeft" class="ui fluid dropdown">
-                <option value="global" selected="selected">Use Global</option>
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the clicked Link Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
-                <option value="notsamedomain">If the clicked Link Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Left Mouse</label>
-              <select id="isolationDomainMouseClickLeft" class="ui fluid dropdown">
-                <option value="global" selected="selected">Use Global</option>
-                <option value="always">Always</option>
-                <option value="notsamedomainexact">If the clicked Link Domain does not exactly match the current Tabs Domain (Subdomains also get isolated)</option>
-                <option value="notsamedomain">If the clicked Link Domain does not match the current Tabs Domain (Subdomains get not isolated)</option>
-                <option value="never">Never</option>
-              </select>
-            </div>
-            <div class="field">
-              <button id="isolationDomainSave" class="ui button primary">Save</button>
-            </div>
-            <div>
-              <h3>Domains</h3>
-              <div class="ui bulleted list" id="isolationDomains">
-              </div>
+              <button id="saveIsolationGlobalPreferences" class="ui button primary">Save</button>
             </div>
           </form>
         </div>

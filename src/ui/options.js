@@ -5,6 +5,7 @@ const initialize = async () => {
   });
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
+  $('.ui.accordion').accordion();
   try {
     const setCurrentPreferences = () => {
       document.querySelector('#automaticMode').checked = preferences.automaticMode.active;
