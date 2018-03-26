@@ -222,13 +222,6 @@ class Container {
       debug('[addToRemoveQueue] container from the tabContainerMap is unknown', tabId, cookieStoreId);
       return;
     }
-    const tempTabs = await browser.tabs.query({
-      cookieStoreId
-    });
-    if (tempTabs.length > 0) {
-      debug('[addToRemoveQueue] not queuing removal because container still has tabs', cookieStoreId, tempTabs.length);
-      return;
-    }
     const containerType = this.storage.local.tempContainers[cookieStoreId].deletesHistory ? 'deletesHistory' : 'regular';
     const containerRemoval = containerType === 'deletesHistory' ?
       this.storage.local.preferences.deletesHistory.containerRemoval :
@@ -291,7 +284,7 @@ class Container {
       }
       const containerRemoved = await this.tryToRemove(cookieStoreId);
       if (containerRemoved) {
-        debug('[tryToRemoveQueue] containter removed', cookieStoreId);
+        debug('[tryToRemoveQueue] container removed', cookieStoreId);
         this.removedContainerCount++;
         debug('[tryToRemoveQueue] waiting a bit', cookieStoreId);
         await delay(5000);
