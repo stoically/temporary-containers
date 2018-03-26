@@ -1,7 +1,10 @@
 const initialize = async () => {
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
-  $('.ui.accordion').accordion();
+  $('.ui.accordion').accordion({
+    animateChildren: false,
+    duration: 0
+  });
 
   try {
     const storage = await browser.storage.local.get();
@@ -9,6 +12,10 @@ const initialize = async () => {
       showPreferencesError();
       return;
     }
+
+    $('#statisticsContainers').html(storage.statistics.containersDeleted);
+    $('#statisticsCookies').html(storage.statistics.cookiesDeleted);
+
     preferences = storage.preferences;
     updateIsolationDomains();
 
@@ -49,14 +56,33 @@ const initialize = async () => {
       });
       $('#deletesHistoryButton').addClass('item');
       $('#deletesHistoryButton').removeClass('hidden');
-      $('#actionOpenInDeletesHistoryTmpDiv').removeClass('hidden');
     }
+
+    $('.ui.sidebar').sidebar({
+      transition: 'overlay'
+    });
+    $('#menu').on('click', () => {
+      $('.ui.sidebar').sidebar('toggle');
+    });
+    $('#menuStatistics').on('click', () => {
+      $('.ui.sidebar').sidebar('hide');
+      $.tab('change tab', 'statistics');
+    });
+    $('#menuIsolation').on('click', () => {
+      $('.ui.sidebar').sidebar('hide');
+      $.tab('change tab', 'isolation');
+    });
+    $('#menuActions').on('click', () => {
+      $('.ui.sidebar').sidebar('hide');
+      $.tab('change tab', 'actions');
+    });
+
+    $.tab('change tab', 'isolation');
 
     const tabs = await browser.tabs.query({active: true});
     const activeTab = tabs[0];
     if (!activeTab.url.startsWith('http')) {
-      $('#menu').addClass('hidden');
-      $('#menu').removeClass('item');
+      $('#actionNone').removeClass('hidden');
       return;
     }
     const tabParsedUrl = new URL(activeTab.url);
@@ -71,17 +97,21 @@ const initialize = async () => {
       });
       window.close();
     });
+    $('#actionOpenInTmpDiv').removeClass('hidden');
 
-    $('#actionOpenInDeletesHistoryTmp').on('click', () => {
-      browser.runtime.sendMessage({
-        method: 'createTabInTempContainer',
-        payload: {
-          url: activeTab.url,
-          deletesHistory: true
-        }
+    if (historyPermission) {
+      $('#actionOpenInDeletesHistoryTmp').on('click', () => {
+        browser.runtime.sendMessage({
+          method: 'createTabInTempContainer',
+          payload: {
+            url: activeTab.url,
+            deletesHistory: true
+          }
+        });
+        window.close();
       });
-      window.close();
-    });
+      $('#actionOpenInDeletesHistoryTmpDiv').removeClass('hidden');
+    }
 
     if (storage.tempContainers[activeTab.cookieStoreId] &&
         storage.tempContainers[activeTab.cookieStoreId].deletesHistory) {
@@ -98,6 +128,7 @@ const initialize = async () => {
       });
       $('#actionConvertToRegularDiv').removeClass('hidden');
     }
+
     if (storage.tempContainers[activeTab.cookieStoreId]) {
       $('#actionConvertToPermanent').on('click', async () => {
         await browser.runtime.sendMessage({
@@ -129,22 +160,6 @@ const initialize = async () => {
       });
       $('#actionConvertToTemporaryDiv').removeClass('hidden');
     }
-
-    $('.ui.sidebar').sidebar({
-      transition: 'overlay'
-    });
-    $('#menu').on('click', () => {
-      $('.ui.sidebar').sidebar('toggle');
-    });
-    $('#menuIsolation').on('click', () => {
-      $('.ui.sidebar').sidebar('hide');
-      $.tab('change tab', 'isolation');
-    });
-    $('#menuActions').on('click', () => {
-      $('.ui.sidebar').sidebar('hide');
-      $.tab('change tab', 'actions');
-    });
-    $.tab('change tab', 'isolation');
   } catch (error) {
     showPreferencesError(error);
   }

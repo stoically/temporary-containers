@@ -30,6 +30,7 @@ class BrowserAction {
     browser.browserAction.setPopup({
       popup: 'ui/popup.html'
     });
+    browser.browserAction.setTitle({title: 'Temporary Containers'});
   }
 
 
@@ -37,6 +38,7 @@ class BrowserAction {
     browser.browserAction.setPopup({
       popup: null
     });
+    browser.browserAction.setTitle({title: null});
   }
 
 

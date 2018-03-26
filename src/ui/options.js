@@ -148,6 +148,7 @@ const initialize = async () => {
       '<li> Open current Tab URL in new Temporary Container' +
       '<li> Open current Tab URL in new "Deletes History Temporary Container"' +
       '<li> Open Preferences/Options' +
+      '<li> Open new Temporary Container' +
       '<li> Open new "Deletes History Temporary Container"' +
       '</ul></div>';
 

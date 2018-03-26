@@ -9,6 +9,7 @@
       .container {
         padding-top: 5px;
         padding-bottom: 10px;
+        min-height: 250px;
       }
       .hidden { display: none; }
     </style>
@@ -17,10 +18,13 @@
   <body>
     <div class="ui sidebar vertical menu">
       <a id="menuIsolation" class="item">
-        Isolation Per Domain
+        <i class="icon-circle-empty"></i> Isolation Per Domain
       </a>
       <a id="menuActions" class="item">
-        Actions
+        <i class="icon-exchange"></i> Actions
+      </a>
+      <a id="menuStatistics" class="item">
+        <i class="icon-chart-bar"></i> Statistics
       </a>
     </div>
     <div class="pusher">
@@ -30,18 +34,33 @@
             <a id="menu" class="item">
               <i class="icon-menu"></i>
             </a>
-            <a id="tmpButton" class="item" title="Open new Temporary Container">
-              <svg width="16" height="16">
-                <image xlink:href="../icons/page-w-16.svg" x="0" y="0" width="100%" height="100%"></image>
-              </svg>
-            </a>
-            <a class="hidden" id="deletesHistoryButton" title="Open new 'Deletes History Temporary Container'">
-              <i class="icon-user-secret"></i>
-            </a>
             <div class="right menu">
               <a class="item" id="preferences" title="Open Preferences/Options">
                 <i class="icon-cog-alt"></i>
               </a>
+              <a class="hidden" id="deletesHistoryButton" title="Open new 'Deletes History Temporary Container'">
+                <i class="icon-user-secret"></i>
+              </a>
+              <a id="tmpButton" class="item" title="Open new Temporary Container">
+                <svg width="16" height="16">
+                  <image xlink:href="../icons/page-w-16.svg" x="0" y="0" width="100%" height="100%"></image>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div class="ui tab" data-tab="statistics">
+            <div class="ui segment">
+              <div class="ui top left attached label">deleted</div>
+              <div class="ui divided list">
+                <div class="item">
+                  <div id="statisticsContainers" class="ui green horizontal label">0</div>
+                  Temporay Containers
+                </div>
+                <div class="item">
+                  <div id="statisticsCookies" class="ui green horizontal label">0</div>
+                  Cookies
+                </div>
+              </div>
             </div>
           </div>
           <div class="ui tab" data-tab="isolation">
@@ -53,7 +72,7 @@
               <div class="ui accordion">
                 <div class="title active">
                   <h4><i class="dropdown icon"></i>
-                    Always open in
+                    Always
                   </h4>
                 </div>
                 <div class="content active">
@@ -149,34 +168,39 @@
             </div>
           </div>
           <div class="ui tab" data-tab="actions">
-            <div id="actionOpenInTmpDiv">
-              <button id="actionOpenInTmp" class="ui primary button">
-                Open Tab URL in new Temporary Container
-              </button>
-              <br><br>
-            </div>
-            <div id="actionConvertToPermanentDiv" data-tooltip="No confirmation" class="hidden">
-              <button id="actionConvertToPermanent" class="ui primary button">
-                Convert to Permanent Container
-              </button>
-              <br><br>
-            </div>
-            <div id="actionConvertToRegularDiv" data-tooltip="No confirmation. History isn't deleted." class="hidden">
-              <button id="actionConvertToRegular" class="ui negative button">
-                Convert to Regular Temporary Container
-              </button>
-              <br><br>
-            </div>
-            <div id="actionConvertToTemporaryDiv" data-tooltip="No confirmation" class="hidden">
-              <button id="actionConvertToTemporary" class="ui negative button">
-                Convert to Temporary Container
-              </button>
-              <br><br>
-            </div>
-            <div id="actionOpenInDeletesHistoryTmpDiv" data-tooltip="No confirmation" class="hidden">
-              <button id="actionOpenInDeletesHistoryTmp" class="ui negative button">
-                Open Tab URL in new "Deletes History Temporary Container"
-              </button>
+              <div class="ui segment">
+              <div id="actionNone" class="hidden">
+                No Actions available for this Tab
+              </div>
+              <div id="actionOpenInTmpDiv" class="hidden">
+                <button id="actionOpenInTmp" class="ui primary button">
+                  Open Tab URL in new Temporary Container
+                </button>
+                <br><br>
+              </div>
+              <div id="actionConvertToPermanentDiv" data-tooltip="No confirmation" class="hidden">
+                <button id="actionConvertToPermanent" class="ui negative button">
+                  Convert to Permanent Container
+                </button>
+                <br><br>
+              </div>
+              <div id="actionConvertToRegularDiv" data-tooltip="No confirmation. History isn't deleted." class="hidden">
+                <button id="actionConvertToRegular" class="ui negative button">
+                  Convert to Regular Temporary Container
+                </button>
+                <br><br>
+              </div>
+              <div id="actionConvertToTemporaryDiv" data-tooltip="No confirmation" class="hidden">
+                <button id="actionConvertToTemporary" class="ui negative button">
+                  Convert to Temporary Container
+                </button>
+                <br><br>
+              </div>
+              <div id="actionOpenInDeletesHistoryTmpDiv" data-tooltip="No confirmation" class="hidden">
+                <button id="actionOpenInDeletesHistoryTmp" class="ui negative button">
+                  Open Tab URL in new "Deletes History Temporary Container"
+                </button>
+              </div>
             </div>
           </div>
         </div>

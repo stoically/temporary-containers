@@ -8,9 +8,9 @@
     "48": "icons/tmpcontainer-48.png"
   },
   "browser_action": {
-    "browser_style": true,
+    "browser_style": false,
     "default_area": "tabstrip",
-    "default_title": "Open a new Tab in a new Temporary Container (Alt+C)",
+    "default_title": "Open a new Tab in a new Temporary Container",
     "default_icon": {
       "16": "icons/page-d-16.svg",
       "32": "icons/page-d-32.svg"
