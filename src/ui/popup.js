@@ -1,6 +1,7 @@
 const initialize = async () => {
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
+  $('.ui.accordion').accordion();
 
   try {
     const storage = await browser.storage.local.get();
