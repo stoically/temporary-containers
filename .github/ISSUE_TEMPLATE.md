@@ -3,8 +3,8 @@
 - Firefox Version:
 - Operating System + Version:
 - Non-default Options/Preferences in Temporary Containers:
-- Other installed Add-ons + Version: 
-<!-- Other Add-ons are optional if you're 100% sure that they're not relevant for the Issue. You should always list Add-ons that also manage Containers in any way (Like "Multi-Account Containers") -->
+- Other installed Add-ons + Version:
+<!-- To Copy&Paste the full list of your Add-ons you can navigate to "about:support" and scroll down to "Extensions" -->
 
 ### Actual behavior
 ..
