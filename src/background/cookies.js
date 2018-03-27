@@ -15,7 +15,6 @@ class Cookies {
     }, [
       'blocking', 'requestHeaders'
     ]);
-    browser.cookies.onChanged.addListener(this.count.bind(this));
   }
 
 
@@ -120,27 +119,6 @@ class Cookies {
       debug('[maybeAddCookiesToHeader] something went wrong while adding cookies to header', tab, details.url, error);
       return;
     }
-  }
-
-
-  async count(changeInfo) {
-    if (!this.storage.local.preferences.statistics &&
-        !this.storage.local.preferences.deletesHistory.statistics &&
-        !this.storage.local.preferences.notifications) {
-      return;
-    }
-    debug('[cookieCount]', changeInfo);
-    if (changeInfo.removed) {
-      return;
-    }
-    if (!this.storage.local.tempContainers[changeInfo.cookie.storeId]) {
-      return;
-    }
-    if (!this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount) {
-      this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount = 0;
-    }
-    this.storage.local.tempContainers[changeInfo.cookie.storeId].cookieCount++;
-    await this.storage.persist();
   }
 }
 

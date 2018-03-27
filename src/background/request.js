@@ -13,8 +13,6 @@ class Request {
     this.mac = this.background.mac;
     this.utils = this.background.utils;
 
-    this.webRequestOnBeforeRequest.bind(this);
-
     // Clean up canceled requests
     browser.webRequest.onCompleted.addListener((request) => {
       if (this.canceledRequests[request.tabId]) {

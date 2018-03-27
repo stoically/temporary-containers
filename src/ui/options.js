@@ -164,6 +164,7 @@ const initialize = async () => {
         .checkbox('set disabled');
 
       $('#keyboardShortcutsAltPField').removeClass('hidden');
+      $('#deletesHistoryStatisticsField').removeClass('hidden');
     }
 
     const notificationsPermission = await browser.permissions.contains({permissions: ['notifications']});

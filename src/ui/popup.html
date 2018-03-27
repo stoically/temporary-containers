@@ -50,7 +50,7 @@
           </div>
           <div class="ui tab" data-tab="statistics">
             <div class="ui segment">
-              <div class="ui top left attached label">deleted</div>
+              <div class="ui top left attached label">Deleted</div>
               <div class="ui divided list">
                 <div class="item">
                   <div id="statisticsContainers" class="ui green horizontal label">0</div>
@@ -59,6 +59,10 @@
                 <div class="item">
                   <div id="statisticsCookies" class="ui green horizontal label">0</div>
                   Cookies
+                </div>
+                <div class="item">
+                  <div id="statisticsCache" class="ui green horizontal label">0</div>
+                  Cache
                 </div>
               </div>
             </div>
@@ -162,18 +166,6 @@
               </div>
             </form>
             <div id="message" class="ui positive message hidden"></div>
-            <div id="preferenceserror" class="ui tiny modal">
-              <h2 class="ui header">
-                Error while loading preferences.
-              </h2>
-              <div class="content">
-                You probably just need to restart Firefox.
-                If the Error persists you might need to go into the preferences/options and
-                reset the storage. Sorry about that.
-                <div id="preferenceserrordesc">
-                </div>
-              </div>
-            </div>
           </div>
           <div class="ui tab" data-tab="actions">
               <div class="ui segment">
@@ -208,6 +200,18 @@
                 <button id="actionOpenInDeletesHistoryTmp" class="ui negative button">
                   Open Tab URL in new "Deletes History Temporary Container"
                 </button>
+              </div>
+            </div>
+          </div>
+          <div id="preferenceserror" class="ui tiny modal">
+            <h2 class="ui header">
+              Error while loading preferences.
+            </h2>
+            <div class="content">
+              You probably just need to restart Firefox.
+              If the Error persists you might need to go into the preferences/options and
+              reset the storage. Sorry about that.
+              <div id="preferenceserrordesc">
               </div>
             </div>
           </div>

@@ -15,6 +15,7 @@ const initialize = async () => {
 
     $('#statisticsContainers').html(storage.statistics.containersDeleted);
     $('#statisticsCookies').html(storage.statistics.cookiesDeleted);
+    $('#statisticsCache').html(formatBytes(storage.statistics.cacheDeleted, 0));
 
     preferences = storage.preferences;
     updateIsolationDomains();

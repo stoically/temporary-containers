@@ -114,6 +114,7 @@
       "background/pageaction.js",
       "background/request.js",
       "background/runtime.js",
+      "background/statistics.js",
       "background/storage.js",
       "background/tabs.js",
       "background/utils.js",

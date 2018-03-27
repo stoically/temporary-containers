@@ -64,7 +64,7 @@ class Migration {
     if (versionCompare('0.77', previousVersion) >= 0) {
       debug('updated from version <= 0.77, migrate preferences');
       const preferences = this.storage.local.preferences;
-      const newPreferences = Object.assign(this.storage.preferencesDefault, {
+      const newPreferences = Object.assign({}, this.storage.preferencesDefault, {
         automaticMode: {
           active: preferences.automaticMode,
           newTab: preferences.automaticModeNewTab
@@ -159,9 +159,13 @@ class Migration {
       });
 
       this.storage.local.preferences = newPreferences;
-      delete this.storage.local.noContainerTabs;
       delete this.storage.local.tabContainerMap;
-      this.storage.persist();
+      await this.storage.persist();
+    }
+    if (versionCompare('0.81', previousVersion) >= 0) {
+      debug('updated from version <= 0.81, remove noContainerTabs from storage');
+      delete this.storage.local.noContainerTabs;
+      await this.storage.persist();
     }
   }
 }

@@ -38,9 +38,6 @@ class Container {
     };
     this.removeContainerQueue = new PQueue({concurrency: 1});
     this.removeContainerDelayQueue = new PQueue();
-    this.removedContainerCount = 0;
-    this.removedContainerCookiesCount = 0;
-    this.removedContainerHistoryCount = 0;
     this.removeContainerQueueMaybeDone = this.removeContainerQueueMaybeDone.bind(this);
     this.noContainerTabs = {};
   }
@@ -52,6 +49,7 @@ class Container {
     this.mouseclick = this.background.mouseclick;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
+    this.statistics = this.background.statistics;
 
     setInterval(() => {
       debug('[interval] container removal interval');
@@ -284,30 +282,11 @@ class Container {
       }
       const containerRemoved = await this.tryToRemove(cookieStoreId);
       if (containerRemoved) {
-        debug('[tryToRemoveQueue] container removed', cookieStoreId);
-        this.removedContainerCount++;
-        debug('[tryToRemoveQueue] waiting a bit', cookieStoreId);
+        debug('[tryToRemoveQueue] container removed, waiting a bit', cookieStoreId);
         await delay(5000);
       }
     }
-    if (!this.removedContainerCount) {
-      debug('[tryToRemoveQueue] no containers removed');
-      return;
-    }
-    debug('[tryToRemoveQueue] queue cleared', this.storage.local.preferences.notifications);
-    if (this.removedContainerCount) {
-      let notificationMessage = `Deleted Temporary Containers: ${this.removedContainerCount}`;
-      if (this.removedContainerCookiesCount) {
-        notificationMessage += `\nand ${this.removedContainerCookiesCount} Cookies with them`;
-      }
-      if (this.removedContainerHistoryCount) {
-        notificationMessage += `\nand ${this.removedContainerHistoryCount} URLs from History with them`;
-      }
-      this.maybeShowNotification(notificationMessage);
-    }
-    this.removedContainerCount = 0;
-    this.removedContainerCookiesCount = 0;
-    this.removedContainerHistoryCount = 0;
+    this.statistics.finish();
   }
 
 
@@ -344,12 +323,18 @@ class Container {
       debug('[tryToRemove] failed to query tabs', cookieStoreId, error);
       return false;
     }
+    let cookies = [];
+    try {
+      cookies = await browser.cookies.getAll({storeId: cookieStoreId});
+    } catch (error) {
+      debug('[tryToRemove] couldnt get cookies', cookieStoreId);
+    }
     const containerRemoved = await this.removeContainer(cookieStoreId);
     if (!containerRemoved) {
       return false;
     }
     const historyClearedCount = this.maybeClearHistory(cookieStoreId);
-    this.maybeUpdateStatistics(historyClearedCount, cookieStoreId);
+    this.statistics.update(historyClearedCount, cookies.length, cookieStoreId);
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();
     return true;
@@ -368,34 +353,6 @@ class Container {
       this.removingContainerQueue = false;
     } else {
       debug('[removeContainerQueueMaybeDone] nope');
-    }
-  }
-
-
-  maybeUpdateStatistics(historyClearedCount, cookieStoreId) {
-    if (historyClearedCount) {
-      this.removedContainerHistoryCount += historyClearedCount;
-    }
-    if (this.storage.local.preferences.statistics) {
-      this.storage.local.statistics.containersDeleted++;
-    }
-    if (this.storage.local.preferences.deletesHistory.statistics &&
-        this.storage.local.tempContainers[cookieStoreId] &&
-        this.storage.local.tempContainers[cookieStoreId].deletesHistory) {
-      this.storage.local.statistics.deletesHistory.containersDeleted++;
-      if (historyClearedCount) {
-        this.storage.local.statistics.deletesHistory.urlsDeleted += historyClearedCount;
-      }
-      if (this.storage.local.tempContainers[cookieStoreId].cookieCount) {
-        this.storage.local.statistics.deletesHistory.cookiesDeleted += this.storage.local.tempContainers[cookieStoreId].cookieCount;
-      }
-    }
-    if (this.storage.local.tempContainers[cookieStoreId] &&
-        this.storage.local.tempContainers[cookieStoreId].cookieCount) {
-      if (this.storage.local.preferences.statistics) {
-        this.storage.local.statistics.cookiesDeleted += this.storage.local.tempContainers[cookieStoreId].cookieCount;
-      }
-      this.removedContainerCookiesCount += this.storage.local.tempContainers[cookieStoreId].cookieCount;
     }
   }
 
@@ -484,6 +441,12 @@ class Container {
       return true;
     }
     return false;
+  }
+
+
+  isTemporary(cookieStoreId, type) {
+    return !!(this.storage.local.tempContainers[cookieStoreId] &&
+              (!type || this.storage.local.tempContainers[cookieStoreId][type]));
   }
 
 
