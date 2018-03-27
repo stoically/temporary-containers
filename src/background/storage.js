@@ -71,6 +71,24 @@ class Storage {
       },
       statistics: false,
     };
+
+    this.storageDefault = {
+      tempContainerCounter: 0,
+      tempContainers: {},
+      statistics: {
+        startTime: new Date,
+        containersDeleted: 0,
+        cookiesDeleted: 0,
+        cacheDeleted: 0,
+        deletesHistory: {
+          containersDeleted: 0,
+          cookiesDeleted: 0,
+          urlsDeleted: 0
+        }
+      },
+      preferences: this.preferencesDefault
+    };
+
     this.loadErrorRetryTime = 1000;
     this.loadErrorCount = 0;
   }
@@ -123,14 +141,7 @@ class Storage {
       }
       debug('[_load] storage loaded', this.local);
 
-      let persist = false;
       if (this.maybeAddMissingStorage()) {
-        persist = true;
-      }
-      if (this.maybeAddMissingPreferences()) {
-        persist = true;
-      }
-      if (persist) {
         await this.persist();
       }
 
@@ -164,13 +175,7 @@ class Storage {
 
   async install() {
     this.loading = true;
-    this.local = {
-      tempContainerCounter: 0,
-      tempContainers: {},
-      noContainerTabs: {},
-      preferences: this.preferencesDefault
-    };
-    this.maybeAddMissingStorage();
+    this.local = this.storageDefault;
     const persisted = await this.persist();
     if (!persisted) {
       debug('[install] something went wrong while initializing storage');
@@ -183,54 +188,25 @@ class Storage {
     }
   }
 
+
   async maybeAddMissingStorage() {
     let storagePersistNeeded = false;
-    if (!this.local.statistics) {
-      this.local.statistics = {
-        startTime: new Date,
-        containersDeleted: 0,
-        cookiesDeleted: 0
-      };
-      storagePersistNeeded = true;
-    }
-    if (!this.local.statistics.deletesHistory) {
-      this.local.statistics.deletesHistory = {
-        containersDeleted: 0,
-        cookiesDeleted: 0,
-        urlsDeleted: 0
-      };
-      storagePersistNeeded = true;
-    }
-    if (!this.local.noContainerTabs) {
-      this.local.noContainerTabs = {};
-      storagePersistNeeded = true;
-    }
-    return storagePersistNeeded;
-  }
 
-  async maybeAddMissingPreferences() {
-    let storagePersistNeeded = false;
-    if (!this.local.preferences) {
-      // legacy code
-      debug('no preferences found, setting defaults', this.preferencesDefault);
-      this.local.preferences = this.preferencesDefault;
-      storagePersistNeeded = true;
-    } else {
-      // TODO maybe replace with Object.assign
-      // but then we dont know whether something changed and need to persist every time
-      const checkPreferences = (preferencesDefault, preferences) => {
-        Object.keys(preferencesDefault).map(key => {
-          if (preferences[key] === undefined) {
-            debug('preference not found, setting default', key, preferencesDefault[key]);
-            preferences[key] = preferencesDefault[key];
-            storagePersistNeeded = true;
-          } else if (typeof preferences[key] === 'object') {
-            checkPreferences(preferencesDefault[key], preferences[key]);
-          }
-        });
-      };
-      checkPreferences(this.preferencesDefault, this.local.preferences);
-    }
+    // TODO maybe replace with Object.assign
+    // but then we dont know whether something changed and need to persist every time
+    const checkStorage = (storageDefault, storage) => {
+      Object.keys(storageDefault).map(key => {
+        if (storage[key] === undefined) {
+          debug('[maybeAddMissingStorage] storage not found, setting default', key, storageDefault[key]);
+          storage[key] = storageDefault[key];
+          storagePersistNeeded = true;
+        } else if (typeof storage[key] === 'object') {
+          checkStorage(storageDefault[key], storage[key]);
+        }
+      });
+    };
+    checkStorage(this.storageDefault, this.local);
+
     return storagePersistNeeded;
   }
 }
