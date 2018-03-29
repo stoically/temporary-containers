@@ -15,7 +15,8 @@ class Statistics {
     this.container = this.background.container;
 
     browser.webRequest.onCompleted.addListener(this.collect.bind(this), {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
+      types: ['script', 'font', 'image', 'imageset', 'stylesheet']
     }, ['responseHeaders']);
   }
 
