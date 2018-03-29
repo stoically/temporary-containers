@@ -163,7 +163,8 @@ class Migration {
       await this.storage.persist();
     }
     if (versionCompare('0.81', previousVersion) >= 0) {
-      debug('updated from version <= 0.81, remove noContainerTabs from storage');
+      debug('updated from version <= 0.81, make sure we removed noContainerTabs and tabContainerMap from storage');
+      delete this.storage.local.tabContainerMap;
       delete this.storage.local.noContainerTabs;
       await this.storage.persist();
     }

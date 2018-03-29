@@ -172,7 +172,7 @@ class Container {
       request,
       macConfirmPage
     });
-    if (!tab) {
+    if (!tab || !newTab) {
       return newTab;
     }
     await this.tabs.remove(tab);
