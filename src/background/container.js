@@ -172,7 +172,8 @@ class Container {
       request,
       macConfirmPage
     });
-    if (!tab || !newTab) {
+    if (!tab
+      || !newTab) { // TODO remove if MAC >6.0.0 is released
       return newTab;
     }
     await this.tabs.remove(tab);

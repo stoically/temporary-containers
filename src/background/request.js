@@ -12,6 +12,7 @@ class Request {
     this.browseraction = this.background.browseraction;
     this.mac = this.background.mac;
     this.utils = this.background.utils;
+    this.tabs = this.background.tabs;
 
     // Clean up canceled requests
     browser.webRequest.onCompleted.addListener((request) => {
@@ -193,7 +194,7 @@ class Request {
       });
       if (tab && this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
         debug('[handleClickedLink] looks like the left clicked opened a new tab, remove it', tab);
-        await this.container.removeTab(tab);
+        await this.tabs.remove(tab);
       }
     } else {
       newTab = await this.container.reloadTabInTempContainer({
