@@ -34,18 +34,22 @@ describe('Temporary Containers', () => {
     await new Promise(r => setTimeout(r, 2000));
     button.click();
 
-    await geckodriver.wait(function*() {
-      const handles = yield geckodriver.getAllWindowHandles();
+    await geckodriver.wait(async () => {
+      const handles = await geckodriver.getAllWindowHandles();
       return handles.length === 2;
     }, 2000, 'Should have opened a new tab');
 
     const element = await geckodriver.wait(until.elementLocated(
       By.id('userContext-label')
     ), 2000, 'Should find the userContext label');
-    expect(await element.getAttribute('value')).to.equal('tmp1');
+
+    await geckodriver.wait(async () => {
+      const containerName = await element.getAttribute('value');
+      return containerName === 'tmp1';
+    }, 2000, 'Should have a containerName');
   });
 
   after(function() {
-    return geckodriver.quit();
+    geckodriver.quit();
   });
 });
