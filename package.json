@@ -9,6 +9,7 @@
     "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha --reporter=dot ./test/setup.js test/*.test.js --timeout 60000",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
+    "test-functional": "mocha ./test/functional/*.test.js --timeout 10000",
     "check-dependencies": "ncu"
   },
   "repository": {
@@ -42,7 +43,8 @@
     "sinon": "^4.4.2",
     "sinon-chai": "^3.0.0",
     "web-ext": "stoically/web-ext#sign-addon-channel",
-    "webextensions-jsdom": "^0.9.0"
+    "webextensions-geckodriver": "^0.2.0",
+    "webextensions-jsdom": "^0.8.0"
   },
   "private": true,
   "nyc": {
