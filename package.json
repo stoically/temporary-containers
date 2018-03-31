@@ -42,7 +42,7 @@
     "sinon": "^4.4.2",
     "sinon-chai": "^3.0.0",
     "web-ext": "stoically/web-ext#sign-addon-channel",
-    "webextensions-jsdom": "^0.8.0"
+    "webextensions-jsdom": "^0.9.0"
   },
   "private": true,
   "nyc": {
