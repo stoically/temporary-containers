@@ -11,6 +11,5 @@ before_install:
 
 script:
   - npm run build
-  - npm run test-functional
 
 after_success: npm run coverage
