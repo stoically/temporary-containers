@@ -5,7 +5,7 @@ const initialize = async () => {
   });
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
-  $('.ui.accordion').accordion();
+  $('.ui.accordion').accordion({exclusive: false});
   try {
     const setCurrentPreferences = () => {
       document.querySelector('#automaticMode').checked = preferences.automaticMode.active;
@@ -100,7 +100,7 @@ const initialize = async () => {
       inline: true
     });
 
-    $('#isolationDomainPattern').popup({
+    $('#isolationDomainPatternDiv').popup({
       html: domainPatternToolTip,
       inline: true
     });
@@ -109,6 +109,7 @@ const initialize = async () => {
       '<div style="width:500px;">' +
       'Automatically reopen Tabs in new Temporary Containers when<ul>' +
       '<li> Opening a new Tab' +
+      '<li> A Tab tries to load a Link in the Default Container' +
       '<li> An external Program opens a Link in the Browser</ul></div>';
 
     $('#automaticModeField').popup({
