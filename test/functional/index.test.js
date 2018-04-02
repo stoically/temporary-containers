@@ -17,7 +17,7 @@ describe('Temporary Containers', () => {
       toolbarButton() {
         return geckodriver.wait(until.elementLocated(
           By.id('_c607c8df-14a7-4f28-894f-29e8722976af_-browser-action')
-        ), 1000);
+        ), 5000);
       }
     };
   });
@@ -31,22 +31,22 @@ describe('Temporary Containers', () => {
   it('should open a new Temporary Container if toolbar button is clicked', async () => {
     await geckodriver.getAllWindowHandles();
     const button = await helper.toolbarButton();
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 3100));
     button.click();
 
     await geckodriver.wait(async () => {
       const handles = await geckodriver.getAllWindowHandles();
       return handles.length === 2;
-    }, 2000, 'Should have opened a new tab');
+    }, 5000, 'Should have opened a new tab');
 
     const element = await geckodriver.wait(until.elementLocated(
       By.id('userContext-label')
-    ), 2000, 'Should find the userContext label');
+    ), 5000, 'Should find the userContext label');
 
     await geckodriver.wait(async () => {
       const containerName = await element.getAttribute('value');
       return containerName === 'tmp1';
-    }, 2000, 'Should have a containerName');
+    }, 5000, 'Should have a containerName');
   });
 
   after(function() {
