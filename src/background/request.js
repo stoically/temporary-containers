@@ -1,6 +1,7 @@
 class Request {
   constructor(background) {
     this.background = background;
+    this.canceledTabs = {};
     this.canceledRequests = {};
     this.requestsSeen = {};
   }
@@ -16,16 +17,16 @@ class Request {
 
     // Clean up canceled requests
     browser.webRequest.onCompleted.addListener((request) => {
-      if (this.canceledRequests[request.tabId]) {
-        delete this.canceledRequests[request.tabId];
+      if (this.canceledTabs[request.tabId]) {
+        delete this.canceledTabs[request.tabId];
       }
     }, {
       urls: ['<all_urls>'],
       types: ['main_frame']
     });
     browser.webRequest.onErrorOccurred.addListener((request) => {
-      if (this.canceledRequests[request.tabId]) {
-        delete this.canceledRequests[request.tabId];
+      if (this.canceledTabs[request.tabId]) {
+        delete this.canceledTabs[request.tabId];
       }
     }, {
       urls: ['<all_urls>'],
@@ -288,9 +289,19 @@ class Request {
       return;
     }
 
-    if (!this.canceledRequests[request.tabId]) {
+    if (!this.canceledRequests[request.requestId]) {
+      this.canceledRequests[request.requestId] = true;
+      // requestIds are unique per session, so we have no pressure to remove them
+      setTimeout(() => {
+        debug('[webRequestOnBeforeRequest] cleaning up canceledRequests', request);
+        delete this.canceledRequests[request.requestId];
+      }, 300000);
+    }
+
+    if (!this.canceledTabs[request.tabId]) {
       debug('[cancelRequest] marked request as canceled', request);
-      this.canceledRequests[request.tabId] = {
+      // workaround until https://bugzilla.mozilla.org/show_bug.cgi?id=1437748 is resolved
+      this.canceledTabs[request.tabId] = {
         requestIds: {
           [request.requestId]: true
         },
@@ -298,22 +309,22 @@ class Request {
           [request.url]: true
         }
       };
-      // cleanup canceledRequests later
+      // cleanup canceledTabs later
       setTimeout(() => {
-        debug('[webRequestOnBeforeRequest] cleaning up canceledRequests', request);
-        delete this.canceledRequests[request.tabId];
+        debug('[webRequestOnBeforeRequest] cleaning up canceledTabs', request);
+        delete this.canceledTabs[request.tabId];
       }, 2000);
       return false;
     } else {
-      debug('[cancelRequest] already canceled', request, this.canceledRequests);
+      debug('[cancelRequest] already canceled', request, this.canceledTabs);
       let cancel = false;
       if (this.shouldCancelRequest(request)) {
         // same requestId or url from the same tab, this is a redirect that we have to cancel to prevent opening two tabs
         cancel = true;
       }
       // we decided to cancel the request at this point, register canceled request
-      this.canceledRequests[request.tabId].requestIds[request.requestId] = true;
-      this.canceledRequests[request.tabId].urls[request.url] = true;
+      this.canceledTabs[request.tabId].requestIds[request.requestId] = true;
+      this.canceledTabs[request.tabId].urls[request.url] = true;
       return cancel;
     }
   }
@@ -327,9 +338,10 @@ class Request {
       return;
     }
 
-    if (this.canceledRequests[request.tabId] &&
-        (this.canceledRequests[request.tabId].requestIds[request.requestId] ||
-         this.canceledRequests[request.tabId].urls[request.url])) {
+    if (this.canceledRequests[request.requestId] ||
+        (this.canceledTabs[request.tabId] &&
+         (this.canceledTabs[request.tabId].requestIds[request.requestId] ||
+          this.canceledTabs[request.tabId].urls[request.url]))) {
       return true;
     }
     return false;
@@ -503,7 +515,7 @@ class Request {
           parsedRequestURL.hostname.match(globToRegexp(domainPattern)))) {
 
         const preferences = this.storage.local.preferences.isolation.domain[domainPattern].always;
-        debug('[maybeAlwaysOpenInTemporaryContainer] found pattern', domainPattern, preferences);
+        debug('[maybeAlwaysOpenInTemporaryContainer] found pattern for incoming request url', domainPattern, preferences);
         if (preferences.action === 'disabled') {
           debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because always disabled');
           break;

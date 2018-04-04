@@ -75,7 +75,8 @@ class Container {
       }
       this.requestCreatedTab[request.requestId] = true;
       // cleanup tracked requests later
-      delay(2000).then(() => {
+      // requestIds are unique per session, so we have no pressure to remove them
+      delay(300000).then(() => {
         debug('[createTabInTempContainer] cleanup timeout', request);
         delete this.requestCreatedTab[request.requestId];
       });

@@ -15,6 +15,7 @@ class Log {
     if (!browser._mochaTest && !this.temporary) {
       console.log(...args.map(JSON.stringify));
       console.trace();
+      console.log('------------------------------------------');
     } else {
       console.log(...args.slice(0));
     }
