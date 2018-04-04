@@ -4,6 +4,7 @@ class Request {
     this.canceledTabs = {};
     this.canceledRequests = {};
     this.requestsSeen = {};
+    this.requestIdUrlSeen = {};
   }
 
   async initialize() {
@@ -36,11 +37,21 @@ class Request {
 
 
   async webRequestOnBeforeRequest(request) {
+    const requestIdUrl = `${request.requestId}+${request.url}`;
+    if (requestIdUrl in this.requestIdUrlSeen) {
+      return;
+    } else {
+      this.requestIdUrlSeen[requestIdUrl] = true;
+      delay(300000).then(() => {
+        delete this.requestIdUrlSeen[requestIdUrl];
+      });
+    }
+
     const returnVal = await this._webRequestOnBeforeRequest(request);
 
     if (!this.requestsSeen[request.requestId]) {
       this.requestsSeen[request.requestId] = true;
-      delay(5000).then(() => {
+      delay(300000).then(() => {
         delete this.requestsSeen[request.requestId];
       });
     }
