@@ -439,22 +439,23 @@ class Request {
     const parsedRequestURL = new URL(request.url);
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
-      if (this.isolation.matchDomainPattern(tab.url, domainPattern)) {
-        const preferences = this.storage.local.preferences.isolation.domain[domainPattern].navigation;
-        if (!preferences) {
-          continue;
-        }
-        debug('[shouldIsolate] found pattern', domainPattern, preferences);
-
-        if (preferences.action === 'global') {
-          debug('[shouldIsolate] breaking because "global"');
-          break;
-        }
-
-        return await this.checkIsolationPreferenceAgainstUrl(
-          preferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
-        );
+      if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
+        continue;
       }
+      const preferences = this.storage.local.preferences.isolation.domain[domainPattern].navigation;
+      if (!preferences) {
+        continue;
+      }
+      debug('[shouldIsolate] found pattern', domainPattern, preferences);
+
+      if (preferences.action === 'global') {
+        debug('[shouldIsolate] breaking because "global"');
+        break;
+      }
+
+      return await this.checkIsolationPreferenceAgainstUrl(
+        preferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
+      );
     }
 
     if (await this.checkIsolationPreferenceAgainstUrl(
@@ -521,54 +522,55 @@ class Request {
       tab, request);
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
-      if (this.isolation.matchDomainPattern(request.url, domainPattern)) {
+      if (!this.isolation.matchDomainPattern(request.url, domainPattern)) {
+        continue;
+      }
 
-        const preferences = this.storage.local.preferences.isolation.domain[domainPattern].always;
-        debug('[maybeAlwaysOpenInTemporaryContainer] found pattern for incoming request url', domainPattern, preferences);
-        if (preferences.action === 'disabled') {
-          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because always disabled');
-          break;
-        }
-        if (this.storage.local.tempContainers[tab.cookieStoreId] &&
-            this.storage.local.tempContainers[tab.cookieStoreId].clean) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
-          break;
-        }
+      const preferences = this.storage.local.preferences.isolation.domain[domainPattern].always;
+      debug('[maybeAlwaysOpenInTemporaryContainer] found pattern for incoming request url', domainPattern, preferences);
+      if (preferences.action === 'disabled') {
+        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because always disabled');
+        break;
+      }
+      if (this.storage.local.tempContainers[tab.cookieStoreId] &&
+          this.storage.local.tempContainers[tab.cookieStoreId].clean) {
+        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
+        break;
+      }
 
-        if (tab.cookieStoreId !== 'firefox-default' &&
-            !this.storage.local.tempContainers[tab.cookieStoreId] &&
-            (typeof preferences !== 'object' ||
-             preferences.allowedInPermanent)) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because not in tmp or default container and allowed to load in permanent container');
-          break;
-        }
+      if (tab.cookieStoreId !== 'firefox-default' &&
+          !this.storage.local.tempContainers[tab.cookieStoreId] &&
+          (typeof preferences !== 'object' ||
+           preferences.allowedInPermanent)) {
+        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because not in tmp or default container and allowed to load in permanent container');
+        break;
+      }
 
-        if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because not in a tmp container');
-          reopen = true;
-          break;
-        }
+      if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
+        debug('[maybeAlwaysOpenInTemporaryContainer] reopening because not in a tmp container');
+        reopen = true;
+        break;
+      }
 
-        if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
-          break;
-        }
+      if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
+        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
+        break;
+      }
 
-        if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
-          let openerMatches = false;
-          if (tab.openerTabId) {
-            const openerTab = await browser.tabs.get(tab.openerTabId);
-            if (!openerTab.url.startsWith('about:')) {
-              if (this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
-                openerMatches = true;
-              }
+      if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
+        let openerMatches = false;
+        if (tab.openerTabId) {
+          const openerTab = await browser.tabs.get(tab.openerTabId);
+          if (!openerTab.url.startsWith('about:')) {
+            if (this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
+              openerMatches = true;
             }
           }
-          if (!openerMatches) {
-            debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', tab.url, domainPattern);
-            reopen = true;
-            break;
-          }
+        }
+        if (!openerMatches) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', tab.url, domainPattern);
+          reopen = true;
+          break;
         }
       }
     }
