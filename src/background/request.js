@@ -15,6 +15,7 @@ class Request {
     this.mac = this.background.mac;
     this.utils = this.background.utils;
     this.tabs = this.background.tabs;
+    this.isolation = this.background.isolation;
 
     // Clean up canceled requests
     browser.webRequest.onCompleted.addListener((request) => {
@@ -438,8 +439,7 @@ class Request {
     const parsedRequestURL = new URL(request.url);
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
-      if ((parsedTabURL.hostname === domainPattern ||
-          parsedTabURL.hostname.match(globToRegexp(domainPattern)))) {
+      if (this.isolation.matchDomainPattern(tab.url, domainPattern)) {
         const preferences = this.storage.local.preferences.isolation.domain[domainPattern].navigation;
         if (!preferences) {
           continue;
@@ -515,15 +515,13 @@ class Request {
       debug('[maybeAlwaysOpenInTemporaryContainer] we cant proceed without tab url information', tab, request);
       return false;
     }
-    const parsedTabURL = new URL(tab.url);
-    const parsedRequestURL = new URL(request.url);
+
     let reopen = false;
     debug('[maybeAlwaysOpenInTemporaryContainer]',
-      tab, request, parsedTabURL.hostname, parsedRequestURL.hostname);
+      tab, request);
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
-      if ((parsedRequestURL.hostname === domainPattern ||
-          parsedRequestURL.hostname.match(globToRegexp(domainPattern)))) {
+      if (this.isolation.matchDomainPattern(request.url, domainPattern)) {
 
         const preferences = this.storage.local.preferences.isolation.domain[domainPattern].always;
         debug('[maybeAlwaysOpenInTemporaryContainer] found pattern for incoming request url', domainPattern, preferences);
@@ -556,21 +554,18 @@ class Request {
           break;
         }
 
-        if (parsedTabURL.hostname !== domainPattern &&
-            !parsedTabURL.hostname.match(globToRegexp(domainPattern))) {
+        if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
           let openerMatches = false;
           if (tab.openerTabId) {
             const openerTab = await browser.tabs.get(tab.openerTabId);
             if (!openerTab.url.startsWith('about:')) {
-              const openerTabParsedURL = new URL(openerTab.url);
-              if (openerTabParsedURL.hostname === domainPattern ||
-                  openerTabParsedURL.hostname.match(globToRegexp(domainPattern))) {
+              if (this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
                 openerMatches = true;
               }
             }
           }
           if (!openerMatches) {
-            debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', parsedTabURL.hostname, domainPattern);
+            debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', tab.url, domainPattern);
             reopen = true;
             break;
           }

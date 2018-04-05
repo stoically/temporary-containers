@@ -14,6 +14,7 @@ class TemporaryContainers {
     this.pageaction = new window.PageAction(this);
     this.contextmenu = new window.ContextMenu(this);
     this.cookies = new window.Cookies(this);
+    this.isolation = new window.Isolation(this);
     this.statistics = new window.Statistics(this);
     this.mac = new window.MultiAccountContainers(this);
     this.migration = new window.Migration(this);

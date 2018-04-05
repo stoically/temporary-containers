@@ -89,11 +89,15 @@ const initialize = async () => {
     });
 
     const domainPatternToolTip =
-      '<div style="width:600px;">' +
+      '<div style="width:750px;">' +
       'Exact matches: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
       'Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>' +
+      '<br>' +
       'Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>, ' +
-      'so you might need two rules. Domain Rules overwrite Global Rules.</div>';
+      'so you might need two rules. Per Domain overwrites Global.</div>' +
+      '<br>' +
+      'Advanced: Parsed as RegExp when <strong>/pattern/flags</strong> is given ' +
+      'and matches the full URL instead of just Domain.';
 
     $('#setCookiesDomainPatternDiv').popup({
       html: domainPatternToolTip,

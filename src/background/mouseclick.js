@@ -12,6 +12,7 @@ class MouseClick {
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.utils = this.background.utils;
+    this.isolation = this.background.isolation;
   }
 
 
@@ -117,8 +118,7 @@ class MouseClick {
     debug('[checkClick] checking click', type, message, sender);
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
-      if (parsedSenderTabURL.hostname !== domainPattern &&
-          !parsedSenderTabURL.hostname.match(globToRegexp(domainPattern))) {
+      if (!this.isolation.matchDomainPattern(sender.tab.url, domainPattern)) {
         continue;
       }
       const domainPatternPreferences = this.storage.local.preferences.isolation.domain[domainPattern].mouseClick;

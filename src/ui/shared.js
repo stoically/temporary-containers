@@ -124,6 +124,7 @@ const isolationDomainAddRule = async () => {
 };
 
 window.isolationDomainEditRule = (domainPattern) => {
+  domainPattern = decodeURIComponent(domainPattern);
   document.querySelector('#isolationDomainPattern').value = domainPattern;
 
   if (preferences.isolation.domain[domainPattern]) {
@@ -135,6 +136,9 @@ window.isolationDomainEditRule = (domainPattern) => {
     $('#isolationDomainMouseClickMiddle').dropdown('set selected', domainRules.mouseClick.middle.action);
     $('#isolationDomainMouseClickCtrlLeft').dropdown('set selected', domainRules.mouseClick.ctrlleft.action);
     $('#isolationDomainMouseClickLeft').dropdown('set selected', domainRules.mouseClick.left.action);
+    $('#isolationPerDomainAccordion').accordion('open', 0);
+    $('#isolationPerDomainAccordion').accordion('open', 1);
+    $('#isolationPerDomainAccordion').accordion('open', 2);
   }
 };
 

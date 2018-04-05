@@ -6,6 +6,7 @@ class Cookies {
 
   initialize() {
     this.storage = this.background.storage;
+    this.isolation = this.background.isolation;
 
     browser.webRequest.onBeforeSendHeaders.addListener(async details => {
       return this.maybeSetAndAddToHeader(details);
@@ -25,13 +26,11 @@ class Cookies {
 
     let tab;
     try {
-      const parsedRequestURL = new URL(details.url);
       let cookieHeader;
       let cookiesHeader = {};
       let cookieHeaderChanged = false;
       for (let domainPattern in this.storage.local.preferences.cookies.domain) {
-        if (parsedRequestURL.hostname !== domainPattern &&
-            !parsedRequestURL.hostname.match(globToRegexp(domainPattern))) {
+        if (!this.isolation.matchDomainPattern(details.url, domainPattern)) {
           continue;
         }
         if (!tab) {
