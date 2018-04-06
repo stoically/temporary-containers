@@ -20,11 +20,21 @@ const initialize = async () => {
       $('#iconColor').dropdown('set selected', preferences.iconColor);
 
       $('#isolationGlobal').dropdown('set selected', preferences.isolation.global.navigation.action);
-      $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
+      if (preferences.isolation.global.navigation.action !== 'never') {
+        $('#isolationGlobalAccordion').accordion('open', 0);
+      }
+
 
       $('#isolationGlobalMouseClickMiddle').dropdown('set selected', preferences.isolation.global.mouseClick.middle.action);
       $('#isolationGlobalMouseClickCtrlLeft').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.action);
       $('#isolationGlobalMouseClickLeft').dropdown('set selected', preferences.isolation.global.mouseClick.left.action);
+      if (preferences.isolation.global.mouseClick.middle.action !== 'never' ||
+          preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
+          preferences.isolation.global.mouseClick.left.action !== 'never') {
+        $('#isolationGlobalAccordion').accordion('open', 1);
+      }
+
+      $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
 
       $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.middle.container);
       $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.container);
