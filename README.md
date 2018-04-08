@@ -56,7 +56,7 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 
 
 ## Libraries
-The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are **only** used for the preferences&popup UI, not for the background and contentscript.
+The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are awesome and are used for the preferences&popup UI - though not for the background and contentscript.
 
 
 ## Limitations
