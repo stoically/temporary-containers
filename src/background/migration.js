@@ -168,6 +168,16 @@ class Migration {
       delete this.storage.local.noContainerTabs;
       await this.storage.persist();
     }
+    if (versionCompare('0.87', previousVersion) >= 0) {
+      debug('updated from version <= 0.87, inform user about management permission');
+      const mangementPermission = await browser.permissions.contains({permissions: ['management']});
+      if (!mangementPermission) {
+        const url = browser.runtime.getURL('ui/notifications/update_from_0.87_and_below.html');
+        browser.tabs.create({
+          url
+        });        
+      }
+    }
   }
 }
 

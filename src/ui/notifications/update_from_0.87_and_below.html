@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Temporary Containers Update Notification</title>
+    <link rel="stylesheet" href="../semantic/semantic.min.css">
+  </head>
+  <body>
+    <div class="ui basic tiny modal">
+      <div class="header">
+        Sorry to interrupt. Update Notification from your Temporary Containers Add-on.
+      </div>
+      <div class="content">
+        Just a quick heads-up: In an upcoming version Temporary Containers will require the
+        <strong>"<a target="_blank" href="https://developer.mozilla.org/Add-ons/WebExtensions/API/management">management</a>"</strong> permission.
+        This will show up as <strong>"Monitor extension usage and manage themes"</strong>. The reason for this change is the ability to
+        improve interoperability between Temporary Containers and other add-ons, including <a href="https://addons.mozilla.org/firefox/addon/multi-account-containers/" target="_blank">Multi-Account Containers</a>
+        and <a href="https://addons.mozilla.org/firefox/addon/facebook-container/" target="_blank">Facebook Containers</a> - which also require this permission for the same reason.
+        <br><br>
+        <a href="https://support.mozilla.org/kb/tips-assessing-safety-extension" target="_blank">You can find tips for assessing
+        the safety of an extension here</a> and <a href="https://support.mozilla.org/kb/permission-request-messages-firefox-extensions" target="_blank">more
+        general explanation about permission requests here</a>.
+        <br><br>
+        Thanks for your attention.
+      </div>
+    </div>
+    <script src="../jquery/jquery.min.js"></script>
+    <script src="../semantic/semantic.min.js"></script>
+    <script src="notifications.js"></script>
+  </body>
+</html>
