@@ -264,7 +264,7 @@ class Container {
 
 
   async delayedRemoveQueue(containerType, queue, delayTime) {
-    debug('[addToRemoveQueue] registering 15minutes delay for queue removal', containerType, queue);
+    debug('[addToRemoveQueue] registering delay for queue removal', delayTime, containerType, queue);
     this.maybeShowNotification(`Queued ${queue.length} Temporary Containers for removal in ${delayTime/1000/60}minutes`);
     this.removeContainerDelayQueue.add(async () => {
       await delay(delayTime);
