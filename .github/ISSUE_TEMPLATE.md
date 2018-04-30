@@ -1,4 +1,7 @@
-<!-- Feel free to ignore this Issue template if you just want to ask or suggest something -->
+<!-- Feel free to ignore this Issue template if you just want to ask or suggest something
+
+Note: If "Firefox will: Never remember history" in the Firefox Preferences/Options under "Privacy & Security > History" is selected or you're in a Private Window, then Temporary Containers will not work, since Containers aren't available in Private Windows. Also make sure that you can see a grayed out but ticked Checkbox with the description "Enable Container Tabs" in the Firefox Preferences/Options under "Tabs", you might need to reinstall Temporary Containers or refresh your Firefox profile if you can't see the ticked Checkbox there.
+-->
 - Temporary Containers Version:
 - Firefox Version:
 - Operating System + Version:
