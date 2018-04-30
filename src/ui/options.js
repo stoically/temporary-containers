@@ -64,6 +64,7 @@ const initialize = async () => {
       document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistory.statistics;
 
       updateIsolationDomains();
+      updateIsolationExcludeDomains();
       updateSetCookiesDomainRules();
       updateStatistics();
       showDeletesHistoryStatistics();
@@ -85,6 +86,11 @@ const initialize = async () => {
         event.preventDefault();
         isolationDomainAddRule();
       }
+    });
+
+    $('#isolationDomainExcludeDomainSave').on('click', (event) => {
+      event.preventDefault();
+      isolationDomainAddExcludeDomainRule();
     });
 
     $('#setCookiesDomainForm').form({

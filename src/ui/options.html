@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="fontello/fontello-embedded.css">
     <link rel="stylesheet" href="semantic/semantic.min.css">
     <style>
-      body { padding: 50px; }
+      body { padding: 25px; }
       iframe {
         margin: 0;
         border: 0;
@@ -143,7 +143,7 @@
                   Always open in new Temporary Containers
                 </h4>
               </div>
-              <div class="content">
+              <div class="ui segment content">
                 <div class="field">
                   <select id="isolationDomainAlways" class="ui fluid dropdown">
                     <option value="enabled">Enabled</option>
@@ -162,7 +162,7 @@
                   Navigating in Tabs should open new Temporary Containers
                 </h4>
               </div>
-              <div class="content">
+              <div class="ui segment content">
                 <div class="field">
                   <select id="isolationDomainNavigation" class="ui fluid dropdown">
                     <option value="global" selected="selected">Use Global</option>
@@ -178,7 +178,7 @@
                   Mouse Clicks on Links should open new Temporary Containers
                 </h4>
               </div>
-              <div class="content">
+              <div class="ui segment content">
                 <div class="field">
                   <label>Middle Mouse</label>
                   <select id="isolationDomainMouseClickMiddle" class="ui fluid dropdown">
@@ -210,11 +210,33 @@
                   </select>
                 </div>
               </div>
+              <div class="title">
+                <h4><i class="dropdown icon"></i>
+                  Exclude Target Domains
+                </h4>
+              </div>
+              <div class="ui segment content">
+                <div class="field">
+                  <div id="isolationDomainExcludeDomainPatternDiv" class="field">
+                    <label>Domain Pattern</label>
+                    <input id="isolationDomainExcludeDomainPattern" type="text">
+                  </div>
+                  <div class="field">
+                    <button id="isolationDomainExcludeDomainSave" class="ui button primary">Exclude</button>
+                  </div>
+                  <div>
+                    <h3>Excluded Target Domains</h3>
+                    <div class="ui bulleted list" id="isolationDomainExcludeDomains">
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <br>
             <div class="field">
               <button id="isolationDomainSave" class="ui button primary">Add or Edit</button>
             </div>
+            <br>
             <div>
               <h3>Domains</h3>
               <div class="ui bulleted list" id="isolationDomains">
@@ -233,7 +255,7 @@
                   Navigating in Tabs should open new Temporary Containers
                 </h4>
               </div>
-              <div class="content">
+              <div class="ui segment content">
                 <div class="field">
                   <select id="isolationGlobal" class="ui fluid dropdown">
                     <option value="always">Always</option>
@@ -248,7 +270,7 @@
                   Mouse Clicks on Links should open new Temporary Containers
                 </h4>
               </div>
-              <div class="content">
+              <div class="ui segment content">
                 <div class="field">
                   <label>Middle Mouse</label>
                   <select id="isolationGlobalMouseClickMiddle" class="ui fluid dropdown">

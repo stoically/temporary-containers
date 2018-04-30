@@ -139,6 +139,7 @@ window.isolationDomainEditRule = (domainPattern) => {
     $('#isolationPerDomainAccordion').accordion('open', 0);
     $('#isolationPerDomainAccordion').accordion('open', 1);
     $('#isolationPerDomainAccordion').accordion('open', 2);
+    $('#isolationPerDomainAccordion').accordion('open', 3);
   }
 };
 
@@ -158,13 +159,18 @@ window.updateIsolationDomains = () => {
 
       const domainRuleTooltip =
         '<div style="width:200%;">' +
-        `Always: ${preferences.isolation.domain[domainPattern].always.action} <br>` +
-        `> Permanent allowed: ${preferences.isolation.domain[domainPattern].always.allowedInPermanent} <br><br>` +
-        `Navigation: ${preferences.isolation.domain[domainPattern].navigation.action} <br><br>` +
-        'Mouse Clicks<br>' +
+        `<strong>Always</strong>: ${preferences.isolation.domain[domainPattern].always.action} <br>` +
+        `> <strong>Permanent allowed</strong>: ${preferences.isolation.domain[domainPattern].always.allowedInPermanent} <br><br>` +
+        `<strong>Navigation</strong>: ${preferences.isolation.domain[domainPattern].navigation.action} <br><br>` +
+        '<strong>Mouse Clicks</strong><br>' +
         `Middle: ${preferences.isolation.domain[domainPattern].mouseClick.middle.action} <br>` +
         `Ctrl+Left: ${preferences.isolation.domain[domainPattern].mouseClick.ctrlleft.action} <br>` +
-        `Left: ${preferences.isolation.domain[domainPattern].mouseClick.left.action}</div>`;
+        `Left: ${preferences.isolation.domain[domainPattern].mouseClick.left.action}</div> <br><br>`;
+        // '<strong>Excluded Target Domains</strong>:<br>' +
+        // (preferences.isolation.domain[domainPattern].excluded &&
+        //  preferences.isolation.domain[domainPattern].excluded.length) ?
+        //   `${preferences.isolation.domain[domainPattern].excluded.join('<br>')}` :
+        //   'No Target Domains excluded';
       el.find('#infoDomainRule').popup({
         html: domainRuleTooltip,
         inline: true
@@ -193,6 +199,52 @@ window.updateIsolationDomains = () => {
     isolationDomainRules.html('No Domains added');
   }
 };
+
+
+window.isolationDomainAddExcludeDomainRule = () => {
+  const excludeDomainPattern = document.querySelector('#isolationDomainExcludeDomainPattern').value;
+  if (!excludeDomainPattern) {
+    $('#isolationDomainExcludeDomainPatternDiv').addClass('error');
+    return;
+  }
+  $('#isolationDomainExcludeDomainPatternDiv').removeClass('error');
+  isolationDomainExcludeDomains[excludeDomainPattern] = {};
+  updateIsolationExcludeDomains();
+};
+
+
+const isolationDomainExcludeDomains = {};
+let isolationDomainExcludeDomainRulesClickEvent = false;
+window.updateIsolationExcludeDomains = () => {
+  const isolationDomainExcludeDomainRulesDiv = $('#isolationDomainExcludeDomains');
+  const isolationDomainExcludeDomainRules = Object.keys(isolationDomainExcludeDomains);
+  if (!isolationDomainExcludeDomainRules.length) {
+    isolationDomainExcludeDomainRulesDiv.html('No Domains excluded');
+    return;
+  }
+  isolationDomainExcludeDomainRulesDiv.html('');
+  isolationDomainExcludeDomainRules.map((domainPattern) => {
+    const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
+      domainPattern +
+      ' <a href="#" id="removeDomainRule" data-tooltip="Remove (no confirmation)" ' +
+      '><i class="icon-trash-empty"></i>️</a></div>');
+    isolationDomainExcludeDomainRulesDiv.append(el);
+  });
+
+  if (!isolationDomainExcludeDomainRulesClickEvent) {
+    isolationDomainExcludeDomainRulesDiv.on('click', async (event) => {
+      event.preventDefault();
+      const targetId = $(event.target).parent().attr('id');
+      const domainPattern = $(event.target).parent().parent().attr('id');
+      if (targetId === 'removeDomainRule') {
+        delete isolationDomainExcludeDomains[decodeURIComponent(domainPattern)];
+        updateIsolationExcludeDomains();
+      }
+    });
+    isolationDomainExcludeDomainRulesClickEvent = true;
+  }
+};
+
 
 window.setCookiesDomainAddRule = async () => {
   const domainPattern = document.querySelector('#setCookiesDomainPattern').value;
