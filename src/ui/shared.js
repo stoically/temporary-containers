@@ -291,20 +291,18 @@ window.updateSetCookiesDomainRules = () => {
 
   setCookiesDomainCookies.on('click', async (event) => {
     event.preventDefault();
-    const domainPattern = $(event.target).parent().attr('id');
-    const domainPatternIndex = $(event.target).parent().attr('idIndex');
-    if (domainPattern === 'setCookiesDomainCookies' ||
-        !preferences.cookies.domain[decodeURIComponent(domainPattern)]) {
-      return;
+    const clickTarget = $(event.target).parent().attr('id');
+    const domainPattern = $(event.target).parent().parent().attr('id');
+    const domainPatternIndex = $(event.target).parent().parent().attr('idIndex');
+    if (clickTarget === 'setCookiesRemoveDomainRules') {
+      delete preferences.cookies.domain[decodeURIComponent(domainPattern)][domainPatternIndex];
+      const cookies = preferences.cookies.domain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie === 'object');
+      if (!cookies.length) {
+        delete preferences.cookies.domain[decodeURIComponent(domainPattern)];
+      }
+      await savePreferences();
+      updateSetCookiesDomainRules();
     }
-
-    delete preferences.cookies.domain[decodeURIComponent(domainPattern)][domainPatternIndex];
-    const cookies = preferences.cookies.domain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie === 'object');
-    if (!cookies.length) {
-      delete preferences.cookies.domain[decodeURIComponent(domainPattern)];
-    }
-    await savePreferences();
-    updateSetCookiesDomainRules();
   });
 };
 
