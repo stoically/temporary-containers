@@ -440,21 +440,35 @@ class Request {
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
       if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
+        debug('[shouldIsolate] pattern not matching', tab.url, domainPattern);
         continue;
       }
-      const preferences = this.storage.local.preferences.isolation.domain[domainPattern].navigation;
-      if (!preferences) {
-        continue;
+      
+      const patternPreferences = this.storage.local.preferences.isolation.domain[domainPattern];
+      if (patternPreferences.excluded) {
+        for (const excludedDomainPattern of Object.keys(patternPreferences.excluded)) {
+          if (!this.isolation.matchDomainPattern(request.url, excludedDomainPattern)) {
+            debug('[shouldIsolate] excluded domain pattern not matching', request.url, excludedDomainPattern);
+            continue;
+          }
+          debug('[shouldIsolate] not isolating because excluded domain pattern matches', request.url, excludedDomainPattern);
+          return false;
+        }
       }
-      debug('[shouldIsolate] found pattern', domainPattern, preferences);
 
-      if (preferences.action === 'global') {
+      const navigationPreferences = patternPreferences.navigation;
+      if (!navigationPreferences) {
+        continue;
+      }
+      debug('[shouldIsolate] found pattern', domainPattern, navigationPreferences);
+
+      if (navigationPreferences.action === 'global') {
         debug('[shouldIsolate] breaking because "global"');
         break;
       }
 
       return await this.checkIsolationPreferenceAgainstUrl(
-        preferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
+        navigationPreferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
       );
     }
 

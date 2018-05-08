@@ -151,6 +151,40 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             browser.tabs.create.should.have.been.calledOnce;
           });
         });
+
+        describe('if the target domain is excluded', () => {
+          beforeEach(async () => {
+            switch (navigatingIn) {
+            case 'sametab.global':
+            case 'newtab.global':
+              background.storage.local.preferences.isolation.global.excluded['excluded.com'] = {};
+              break;
+
+            case 'sametab.perdomain':
+            case 'newtab.perdomain':
+              background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
+              background.storage.local.preferences.isolation.domain['example.com'].excluded['excluded.com'] = {};
+              break;
+            }
+
+            await navigateTo('https://excluded.com');
+          });
+
+          it('should not open a new Temporary Container', async () => {
+            switch (navigatingIn) {
+            case 'sametab.global':
+            case 'newtab.global':
+              // TODO: implement me
+              expect(true).to.be.true;
+              break;
+
+            case 'sametab.perdomain':
+            case 'newtab.perdomain':
+              browser.tabs.create.should.not.have.been.called;
+              break;
+            }
+          });
+        });
       });
 
       describe('navigating with preference "notsamedomain"', () => {

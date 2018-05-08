@@ -37,7 +37,8 @@ class Storage {
               action: 'never',
               container: 'default'
             }
-          }
+          },
+          excluded: {}
         },
         domain: {},
         mac: {

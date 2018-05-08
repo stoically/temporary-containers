@@ -8,7 +8,7 @@
     "build-sign": "rm -rf web-ext-artifacts && cp README.md LICENSE src && node build-sign.js && npm run lint && npm test && web-ext sign --channel unlisted -s src && git checkout -- src/manifest.json && ncu",
     "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha --reporter=dot ./test/setup.js test/*.test.js --timeout 60000",
-    "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug",
+    "test-watch": "mocha ./test/setup.js test/*.test.js --watch --inspect --tmp-debug",
     "test-functional": "mocha ./test/functional/*.test.js --timeout 10000",
     "check-dependencies": "ncu"
   },

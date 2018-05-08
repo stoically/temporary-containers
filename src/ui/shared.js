@@ -116,7 +116,8 @@ const isolationDomainAddRule = async () => {
       left: {
         action: document.querySelector('#isolationDomainMouseClickLeft').value
       }
-    }
+    },
+    excluded: isolationDomainExcludeDomains
   };
 
   await savePreferences();
@@ -165,12 +166,12 @@ window.updateIsolationDomains = () => {
         '<strong>Mouse Clicks</strong><br>' +
         `Middle: ${preferences.isolation.domain[domainPattern].mouseClick.middle.action} <br>` +
         `Ctrl+Left: ${preferences.isolation.domain[domainPattern].mouseClick.ctrlleft.action} <br>` +
-        `Left: ${preferences.isolation.domain[domainPattern].mouseClick.left.action}</div> <br><br>`;
-        // '<strong>Excluded Target Domains</strong>:<br>' +
-        // (preferences.isolation.domain[domainPattern].excluded &&
-        //  preferences.isolation.domain[domainPattern].excluded.length) ?
-        //   `${preferences.isolation.domain[domainPattern].excluded.join('<br>')}` :
-        //   'No Target Domains excluded';
+        `Left: ${preferences.isolation.domain[domainPattern].mouseClick.left.action}</div><br>` +
+        '<strong>Excluded Target/Link Domains</strong>:<br>' +
+        (preferences.isolation.domain[domainPattern].excluded &&
+         Object.keys(preferences.isolation.domain[domainPattern].excluded).length > 0 ?
+          `${Object.keys(preferences.isolation.domain[domainPattern].excluded).join('<br>')}` :
+          'No Target/Link Domains excluded');
       el.find('#infoDomainRule').popup({
         html: domainRuleTooltip,
         inline: true
