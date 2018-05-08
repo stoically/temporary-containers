@@ -65,7 +65,7 @@ const buildWebExtension = async (build = {}) => {
     webExtension.background.browser.contextualIdentities.get.resolves({});
   }
   webExtension.background.browser.cookies.getAll.resolves([]);
-  
+
   if (process.argv[process.argv.length-1] === '--tmp-debug') {
     webExtension.background.window.log.DEBUG = true;
   }

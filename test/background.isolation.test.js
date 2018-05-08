@@ -1,19 +1,45 @@
 preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(preferences)}`, () => {
   let tab;
 
+  const defaultIsolationDomainPreferences = {
+    always: {
+      action: 'disabled',
+      allowedInPermanent: false
+    },
+    navigation: {
+      action: 'global'
+    },
+    mouseClick: {
+      middle: {
+        action: 'global'
+      },
+      ctrlleft: {
+        action: 'global'
+      },
+      left: {
+        action: 'global'
+      }
+    },
+    excluded: {}
+  };
+
   [
-    'sametab',
-    'newtab'
+    'sametab.global',
+    'sametab.perdomain',
+    'newtab.global',
+    'newtab.perdomain'
   ].map(navigatingIn => { describe(`navigatingIn: ${navigatingIn}`, () => {
 
     const navigateTo = async (url) => {
       switch (navigatingIn) {
-      case 'sametab':
+      case 'sametab.global':
+      case 'sametab.perdomain':
         return browser.tabs._update(tab.id, {
           url
         });
 
-      case 'newtab':
+      case 'newtab.global':
+      case 'newtab.perdomain':
         return browser.tabs._create({
           cookieStoreId: tab.cookieStoreId,
           openerTabId: tab.id,
@@ -35,7 +61,18 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "never"', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.isolation.global.navigation.action = 'never';
+          switch (navigatingIn) {
+          case 'sametab.global':
+          case 'newtab.global':
+            background.storage.local.preferences.isolation.global.navigation.action = 'never';
+            break;
+
+          case 'sametab.perdomain':
+          case 'newtab.perdomain':
+            background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
+            background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'never';
+            break;
+          }
         });
 
         describe('if its the exact same domain', () => {
@@ -71,7 +108,18 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "always"', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.isolation.global.navigation.action = 'always';
+          switch (navigatingIn) {
+          case 'sametab.global':
+          case 'newtab.global':
+            background.storage.local.preferences.isolation.global.navigation.action = 'always';
+            break;
+
+          case 'sametab.perdomain':
+          case 'newtab.perdomain':
+            background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
+            background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'always';
+            break;
+          }
         });
 
         describe('if its the exact same domain', () => {
@@ -107,7 +155,18 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "notsamedomain"', () => {
         beforeEach(() => {
-          background.storage.local.preferences.isolation.global.navigation.action = 'notsamedomain';
+          switch (navigatingIn) {
+          case 'sametab.global':
+          case 'newtab.global':
+            background.storage.local.preferences.isolation.global.navigation.action = 'notsamedomain';
+            break;
+
+          case 'sametab.perdomain':
+          case 'newtab.perdomain':
+            background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
+            background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'notsamedomain';
+            break;
+          }
         });
 
         describe('if its the exact same domain', () => {
@@ -143,7 +202,18 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('navigating with preference "notsamedomainexact"', () => {
         beforeEach(() => {
-          background.storage.local.preferences.isolation.global.navigation.action = 'notsamedomainexact';
+          switch (navigatingIn) {
+          case 'sametab.global':
+          case 'newtab.global':
+            background.storage.local.preferences.isolation.global.navigation.action = 'notsamedomainexact';
+            break;
+
+          case 'sametab.perdomain':
+          case 'newtab.perdomain':
+            background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
+            background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'notsamedomainexact';
+            break;
+          }
         });
 
         describe('if its the exact same domain', () => {
