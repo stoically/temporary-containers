@@ -29,6 +29,7 @@
     ]
   },
   "page_action": {
+    "browser_style": false,
     "default_popup": "ui/popup.html",
     "default_icon": {
       "19": "icons/pageaction-gray-19.svg",

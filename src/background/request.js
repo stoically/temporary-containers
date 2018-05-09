@@ -123,6 +123,18 @@ class Request {
       }
     }
 
+    const parsedUrl = new URL(request.url);
+    for (const containWhat of ['@contain-facebook', '@contain-google', '@contain-twitter', '@contain-youtube']) {
+      if (this.management.addons[containWhat].enabled) {
+        for (const RE of this.management.addons[containWhat].REs) {
+          if (RE.test(parsedUrl.hostname)) {
+            debug('[webRequestOnBeforeRequest] handled by active container addon, ignoring', containWhat, RE, request.url);
+            return;
+          }
+        }
+      }
+    }
+
     let tab;
     try {
       tab = await browser.tabs.get(request.tabId);
