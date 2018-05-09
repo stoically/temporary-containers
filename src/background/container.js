@@ -82,7 +82,7 @@ class Container {
       });
     }
 
-    const containerOptions = this.getContainerNameIconColor();
+    const containerOptions = this.getContainerNameIconColor(request);
 
     if (!deletesHistory) {
       deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
@@ -182,7 +182,7 @@ class Container {
   }
 
 
-  getContainerNameIconColor() {
+  getContainerNameIconColor(request) {
     let tempContainerNumber;
     if (this.storage.local.preferences.container.numberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
@@ -191,7 +191,18 @@ class Container {
     if (this.storage.local.preferences.container.numberMode === 'reuse') {
       tempContainerNumber = this.getReusedContainerNumber();
     }
-    let containerName = `${this.storage.local.preferences.container.namePrefix}${tempContainerNumber}`;
+    let containerName = this.storage.local.preferences.container.namePrefix;
+    if (request && request.url) {
+      const parsedUrl = new URL(request.url);
+      containerName = containerName
+        .replace('%fulldomain%', parsedUrl.hostname)
+        .replace('%domain%', psl.parse(parsedUrl.hostname).domain);
+    } else {
+      containerName = containerName
+        .replace('%fulldomain%', '')
+        .replace('%domain%', '');
+    }
+    containerName = `${containerName}${tempContainerNumber}`;
 
     let containerColor = this.storage.local.preferences.container.color;
     if (this.storage.local.preferences.container.colorRandom) {
