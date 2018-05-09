@@ -16,6 +16,7 @@ class Request {
     this.utils = this.background.utils;
     this.tabs = this.background.tabs;
     this.isolation = this.background.isolation;
+    this.management = this.background.management;
 
     // Clean up canceled requests
     browser.webRequest.onCompleted.addListener((request) => {
@@ -89,13 +90,13 @@ class Request {
     }
 
     let macAssignment;
-    try {
-      macAssignment = await this.mac.getAssignment(request.url);
-    } catch (error) {
-      debug('[webRequestOnBeforeRequest] contacting mac failed, either not installed or old version', error);
+    if (this.management.addons['@testpilot-containers'].enabled) {
+      try {
+        macAssignment = await this.mac.getAssignment(request.url);
+      } catch (error) {
+        debug('[webRequestOnBeforeRequest] contacting mac failed, probably old version', error);
+      }
     }
-
-    let tab;
     if (macAssignment) {
       if (macAssignment.neverAsk) {
         debug('[webRequestOnBeforeRequest] mac neverask assigned, we do nothing', macAssignment);
@@ -104,6 +105,25 @@ class Request {
         debug('[webRequestOnBeforeRequest] mac assigned', macAssignment);
       }
     }
+
+    if (this.management.addons['containerise@kinte.sh'].enabled) {
+      try {
+        const hostmap = await browser.runtime.sendMessage('containerise@kinte.sh', {
+          method: 'getHostMap',
+          url: request.url
+        });
+        if (typeof hostmap === 'object' && hostmap.cookieStoreId && hostmap.enabled) {
+          debug('[webRequestOnBeforeRequest] assigned with containerise we do nothing', hostmap);
+          return;
+        } else {
+          debug('[webRequestOnBeforeRequest] not assigned with containerise', hostmap);
+        }
+      } catch (error) {
+        debug('[webRequestOnBeforeRequest] contacting containerise failed, probably old version', error);
+      }
+    }
+
+    let tab;
     try {
       tab = await browser.tabs.get(request.tabId);
       debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
@@ -443,7 +463,7 @@ class Request {
         debug('[shouldIsolate] pattern not matching', tab.url, domainPattern);
         continue;
       }
-      
+
       const patternPreferences = this.storage.local.preferences.isolation.domain[domainPattern];
       if (patternPreferences.excluded) {
         for (const excludedDomainPattern of Object.keys(patternPreferences.excluded)) {

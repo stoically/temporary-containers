@@ -63,8 +63,13 @@ const buildWebExtension = async (build = {}) => {
     webExtension.background.browser.tabs.query.resolves([{},{}]);
     webExtension.background.browser.storage.local.get.resolves({});
     webExtension.background.browser.contextualIdentities.get.resolves({});
+    webExtension.background.browser.cookies.getAll.resolves([]);
   }
-  webExtension.background.browser.cookies.getAll.resolves([]);
+  webExtension.background.browser.management.getAll.resolves([{
+    id: '@testpilot-containers',
+    enabled: true,
+    version: '6.0.0'
+  }]);
 
   if (process.argv[process.argv.length-1] === '--tmp-debug') {
     webExtension.background.window.log.DEBUG = true;

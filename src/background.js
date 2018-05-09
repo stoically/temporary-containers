@@ -5,6 +5,7 @@ class TemporaryContainers {
     this.storage = new window.Storage;
     this.utils = new window.Utils(this);
     this.runtime = new window.Runtime(this);
+    this.management = new window.Management(this);
     this.request = new window.Request(this);
     this.container = new window.Container(this);
     this.mouseclick = new window.MouseClick(this);
@@ -46,6 +47,8 @@ class TemporaryContainers {
     this.cookies.initialize();
     this.statistics.initialize();
     this.mac.initialize();
+
+    await this.management.initialize();
     await this.tabs.initialize();
 
     this.initialized = true;
