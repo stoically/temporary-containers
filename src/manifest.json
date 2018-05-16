@@ -39,8 +39,7 @@
   "commands": {
     "new_temporary_container_tab": {
       "suggested_key": {
-        "default": "Alt+C",
-        "windows": "Alt+Shift+T"
+        "default": "Alt+C"
       },
       "description": "Open a new Tab in a new Temporary Container"
     },
