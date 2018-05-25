@@ -398,10 +398,20 @@
             </div>
             <div class="field">
               <label>Ignoring requests to</label>
+              <div class="ui notice message">
+                Note: Ticked checkbox means that the Domains get ignored from Temporary Containers. However, starting with
+                Firefox 61.0 just unticking the checkbox isn't enough - you need to remove the Domain from the <i>about:config</i>
+                key <strong>extensions.webextensions.restrictedDomains</strong> list too if it's listed there.
+                <br><br>
+                To fully unignore requests to addons.mozilla.org you need to configure <strong>privacy.resistFingerprinting.block_mozAddonManager</strong>
+                in <i>about:config</i> to Boolean <i>true</i> as well.
+              </div>
               <div class="ui checkbox">
                 <input type="checkbox" id="ignoreRequestsToAMO">
-                <label>addons.mozilla.org<br><i>Firefox prevents contentscripts on and canceling requests to that domain. You can configure "privacy.resistFingerprinting.block_mozAddonManager" in "about:config" to "true" to circumvent that.</i></label>
+                <label>addons.mozilla.org<br><i>Firefox prevents contentscripts on and canceling requests to that domain.</i></label>
               </div>
+            </div>
+            <div class="field">
               <div class="ui checkbox">
                 <input type="checkbox" id="ignoreRequestsToPocket">
                 <label>getpocket.com<br><i>The Firefox Pocket integration only works in the default container</i></label>
