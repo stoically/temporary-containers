@@ -36,7 +36,7 @@
     "addons-linter": "^1.0.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
-    "eslint": "^4.18.1",
+    "eslint": "^5.0.0",
     "mocha": "^5.0.1",
     "npm-check-updates": "^2.14.1",
     "nyc": "^12.0.1",
