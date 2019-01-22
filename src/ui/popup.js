@@ -80,7 +80,7 @@ const initialize = async () => {
 
     $.tab('change tab', 'isolation');
 
-    const tabs = await browser.tabs.query({active: true});
+    const tabs = await browser.tabs.query({currentWindow: true, active: true});
     const activeTab = tabs[0];
     if (!activeTab.url.startsWith('http')) {
       $('#actionNone').removeClass('hidden');
