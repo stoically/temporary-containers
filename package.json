@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/stoically/temporary-containers#readme",
   "dependencies": {
-    "delay": "^2.0.0",
+    "delay": "^3.0.0",
     "glob-to-regexp": "^0.4.0",
     "jquery": "^3.3.1",
     "jquery-address": "^1.6.0",
