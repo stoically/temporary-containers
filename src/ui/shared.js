@@ -141,6 +141,9 @@ window.isolationDomainEditRule = (domainPattern) => {
     $('#isolationPerDomainAccordion').accordion('open', 1);
     $('#isolationPerDomainAccordion').accordion('open', 2);
     $('#isolationPerDomainAccordion').accordion('open', 3);
+
+    isolationDomainExcludeDomains = domainRules.excluded;
+    updateIsolationExcludeDomains();
   }
 };
 
@@ -214,7 +217,7 @@ window.isolationDomainAddExcludeDomainRule = () => {
 };
 
 
-const isolationDomainExcludeDomains = {};
+let isolationDomainExcludeDomains = {};
 let isolationDomainExcludeDomainRulesClickEvent = false;
 window.updateIsolationExcludeDomains = () => {
   const isolationDomainExcludeDomainRulesDiv = $('#isolationDomainExcludeDomains');
