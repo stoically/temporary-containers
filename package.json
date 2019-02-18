@@ -37,7 +37,7 @@
     "chai": "^4.2.0",
     "coveralls": "^3.0.2",
     "eslint": "^5.13.0",
-    "mocha": "^5.2.0",
+    "mocha": "^6.0.0",
     "npm-check-updates": "^2.15.0",
     "nyc": "^13.2.0",
     "sinon": "^7.2.3",
