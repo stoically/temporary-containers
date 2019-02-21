@@ -139,9 +139,7 @@ const initialize = async () => {
 
     const notificationsToolTip =
       '<div style="width:500px;">' +
-      'Will ask for Notifications Permissions when you click the first time<br>' +
-      'And with the next update of the Add-on - not again after that.<br>' +
-      'Asking after update again is a Firefox bug and is already reported.</div>';
+      'Will ask for Notifications Permissions when you click the first time</div>';
 
     $('#notificationsField').popup({
       html: notificationsToolTip,
