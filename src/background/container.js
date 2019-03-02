@@ -82,7 +82,7 @@ class Container {
       });
     }
 
-    const containerOptions = this.getContainerNameIconColor(request);
+    const containerOptions = this.getContainerNameIconColor((request && request.url) || url);
 
     if (!deletesHistory) {
       deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
@@ -182,7 +182,7 @@ class Container {
   }
 
 
-  getContainerNameIconColor(request) {
+  getContainerNameIconColor(url) {
     let tempContainerNumber;
     if (this.storage.local.preferences.container.numberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
@@ -192,8 +192,8 @@ class Container {
       tempContainerNumber = this.getReusedContainerNumber();
     }
     let containerName = this.storage.local.preferences.container.namePrefix;
-    if (request && request.url) {
-      const parsedUrl = new URL(request.url);
+    if (url) {
+      const parsedUrl = new URL(url);
       containerName = containerName
         .replace('%fulldomain%', parsedUrl.hostname)
         .replace('%domain%', psl.parse(parsedUrl.hostname).domain);
