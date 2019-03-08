@@ -27,7 +27,7 @@
     "glob-to-regexp": "^0.4.0",
     "jquery": "^3.3.1",
     "jquery-address": "^1.6.0",
-    "p-queue": "^3.0.0",
+    "p-queue": "^4.0.0",
     "psl": "^1.1.31",
     "semantic-ui": "^2.4.2",
     "semver-compare": "^1.0.0"
