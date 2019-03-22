@@ -44,7 +44,7 @@
     "sinon-chai": "^3.3.0",
     "web-ext": "stoically/web-ext#sign-addon-channel",
     "webextensions-geckodriver": "^0.4.0",
-    "webextensions-jsdom": "^0.13.0"
+    "webextensions-jsdom": "^0.14.0"
   },
   "private": true,
   "nyc": {
