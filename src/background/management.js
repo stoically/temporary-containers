@@ -87,12 +87,18 @@ class Management {
 
 
   disable(extension) {
+    if (!this.addons[extension.id]) {
+      return;
+    }
     this.addons[extension.id].enabled = false;
     this.addons[extension.id].version = extension.version;
   }
 
 
   enable(extension) {
+    if (!this.addons[extension.id]) {
+      return;
+    }
     this.addons[extension.id].enabled = true;
     this.addons[extension.id].version = extension.version;
   }
