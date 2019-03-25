@@ -2,7 +2,7 @@ class Isolation {
 
   matchDomainPattern(url, domainPattern) {
     if (domainPattern.startsWith('/')) {
-      const regexp = domainPattern.match(/\/(.*)\/(\w+)?/);
+      const regexp = domainPattern.match(/^\/(.*)\/([gimsuy]+)?$/);
       return (new RegExp(regexp[1], regexp[2])).test(url);
     } else {
       const parsedUrl = new URL(url);
