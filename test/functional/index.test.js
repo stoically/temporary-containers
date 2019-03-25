@@ -31,7 +31,10 @@ describe('Temporary Containers', () => {
   it('should open a new Temporary Container if toolbar button is clicked', async () => {
     await geckodriver.getAllWindowHandles();
     const button = await helper.toolbarButton();
-    await new Promise(r => setTimeout(r, 3100));
+
+    // give the extension a chance to fully initialize
+    await new Promise(r => setTimeout(r, 1500));
+
     button.click();
 
     await geckodriver.wait(async () => {
@@ -49,7 +52,7 @@ describe('Temporary Containers', () => {
     }, 5000, 'Should have a containerName');
   });
 
-  after(function() {
+  after(() => {
     geckodriver.quit();
   });
 });
