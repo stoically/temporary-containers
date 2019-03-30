@@ -7,8 +7,8 @@
     "build": "rm -rf web-ext-artifacts && cp README.md LICENSE src && npm run lint && npm test && web-ext build -s src && addons-linter web-ext-artifacts/temporary_containers-*.zip && ncu",
     "build-sign": "rm -rf web-ext-artifacts && cp README.md LICENSE src && node build-sign.js && npm run lint && npm test && web-ext sign --channel unlisted -s src && git checkout -- src/manifest.json && ncu",
     "lint": "eslint src",
-    "test": "nyc --reporter=html --reporter=text mocha --reporter=dot ./test/setup.js test/*.test.js --timeout 60000 --max-old-space-size=4096",
-    "test-watch": "mocha ./test/setup.js test/*.test.js --watch --inspect --tmp-debug --max-old-space-size=4096",
+    "test": "nyc --reporter=html --reporter=text mocha --reporter=dot ./test/setup.js test/*.test.js --timeout 60000",
+    "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug --inspect",
     "test-functional": "mocha ./test/functional/*.test.js --timeout 10000",
     "check-dependencies": "ncu"
   },
@@ -36,15 +36,15 @@
     "addons-linter": "^1.7.0",
     "chai": "^4.2.0",
     "coveralls": "^3.0.3",
-    "eslint": "^5.15.3",
+    "eslint": "^5.16.0",
     "mocha": "^6.0.2",
-    "npm-check-updates": "^3.1.1",
+    "npm-check-updates": "^3.1.3",
     "nyc": "^13.3.0",
-    "sinon": "^7.3.0",
+    "sinon": "^7.3.1",
     "sinon-chai": "^3.3.0",
     "web-ext": "^3.0.0",
     "webextensions-geckodriver": "^0.5.1",
-    "webextensions-jsdom": "^0.14.0"
+    "webextensions-jsdom": "^0.15.2"
   },
   "private": true,
   "nyc": {
