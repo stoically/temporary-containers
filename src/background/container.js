@@ -83,6 +83,7 @@ class Container {
     }
 
     const containerOptions = this.getContainerNameIconColor((request && request.url) || url);
+    this.storage.local.tempContainersNumbers.push(containerOptions.number);
 
     if (!deletesHistory) {
       deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
@@ -326,6 +327,9 @@ class Container {
       await browser.contextualIdentities.get(cookieStoreId);
     } catch (error) {
       debug('[tryToRemove] container not found, removing entry from storage', cookieStoreId, error);
+      this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(number => {
+        return this.storage.local.tempContainers[cookieStoreId].number !== number;
+      });
       delete this.storage.local.tempContainers[cookieStoreId];
       await this.storage.persist();
       return false;
@@ -356,6 +360,9 @@ class Container {
     }
     const historyClearedCount = this.maybeClearHistory(cookieStoreId);
     this.statistics.update(historyClearedCount, cookies.length, cookieStoreId);
+    this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(number => {
+      return this.storage.local.tempContainers[cookieStoreId].number !== number;
+    });
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();
     return true;
@@ -530,16 +537,7 @@ class Container {
 
 
   getReusedContainerNumber() {
-    const tempContainersNumbers = Object.values(this.storage.local.tempContainers)
-      .reduce((accumulator, containerOptions) => {
-        if (typeof containerOptions !== 'object') {
-          accumulator.push(containerOptions);
-          return accumulator;
-        }
-        accumulator.push(containerOptions.number);
-        return accumulator;
-      }, [])
-      .sort();
+    const tempContainersNumbers = this.storage.local.tempContainersNumbers.sort();
     if (!tempContainersNumbers.length) {
       return 1;
     } else {

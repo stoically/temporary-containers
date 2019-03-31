@@ -175,8 +175,15 @@ class Migration {
         const url = browser.runtime.getURL('ui/notifications/update_from_0.87_and_below.html');
         browser.tabs.create({
           url
-        });        
+        });
       }
+    }
+    if (versionCompare('0.91', previousVersion) >= 0) {
+      debug('updated from version <= 0.91, migrate container numbers into dedicated array');
+      Object.values(this.storage.local.tempContainers).map(container => {
+        this.storage.local.tempContainersNumbers.push(container.number);
+      });
+      await this.storage.persist();
     }
   }
 }

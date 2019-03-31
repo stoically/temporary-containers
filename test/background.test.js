@@ -457,4 +457,39 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       });
     });
   });
+
+  describe('Reuse container number', () => {
+    if (!preferences.automaticMode.active || preferences.automaticMode.newTab === 'navigation') {
+      return;
+    }
+
+    it('should work when multiple tabs are opened', async () => {
+      const background = await loadBareBackground(preferences, {apiFake: true});
+      await background.initialize();
+      background.storage.local.preferences.container.numberMode = 'reuse';
+      const tabPromises = [];
+      for (let i = 0; i < 5; i++) {
+        tabPromises.push(browser.tabs._create({}));
+      }
+      await Promise.all(tabPromises);
+      const tabs = await browser.tabs.query({});
+      const containerPromises = tabs.map(tab => browser.contextualIdentities.get(tab.cookieStoreId));
+      const containers = await Promise.all(containerPromises);
+      for (let i = 0; i < 5; i++) {
+        containers[i].name.should.equal(`tmp${i+1}`);
+      }
+
+      await browser.tabs.remove(tabs[0].id);
+      await background.container.cleanup(true);
+      await new Promise(process.nextTick);
+      await browser.tabs._create({});
+      (await browser.contextualIdentities.get(
+        (await browser.tabs.create.lastCall.returnValue).cookieStoreId
+      )).name.should.equal('tmp1');
+      await browser.tabs._create({});
+      (await browser.contextualIdentities.get(
+        (await browser.tabs.create.lastCall.returnValue).cookieStoreId
+      )).name.should.equal('tmp6');
+    });
+  });
 });});
