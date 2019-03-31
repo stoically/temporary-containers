@@ -323,6 +323,15 @@ class Container {
     }
 
     try {
+      await browser.contextualIdentities.get(cookieStoreId);
+    } catch (error) {
+      debug('[tryToRemove] container not found, removing entry from storage', cookieStoreId, error);
+      delete this.storage.local.tempContainers[cookieStoreId];
+      await this.storage.persist();
+      return false;
+    }
+
+    try {
       const tempTabs = await browser.tabs.query({
         cookieStoreId
       });
@@ -339,7 +348,7 @@ class Container {
     try {
       cookies = await browser.cookies.getAll({storeId: cookieStoreId});
     } catch (error) {
-      debug('[tryToRemove] couldnt get cookies', cookieStoreId);
+      debug('[tryToRemove] couldnt get cookies', cookieStoreId, error);
     }
     const containerRemoved = await this.removeContainer(cookieStoreId);
     if (!containerRemoved) {
