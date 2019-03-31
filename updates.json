@@ -3,76 +3,8 @@
     "{c607c8df-14a7-4f28-894f-29e8722976af}": {
       "updates": [
         {
-          "version": "0.75beta1",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.75beta1/temporary_containers-0.75beta1-an.fx.xpi"
-        },
-        {
-          "version": "0.75beta2",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.75beta2/temporary_containers-0.75beta2-an.fx.xpi"
-        },
-        {
-          "version": "0.77",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.77/temporary_containers-0.77-an.fx.xpi"
-        },
-        {
-          "version": "0.79beta1",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.79beta1/temporary_containers-0.79beta1-an.fx.xpi"
-        },
-        {
-          "version": "0.79beta4",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.79beta4/temporary_containers-0.79beta4-an.fx.xpi"
-        },
-        {
-          "version": "0.79beta6",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.79beta6/temporary_containers-0.79beta6-an.fx.xpi"
-        },
-        {
-          "version": "0.80",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.80/temporary_containers-0.80-an.fx.xpi"
-        },
-        {
-          "version": "0.81",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.81/temporary_containers-0.81-an.fx.xpi"
-        },
-        {
-          "version": "0.82beta1",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.82beta1/temporary_containers-0.82beta1-an.fx.xpi"
-        },
-        {
-          "version": "0.84",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.84/temporary_containers-0.84-an.fx.xpi"
-        },
-        {
-          "version": "0.85",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.85/temporary_containers-0.85-an.fx.xpi"
-        },
-        {
-          "version": "0.86beta1",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.86beta1/temporary_containers-0.86beta1-an.fx.xpi"
-        },
-        {
-          "version": "0.86beta2",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.86beta2/temporary_containers-0.86beta2-an.fx.xpi"
-        },
-        {
-          "version": "0.87",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.87/temporary_containers-0.87-an.fx.xpi"
-        },
-        {
-          "version": "0.89",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.89/temporary_containers-0.89-an.fx.xpi"
-        },
-        {
-          "version": "0.90beta1",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.90beta1/temporary_containers-0.90beta1-an.fx.xpi"
-        },
-        {
-          "version": "0.90",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.90/temporary_containers-0.90-an.fx.xpi"
-        },
-        {
-          "version": "0.91",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.91/temporary_containers-0.91-fx.xpi"
+          "version": "0.92",
+          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v0.92/temporary_containers-0.92-fx.xpi"
         }
       ]
     }
