@@ -68,7 +68,7 @@ class Tabs {
     debug('[onUpdated] url changed', changeInfo);
     await this.container.maybeAddHistory(tab, changeInfo.url);
     await this.pageaction.showOrHide(tab);
-    await this.maybeReloadInTempContainer(tab);
+    await this.maybeReloadInTempContainer(tab, changeInfo);
   }
 
 
@@ -95,7 +95,7 @@ class Tabs {
   }
 
 
-  async maybeReloadInTempContainer(tab) {
+  async maybeReloadInTempContainer(tab, changeInfo = {}) {
     if (tab.incognito) {
       debug('[maybeReloadInTempContainer] tab is incognito, ignore it and disable browseraction', tab);
       browser.browserAction.disable(tab.id);
@@ -128,8 +128,9 @@ class Tabs {
     if (!deletesHistoryContainer &&
         this.storage.local.preferences.automaticMode.newTab === 'navigation' &&
         tab.cookieStoreId === 'firefox-default' &&
-       (tab.url === 'about:home' ||
-        tab.url === 'about:newtab')) {
+        (tab.url === 'about:home' ||
+         tab.url === 'about:newtab' ||
+         (changeInfo.status === 'loading' && changeInfo.url === 'about:blank'))) {
       debug('[maybeReloadInTempContainer] automatic mode on navigation, setting icon badge', tab);
       this.browseraction.addBadge(tab.id);
       return;
@@ -137,8 +138,9 @@ class Tabs {
 
     if ((this.storage.local.preferences.automaticMode.newTab === 'created' || deletesHistoryContainer) &&
         tab.cookieStoreId === 'firefox-default' &&
-       (tab.url === 'about:home' ||
-        tab.url === 'about:newtab')) {
+        (tab.url === 'about:home' ||
+         tab.url === 'about:newtab' ||
+         (changeInfo.status === 'loading' && changeInfo.url === 'about:blank'))) {
       debug('[maybeReloadInTempContainer] about:home/new tab in firefox-default container, reload in temp container', tab);
 
       await this.container.reloadTabInTempContainer({
