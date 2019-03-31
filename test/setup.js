@@ -71,7 +71,7 @@ const buildWebExtension = async (build = {}) => {
     version: '6.0.0'
   }]);
 
-  if (process.argv[process.argv.length-1] === '--tmp-debug') {
+  if (process.argv.includes('--tmp-debug')) {
     webExtension.background.window.log.DEBUG = true;
   }
 
@@ -126,6 +126,7 @@ global.loadUninstalledBackground = async () => {
 
 
 afterEach(() => {
+  sinon.restore();
   if (global.webExtension && global.webExtension.background) {
     global.webExtension.background.destroy();
     delete global.webExtension;

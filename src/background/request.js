@@ -438,6 +438,16 @@ class Request {
       return true;
     }
 
+    if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
+      debug('[shouldIsolate] not isolating because the tab url is blank and we seen this request before, probably redirect');
+      return false;
+    }
+
+    if ((tab.url === 'about:blank' || tab.url === 'about:home') && !tab.openerTabId) {
+      debug('[shouldIsolate] not isolating because the tab url is blank/home and no openerTabId');
+      return false;
+    }
+
     if (!openerCheck && tab.url === 'about:blank' && tab.openerTabId) {
       const openerTab = await browser.tabs.get(tab.openerTabId);
       debug('[shouldIsolate] we have to check the opener against the request', openerTab);
@@ -454,16 +464,6 @@ class Request {
       }
 
       debug('[shouldIsolate] decided to not isolate because of opener', openerTab);
-      return false;
-    }
-
-    if ((tab.url === 'about:blank' || tab.url === 'about:home') && !tab.openerTabId) {
-      debug('[shouldIsolate] not isolating because the tab url is blank/home and no openerTabId');
-      return false;
-    }
-
-    if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
-      debug('[shouldIsolate] not isolating because the tab url is blank and we seen this request before, probably redirect');
       return false;
     }
 
