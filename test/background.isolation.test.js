@@ -232,6 +232,19 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             browser.tabs.create.should.have.been.calledOnce;
           });
         });
+
+        describe('if its not the same domain after a redirect', () => {
+          beforeEach(async () => {
+            browser.tabs._registerRedirects('https://out.example.com', [
+              'https://notexample.com'
+            ]);
+            await navigateTo('https://out.example.com');
+          });
+
+          it('should open a new Temporary Container', async () => {
+            browser.tabs.create.should.have.been.calledOnce;
+          });
+        });
       });
 
       describe('navigating with preference "notsamedomainexact"', () => {

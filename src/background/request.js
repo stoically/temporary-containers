@@ -51,12 +51,6 @@ class Request {
 
     const returnVal = await this._webRequestOnBeforeRequest(request);
 
-    if (!this.requestsSeen[request.requestId]) {
-      this.requestsSeen[request.requestId] = true;
-      delay(300000).then(() => {
-        delete this.requestsSeen[request.requestId];
-      });
-    }
 
     if (returnVal && returnVal.cancel) {
       this.cancelRequest(request);
@@ -80,6 +74,17 @@ class Request {
     if (request.tabId === -1) {
       debug('[browser.webRequest.onBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
       return;
+    }
+
+    if (!this.requestsSeen[request.requestId]) {
+      this.requestsSeen[request.requestId] = true;
+      delay(300000).then(() => {
+        delete this.requestsSeen[request.requestId];
+      });
+    } else {
+      // we saw the requestId already, so this is a redirect
+      // which means we can mark the container as clean
+      this.container.markClean(request.tabId);
     }
 
     this.browseraction.removeBadge(request.tabId);
@@ -440,13 +445,8 @@ class Request {
       return true;
     }
 
-    if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
-      debug('[shouldIsolate] not isolating because the tab url is blank and we seen this request before, probably redirect');
-      return false;
-    }
-
-    if ((tab.url === 'about:blank' || tab.url === 'about:home') && !tab.openerTabId) {
-      debug('[shouldIsolate] not isolating because the tab url is blank/home and no openerTabId');
+    if ((tab.url === 'about:blank' || tab.url === 'about:newtab' || tab.url === 'about:home') && !openerTab) {
+      debug('[shouldIsolate] not isolating because the tab url is blank/newtab/home and no openerTabId');
       return false;
     }
 
@@ -560,11 +560,6 @@ class Request {
     }
     if (!tab || !tab.url) {
       debug('[maybeAlwaysOpenInTemporaryContainer] we cant proceed without tab url information', tab, request);
-      return false;
-    }
-
-    if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
-      debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
       return false;
     }
 
