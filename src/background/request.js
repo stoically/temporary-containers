@@ -123,22 +123,13 @@ class Request {
       }
     }
 
-    const parsedUrl = new URL(request.url);
-    for (const containWhat of ['@contain-facebook', '@contain-google', '@contain-twitter', '@contain-youtube']) {
-      if (this.management.addons[containWhat].enabled) {
-        for (const RE of this.management.addons[containWhat].REs) {
-          if (RE.test(parsedUrl.hostname)) {
-            debug('[webRequestOnBeforeRequest] handled by active container addon, ignoring', containWhat, RE, request.url);
-            return;
-          }
-        }
-      }
-    }
-
-    let tab;
+    let tab, openerTab;
     try {
       tab = await browser.tabs.get(request.tabId);
-      debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab);
+      if (tab && tab.openerTabId) {
+        openerTab = await browser.tabs.get(tab.openerTabId);
+      }
+      debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab, openerTab);
     } catch (error) {
       debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
     }
@@ -146,6 +137,23 @@ class Request {
     if (tab && tab.incognito) {
       debug('[webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
       return;
+    }
+
+    const parsedUrl = new URL(request.url);
+    const parsedTabUrl = tab && /^https?:/.test(tab.url) && new URL(tab.url);
+    const parsedOpenerTabUrl = openerTab && /^https?:/.test(openerTab.url) && new URL(openerTab.url);
+    for (const containWhat of ['@contain-facebook', '@contain-google', '@contain-twitter', '@contain-youtube']) {
+      if (!this.management.addons[containWhat].enabled) {
+        continue;
+      }
+      for (const RE of this.management.addons[containWhat].REs) {
+        if (RE.test(parsedUrl.hostname) ||
+           (parsedTabUrl && RE.test(parsedTabUrl.hostname)) ||
+           (parsedOpenerTabUrl && RE.test(parsedOpenerTabUrl.hostname))) {
+          debug('[webRequestOnBeforeRequest] handled by active container addon, ignoring', containWhat, RE, request.url);
+          return;
+        }
+      }
     }
 
     this.container.maybeAddHistory(tab, request.url);
@@ -163,14 +171,14 @@ class Request {
       return;
     }
 
-    const isolated = !macAssignment && await this.maybeIsolate(tab, request);
+    const isolated = !macAssignment && await this.maybeIsolate(tab, request, openerTab);
     if (isolated) {
       debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
       return isolated;
     }
 
     const alwaysOpenIn = !macAssignment &&
-      await this.maybeAlwaysOpenInTemporaryContainer(tab, request);
+      await this.maybeAlwaysOpenInTemporaryContainer(tab, request, openerTab);
     if (alwaysOpenIn) {
       debug('[webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
       return alwaysOpenIn;
@@ -191,7 +199,7 @@ class Request {
     if (this.mouseclick.linksClicked[request.url]) {
       return this.handleClickedLink(request, tab, macAssignment);
     } else {
-      return this.handleNotClickedLink(request, tab, macAssignment);
+      return this.handleNotClickedLink(request, tab, macAssignment, openerTab);
     }
   }
 
@@ -252,12 +260,11 @@ class Request {
   }
 
 
-  async handleNotClickedLink(request, tab, macAssignment) {
+  async handleNotClickedLink(request, tab, macAssignment, openerTab) {
     debug('[handleNotClickedLink] onBeforeRequest', request, tab);
 
-    if (tab && tab.cookieStoreId === 'firefox-default' && tab.openerTabId) {
-      debug('[handleNotClickedLink] default container and openerTabId set', tab);
-      const openerTab = await browser.tabs.get(tab.openerTabId);
+    if (tab && tab.cookieStoreId === 'firefox-default' && openerTab) {
+      debug('[handleNotClickedLink] default container and openerTab', openerTab);
       if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
         debug('[handleNotClickedLink] request didnt came from about/moz-extension page, we do nothing', openerTab);
         return;
@@ -388,13 +395,13 @@ class Request {
   }
 
 
-  async maybeIsolate(tab, request) {
+  async maybeIsolate(tab, request, openerTab) {
     if (!tab || !tab.url) {
       debug('[maybeIsolate] we cant proceed without tab url information', tab, request);
       return false;
     }
 
-    if (!await this.shouldIsolate(tab, request)) {
+    if (!await this.shouldIsolate(tab, request, openerTab)) {
       debug('[maybeIsolate] decided to not isolate', tab, request);
       return false;
     }
@@ -421,7 +428,7 @@ class Request {
   }
 
 
-  async shouldIsolate(tab, request, openerCheck = false) {
+  async shouldIsolate(tab, request, openerTab) {
     debug('[shouldIsolate]', tab, request);
     if (this.container.isClean(tab.cookieStoreId)) {
       debug('[shouldIsolate] not isolating because the tmp container is still clean');
@@ -443,8 +450,7 @@ class Request {
       return false;
     }
 
-    if (!openerCheck && tab.url === 'about:blank' && tab.openerTabId) {
-      const openerTab = await browser.tabs.get(tab.openerTabId);
+    if (openerTab && tab.url === 'about:blank') {
       debug('[shouldIsolate] we have to check the opener against the request', openerTab);
 
       if (this.container.isPermanent(tab.cookieStoreId) &&
@@ -453,7 +459,7 @@ class Request {
         return false;
       }
 
-      if (await this.shouldIsolate(openerTab, request, true)) {
+      if (await this.shouldIsolate(openerTab, request, false)) {
         debug('[shouldIsolate] decided to isolate because of opener', openerTab);
         return true;
       }
@@ -548,7 +554,7 @@ class Request {
   }
 
 
-  async maybeAlwaysOpenInTemporaryContainer(tab, request) {
+  async maybeAlwaysOpenInTemporaryContainer(tab, request, openerTab) {
     if (!Object.keys(this.storage.local.preferences.isolation.domain).length) {
       return;
     }
@@ -595,8 +601,7 @@ class Request {
       }
 
       if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
-        if (tab.openerTabId) {
-          const openerTab = await browser.tabs.get(tab.openerTabId);
+        if (openerTab) {
           if (!openerTab.url.startsWith('about:') &&
               !this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
             debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the opener url doesnt match the pattern', openerTab.url, domainPattern);
