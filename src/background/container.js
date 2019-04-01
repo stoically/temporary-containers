@@ -194,9 +194,14 @@ class Container {
     let containerName = this.storage.local.preferences.container.namePrefix;
     if (url) {
       const parsedUrl = new URL(url);
-      containerName = containerName
-        .replace('%fulldomain%', parsedUrl.hostname)
-        .replace('%domain%', psl.parse(parsedUrl.hostname).domain);
+      if (containerName.includes('%fulldomain%')) {
+        containerName = containerName.replace('%fulldomain%', parsedUrl.hostname);
+      }
+      if (containerName.includes('%domain%')) {
+        const domain = psl.isValid(parsedUrl.hostname) ? psl.get(parsedUrl.hostname) : parsedUrl.hostname;
+        containerName = containerName.replace('%domain%', domain);
+      }
+
     } else {
       containerName = containerName
         .replace('%fulldomain%', '')
