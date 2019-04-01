@@ -82,7 +82,7 @@ class MultiAccountContainers {
     }
     const currentContainer = confirmPage.currentContainer;
     if (currentContainer) {
-      if (this.container.isPermanentContainer(currentContainer)) {
+      if (this.container.isPermanent(currentContainer)) {
         debug('[_maybeReopenConfirmPage] currentContainer is permanent, we do nothing');
         return false;
       } else if (this.storage.local.tempContainers[currentContainer] &&

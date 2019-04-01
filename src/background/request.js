@@ -175,9 +175,7 @@ class Request {
       debug('[webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
       return alwaysOpenIn;
     } else if (!this.storage.local.preferences.automaticMode.active &&
-               (!this.mouseclick.linksClicked[request.url] &&
-               (!tab || !this.storage.local.tempContainers[tab.cookieStoreId] ||
-                (this.storage.local.tempContainers[tab.cookieStoreId])))) {
+               !this.mouseclick.linksClicked[request.url]) {
       debug('[webRequestOnBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
     } else if (this.mouseclick.unhandledLinksClicked[request.url]) {
@@ -214,8 +212,7 @@ class Request {
 
     let deletesHistoryContainer = false;
     if (tab &&
-        this.storage.local.tempContainers[tab.cookieStoreId] &&
-        this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory &&
+        this.container.isTemporary(tab.cookieStoreId, 'deletesHistory') &&
         this.storage.local.preferences.deletesHistory.containerMouseClicks === 'automatic') {
       deletesHistoryContainer = true;
     }
@@ -299,8 +296,7 @@ class Request {
     }
 
     if (macAssignment) {
-      if (tab && tab.cookieStoreId &&
-          this.storage.local.tempContainers[tab.cookieStoreId]) {
+      if (tab && tab.cookieStoreId && this.container.isTemporary(tab.cookieStoreId)) {
         debug('[handleNotClickedLink] mac assigned but we are already in a tmp container, we do nothing', request, tab, macAssignment);
         return;
       }
@@ -415,7 +411,7 @@ class Request {
       request,
       deletesHistory: this.storage.local.preferences.deletesHistory.containerIsolation === 'automatic'
     };
-    if (tab.url === 'about:newtab' || tab.url === 'about:blank' ||
+    if (tab.url === 'about:home' || tab.url === 'about:newtab' || tab.url === 'about:blank' ||
         this.storage.local.preferences.replaceTabs) {
       await this.container.reloadTabInTempContainer(params);
     } else {
@@ -427,8 +423,7 @@ class Request {
 
   async shouldIsolate(tab, request, openerCheck = false) {
     debug('[shouldIsolate]', tab, request);
-    if (this.storage.local.tempContainers[tab.cookieStoreId] &&
-        this.storage.local.tempContainers[tab.cookieStoreId].clean) {
+    if (this.container.isClean(tab.cookieStoreId)) {
       debug('[shouldIsolate] not isolating because the tmp container is still clean');
       return false;
     }
@@ -452,7 +447,7 @@ class Request {
       const openerTab = await browser.tabs.get(tab.openerTabId);
       debug('[shouldIsolate] we have to check the opener against the request', openerTab);
 
-      if (this.container.isPermanentContainer(tab.cookieStoreId) &&
+      if (this.container.isPermanent(tab.cookieStoreId) &&
           openerTab.cookieStoreId !== tab.cookieStoreId) {
         debug('[shouldIsolate] the tab loads a permanent container that is different from the openerTab, probaby explicitly selected in the context menu');
         return false;
@@ -472,7 +467,6 @@ class Request {
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
       if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
-        debug('[shouldIsolate] pattern not matching', tab.url, domainPattern);
         continue;
       }
 
@@ -522,7 +516,7 @@ class Request {
       debug('[shouldIsolateMac] mac isolation disabled');
       return false;
     }
-    if (this.container.isPermanentContainer(tab.cookieStoreId)) {
+    if (this.container.isPermanent(tab.cookieStoreId)) {
       debug('[shouldIsolateMac] mac isolating because request url is not assigned to the tabs permanent container');
       return true;
     }
@@ -533,19 +527,19 @@ class Request {
     debug('[checkIsolationPreferenceAgainstUrl]', preference, origin, target, tab);
     switch (preference) {
     case 'always':
-      debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "always"');
+      debug('[checkIsolationPreferenceAgainstUrl] isolating based on "always"');
       return true;
 
     case 'notsamedomainexact':
       if (target !== origin) {
-        debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "notsamedomainexact"');
+        debug('[checkIsolationPreferenceAgainstUrl] isolating based on "notsamedomainexact"');
         return true;
       }
       break;
 
     case 'notsamedomain':
       if (!this.utils.sameDomain(origin, target)) {
-        debug('[checkIsolationPreferenceAgainstUrl] isolating based on global "notsamedomain"');
+        debug('[checkIsolationPreferenceAgainstUrl] isolating based on "notsamedomain"');
         return true;
       }
       break;
@@ -563,6 +557,16 @@ class Request {
       return false;
     }
 
+    if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
+      debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
+      return false;
+    }
+
+    if (this.container.isClean(tab.cookieStoreId)) {
+      debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
+      return false;
+    }
+
     let reopen = false;
     debug('[maybeAlwaysOpenInTemporaryContainer]',
       tab, request);
@@ -575,49 +579,34 @@ class Request {
       const preferences = this.storage.local.preferences.isolation.domain[domainPattern].always;
       debug('[maybeAlwaysOpenInTemporaryContainer] found pattern for incoming request url', domainPattern, preferences);
       if (preferences.action === 'disabled') {
-        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because always disabled');
-        break;
-      }
-      if (this.storage.local.tempContainers[tab.cookieStoreId] &&
-          this.storage.local.tempContainers[tab.cookieStoreId].clean) {
-        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
-        break;
+        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because "always" disabled');
+        continue;
       }
 
-      if (tab.cookieStoreId !== 'firefox-default' &&
-          !this.storage.local.tempContainers[tab.cookieStoreId] &&
-          (typeof preferences !== 'object' ||
-           preferences.allowedInPermanent)) {
-        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because not in tmp or default container and allowed to load in permanent container');
-        break;
+      if (preferences.allowedInPermanent && this.container.isPermanent(tab.cookieStoreId)) {
+        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because allowed to load in permanent container');
+        continue;
       }
 
-      if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
+      if (!this.container.isTemporary(tab.cookieStoreId)) {
         debug('[maybeAlwaysOpenInTemporaryContainer] reopening because not in a tmp container');
         reopen = true;
         break;
       }
 
-      if (tab.url === 'about:blank' && this.requestsSeen[request.requestId]) {
-        debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tab url is blank and we seen this request before, probably redirect');
-        break;
-      }
-
       if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
-        let openerMatches = false;
         if (tab.openerTabId) {
           const openerTab = await browser.tabs.get(tab.openerTabId);
-          if (!openerTab.url.startsWith('about:')) {
-            if (this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
-              openerMatches = true;
-            }
+          if (!openerTab.url.startsWith('about:') &&
+              !this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
+            debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the opener url doesnt match the pattern', openerTab.url, domainPattern);
+            reopen = true;
+            break;
           }
         }
-        if (!openerMatches) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', tab.url, domainPattern);
-          reopen = true;
-          break;
-        }
+        debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', tab.url, domainPattern);
+        reopen = true;
+        break;
       }
     }
 
@@ -634,7 +623,7 @@ class Request {
         request,
         deletesHistory
       };
-      if (tab.url === 'about:newtab' || tab.url === 'about:blank') {
+      if (tab.url === 'about:home' || tab.url === 'about:newtab' || tab.url === 'about:blank') {
         await this.container.reloadTabInTempContainer(params);
       } else {
         await this.container.createTabInTempContainer(params);

@@ -464,7 +464,7 @@ class Container {
   }
 
 
-  isPermanentContainer(cookieStoreId) {
+  isPermanent(cookieStoreId) {
     if (cookieStoreId !== 'firefox-default' && !this.storage.local.tempContainers[cookieStoreId]) {
       return true;
     }
@@ -523,6 +523,12 @@ class Container {
       url
     });
     await this.tabs.remove({id: tabId});
+  }
+
+
+  isClean(cookieStoreId) {
+    return this.storage.local.tempContainers[cookieStoreId] &&
+      this.storage.local.tempContainers[cookieStoreId].clean;
   }
 
 
