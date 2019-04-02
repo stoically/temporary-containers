@@ -3,8 +3,8 @@ class Request {
     this.background = background;
     this.canceledTabs = {};
     this.canceledRequests = {};
-    this.requestsSeen = {};
     this.requestIdUrlSeen = {};
+    this.cleanRequests = {};
   }
 
   async initialize() {
@@ -70,27 +70,16 @@ class Request {
 
 
   async _webRequestOnBeforeRequest(request) {
-    debug('[browser.webRequest.onBeforeRequest] incoming request', request);
+    debug('[_webRequestOnBeforeRequest] incoming request', request);
     if (request.tabId === -1) {
-      debug('[browser.webRequest.onBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
+      debug('[_webRequestOnBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
       return;
-    }
-
-    if (!this.requestsSeen[request.requestId]) {
-      this.requestsSeen[request.requestId] = true;
-      delay(300000).then(() => {
-        delete this.requestsSeen[request.requestId];
-      });
-    } else {
-      // we saw the requestId already, so this is a redirect
-      // which means we can mark the container as clean
-      this.container.markClean(request.tabId);
     }
 
     this.browseraction.removeBadge(request.tabId);
 
     if (this.shouldCancelRequest(request)) {
-      debug('[webRequestOnBeforeRequest] canceling', request);
+      debug('[_webRequestOnBeforeRequest] canceling', request);
       return { cancel: true };
     }
 
@@ -99,15 +88,15 @@ class Request {
       try {
         macAssignment = await this.mac.getAssignment(request.url);
       } catch (error) {
-        debug('[webRequestOnBeforeRequest] contacting mac failed, probably old version', error);
+        debug('[_webRequestOnBeforeRequest] contacting mac failed, probably old version', error);
       }
     }
     if (macAssignment) {
       if (macAssignment.neverAsk) {
-        debug('[webRequestOnBeforeRequest] mac neverask assigned, we do nothing', macAssignment);
+        debug('[_webRequestOnBeforeRequest] mac neverask assigned, we do nothing', macAssignment);
         return;
       } else {
-        debug('[webRequestOnBeforeRequest] mac assigned', macAssignment);
+        debug('[_webRequestOnBeforeRequest] mac assigned', macAssignment);
       }
     }
 
@@ -118,13 +107,13 @@ class Request {
           url: request.url
         });
         if (typeof hostmap === 'object' && hostmap.cookieStoreId && hostmap.enabled) {
-          debug('[webRequestOnBeforeRequest] assigned with containerise we do nothing', hostmap);
+          debug('[_webRequestOnBeforeRequest] assigned with containerise we do nothing', hostmap);
           return;
         } else {
-          debug('[webRequestOnBeforeRequest] not assigned with containerise', hostmap);
+          debug('[_webRequestOnBeforeRequest] not assigned with containerise', hostmap);
         }
       } catch (error) {
-        debug('[webRequestOnBeforeRequest] contacting containerise failed, probably old version', error);
+        debug('[_webRequestOnBeforeRequest] contacting containerise failed, probably old version', error);
       }
     }
 
@@ -134,13 +123,13 @@ class Request {
       if (tab && tab.openerTabId) {
         openerTab = await browser.tabs.get(tab.openerTabId);
       }
-      debug('[webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab, openerTab);
+      debug('[_webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab, openerTab);
     } catch (error) {
-      debug('[webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
+      debug('[_webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
     }
 
     if (tab && tab.incognito) {
-      debug('[webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
+      debug('[_webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
       return;
     }
 
@@ -155,7 +144,7 @@ class Request {
         if (RE.test(parsedUrl.hostname) ||
            (parsedTabUrl && RE.test(parsedTabUrl.hostname)) ||
            (parsedOpenerTabUrl && RE.test(parsedOpenerTabUrl.hostname))) {
-          debug('[webRequestOnBeforeRequest] handled by active container addon, ignoring', containWhat, RE, request.url);
+          debug('[_webRequestOnBeforeRequest] handled by active container addon, ignoring', containWhat, RE, request.url);
           return;
         }
       }
@@ -166,38 +155,38 @@ class Request {
     if ((request.url.startsWith('http://addons.mozilla.org') ||
         request.url.startsWith('https://addons.mozilla.org')) &&
         this.storage.local.preferences.ignoreRequestsToAMO) {
-      debug('[webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
+      debug('[_webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
       return;
     }
 
     if (request.url.startsWith('https://getpocket.com') &&
         this.storage.local.preferences.ignoreRequestsToPocket) {
-      debug('[webRequestOnBeforeRequest] we are ignoring requests to getpocket.com because of #52', request);
+      debug('[_webRequestOnBeforeRequest] we are ignoring requests to getpocket.com because of #52', request);
       return;
     }
 
     const isolated = !macAssignment && await this.maybeIsolate(tab, request, openerTab);
     if (isolated) {
-      debug('[webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
+      debug('[_webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
       return isolated;
     }
 
     const alwaysOpenIn = !macAssignment &&
       await this.maybeAlwaysOpenInTemporaryContainer(tab, request, openerTab);
     if (alwaysOpenIn) {
-      debug('[webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
+      debug('[_webRequestOnBeforeRequest] we decided to always open in new tmpcontainer', request);
       return alwaysOpenIn;
     } else if (!this.storage.local.preferences.automaticMode.active &&
                !this.mouseclick.linksClicked[request.url]) {
-      debug('[webRequestOnBeforeRequest] automatic mode disabled and no link clicked', request);
+      debug('[_webRequestOnBeforeRequest] automatic mode disabled and no link clicked', request);
       return;
     } else if (this.mouseclick.unhandledLinksClicked[request.url]) {
-      debug('[webRequestOnBeforeRequest] we saw an unhandled click for that url', request);
+      debug('[_webRequestOnBeforeRequest] we saw an unhandled click for that url', request);
       return;
     }
 
     if (this.container.noContainerTabs[request.tabId]) {
-      debug('[webRequestOnBeforeRequest] no container tab, we ignore that', tab);
+      debug('[_webRequestOnBeforeRequest] no container tab, we ignore that', tab);
       return;
     }
 
@@ -565,6 +554,17 @@ class Request {
 
     if (this.container.isClean(tab.cookieStoreId)) {
       debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
+      if (!this.cleanRequests[request.requestId]) {
+        this.cleanRequests[request.requestId] = true;
+        delay(300000).then(() => {
+          delete this.cleanRequests[request.requestId];
+        });
+      }
+      return false;
+    }
+
+    if (this.cleanRequests[request.requestId]) {
+      debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because of clean requests, redirect', request);
       return false;
     }
 
