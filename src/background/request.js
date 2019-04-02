@@ -5,6 +5,7 @@ class Request {
     this.canceledRequests = {};
     this.requestIdUrlSeen = {};
     this.cleanRequests = {};
+    this.lastSeenRequestUrl = {};
   }
 
   async initialize() {
@@ -51,6 +52,12 @@ class Request {
 
     const returnVal = await this._webRequestOnBeforeRequest(request);
 
+    if (!this.lastSeenRequestUrl[request.requestId]) {
+      delay(300000).then(() => {
+        delete this.lastSeenRequestUrl[request.requestId];
+      });
+    }
+    this.lastSeenRequestUrl[request.requestId] = request.url;
 
     if (returnVal && returnVal.cancel) {
       this.cancelRequest(request);
@@ -435,7 +442,7 @@ class Request {
     }
 
     if ((tab.url === 'about:blank' || tab.url === 'about:newtab' || tab.url === 'about:home') && !openerTab) {
-      debug('[shouldIsolate] not isolating because the tab url is blank/newtab/home and no openerTabId');
+      debug('[shouldIsolate] not isolating because the tab url is blank/newtab/home and no openerTab');
       return false;
     }
 
@@ -457,7 +464,10 @@ class Request {
       return false;
     }
 
-    const parsedTabURL = new URL(tab.url);
+    const url = this.lastSeenRequestUrl[request.requestId] &&
+      this.lastSeenRequestUrl[request.requestId] !== tab.url ?
+      this.lastSeenRequestUrl[request.requestId] : tab.url;
+    const parsedURL = new URL(url);
     const parsedRequestURL = new URL(request.url);
 
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
@@ -489,13 +499,13 @@ class Request {
       }
 
       return await this.checkIsolationPreferenceAgainstUrl(
-        navigationPreferences.action, parsedTabURL.hostname, parsedRequestURL.hostname, tab
+        navigationPreferences.action, parsedURL.hostname, parsedRequestURL.hostname, tab
       );
     }
 
     if (await this.checkIsolationPreferenceAgainstUrl(
       this.storage.local.preferences.isolation.global.navigation.action,
-      parsedTabURL.hostname,
+      parsedURL.hostname,
       parsedRequestURL.hostname,
       tab
     )) {

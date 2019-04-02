@@ -311,7 +311,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
               await navigateTo('http://notexample.com');
             });
 
-            it.skip('should not open two Temporary Containers', async () => {
+            it('should not open two Temporary Containers', async () => {
               browser.tabs.create.should.have.been.calledOnce;
             });
           });
