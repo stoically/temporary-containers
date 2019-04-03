@@ -606,17 +606,17 @@ class Request {
       }
 
       if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
-        if (openerTab) {
-          if (!openerTab.url.startsWith('about:') &&
-              !this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
-            debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the opener url doesnt match the pattern', openerTab.url, domainPattern);
-            reopen = true;
-            break;
-          }
+        let openerMatches = false;
+        if (openerTab && !openerTab.url.startsWith('about:') &&
+            this.isolation.matchDomainPattern(openerTab.url, domainPattern)) {
+          openerMatches = true;
+          debug('[maybeAlwaysOpenInTemporaryContainer] opener tab url matched the pattern', openerTab.url, domainPattern);
         }
-        debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab url doesnt match the pattern', tab.url, domainPattern);
-        reopen = true;
-        break;
+        if (!openerMatches) {
+          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab/opener url doesnt match the pattern', tab.url, openerTab, domainPattern);
+          reopen = true;
+          break;
+        }
       }
     }
 

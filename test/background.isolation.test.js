@@ -361,6 +361,53 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
         });
       });
+
+
+      describe('Always open in', () => {
+        beforeEach(async () => {
+          const background = await loadBareBackground(preferences, {apiFake: true});
+          await background.initialize();
+          const url = 'https://example.com';
+          if (originContainerType === 'permanent') {
+            tab = await browser.tabs._create({
+              active: true,
+              url,
+              cookieStoreId: 'firefox-container-1'
+            });
+          } else {
+            tab = await background.container.createTabInTempContainer({url});
+            browser.tabs.create.resetHistory();
+          }
+        });
+
+        it('should not open in a new temporary container if the opener tab url belonging to the request matches the pattern', async () => {
+          background.storage.local.preferences.isolation.domain = {
+            'example.com': {
+              always: {
+                action: 'enabled',
+                allowedInPermanent: false
+              }
+            }
+          };
+
+          await browser.tabs._create({
+            url: 'https://example.com',
+            openerTabId: tab.id,
+            cookieStoreId: tab.cookieStoreId
+          });
+
+          switch (originContainerType) {
+          case 'tmp':
+            browser.tabs.create.should.not.have.been.called;
+            break;
+
+          case 'permanent':
+            browser.tabs.create.should.have.been.calledOnce;
+            break;
+          }
+
+        });
+      });
     });});
   });});
 });});
