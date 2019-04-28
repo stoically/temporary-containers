@@ -420,3 +420,52 @@ window.formatBytes = (bytes, decimals) => {
     i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
 };
+
+window.exportPreferencesButton = async () => {
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(await exportPreferences());
+  a.setAttribute('download', 'temporary_containers_preferences.json');
+  a.setAttribute('type', 'text/plain');
+  a.dispatchEvent(new MouseEvent('click'));
+};
+
+window.exportPreferences = async () => {
+  const storage = await browser.storage.local.get('preferences');
+  return JSON.stringify(storage.preferences, null, 2);
+};
+
+window.importPreferencesButton = async (e) => {
+  await importPreferences(e.target.files[0]);
+  $(e.target).closest('form').get(0).reset();
+};
+
+window.importPreferences = async (file) => {
+  const reader = new FileReader();
+  reader.readAsText(file, 'UTF-8');
+  reader.onload = async (e) => {
+    let preferences;
+    try {
+      preferences = JSON.parse(e.target.result);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('error while importing preferences', error);
+      showError('Error while importing preferences!');
+    }
+    try {
+      await browser.runtime.sendMessage({
+        method: 'savePreferences',
+        payload: {
+          preferences
+        }
+      });
+
+      showMessage('Preferences imported.');
+
+      initialize();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('error while importing preferences', error);
+      showError('Error while importing preferences!');
+    }
+  };
+};

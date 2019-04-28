@@ -176,6 +176,24 @@ const initialize = async () => {
       inline: true
     });
 
+    const exportToolTip =
+        '<div style="width:500px;">' +
+        'Export your preferences into a JSON file</div>';
+
+    $('#exportPreferences').popup({
+      html: exportToolTip,
+      inline: true
+    });
+
+    const importToolTip =
+        '<div style="width:500px;">' +
+        'Import your preferences from a JSON file</div>';
+
+    $('#importPreferences').popup({
+      html: importToolTip,
+      inline: true
+    });
+
     const historyPermission = await browser.permissions.contains({permissions: ['history']});
     if (historyPermission) {
       $('#deletesHistoryContainerWarningRead')
@@ -211,6 +229,8 @@ $('#resetStatistics').on('click', resetStatistics);
 $('#deletesHistoryStatisticsField').on('click', showDeletesHistoryStatistics);
 $('#deletesHistoryContainerWarningRead').on('click', requestHistoryPermissions);
 $('#notifications').on('click', requestNotificationsPermissions);
+$('#exportPreferences').on('click', exportPreferencesButton);
+$('#importPreferences').on('change', importPreferencesButton);
 
 $('#resetStorage').on('click', async (event) => {
   event.preventDefault();
