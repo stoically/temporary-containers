@@ -431,7 +431,12 @@ window.exportPreferencesButton = async () => {
 
 window.exportPreferences = async () => {
   const storage = await browser.storage.local.get('preferences');
-  return JSON.stringify(storage.preferences, null, 2);
+  const exportedPreferences = {
+    version: browser.runtime.getManifest().version,
+    date: Date.now(),
+    preferences: storage.preferences,
+  };
+  return JSON.stringify(exportedPreferences, null, 2);
 };
 
 window.importPreferencesButton = async (e) => {
@@ -443,19 +448,15 @@ window.importPreferences = async (file) => {
   const reader = new FileReader();
   reader.readAsText(file, 'UTF-8');
   reader.onload = async (e) => {
-    let preferences;
     try {
-      preferences = JSON.parse(e.target.result);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('error while importing preferences', error);
-      showError('Error while importing preferences!');
-    }
-    try {
+      const importedPreferences = JSON.parse(e.target.result);
+
       await browser.runtime.sendMessage({
         method: 'savePreferences',
         payload: {
-          preferences
+          preferences: importedPreferences.preferences,
+          migrate: true,
+          previousVersion: importedPreferences.version,
         }
       });
 
