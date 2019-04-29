@@ -421,7 +421,8 @@ window.formatBytes = (bytes, decimals) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
 };
 
-window.exportPreferencesButton = async () => {
+window.exportPreferencesButton = async (e) => {
+  e.preventDefault();
   const date = new Date();
   const dateString = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
   const timeString = [date.getHours(), date.getMinutes(), date.getSeconds()].join('.');
@@ -443,6 +444,7 @@ window.exportPreferences = async () => {
 };
 
 window.importPreferencesButton = async (e) => {
+  e.preventDefault();
   await importPreferences(e.target.files[0]);
   $(e.target).closest('form').get(0).reset();
 };
