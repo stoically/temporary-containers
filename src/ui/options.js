@@ -187,7 +187,7 @@ const initialize = async () => {
 
     const importToolTip =
         '<div style="width:500px;">' +
-        'Import your preferences from a JSON file</div>';
+        'Import your preferences from a JSON file. No confirmation</div>';
 
     $('#importPreferences').popup({
       html: importToolTip,
