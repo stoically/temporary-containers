@@ -25,6 +25,7 @@
         <a class="item" data-tab="isolation">Isolation</a>
         <a class="item" data-tab="advanced">Advanced</a>
         <a class="item" data-tab="statistics">Statistics</a>
+        <a class="item" data-tab="export_import">Export/Import</a>
       </div>
       <div class="ui tab segment" data-tab="general">
         <form class="ui form">
@@ -119,7 +120,6 @@
           <div class="field">
             <button id="saveContainerPreferences" class="ui button primary">Save</button>
           </div>
-          <!--<iframe src="backup.html"></iframe>-->
         </form>
       </div>
       <div class="ui tab segment" data-tab="isolation">
@@ -701,6 +701,17 @@
           <div class="field">
             <button id="saveStatisticsPreferences" class="ui button primary">Save</button>
             <button id="resetStatistics" class="ui button negative primary" data-tooltip="No confirmation">Reset Statistics</button>
+          </div>
+        </form>
+      </div>
+      <div class="ui tab segment" data-tab="export_import">
+        <form class="ui form">
+          <div class="field">
+            <button id="exportPreferences" class="ui button primary">Export Preferences</button>
+          </div>
+          <div class="field">
+            <label>Import Preferences</label>
+            <input id="importPreferences" type="file" name="Import Preferences">
           </div>
         </form>
       </div>

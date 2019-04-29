@@ -45,6 +45,9 @@ class Runtime {
       }
       this.storage.local.preferences = message.payload.preferences;
       await this.storage.persist();
+      if (message.payload.migrate) {
+        await this.migration.onUpdate({previousVersion: message.payload.previousVersion});
+      }
       break;
 
     case 'resetStatistics':
