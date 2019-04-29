@@ -44,10 +44,10 @@ class Runtime {
         this.permissions.notifications = true;
       }
       this.storage.local.preferences = message.payload.preferences;
-      if(message.payload.migrate) {
+      await this.storage.persist();
+      if (message.payload.migrate) {
         this.migration.onUpdate({previousVersion: message.payload.previousVersion});
       }
-      await this.storage.persist();
       break;
 
     case 'resetStatistics':
