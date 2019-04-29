@@ -422,9 +422,12 @@ window.formatBytes = (bytes, decimals) => {
 };
 
 window.exportPreferencesButton = async () => {
+  const date = new Date();
+  const dateString = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
+  const timeString = [date.getHours(), date.getMinutes(), date.getSeconds()].join('.');
   const a = document.createElement('a');
   a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(await exportPreferences());
-  a.setAttribute('download', 'temporary_containers_preferences.json');
+  a.setAttribute('download', `temporary_containers_preferences_${dateString}_${timeString}.json`);
   a.setAttribute('type', 'text/plain');
   a.dispatchEvent(new MouseEvent('click'));
 };
