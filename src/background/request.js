@@ -107,6 +107,8 @@ class Request {
       }
     }
 
+    const parsedUrl = new URL(request.url);
+
     if (this.management.addons['containerise@kinte.sh'].enabled) {
       try {
         const hostmap = await browser.runtime.sendMessage('containerise@kinte.sh', {
@@ -121,6 +123,23 @@ class Request {
         }
       } catch (error) {
         debug('[_webRequestOnBeforeRequest] contacting containerise failed, probably old version', error);
+      }
+    }
+
+    if (this.management.addons['block_outside_container@jspenguin.org'].enabled) {
+      try {
+        let response = await browser.runtime.sendMessage('block_outside_container@jspenguin.org', {
+          action: 'rule_exists',
+          domain: parsedUrl.hostname,
+        });
+        if (response.rule_exists) {
+          debug('[_webRequestOnBeforeRequest] assigned with block_outside_container we do nothing');
+          return;
+        } else {
+          debug('[_webRequestOnBeforeRequest] not assigned with block_outside_container');
+        }
+      } catch (error) {
+        debug('[_webRequestOnBeforeRequest] contacting block_outside_container failed', error);
       }
     }
 
@@ -140,7 +159,6 @@ class Request {
       return;
     }
 
-    const parsedUrl = new URL(request.url);
     const parsedTabUrl = tab && /^https?:/.test(tab.url) && new URL(tab.url);
     const parsedOpenerTabUrl = openerTab && /^https?:/.test(openerTab.url) && new URL(openerTab.url);
     for (const containWhat of ['@contain-facebook', '@contain-google', '@contain-twitter', '@contain-youtube']) {

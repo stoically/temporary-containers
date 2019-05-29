@@ -69,6 +69,11 @@ class Management {
         enabled: false,
         version: false
       },
+      'block_outside_container@jspenguin.org': {
+        name: 'Block sites outside container',
+        enabled: false,
+        version: false,
+      },
       '@contain-facebook': {
         name: 'Facebook Container',
         enabled: false,
