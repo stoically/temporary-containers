@@ -9,9 +9,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       const cookie = {
         domain: 'domain',
         expirationDate: 123,
+        firstPartyDomain: 'firstPartyDomain',
         httpOnly: 'true',
         name: 'name',
         path: '/foo/bar',
+        sameSite: 'sameSite',
         secure: 'true',
         url: 'https://example.com',
         value: 'value'
@@ -30,9 +32,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.cookies.set.should.have.been.calledWith({
         domain: 'domain',
         expirationDate: 123,
+        firstPartyDomain: 'firstPartyDomain',
         httpOnly: true,
         name: 'name',
         path: '/foo/bar',
+        sameSite: 'sameSite',
         secure: true,
         url: 'https://example.com',
         value: 'value',
