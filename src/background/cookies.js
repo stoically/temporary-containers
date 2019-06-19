@@ -61,12 +61,14 @@ class Cookies {
           const setCookie = {
             domain: cookie.domain || undefined,
             expirationDate: cookie.expirationDate ? parseInt(cookie.expirationDate) : undefined,
+            firstPartyDomain: cookie.firstPartyDomain || undefined,
             httpOnly: cookie.httpOnly === '' ? undefined : (cookie.httpOnly === 'true' ? true : false),
             name: cookie.name,
             path: cookie.path || undefined,
             secure: cookie.secure === '' ? undefined : (cookie.secure === 'true' ? true : false),
             url: cookie.url,
             value: cookie.value || undefined,
+            sameSite: cookie.sameSite || undefined,
             storeId: tab.cookieStoreId
           };
           debug('[maybeSetCookies] setting cookie', cookie, setCookie);

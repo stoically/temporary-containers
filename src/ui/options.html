@@ -471,6 +471,10 @@
               <label>expirationDate</label>
               <input id="setCookiesDomainExpirationDate" type="text">
             </div>
+            <div id="setCookiesFirstPartyDomainDiv" class="field">
+              <label>firstPartyDomain</label>
+              <input id="setCookiesFirstPartyDomain" type="text">
+            </div>
             <div class="field">
               <label>httpOnly</label>
               <select id="setCookiesDomainHttpOnly" class="ui fluid dropdown">
@@ -486,6 +490,15 @@
             <div id="setCookiesDomainPathDiv" class="field">
               <label>path</label>
               <input id="setCookiesDomainPath" type="text">
+            </div>
+            <div class="field">
+              <label>sameSite</label>
+              <select id="setCookiesSameSite" class="ui fluid dropdown">
+                <option value="">sameSite</option>
+                <option value="no_restriction">no_restriction</option>
+                <option value="lax">lax</option>
+                <option value="strict">strict</option>
+              </select>
             </div>
             <div class="field">
               <label>secure</label>
