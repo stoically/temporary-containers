@@ -81,11 +81,18 @@ class Cookies {
           }
 
           // check if we're allowed to send the cookie with the current request
-          const cookieAllowed = await browser.cookies.get({
-            name: cookie.name,
-            url: details.url,
-            storeId: tab.cookieStoreId
-          });
+          let cookieAllowed;
+          try {
+            cookieAllowed = await browser.cookies.get({
+              name: cookie.name,
+              url: details.url,
+              storeId: tab.cookieStoreId,
+              firstPartyDomain: cookie.firstPartyDomain || undefined,
+            });
+          } catch (error) {
+            cookieAllowed = false;
+          }
+
           debug('[maybeAddCookiesToHeader] checked if allowed to add cookie to header', cookieAllowed);
 
           if (cookieAllowed) {

@@ -5,7 +5,7 @@ class Isolation {
       const regexp = domainPattern.match(/^\/(.*)\/([gimsuy]+)?$/);
       try {
         return (new RegExp(regexp[1], regexp[2])).test(url);
-      } catch(error) {
+      } catch (error) {
         return false;
       }
     } else {
