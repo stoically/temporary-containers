@@ -64,6 +64,7 @@ const buildWebExtension = async (build = {}) => {
     webExtension.background.browser.storage.local.get.resolves({});
     webExtension.background.browser.contextualIdentities.get.resolves({});
     webExtension.background.browser.cookies.getAll.resolves([]);
+    webExtension.background.browser.runtime.getBrowserInfo.resolves({version: 67});
   }
   webExtension.background.browser.management.getAll.resolves([{
     id: '@testpilot-containers',

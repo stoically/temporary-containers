@@ -70,6 +70,19 @@ const initialize = async () => {
       showDeletesHistoryStatistics();
     };
 
+    if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
+      const toolbarOption = document.createElement('option');
+      toolbarOption.value = 'toolbar';
+      toolbarOption.text = 'toolbar (black/gray)';
+      document.querySelector('#containerColor').add(toolbarOption);
+
+      const fenceOption = document.createElement('option');
+      fenceOption.value = 'fence';
+      fenceOption.text = 'fence';
+      document.querySelector('#containerIcon').add(fenceOption);
+    }
+
+
     const storage = await browser.storage.local.get('preferences');
     if (!storage.preferences || !Object.keys(storage.preferences).length) {
       showPreferencesError();

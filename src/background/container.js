@@ -10,7 +10,6 @@ class Container {
       'red',       // #FF613D
       'pink',      // #FF4BDA
       'purple',    // #AF51F5
-      'toolbar',
     ];
 
     this.containerIcons = [
@@ -26,7 +25,6 @@ class Container {
       'pet',
       'tree',
       'chill',
-      'fence',
     ];
 
     this.tabContainerMap = {};
@@ -45,13 +43,18 @@ class Container {
   }
 
 
-  initialize() {
+  async initialize() {
     this.storage = this.background.storage;
     this.request = this.background.request;
     this.mouseclick = this.background.mouseclick;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
     this.statistics = this.background.statistics;
+
+    if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
+      this.containerColors.push('toolbar');
+      this.containerIcons.push('fence');
+    }
 
     setInterval(() => {
       debug('[interval] container removal interval');
