@@ -10,6 +10,7 @@ class Container {
       'red',       // #FF613D
       'pink',      // #FF4BDA
       'purple',    // #AF51F5
+      'toolbar',
     ];
 
     this.containerIcons = [
@@ -25,6 +26,7 @@ class Container {
       'pet',
       'tree',
       'chill',
+      'fence',
     ];
 
     this.tabContainerMap = {};
