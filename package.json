@@ -44,7 +44,7 @@
     "sinon-chai": "^3.3.0",
     "web-ext": "^3.0.0",
     "webextensions-geckodriver": "^0.5.1",
-    "webextensions-jsdom": "^0.15.2"
+    "webextensions-jsdom": "^0.15.3"
   },
   "private": true,
   "nyc": {
