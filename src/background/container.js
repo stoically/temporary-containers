@@ -134,6 +134,13 @@ class Container {
         if (active === false) {
           newTabOptions.active = false;
         }
+        if (!newTabOptions.active) {
+          if (!this.tabs.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT]) {
+            this.tabs.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] = newTabOptions.index;
+          } else {
+            newTabOptions.index = ++this.tabs.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT];
+          }
+        }
 
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);
         const newTab = await browser.tabs.create(newTabOptions);

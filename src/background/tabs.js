@@ -3,6 +3,7 @@ class Tabs {
     this.background = background;
 
     this.creatingInSameContainer = false;
+    this.lastInactiveIndex = {};
   }
 
 
@@ -44,6 +45,10 @@ class Tabs {
       debug('[onCreated] tab incognito, we ignore that', tab);
       browser.browserAction.disable(tab.id);
       return;
+    }
+    if (!tab.active && this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] &&
+      this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] > tab.index) {
+      browser.tabs.move(tab.id, {index: this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT]++});
     }
     if (tab && tab.cookieStoreId && !this.container.tabContainerMap[tab.id] &&
         this.storage.local.tempContainers[tab.cookieStoreId]) {
@@ -106,6 +111,7 @@ class Tabs {
   async onActivated(activeInfo) {
     debug('[onActivated]', activeInfo);
     this.contextmenu.remove();
+    this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] = false;
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     if (!activatedTab.incognito) {
       this.contextmenu.add();
