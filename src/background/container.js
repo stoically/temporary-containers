@@ -335,7 +335,7 @@ class Container {
 
 
   async tryToRemove(cookieStoreId) {
-    if (await this.tabs.onlyIncognitoOrNone()) {
+    if (await this.tabs.onlyIncognitoNoneOrSessionRestore()) {
       debug('[tryToRemove] canceling, only incognito or no tabs');
       return false;
     }
@@ -433,8 +433,8 @@ class Container {
       debug('[cleanup] canceling, no containers at all');
       return;
     }
-    if (await this.tabs.onlyIncognitoOrNone()) {
-      debug('[cleanup] canceling, only incognito or no tabs');
+    if (await this.tabs.onlyIncognitoNoneOrSessionRestore()) {
+      debug('[cleanup] canceling, only incognito, no tabs or sessionrestore tab');
       return;
     }
 

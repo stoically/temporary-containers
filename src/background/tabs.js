@@ -186,14 +186,14 @@ class Tabs {
   }
 
 
-  async onlyIncognitoOrNone() {
-    // don't do a cleanup if there are none or only incognito-tabs
+  async onlyIncognitoNoneOrSessionRestore() {
+    // don't do a cleanup if there are only incognito-tabs, no tabs, or a sessionrestore tab
     try {
       const tabs = await browser.tabs.query({});
       if (!tabs.length) {
         return true;
       }
-      if (!tabs.filter(tab => !tab.incognito).length) {
+      if (tabs.filter(tab => tab.incognito || tab.url === 'about:sessionrestore').length) {
         return true;
       }
       return false;
