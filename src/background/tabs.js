@@ -3,7 +3,6 @@ class Tabs {
     this.background = background;
 
     this.creatingInSameContainer = false;
-    this.lastInactiveIndex = {};
   }
 
 
@@ -46,9 +45,20 @@ class Tabs {
       browser.browserAction.disable(tab.id);
       return;
     }
-    if (!tab.active && this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] &&
-      this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] > tab.index) {
-      browser.tabs.move(tab.id, {index: this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT]++});
+    if (!tab.active && this.container.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] &&
+      this.container.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] !== tab.id) {
+      try {
+        const lastCreatedInactiveTab = await browser.tabs.get(
+          this.container.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
+        );
+        if (lastCreatedInactiveTab.index > tab.index) {
+          debug('[onCreated] moving tab', lastCreatedInactiveTab, tab);
+          browser.tabs.move(tab.id, {index: lastCreatedInactiveTab.index});
+          this.container.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] = tab.id;
+        }
+      } catch (error) {
+        debug('[onCreated] getting lastCreatedInactiveTab failed', error);
+      }
     }
     if (tab && tab.cookieStoreId && !this.container.tabContainerMap[tab.id] &&
         this.storage.local.tempContainers[tab.cookieStoreId]) {
@@ -60,7 +70,7 @@ class Tabs {
 
 
   async onUpdated(tabId, changeInfo, tab) {
-    debug('[onUpdated] tab updated', tab);
+    debug('[onUpdated] tab updated', tab, changeInfo);
     if (tab.incognito) {
       debug('[onUpdated] tab incognito, we ignore that');
       browser.browserAction.disable(tab.id);
@@ -98,6 +108,7 @@ class Tabs {
 
 
   async onRemoved(tabId) {
+    debug('[onRemoved]', tabId);
     if (this.container.noContainerTabs[tabId]) {
       delete this.container.noContainerTabs[tabId];
     }
@@ -111,7 +122,8 @@ class Tabs {
   async onActivated(activeInfo) {
     debug('[onActivated]', activeInfo);
     this.contextmenu.remove();
-    this.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] = false;
+
+    this.container.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] = false;
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     if (!activatedTab.incognito) {
       this.contextmenu.add();

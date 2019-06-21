@@ -40,6 +40,7 @@ class Container {
     this.removeContainerDelayQueue = new PQueue();
     this.removeContainerQueueMaybeDone = this.removeContainerQueueMaybeDone.bind(this);
     this.noContainerTabs = {};
+    this.lastCreatedInactiveTab = {};
   }
 
 
@@ -122,7 +123,21 @@ class Container {
         if (tab) {
           newTabOptions.active = tab.active;
           if (tab.index >= 0) {
-            newTabOptions.index = tab.index + 1;
+            if (!tab.active && this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]) {
+              debug('[createTabInTempContainer] lastCreatedInactiveTab id', this.lastCreatedInactiveTab);
+              try {
+                const lastCreatedInactiveTab = await browser.tabs.get(
+                  this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
+                );
+                debug('[createTabInTempContainer] lastCreatedInactiveTab', lastCreatedInactiveTab);
+                newTabOptions.index = lastCreatedInactiveTab.index + 1;
+              } catch (error) {
+                debug('[createTabInTempContainer] failed to get lastCreatedInactiveTab', error);
+                newTabOptions.index = tab.index + 1;
+              }
+            } else {
+              newTabOptions.index = tab.index + 1;
+            }
           }
           if (tab.pinned && !dontPin) {
             newTabOptions.pinned = true;
@@ -134,16 +149,12 @@ class Container {
         if (active === false) {
           newTabOptions.active = false;
         }
-        if (!newTabOptions.active) {
-          if (!this.tabs.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT]) {
-            this.tabs.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT] = newTabOptions.index;
-          } else {
-            newTabOptions.index = ++this.tabs.lastInactiveIndex[browser.windows.WINDOW_ID_CURRENT];
-          }
-        }
 
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);
         const newTab = await browser.tabs.create(newTabOptions);
+        if (!newTabOptions.active) {
+          this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] = newTab.id;
+        }
         debug('[createTabInTempContainer] new tab in temp container created', newTab);
         if (url) {
           this.urlCreatedContainer[url] = contextualIdentity.cookieStoreId;
