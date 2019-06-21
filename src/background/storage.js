@@ -59,7 +59,7 @@ class Storage {
       closeRedirectorTabs: {
         active: false,
         delay: 2000,
-        domains: ['t.co']
+        domains: ['t.co', 'outgoing.prod.mozaws.net']
       },
       ignoreRequestsToAMO: true,
       ignoreRequestsToPocket: true,
