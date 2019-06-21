@@ -8,12 +8,6 @@
     <link rel="stylesheet" href="semantic/semantic.min.css">
     <style>
       body { padding: 25px; }
-      iframe {
-        margin: 0;
-        border: 0;
-        width: 100%;
-        height: 50px;
-      }
       .hidden { display: none; }
     </style>
   </head>
@@ -393,10 +387,17 @@
               </div>
             </div>
             <div class="field">
-              <label>Creating new Temporary Containers in case of Isolation and Left Mouse Clicks</label>
+              <label>Creating new Temporary Containers in case of Isolation</label>
               <div class="ui checkbox">
                 <input type="checkbox" id="replaceTabs">
                 <label>Instead of creating a new Tab replace the currently active Tab</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>Redirector Tabs</label>
+              <div class="ui checkbox">
+                <input type="checkbox" id="closeRedirectorTabs">
+                <label>Automatically close left-over redirector tabs after 2 seconds: <strong>t.co</strong> (Twitter)</label>
               </div>
             </div>
             <div class="field">

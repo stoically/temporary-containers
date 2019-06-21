@@ -61,12 +61,32 @@ class Tabs {
       browser.browserAction.disable(tab.id);
       return;
     }
+    if (changeInfo.url) {
+      debug('[onUpdated] url changed', changeInfo);
+      await this.container.maybeAddHistory(tab, changeInfo.url);
+    }
+    if (this.storage.local.preferences.closeRedirectorTabs.active &&
+      changeInfo.status && changeInfo.status === 'complete') {
+      const url = new URL(tab.url);
+      if (this.storage.local.preferences.closeRedirectorTabs.domains.includes(url.hostname)) {
+        delay(this.storage.local.preferences.closeRedirectorTabs.delay).then(async () => {
+          try {
+            const tab = await browser.tabs.get(tabId);
+            const url = new URL(tab.url);
+            if (this.storage.local.preferences.closeRedirectorTabs.domains.includes(url.hostname)) {
+              debug('[onUpdated] removing redirector tab', changeInfo, tab);
+              browser.tabs.remove(tabId);
+            }
+          } catch (error) {
+            debug('[onUpdate] error while requesting tab info', error);
+          }
+        });
+      }
+    }
     if (!changeInfo.url) {
       debug('[onUpdated] url didnt change, not relevant', tabId, changeInfo);
       return;
     }
-    debug('[onUpdated] url changed', changeInfo);
-    await this.container.maybeAddHistory(tab, changeInfo.url);
     await this.pageaction.showOrHide(tab);
     await this.maybeReloadInTempContainer(tab, changeInfo);
   }

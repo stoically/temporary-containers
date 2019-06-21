@@ -56,6 +56,11 @@ class Storage {
         AltX: false
       },
       replaceTabs: false,
+      closeRedirectorTabs: {
+        active: false,
+        delay: 2000,
+        domains: ['t.co']
+      },
       ignoreRequestsToAMO: true,
       ignoreRequestsToPocket: true,
       cookies: {
