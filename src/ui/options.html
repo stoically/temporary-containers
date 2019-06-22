@@ -145,7 +145,7 @@
               </div>
               <div class="title">
                 <h4><i class="dropdown icon"></i>
-                  Mouse clicks on Links should open new Temporary Containers
+                  Mouse clicks on links should open new Temporary Containers
                 </h4>
               </div>
               <div class="ui segment content">
@@ -190,6 +190,27 @@
                   </div>
                 </div>
               </div>
+              <div class="title">
+                  <h4><i class="dropdown icon"></i>
+                    Exclude domains from Isolation
+                  </h4>
+                </div>
+                <div class="ui segment content">
+                  <div class="field">
+                    <div id="isolationGlobalExcludeDomainPatternDiv" class="field">
+                      <label>Domain Pattern</label>
+                      <input id="isolationGlobalExcludeDomainPattern" type="text">
+                    </div>
+                    <div class="field">
+                      <button id="isolationGlobalExcludeDomainSave" class="ui button primary">Exclude</button>
+                    </div>
+                    <div>
+                      <h3>Excluded domains</h3>
+                      <div class="ui bulleted list" id="isolationGlobalExcludedDomains">
+                      </div>
+                    </div>
+                  </div>
+                </div>
             </div>
             <br>
             <div class="field">
@@ -244,7 +265,7 @@
               </div>
               <div class="title">
                 <h4><i class="dropdown icon"></i>
-                  Mouse clicks on Links should open new Temporary Containers
+                  Mouse clicks on links should open new Temporary Containers
                 </h4>
               </div>
               <div class="ui segment content">
@@ -295,7 +316,7 @@
                   </div>
                   <div>
                     <h3>Excluded target domains</h3>
-                    <div class="ui bulleted list" id="isolationDomainExcludeDomains">
+                    <div class="ui bulleted list" id="isolationDomainExcludedDomains">
                     </div>
                   </div>
                 </div>
@@ -618,7 +639,7 @@
               <label>Isolation - Mouse clicks in "Deletes History Temporary Containers"</label>
               <select id="deletesHistoryContainerMouseClicks" class="ui fluid dropdown">
                 <option value="never">Default</option>
-                <option value="automatic">Open new "Deletes History Temporary Containers" with Mouse clicks on Links in "Deletes History Temporary Containers" instead of normal
+                <option value="automatic">Open new "Deletes History Temporary Containers" with Mouse clicks on links in "Deletes History Temporary Containers" instead of normal
                   Temporary Containers</option>
               </select>
             </div>

@@ -90,6 +90,17 @@ class Request {
       return { cancel: true };
     }
 
+    const excludedDomainPatterns = Object.keys(this.storage.local.preferences.isolation.global.excluded);
+    if (excludedDomainPatterns.length) {
+      const excluded = excludedDomainPatterns.find(excludedDomainPattern => {
+        return this.isolation.matchDomainPattern(request.url, excludedDomainPattern);
+      });
+      if (excluded) {
+        debug('[_webRequestOnBeforeRequest] request url matches excluded domain pattern', request, excludedDomainPatterns);
+        return;
+      }
+    }
+
     let tab, openerTab;
     try {
       tab = await browser.tabs.get(request.tabId);
@@ -108,7 +119,7 @@ class Request {
 
     if (tab && this.container.isPermanent(tab.cookieStoreId) &&
       this.storage.local.preferences.isolation.global.excludedContainers[tab.cookieStoreId]) {
-      debug('[_webRequestOnBeforeRequest] container on global excluded list, we do nothing', tab);
+      debug('[_webRequestOnBeforeRequest] container on global excluded list', tab);
       return;
     }
 
@@ -122,7 +133,7 @@ class Request {
     }
     if (macAssignment) {
       if (macAssignment.neverAsk) {
-        debug('[_webRequestOnBeforeRequest] mac neverask assigned, we do nothing', macAssignment);
+        debug('[_webRequestOnBeforeRequest] mac neverask assigned', macAssignment);
         return;
       } else {
         debug('[_webRequestOnBeforeRequest] mac assigned', macAssignment);
@@ -291,7 +302,7 @@ class Request {
     if (tab && tab.cookieStoreId === 'firefox-default' && openerTab) {
       debug('[handleNotClickedLink] default container and openerTab', openerTab);
       if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
-        debug('[handleNotClickedLink] request didnt came from about/moz-extension page, we do nothing', openerTab);
+        debug('[handleNotClickedLink] request didnt came from about/moz-extension page', openerTab);
         return;
       }
     }
@@ -317,7 +328,7 @@ class Request {
       if (tab.cookieStoreId === macAssignment.cookieStoreId &&
           parsedTabUrl.hostname === parsedRequestUrl.hostname &&
           tab.id === request.tabId) {
-        debug('[handleNotClickedLink] the request url is mac assigned to this container, we do nothing');
+        debug('[handleNotClickedLink] the request url is mac assigned to this container');
         return;
       }
     }
@@ -329,7 +340,7 @@ class Request {
 
     if (macAssignment) {
       if (tab && tab.cookieStoreId && this.container.isTemporary(tab.cookieStoreId)) {
-        debug('[handleNotClickedLink] mac assigned but we are already in a tmp container, we do nothing', request, tab, macAssignment);
+        debug('[handleNotClickedLink] mac assigned but we are already in a tmp container', request, tab, macAssignment);
         return;
       }
       debug('[handleNotClickedLink] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
@@ -665,7 +676,7 @@ class Request {
       return {cancel: true};
     }
 
-    debug('[maybeAlwaysOpenInTemporaryContainer] nothing matched, we do nothing', request);
+    debug('[maybeAlwaysOpenInTemporaryContainer] nothing matched', request);
     return false;
   }
 }

@@ -38,6 +38,11 @@ const initialize = async () => {
         $('#isolationGlobalAccordion').accordion('open', 2);
       }
 
+      isolationGlobalExcludedDomains = preferences.isolation.global.excluded;
+      if (Object.keys(preferences.isolation.global.excluded).length) {
+        $('#isolationGlobalAccordion').accordion('open', 3);
+      }
+
       $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
 
       $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.middle.container);
@@ -68,8 +73,9 @@ const initialize = async () => {
       document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
       document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistory.statistics;
 
+      updateIsolationGlobalExcludeDomains();
       updateIsolationDomains();
-      updateIsolationExcludeDomains();
+      updateIsolationDomainExcludeDomains();
       updateSetCookiesDomainRules();
       updateStatistics();
       showDeletesHistoryStatistics();
@@ -108,7 +114,7 @@ const initialize = async () => {
       });
     });
     $('#isolationGlobalExcludeContainers').dropdown({
-      placeholder: 'Permanent containers to exclude from Isolation',
+      placeholder: 'Select permanent containers to exclude from Isolation',
       values: excludeContainers
     });
 
@@ -122,6 +128,11 @@ const initialize = async () => {
         event.preventDefault();
         isolationDomainAddRule();
       }
+    });
+
+    $('#isolationGlobalExcludeDomainSave').on('click', (event) => {
+      event.preventDefault();
+      isolationGlobalAddExcludeDomainRule();
     });
 
     $('#isolationDomainExcludeDomainSave').on('click', (event) => {
@@ -160,6 +171,17 @@ const initialize = async () => {
       html: domainPatternToolTip,
       inline: true
     });
+
+    $('#isolationGlobalExcludeDomainPatternDiv').popup({
+      html: domainPatternToolTip,
+      inline: true
+    });
+
+    $('#isolationDomainExcludeDomainPatternDiv').popup({
+      html: domainPatternToolTip,
+      inline: true
+    });
+
 
     const automaticModeToolTip =
       '<div style="width:500px;">' +

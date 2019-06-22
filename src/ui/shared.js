@@ -91,6 +91,8 @@ window.saveIsolationGlobalPreferences = async (event) => {
     }
   };
 
+  preferences.isolation.global.excluded = isolationGlobalExcludedDomains;
+
   preferences.isolation.global.excludedContainers = {};
   const excludedContainers = $('#isolationGlobalExcludeContainers').dropdown('get values');
   if (excludedContainers) {
@@ -126,7 +128,7 @@ const isolationDomainAddRule = async () => {
         action: document.querySelector('#isolationDomainMouseClickLeft').value
       }
     },
-    excluded: isolationDomainExcludeDomains
+    excluded: isolationDomainExcludedDomains
   };
 
   await savePreferences();
@@ -151,8 +153,8 @@ window.isolationDomainEditRule = (domainPattern) => {
     $('#isolationPerDomainAccordion').accordion('open', 2);
     $('#isolationPerDomainAccordion').accordion('open', 3);
 
-    isolationDomainExcludeDomains = domainRules.excluded;
-    updateIsolationExcludeDomains();
+    isolationDomainExcludedDomains = domainRules.excluded;
+    updateIsolationDomainExcludeDomains();
   }
 };
 
@@ -166,7 +168,7 @@ window.updateIsolationDomains = () => {
       const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
         `<span id="infoDomainRule" href="#">${domainPattern} <i class="icon-info-circled"></i></span> ` +
         '<a href="#" id="editDomainRule" data-tooltip="Edit"><i class="icon-pencil"></i>️</a> ' +
-        '<a href="#" id="removeDomainRule" data-tooltip="Remove (no confirmation)" ' +
+        '<a href="#" id="removeDomainPattern" data-tooltip="Remove (no confirmation)" ' +
         '><i class="icon-trash-empty"></i>️</a></div>');
       isolationDomainRules.append(el);
 
@@ -199,7 +201,7 @@ window.updateIsolationDomains = () => {
           isolationDomainEditRule(domainPattern);
           return;
         }
-        if (targetId === 'removeDomainRule') {
+        if (targetId === 'removeDomainPattern') {
           delete preferences.isolation.domain[decodeURIComponent(domainPattern)];
           // TODO show "rule deleted" instead of "preferences saved"
           await savePreferences();
@@ -213,6 +215,17 @@ window.updateIsolationDomains = () => {
   }
 };
 
+window.isolationGlobalAddExcludeDomainRule = () => {
+  const excludeDomainPattern = document.querySelector('#isolationGlobalExcludeDomainPattern').value;
+  if (!excludeDomainPattern) {
+    $('#isolationGlobalExcludeDomainPatternDiv').addClass('error');
+    return;
+  }
+  $('#isolationGlobalExcludeDomainPatternDiv').removeClass('error');
+  isolationGlobalExcludedDomains[excludeDomainPattern] = {};
+  updateIsolationGlobalExcludeDomains();
+};
+
 
 window.isolationDomainAddExcludeDomainRule = () => {
   const excludeDomainPattern = document.querySelector('#isolationDomainExcludeDomainPattern').value;
@@ -221,40 +234,73 @@ window.isolationDomainAddExcludeDomainRule = () => {
     return;
   }
   $('#isolationDomainExcludeDomainPatternDiv').removeClass('error');
-  isolationDomainExcludeDomains[excludeDomainPattern] = {};
-  updateIsolationExcludeDomains();
+  isolationDomainExcludedDomains[excludeDomainPattern] = {};
+  updateIsolationDomainExcludeDomains();
 };
 
 
-let isolationDomainExcludeDomains = {};
-let isolationDomainExcludeDomainRulesClickEvent = false;
-window.updateIsolationExcludeDomains = () => {
-  const isolationDomainExcludeDomainRulesDiv = $('#isolationDomainExcludeDomains');
-  const isolationDomainExcludeDomainRules = Object.keys(isolationDomainExcludeDomains);
-  if (!isolationDomainExcludeDomainRules.length) {
-    isolationDomainExcludeDomainRulesDiv.html('No Domains excluded');
+let isolationGlobalExcludedDomains = {};
+let isolationGlobalExcludeDomainPatternsClickEvent = false;
+window.updateIsolationGlobalExcludeDomains = () => {
+  const isolationGlobalExcludeDomainPatternsDiv = $('#isolationGlobalExcludedDomains');
+  const isolationGlobalExcludeDomainPatterns = Object.keys(isolationGlobalExcludedDomains);
+  if (!isolationGlobalExcludeDomainPatterns.length) {
+    isolationGlobalExcludeDomainPatternsDiv.html('No domains excluded');
     return;
   }
-  isolationDomainExcludeDomainRulesDiv.html('');
-  isolationDomainExcludeDomainRules.map((domainPattern) => {
+  isolationGlobalExcludeDomainPatternsDiv.html('');
+  isolationGlobalExcludeDomainPatterns.map((domainPattern) => {
     const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
       domainPattern +
-      ' <a href="#" id="removeDomainRule" data-tooltip="Remove (no confirmation)" ' +
+      ' <a href="#" id="removeDomainPattern" data-tooltip="Remove (no confirmation)" ' +
       '><i class="icon-trash-empty"></i>️</a></div>');
-    isolationDomainExcludeDomainRulesDiv.append(el);
+    isolationGlobalExcludeDomainPatternsDiv.append(el);
   });
 
-  if (!isolationDomainExcludeDomainRulesClickEvent) {
-    isolationDomainExcludeDomainRulesDiv.on('click', async (event) => {
+  if (!isolationGlobalExcludeDomainPatternsClickEvent) {
+    isolationGlobalExcludeDomainPatternsDiv.on('click', async (event) => {
       event.preventDefault();
       const targetId = $(event.target).parent().attr('id');
       const domainPattern = $(event.target).parent().parent().attr('id');
-      if (targetId === 'removeDomainRule') {
-        delete isolationDomainExcludeDomains[decodeURIComponent(domainPattern)];
-        updateIsolationExcludeDomains();
+      if (targetId === 'removeDomainPattern') {
+        delete isolationGlobalExcludedDomains[decodeURIComponent(domainPattern)];
+        updateIsolationGlobalExcludeDomains();
       }
     });
-    isolationDomainExcludeDomainRulesClickEvent = true;
+    isolationGlobalExcludeDomainPatternsClickEvent = true;
+  }
+};
+
+
+let isolationDomainExcludedDomains = {};
+let isolationDomainExcludeDomainPatternsClickEvent = false;
+window.updateIsolationDomainExcludeDomains = () => {
+  const isolationDomainExcludeDomainPatternsDiv = $('#isolationDomainExcludedDomains');
+  const isolationDomainExcludeDomainPatterns = Object.keys(isolationDomainExcludedDomains);
+  if (!isolationDomainExcludeDomainPatterns.length) {
+    isolationDomainExcludeDomainPatternsDiv.html('No domains excluded');
+    return;
+  }
+  isolationDomainExcludeDomainPatternsDiv.html('');
+  isolationDomainExcludeDomainPatterns.map((domainPattern) => {
+    const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
+      domainPattern +
+      ' <a href="#" id="removeDomainPattern" data-tooltip="Remove (no confirmation)" ' +
+      '><i class="icon-trash-empty"></i>️</a></div>');
+    isolationDomainExcludeDomainPatternsDiv.append(el);
+  });
+
+  if (!isolationDomainExcludeDomainPatternsClickEvent) {
+    isolationDomainExcludeDomainPatternsDiv.on('click', async (event) => {
+      event.preventDefault();
+      const targetId = $(event.target).parent().attr('id');
+      const domainPattern = $(event.target).parent().parent().attr('id');
+      if (targetId === 'removeDomainPattern') {
+        delete isolationDomainExcludedDomains[decodeURIComponent(domainPattern)];
+        updateIsolationDomainExcludeDomains();
+      }
+    });
+    isolationDomainExcludeDomainPatternsClickEvent = true;
   }
 };
 
@@ -299,7 +345,7 @@ window.updateSetCookiesDomainRules = () => {
       setCookiesDomainCookies.append(
         `<div class="item" id="${encodeURIComponent(domainPattern)}" idIndex="${index}">${domainPattern} [${index}]: ` +
         ` ${domainPatternCookie.name} ${domainPatternCookie.value} ` +
-        '<a href="#" id="setCookiesRemoveDomainRules" data-tooltip="Remove Cookie (no confirmation)" ' +
+        '<a href="#" id="setCookiesRemoveDomainPatterns" data-tooltip="Remove Cookie (no confirmation)" ' +
         '><i class="icon-trash-empty"></i></a></div>');
     });
   });
@@ -309,7 +355,7 @@ window.updateSetCookiesDomainRules = () => {
     const clickTarget = $(event.target).parent().attr('id');
     const domainPattern = $(event.target).parent().parent().attr('id');
     const domainPatternIndex = $(event.target).parent().parent().attr('idIndex');
-    if (clickTarget === 'setCookiesRemoveDomainRules') {
+    if (clickTarget === 'setCookiesRemoveDomainPatterns') {
       delete preferences.cookies.domain[decodeURIComponent(domainPattern)][domainPatternIndex];
       const cookies = preferences.cookies.domain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie === 'object');
       if (!cookies.length) {
