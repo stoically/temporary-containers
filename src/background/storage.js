@@ -38,7 +38,8 @@ class Storage {
               container: 'default'
             }
           },
-          excluded: {}
+          excluded: {},
+          excludedContainers: {}
         },
         domain: {},
         mac: {

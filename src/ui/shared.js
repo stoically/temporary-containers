@@ -90,6 +90,15 @@ window.saveIsolationGlobalPreferences = async (event) => {
       container: document.querySelector('#linkClickGlobalLeftCreatesContainer').value
     }
   };
+
+  preferences.isolation.global.excludedContainers = {};
+  const excludedContainers = $('#isolationGlobalExcludeContainers').dropdown('get values');
+  if (excludedContainers) {
+    excludedContainers.map(excludeContainer => {
+      preferences.isolation.global.excludedContainers[excludeContainer] = {};
+    });
+  }
+
   preferences.isolation.mac.action = document.querySelector('#isolationMac').value;
 
   await savePreferences();

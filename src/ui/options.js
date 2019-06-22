@@ -34,6 +34,10 @@ const initialize = async () => {
         $('#isolationGlobalAccordion').accordion('open', 1);
       }
 
+      if (Object.keys(preferences.isolation.global.excludedContainers).length) {
+        $('#isolationGlobalAccordion').accordion('open', 2);
+      }
+
       $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
 
       $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.middle.container);
@@ -84,12 +88,30 @@ const initialize = async () => {
     }
 
 
-    const storage = await browser.storage.local.get('preferences');
+    const storage = await browser.storage.local.get(['preferences', 'tempContainers']);
     if (!storage.preferences || !Object.keys(storage.preferences).length) {
       showPreferencesError();
       return;
     }
     preferences = storage.preferences;
+
+    const excludeContainers = [];
+    const containers = await browser.contextualIdentities.query({});
+    containers.map(container => {
+      if (storage.tempContainers[container.cookieStoreId]) {
+        return;
+      }
+      excludeContainers.push({
+        name: container.name,
+        value: container.cookieStoreId,
+        selected: !!preferences.isolation.global.excludedContainers[container.cookieStoreId]
+      });
+    });
+    $('#isolationGlobalExcludeContainers').dropdown({
+      placeholder: 'Permanent containers to exclude from Isolation',
+      values: excludeContainers
+    });
+
     setCurrentPreferences();
 
     $('#isolationDomainForm').form({
@@ -127,7 +149,7 @@ const initialize = async () => {
       'so you might need two rules. Per Domain overwrites Global.</div>' +
       '<br>' +
       'Advanced: Parsed as RegExp when <strong>/pattern/flags</strong> is given ' +
-      'and matches the full URL instead of just Domain.';
+      'and matches the full URL instead of just domain.';
 
     $('#setCookiesDomainPatternDiv').popup({
       html: domainPatternToolTip,
@@ -141,10 +163,10 @@ const initialize = async () => {
 
     const automaticModeToolTip =
       '<div style="width:500px;">' +
-      'Automatically reopen Tabs in new Temporary Containers when<ul>' +
-      '<li> Opening a new Tab' +
-      '<li> A Tab tries to load a Link in the Default Container' +
-      '<li> An external Program opens a Link in the Browser</ul></div>';
+      'Automatically reopen tabs in new Temporary Containers when<ul>' +
+      '<li> Opening a new tab' +
+      '<li> A tab tries to load a Link in the default container' +
+      '<li> An external Program opens a Link in the browser</ul></div>';
 
     $('#automaticModeField').popup({
       html: automaticModeToolTip,
@@ -175,11 +197,11 @@ const initialize = async () => {
     const popupToolTip =
       '<div style="width:500px;">' +
       'The popup lets you<ul>' +
-      '<li> Configure Isolation per Domain' +
+      '<li> Configure Isolation Per Domain' +
       '<li> Convert Temporary to Permanent Container' +
       '<li> Convert Permanent to Temporary Container' +
-      '<li> Open current Tab URL in new Temporary Container' +
-      '<li> Open current Tab URL in new "Deletes History Temporary Container"' +
+      '<li> Open current tab URL in new Temporary Container' +
+      '<li> Open current tab URL in new "Deletes History Temporary Container"' +
       '<li> Open Preferences/Options' +
       '<li> Open new Temporary Container' +
       '<li> Open new "Deletes History Temporary Container"' +

@@ -90,6 +90,28 @@ class Request {
       return { cancel: true };
     }
 
+    let tab, openerTab;
+    try {
+      tab = await browser.tabs.get(request.tabId);
+      if (tab && tab.openerTabId) {
+        openerTab = await browser.tabs.get(tab.openerTabId);
+      }
+      debug('[_webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab, openerTab);
+    } catch (error) {
+      debug('[_webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
+    }
+
+    if (tab && tab.incognito) {
+      debug('[_webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
+      return;
+    }
+
+    if (tab && this.container.isPermanent(tab.cookieStoreId) &&
+      this.storage.local.preferences.isolation.global.excludedContainers[tab.cookieStoreId]) {
+      debug('[_webRequestOnBeforeRequest] container on global excluded list, we do nothing', tab);
+      return;
+    }
+
     let macAssignment;
     if (this.management.addons['@testpilot-containers'].enabled) {
       try {
@@ -141,22 +163,6 @@ class Request {
       } catch (error) {
         debug('[_webRequestOnBeforeRequest] contacting block_outside_container failed', error);
       }
-    }
-
-    let tab, openerTab;
-    try {
-      tab = await browser.tabs.get(request.tabId);
-      if (tab && tab.openerTabId) {
-        openerTab = await browser.tabs.get(tab.openerTabId);
-      }
-      debug('[_webRequestOnBeforeRequest] onbeforeRequest requested tab information', tab, openerTab);
-    } catch (error) {
-      debug('[_webRequestOnBeforeRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
-    }
-
-    if (tab && tab.incognito) {
-      debug('[_webRequestOnBeforeRequest] tab is incognito, ignore it', tab);
-      return;
     }
 
     const parsedTabUrl = tab && /^https?:/.test(tab.url) && new URL(tab.url);

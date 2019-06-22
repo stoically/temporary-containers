@@ -152,7 +152,7 @@ class Container {
 
         debug('[createTabInTempContainer] creating tab in temporary container', newTabOptions);
         const newTab = await browser.tabs.create(newTabOptions);
-        if (!newTabOptions.active) {
+        if (tab && !tab.active) {
           this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] = newTab.id;
         }
         debug('[createTabInTempContainer] new tab in temp container created', newTab);
