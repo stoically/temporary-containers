@@ -181,17 +181,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             });
 
             it('should not open a new Temporary Container', async () => {
-              switch (navigatingIn) {
-              case 'sametab.global':
-              case 'newtab.global':
-                // TODO: implement me
-                break;
-
-              case 'sametab.perdomain':
-              case 'newtab.perdomain':
-                browser.tabs.create.should.not.have.been.called;
-                break;
-              }
+              browser.tabs.create.should.not.have.been.called;
             });
           });
         });

@@ -48,6 +48,7 @@ class TemporaryContainers {
     this.cookies.initialize();
     this.statistics.initialize();
     this.mac.initialize();
+    this.isolation.initialize();
 
     await this.management.initialize();
     await this.tabs.initialize();

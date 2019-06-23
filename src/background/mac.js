@@ -41,7 +41,8 @@ class MultiAccountContainers {
     }
   }
 
-  async maybeReopenConfirmPage(macAssignment, request, tab, deletesHistoryContainer) {
+  async maybeReopenConfirmPage(macAssignment, request, tab) {
+    const deletesHistoryContainer = this.storage.local.preferences.deletesHistory.automaticMode === 'automatic';
     debug('[maybeReopenConfirmPage]', macAssignment, request, tab, deletesHistoryContainer, this.container.tabCreatedAsMacConfirmPage);
     if ((tab && tab.id && this.container.tabCreatedAsMacConfirmPage[tab.id]) ||
        (request && request.tabId && this.container.tabCreatedAsMacConfirmPage[request.tabId])) {
