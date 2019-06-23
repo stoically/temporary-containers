@@ -1,6 +1,9 @@
 class ContextMenu {
   constructor(background) {
     this.background = background;
+
+    this.nextMenuInstanceId = 0;
+    this.lastMenuInstanceId = 0;
   }
 
 
@@ -9,6 +12,7 @@ class ContextMenu {
     this.container = this.background.container;
 
     browser.contextMenus.onClicked.addListener(this.onClicked.bind(this));
+    browser.contextMenus.onShown.addListener(this.onShown.bind(this));
     browser.windows.onFocusChanged.addListener(this.windowsOnFocusChanged.bind(this));
 
     this.add();
@@ -25,6 +29,7 @@ class ContextMenu {
         deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
       });
       break;
+
     case 'open-link-in-new-deletes-history-temporary-container-tab':
       this.container.createTabInTempContainer({
         tab,
@@ -33,6 +38,71 @@ class ContextMenu {
         deletesHistory: true
       });
       break;
+
+    case 'open-bookmark-in-new-temporary-container-tab': {
+      const bookmarks = await browser.bookmarks.get(info.bookmarkId);
+      if (bookmarks[0].url) {
+        this.container.createTabInTempContainer({
+          tab,
+          url: bookmarks[0].url,
+          active: false,
+          deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
+        });
+      }
+      break;
+    }
+
+    case 'open-bookmark-in-new-deletes-history-temporary-container-tab': {
+      const bookmarks = await browser.bookmarks.get(info.bookmarkId);
+      if (bookmarks[0].url) {
+        this.container.createTabInTempContainer({
+          tab,
+          url: bookmarks[0].url,
+          active: false,
+          deletesHistory: true
+        });
+      }
+      break;
+    }}
+  }
+
+
+  async onShown(info) {
+    if (!info.bookmarkId) {
+      return;
+    }
+    const menuInstanceId = this.nextMenuInstanceId++;
+    this.lastMenuInstanceId = menuInstanceId;
+
+    const bookmarks = await browser.bookmarks.get(info.bookmarkId);
+    if (bookmarks[0].url) {
+      return;
+    }
+
+    await this.toggleBookmarks(false);
+
+    if (menuInstanceId !== this.lastMenuInstanceId) {
+      this.toggleBookmarks(true);
+      return;
+    }
+    await browser.contextMenus.refresh();
+    this.toggleBookmarks(true);
+  }
+
+
+  async toggleBookmarks(visible) {
+    if (this.storage.local.preferences.contextMenuBookmarks &&
+      this.background.permissions.bookmarks) {
+      await browser.contextMenus.update('open-bookmark-in-new-temporary-container-tab', {
+        visible
+      });
+    }
+    if (this.storage.local.preferences.deletesHistory.contextMenuBookmarks &&
+      this.background.permissions.history &&
+      this.background.permissions.bookmarks) {
+      await browser.contextMenus.update('open-bookmark-in-new-deletes-history-temporary-container-tab', {
+        visible
+      });
     }
   }
 
@@ -49,7 +119,8 @@ class ContextMenu {
         }
       });
     }
-    if (this.storage.local.preferences.deletesHistory.contextMenu) {
+    if (this.storage.local.preferences.deletesHistory.contextMenu &&
+      this.background.permissions.history) {
       browser.contextMenus.create({
         id: 'open-link-in-new-deletes-history-temporary-container-tab',
         title: 'Open Link in New "Deletes History Temporary Container" Tab',
@@ -60,11 +131,36 @@ class ContextMenu {
         }
       });
     }
+    if (this.storage.local.preferences.contextMenuBookmarks &&
+      this.background.permissions.bookmarks) {
+      browser.contextMenus.create({
+        id: 'open-bookmark-in-new-temporary-container-tab',
+        title: 'Open Bookmark in New Temporary Container Tab',
+        contexts: ['bookmark'],
+        icons: {
+          '16': 'icons/page-w-16.svg',
+          '32': 'icons/page-w-32.svg'
+        }
+      });
+    }
+    if (this.storage.local.preferences.deletesHistory.contextMenuBookmarks &&
+      this.background.permissions.history &&
+      this.background.permissions.bookmarks) {
+      browser.contextMenus.create({
+        id: 'open-bookmark-in-new-deletes-history-temporary-container-tab',
+        title: 'Open Bookmark in New "Deletes History Temporary Container" Tab',
+        contexts: ['bookmark'],
+        icons: {
+          '16': 'icons/page-w-16.svg',
+          '32': 'icons/page-w-32.svg'
+        }
+      });
+    }
   }
 
 
-  async remove() {
-    browser.contextMenus.removeAll();
+  remove() {
+    return browser.contextMenus.removeAll();
   }
 
 

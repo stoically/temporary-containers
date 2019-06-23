@@ -45,6 +45,15 @@ class Runtime {
       }
       this.storage.local.preferences = message.payload.preferences;
       await this.storage.persist();
+
+      if (this.storage.local.preferences.contextMenu !== message.payload.preferences.contextMenu ||
+        this.storage.local.preferences.contextMenuBookmarks !== message.payload.preferences.contextMenuBookmarks ||
+        this.storage.local.preferences.deletesHistory.contextMenu !== message.payload.preferences.deletesHistory.contextMenu ||
+        this.storage.local.preferences.deletesHistory.contextMenuBookmarks !== message.payload.preferences.deletesHistory.contextMenuBookmarks)  {
+        await this.contextmenu.remove();
+        this.contextmenu.add();
+      }
+
       if (message.payload.migrate) {
         await this.migration.onUpdate({previousVersion: message.payload.previousVersion});
       }

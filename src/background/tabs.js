@@ -121,13 +121,9 @@ class Tabs {
 
   async onActivated(activeInfo) {
     debug('[onActivated]', activeInfo);
-    this.contextmenu.remove();
-
     this.container.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] = false;
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     if (!activatedTab.incognito) {
-      this.contextmenu.add();
-
       this.pageaction.showOrHide(activatedTab);
     }
   }

@@ -49,6 +49,7 @@ class Storage {
       browserActionPopup: false,
       pageAction: false,
       contextMenu: true,
+      contextMenuBookmarks: false,
       keyboardShortcuts: {
         AltC: true,
         AltP: true,
@@ -70,6 +71,7 @@ class Storage {
       deletesHistory: {
         automaticMode: 'never',
         contextMenu: false,
+        contextMenuBookmarks: false,
         containerAlwaysPerDomain: 'never',
         containerIsolation: 'never',
         containerRemoval: 'instant',

@@ -59,6 +59,9 @@ const buildWebExtension = async (build = {}) => {
       }
     }
   });
+  webExtension.background.browser.contextMenus.onShown = {
+    addListener: sinon.stub()
+  };
   if (!build.apiFake) {
     webExtension.background.browser.tabs.query.resolves([{},{}]);
     webExtension.background.browser.storage.local.get.resolves({});

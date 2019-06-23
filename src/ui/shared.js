@@ -390,6 +390,7 @@ window.saveAdvancedPreferences = async (event) => {
   preferences.browserActionPopup = document.querySelector('#browserActionPopup').checked;
   preferences.pageAction = document.querySelector('#pageAction').checked;
   preferences.contextMenu = document.querySelector('#contextMenu').checked;
+  preferences.contextMenuBookmarks = document.querySelector('#contextMenuBookmarksCheckbox').checked;
   preferences.keyboardShortcuts.AltC = document.querySelector('#keyboardShortcutsAltC').checked;
   preferences.keyboardShortcuts.AltP = document.querySelector('#keyboardShortcutsAltP').checked;
   preferences.keyboardShortcuts.AltN = document.querySelector('#keyboardShortcutsAltN').checked;
@@ -403,6 +404,7 @@ window.saveAdvancedPreferences = async (event) => {
 
   preferences.deletesHistory.automaticMode = document.querySelector('#deletesHistoryContainer').value;
   preferences.deletesHistory.contextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
+  preferences.deletesHistory.contextMenuBookmarks = document.querySelector('#deletesHistoryContextMenuBookmarksCheckbox').checked;
   preferences.deletesHistory.containerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
   preferences.deletesHistory.containerAlwaysPerDomain = document.querySelector('#deletesHistorycontainerAlwaysPerDomain').value;
   preferences.deletesHistory.containerIsolation = document.querySelector('#deletesHistoryContainerIsolation').value;
@@ -466,6 +468,16 @@ window.requestNotificationsPermissions = async () => {
   if (!allowed) {
     $('#notifications')
       .checkbox('uncheck');
+  }
+};
+
+window.requestBookmarksPermissions = async () => {
+  const allowed = await browser.permissions.request({
+    permissions: ['bookmarks']
+  });
+  if (!allowed) {
+    $('#contextMenuBookmarks').checkbox('uncheck');
+    $('#deletesHistoryContextMenuBookmarks').checkbox('uncheck');
   }
 };
 

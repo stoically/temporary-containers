@@ -130,7 +130,7 @@
             <div class="ui accordion" id="isolationGlobalAccordion">
               <div class="title">
                 <h4><i class="dropdown icon"></i>
-                  Navigating in tabs should open new Temporary Containers
+                  Navigating in Tabs should open new Temporary Containers
                 </h4>
               </div>
               <div class="ui segment content">
@@ -145,7 +145,7 @@
               </div>
               <div class="title">
                 <h4><i class="dropdown icon"></i>
-                  Mouse clicks on links should open new Temporary Containers
+                  Mouse Clicks on links should open new Temporary Containers
                 </h4>
               </div>
               <div class="ui segment content">
@@ -249,7 +249,7 @@
               </div>
               <div class="title">
                 <h4><i class="dropdown icon"></i>
-                  Navigating in tabs should open new Temporary Containers
+                  Navigating in Tabs should open new Temporary Containers
                 </h4>
               </div>
               <div class="ui segment content">
@@ -265,7 +265,7 @@
               </div>
               <div class="title">
                 <h4><i class="dropdown icon"></i>
-                  Mouse clicks on links should open new Temporary Containers
+                  Mouse Clicks on links should open new Temporary Containers
                 </h4>
               </div>
               <div class="ui segment content">
@@ -343,7 +343,7 @@
               Open new Temporary Containers if a permanent container tab tries to load
               a domain that isn't assigned to "Always open in" that container with
               <a href="https://addons.mozilla.org/firefox/addon/multi-account-containers/" target="_blank">Multi-Account Containers</a>
-              (Note: this is different from the Per Domain "Always open in" configuration)
+              (Note: This is different from the Per Domain "Always open in" configuration)
             </h4>
             <div class="field">
               <select id="isolationMac" class="ui fluid dropdown">
@@ -382,9 +382,17 @@
             </div>
             <div class="field">
               <label>Context Menu</label>
-              <div class="ui checkbox">
-                <input type="checkbox" id="contextMenu">
-                <label>Show Temporary Container entry in the right click on links context menu</label>
+              <div class="field">
+                <div class="ui checkbox">
+                  <input type="checkbox" id="contextMenu">
+                  <label>Show Temporary Container entry in the right click on links context menu</label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui checkbox" id="contextMenuBookmarks">
+                  <input type="checkbox" id="contextMenuBookmarksCheckbox">
+                  <label>Show Temporary Container entry in the right click on bookmarks context menu</label>
+                </div>
               </div>
             </div>
             <div class="field">
@@ -461,7 +469,7 @@
             <div class="field">
               <label>Automatic Mode</label>
               <div class="ui negative message">
-                <strong>Warning:</strong> new tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
+                <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
                 use the address bar for search engines. If you select "Don't reopen new tabs in Temporary Containers"
                 here, cookies can get written into and read from the permanent default container as long as the new
                 tab didn't get reopened in a Temporary Container.<br>
@@ -485,7 +493,7 @@
         <div class="ui bottom attached tab segment" data-tab="advanced/setcookies">
           <form class="ui form" id="setCookiesDomainForm">
             <h4>
-              Configure cookies to be set on certain Domains in Temporary Containers
+              Configure cookies to be set on certain domains in Temporary Containers
             </h4>
             <div class="ui negative message">
               <strong>Warning:</strong> Setting cookies can make you easier fingerprintable. Especially
@@ -498,7 +506,7 @@
               encoded, or you might break the header being sent.
             </div>
             <div id="setCookiesDomainPatternDiv" class="field">
-              <label>Domain Pattern [?]</label>
+              <label>Domain Pattern</label>
               <input id="setCookiesDomainPattern" type="text">
             </div>
             <div id="setCookiesDomainDomainDiv" class="field">
@@ -573,7 +581,7 @@
                   Warning: Every website URL that you visit in a
                   "Deletes History Temporary Container" will get deleted from your entire history.
                   This means if you visited the same Website URL in another Container, Temporary Container
-                  or in Default Container before or while visiting it in a "Deletes History Temporary Container"
+                  or in the Default Container before or while visiting it in a "Deletes History Temporary Container"
                   then those visits will get deleted from History too. This is true until Firefox supports a special history for container tabs.
                   <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320" target="_blank">The related Firefox bug can be found here</a>.<br>
                   <br>
@@ -610,6 +618,12 @@
               <div class="ui checkbox">
                 <input type="checkbox" id="deletesHistoryContextMenu">
                 <label>Show additional "Deletes History Temporary Containers" entry in the right click on links context menu</label>
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui checkbox" id="deletesHistoryContextMenuBookmarks">
+                <input type="checkbox" id="deletesHistoryContextMenuBookmarksCheckbox">
+                <label>Show additional "Deletes History Temporary Containers" entry in the right click on bookmarks context menu</label>
               </div>
             </div>
             <div class="field" data-tooltip='"15minutes" lets you "undo close tabs" in that timeframe'>

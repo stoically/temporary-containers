@@ -51,6 +51,7 @@ const initialize = async () => {
 
       $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistory.automaticMode);
       document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistory.contextMenu;
+      document.querySelector('#deletesHistoryContextMenuBookmarksCheckbox').checked = preferences.deletesHistory.contextMenuBookmarks;
       $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistory.containerRemoval);
       $('#deletesHistorycontainerAlwaysPerDomain').dropdown('set selected', preferences.deletesHistory.containerAlwaysPerDomain);
       $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistory.containerIsolation);
@@ -59,6 +60,7 @@ const initialize = async () => {
       document.querySelector('#browserActionPopup').checked = preferences.browserActionPopup;
       document.querySelector('#pageAction').checked = preferences.pageAction;
       document.querySelector('#contextMenu').checked = preferences.contextMenu;
+      document.querySelector('#contextMenuBookmarksCheckbox').checked = preferences.contextMenuBookmarks;
       document.querySelector('#keyboardShortcutsAltC').checked = preferences.keyboardShortcuts.AltC;
       document.querySelector('#keyboardShortcutsAltP').checked = preferences.keyboardShortcuts.AltP;
       document.querySelector('#keyboardShortcutsAltN').checked = preferences.keyboardShortcuts.AltN;
@@ -153,11 +155,11 @@ const initialize = async () => {
 
     const domainPatternToolTip =
       '<div style="width:750px;">' +
-      'Exact matches: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
+      'Exact match: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
       'Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>' +
       '<br>' +
       'Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>, ' +
-      'so you might need two rules. Per Domain overwrites Global.</div>' +
+      'so you might need two patterns.</div>' +
       '<br>' +
       'Advanced: Parsed as RegExp when <strong>/pattern/flags</strong> is given ' +
       'and matches the full URL instead of just domain.';
@@ -187,20 +189,11 @@ const initialize = async () => {
       '<div style="width:500px;">' +
       'Automatically reopen tabs in new Temporary Containers when<ul>' +
       '<li> Opening a new tab' +
-      '<li> A tab tries to load a Link in the default container' +
-      '<li> An external Program opens a Link in the browser</ul></div>';
+      '<li> A tab tries to load a link in the default container' +
+      '<li> An external program opens a link in the browser</ul></div>';
 
     $('#automaticModeField').popup({
       html: automaticModeToolTip,
-      inline: true
-    });
-
-    const notificationsToolTip =
-      '<div style="width:500px;">' +
-      'Will ask for Notifications Permissions when you click the first time</div>';
-
-    $('#notificationsField').popup({
-      html: notificationsToolTip,
       inline: true
     });
 
@@ -268,6 +261,12 @@ const initialize = async () => {
         .checkbox('uncheck');
     }
 
+    const bookmarksPermission = await browser.permissions.contains({permissions: ['bookmarks']});
+    if (!bookmarksPermission) {
+      $('#contextMenuBookmarks').checkbox('uncheck');
+      $('#deletesHistoryContextMenuBookmarks').checkbox('uncheck');
+    }
+
     if (!window.location.hash) {
       $('.menu .item').tab('change tab', 'general');
     }
@@ -287,6 +286,8 @@ $('#resetStatistics').on('click', resetStatistics);
 $('#deletesHistoryStatisticsField').on('click', showDeletesHistoryStatistics);
 $('#deletesHistoryContainerWarningRead').on('click', requestHistoryPermissions);
 $('#notifications').on('click', requestNotificationsPermissions);
+$('#contextMenuBookmarks').on('click', requestBookmarksPermissions);
+$('#deletesHistoryContextMenuBookmarks').on('click', requestBookmarksPermissions);
 $('#exportPreferences').on('click', exportPreferencesButton);
 $('#importPreferences').on('change', importPreferencesButton);
 
