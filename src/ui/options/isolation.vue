@@ -1,5 +1,111 @@
+<script>
+  export default {
+    data: () => ({
+      loaded: false
+    }),
+    props: ['preferences'],
+    watch: {
+      async preferences() {
+        $('#saveIsolationGlobalPreferences').on('click', window.saveIsolationGlobalPreferences);
+        $('#saveIsolationMacPreferences').on('click', window.saveIsolationGlobalPreferences);
+
+        $('#isolationGlobal').dropdown('set selected', preferences.isolation.global.navigation.action);
+        if (preferences.isolation.global.navigation.action !== 'never') {
+          $('#isolationGlobalAccordion').accordion('open', 0);
+        }
+
+        $('#isolationGlobalMouseClickMiddle').dropdown('set selected', preferences.isolation.global.mouseClick.middle.action);
+        $('#isolationGlobalMouseClickCtrlLeft').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.action);
+        $('#isolationGlobalMouseClickLeft').dropdown('set selected', preferences.isolation.global.mouseClick.left.action);
+        if (preferences.isolation.global.mouseClick.middle.action !== 'never' ||
+            preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
+            preferences.isolation.global.mouseClick.left.action !== 'never') {
+          $('#isolationGlobalAccordion').accordion('open', 1);
+        }
+
+        if (Object.keys(preferences.isolation.global.excludedContainers).length) {
+          $('#isolationGlobalAccordion').accordion('open', 2);
+        }
+
+        isolationGlobalExcludedDomains = preferences.isolation.global.excluded;
+        if (Object.keys(preferences.isolation.global.excluded).length) {
+          $('#isolationGlobalAccordion').accordion('open', 3);
+        }
+
+        $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
+
+        $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.middle.container);
+        $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.container);
+        $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.left.container);
+
+        const excludeContainers = [];
+        const containers = await browser.contextualIdentities.query({});
+        containers.map(container => {
+          if (storage.tempContainers[container.cookieStoreId]) {
+            return;
+          }
+          excludeContainers.push({
+            name: container.name,
+            value: container.cookieStoreId,
+            selected: !!preferences.isolation.global.excludedContainers[container.cookieStoreId]
+          });
+        });
+        $('#isolationGlobalExcludeContainers').dropdown({
+          placeholder: 'Select permanent containers to exclude from Isolation',
+          values: excludeContainers
+        });
+
+        $('#isolationDomainForm').form({
+          fields: {
+            isolationDomainPattern: 'empty'
+          },
+          onSuccess: (event) => {
+            event.preventDefault();
+            isolationDomainAddRule();
+          }
+        });
+
+        $('#isolationGlobalExcludeDomainSave').on('click', (event) => {
+          event.preventDefault();
+          isolationGlobalAddExcludeDomainRule();
+        });
+
+        $('#isolationDomainExcludeDomainSave').on('click', (event) => {
+          event.preventDefault();
+          isolationDomainAddExcludeDomainRule();
+        });
+
+
+        $('#isolationDomainPatternDiv').popup({
+          html: domainPatternToolTip,
+          inline: true,
+          position: 'bottom left'
+        });
+
+        $('#isolationGlobalExcludeDomainPatternDiv').popup({
+          html: domainPatternToolTip,
+          inline: true,
+          position: 'bottom left'
+        });
+
+        $('#isolationDomainExcludeDomainPatternDiv').popup({
+          html: domainPatternToolTip,
+          inline: true,
+          position: 'bottom left'
+        });
+
+        window.updateIsolationGlobalExcludeDomains();
+        window.updateIsolationDomains();
+        window.updateIsolationDomainExcludeDomains();
+
+        this.loaded = true;
+      }
+    }
+  }
+</script>
+
 <template>
-  <div class="ui tab segment" data-tab="isolation">
+  <div v-show="loaded" class="ui tab segment" data-tab="isolation">
     <div class="ui top attached tabular menu">
       <a class="active item" data-tab="isolation/global">Global</a>
       <a class="item" data-tab="isolation/perdomain">Per Domain</a>
@@ -9,7 +115,7 @@
       <a class="ui blue ribbon label" href="https://github.com/stoically/temporary-containers/wiki/Global-Isolation" target="_blank">
         <i class="icon-info-circled"></i> Global Isolation?
       </a><br><br>
-      <form class="ui form">
+      <div class="ui form">
         <div class="ui accordion" id="isolationGlobalAccordion">
           <div class="title">
             <h4><i class="dropdown icon"></i>
@@ -99,13 +205,13 @@
         <div class="field">
           <button id="saveIsolationGlobalPreferences" class="ui button primary">Save</button>
         </div>
-      </form>
+      </div>
     </div>
     <div class="ui bottom attached tab segment" data-tab="isolation/perdomain">
       <a class="ui blue ribbon label" href="https://github.com/stoically/temporary-containers/wiki/Per-domain-Isolation" target="_blank">
         <i class="icon-info-circled"></i> Per domain Isolation?
       </a><br><br>
-      <form class="ui form" id="isolationDomainForm">
+      <div class="ui form" id="isolationDomainForm">
         <div id="isolationDomainPatternDiv" class="field">
           <label>Domain Pattern</label>
           <input id="isolationDomainPattern" type="text">
@@ -215,13 +321,13 @@
           <div class="ui bulleted list" id="isolationDomains">
           </div>
         </div>
-      </form>
+      </div>
     </div>
     <div class="ui bottom attached tab segment" data-tab="isolation/mac">
       <a class="ui blue ribbon label" href="https://github.com/stoically/temporary-containers/wiki/Multi-Account-Containers-Isolation" target="_blank">
         <i class="icon-info-circled"></i> Multi-Account Containers Isolation?
       </a><br><br>
-      <form class="ui form">
+      <div class="ui form">
         <h4>
           Open new Temporary Containers if a permanent container tab tries to load
           a domain that isn't assigned to "Always open in" that container with
@@ -237,7 +343,7 @@
         <div class="field">
           <button id="saveIsolationMacPreferences" class="ui button primary">Save</button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>

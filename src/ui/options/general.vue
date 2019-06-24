@@ -1,9 +1,101 @@
+<script>
+  export default {
+    methods: {
+      save() {
+        if (!this.loaded) {
+          return;
+        }
+
+        preferences.automaticMode.active = document.querySelector('#automaticMode').checked;
+        preferences.notifications = document.querySelector('#notificationsCheckbox').checked;
+        preferences.container.namePrefix = document.querySelector('#containerNamePrefix').value;
+        preferences.container.color = document.querySelector('#containerColor').value;
+        preferences.container.colorRandom = document.querySelector('#containerColorRandom').checked;
+        preferences.container.icon = document.querySelector('#containerIcon').value;
+        preferences.container.iconRandom = document.querySelector('#containerIconRandom').checked;
+        preferences.container.numberMode = document.querySelector('#containerNumberMode').value;
+        preferences.container.removal = document.querySelector('#containerRemoval').value;
+        preferences.iconColor = document.querySelector('#iconColor').value;
+
+        window.savePreferences();
+      },
+
+      async requestNotificationsPermissions() {
+        const allowed = await browser.permissions.request({
+          permissions: ['notifications']
+        });
+        if (!allowed) {
+          $('#notifications')
+            .checkbox('uncheck');
+        } else {
+          this.save();
+        }
+      }
+    },
+    data: () => ({
+      loaded: false
+    }),
+    props: ['preferences'],
+    watch: {
+      async preferences() {
+        if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
+          const toolbarOption = document.createElement('option');
+          toolbarOption.value = 'toolbar';
+          toolbarOption.text = 'toolbar (black/gray)';
+          document.querySelector('#containerColor').add(toolbarOption);
+
+          const fenceOption = document.createElement('option');
+          fenceOption.value = 'fence';
+          fenceOption.text = 'fence';
+          document.querySelector('#containerIcon').add(fenceOption);
+        }
+
+        document.querySelector('#automaticMode').checked = preferences.automaticMode.active;
+        document.querySelector('#notificationsCheckbox').checked = preferences.notifications;
+        document.querySelector('#containerNamePrefix').value = preferences.container.namePrefix;
+        $('#containerColor').dropdown('set selected', preferences.container.color);
+        document.querySelector('#containerColorRandom').checked = preferences.container.colorRandom;
+        $('#containerIcon').dropdown('set selected', preferences.container.icon);
+        document.querySelector('#containerIconRandom').checked = preferences.container.iconRandom;
+        $('#containerNumberMode').dropdown('set selected', preferences.container.numberMode);
+        $('#containerRemoval').dropdown('set selected', preferences.container.removal);
+        $('#iconColor').dropdown('set selected', preferences.iconColor);
+
+        const automaticModeToolTip =
+          '<div style="width:500px;">' +
+          'Automatically reopen tabs in new Temporary Containers when<ul>' +
+          '<li> Opening a new tab' +
+          '<li> A tab tries to load a link in the default container' +
+          '<li> An external program opens a link in the browser</ul></div>';
+
+        $('#automaticModeField').popup({
+          html: automaticModeToolTip,
+          inline: true,
+          position: 'bottom left'
+        });
+
+        const notificationsPermission = await browser.permissions.contains({permissions: ['notifications']});
+        if (!notificationsPermission) {
+          $('#notifications')
+            .checkbox('uncheck');
+        }
+
+        $('#general .dropdown').dropdown({
+          onChange: this.save
+        });
+
+        this.loaded = true;
+      }
+    }
+  }
+</script>
+
 <template>
-  <div class="ui tab segment" data-tab="general">
-    <form class="ui form">
+  <div id="general" v-show="loaded" class="ui tab segment" data-tab="general">
+    <div class="ui form">
       <div class="field" id="automaticModeField">
         <div class="ui checkbox">
-          <input type="checkbox" id="automaticMode">
+          <input v-on:change="save" type="checkbox" id="automaticMode">
           <label>{{t('automaticMode')}}</label>
         </div>
         <span class="float right">
@@ -12,18 +104,18 @@
       </div>
 
       <div class="field" id="notificationsField">
-        <div class="ui checkbox" id="notifications">
+        <div class="ui checkbox" v-on:click="requestNotificationsPermissions" id="notifications">
           <input type="checkbox" id="notificationsCheckbox">
           <label>{{t('optionsGeneralNotifications')}}</label>
         </div>
       </div>
       <div class="field">
         <label>{{t('optionsGeneralContainerNamePrefix')}}</label>
-        <input type="text" id="containerNamePrefix">
+        <input type="text" v-on:input="save" id="containerNamePrefix">
       </div>
       <div class="field">
         <label>{{t('optionsGeneralContainerColor')}}</label>
-        <select id="containerColor" class="ui fluid dropdown">
+        <select id="containerColor" v-on:change="save" class="ui fluid dropdown">
           <option value="blue">{{t('optionsGeneralContainerColorBlue')}}</option>
           <option value="turquoise">{{t('optionsGeneralContainerColorTurquoise')}}</option>
           <option value="green">{{t('optionsGeneralContainerColorGreen')}}</option>
@@ -36,7 +128,7 @@
       </div>
       <div class="field">
           <div class="ui checkbox">
-            <input type="checkbox" id="containerColorRandom">
+            <input v-on:change="save" type="checkbox" id="containerColorRandom">
             <label>{{t('optionsGeneralContainerRandomColor')}}</label>
           </div>
       </div>
@@ -59,7 +151,7 @@
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" id="containerIconRandom">
+          <input v-on:change="save" type="checkbox" id="containerIconRandom">
           <label>{{t('optionsGeneralContainerIconRandom')}}</label>
         </div>
       </div>
@@ -71,7 +163,7 @@
         </select>
       </div>
       <div class="field" :data-tooltip="t('optionsGeneralContainerDeleteTimeTooltip')">
-        <label>{{t('optionsGeneralContainerDelete')}}</label>
+        <label>{{t('optionsGeneralContainerDeleteTime')}}</label>
         <select id="containerRemoval" class="ui fluid dropdown">
           <option value="15minutes">{{t('optionsGeneralContainerDeleteTime15Minutes')}}</option>
           <option value="5minutes">{{t('optionsGeneralContainerDeleteTime5Minutes')}}</option>
@@ -80,7 +172,7 @@
         </select>
       </div>
       <div class="field" :data-tooltip="t('optionsGeneralToolbarIconColorTooltip')">
-        <label></label>
+        <label>{{t('optionsGeneralToolbarIconColor')}}</label>
         <select id="iconColor" class="ui fluid dropdown">
           <option value="default">{{t('optionsGeneralToolbarIconColorDefault')}}</option>
           <option value="black-simple">{{t('optionsGeneralToolbarIconColorBlackSimple')}}</option>
@@ -89,9 +181,6 @@
           <option value="white-simple">{{t('optionsGeneralToolbarIconColorWhiteSimple')}}</option>
         </select>
       </div>
-      <div class="field">
-        <button id="saveContainerPreferences" class="ui button primary">{{t('optionsSave')}}</button>
-      </div>
-    </form>
+    </div>
   </div>
 </template>

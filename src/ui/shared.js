@@ -39,7 +39,7 @@ window.showPreferencesError = (error) => {
     .modal('show');
 };
 
-const savePreferences = async () => {
+window.savePreferences = async () => {
   try {
     await browser.runtime.sendMessage({
       method: 'savePreferences',
@@ -55,23 +55,6 @@ const savePreferences = async () => {
     console.log('error while saving preferences', error);
     showError('Error while saving preferences!');
   }
-};
-
-window.saveContainerPreferences = async (event) => {
-  event.preventDefault();
-
-  preferences.automaticMode.active = document.querySelector('#automaticMode').checked;
-  preferences.notifications = document.querySelector('#notificationsCheckbox').checked;
-  preferences.container.namePrefix = document.querySelector('#containerNamePrefix').value;
-  preferences.container.color = document.querySelector('#containerColor').value;
-  preferences.container.colorRandom = document.querySelector('#containerColorRandom').checked;
-  preferences.container.icon = document.querySelector('#containerIcon').value;
-  preferences.container.iconRandom = document.querySelector('#containerIconRandom').checked;
-  preferences.container.numberMode = document.querySelector('#containerNumberMode').value;
-  preferences.container.removal = document.querySelector('#containerRemoval').value;
-  preferences.iconColor = document.querySelector('#iconColor').value;
-
-  await savePreferences();
 };
 
 window.saveIsolationGlobalPreferences = async (event) => {
@@ -463,15 +446,7 @@ window.requestHistoryPermissions = async () => {
   }
 };
 
-window.requestNotificationsPermissions = async () => {
-  const allowed = await browser.permissions.request({
-    permissions: ['notifications']
-  });
-  if (!allowed) {
-    $('#notifications')
-      .checkbox('uncheck');
-  }
-};
+
 
 window.requestBookmarksPermissions = async () => {
   const allowed = await browser.permissions.request({
@@ -491,59 +466,4 @@ window.formatBytes = (bytes, decimals) => {
     sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
     i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
-};
-
-window.exportPreferencesButton = async (e) => {
-  e.preventDefault();
-  const date = new Date();
-  const dateString = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
-  const timeString = [date.getHours(), date.getMinutes(), date.getSeconds()].join('.');
-  const a = document.createElement('a');
-  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(await exportPreferences());
-  a.setAttribute('download', `temporary_containers_preferences_${dateString}_${timeString}.json`);
-  a.setAttribute('type', 'text/plain');
-  a.dispatchEvent(new MouseEvent('click'));
-};
-
-window.exportPreferences = async () => {
-  const storage = await browser.storage.local.get('preferences');
-  const exportedPreferences = {
-    version: browser.runtime.getManifest().version,
-    date: Date.now(),
-    preferences: storage.preferences,
-  };
-  return JSON.stringify(exportedPreferences, null, 2);
-};
-
-window.importPreferencesButton = async (e) => {
-  e.preventDefault();
-  await importPreferences(e.target.files[0]);
-  $(e.target).closest('form').get(0).reset();
-};
-
-window.importPreferences = async (file) => {
-  const reader = new FileReader();
-  reader.readAsText(file, 'UTF-8');
-  reader.onload = async (e) => {
-    try {
-      const importedPreferences = JSON.parse(e.target.result);
-
-      await browser.runtime.sendMessage({
-        method: 'savePreferences',
-        payload: {
-          preferences: importedPreferences.preferences,
-          migrate: true,
-          previousVersion: importedPreferences.version,
-        }
-      });
-
-      showMessage('Preferences imported.');
-
-      initialize();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('error while importing preferences', error);
-      showError('Error while importing preferences!');
-    }
-  };
 };

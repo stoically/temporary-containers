@@ -191,7 +191,7 @@ class TmpStorage {
       debug('[install] something went wrong while initializing storage');
       return false;
     } else {
-      debug('[install] storage initialized');
+      debug('[install] storage initialized', this.local);
       this.loaded = true;
       this.loading = false;
       return true;

@@ -1,6 +1,6 @@
 <template>
   <div class="ui tab" data-tab="isolation">
-    <form class="ui form" id="isolationDomainForm">
+    <div class="ui form" id="isolationDomainForm">
       <div id="isolationDomainPatternDiv" class="field">
         <label>Domain Pattern</label>
         <input id="isolationDomainPattern" type="text">
@@ -96,7 +96,7 @@
           </div>
         </div>
       </div>
-    </form>
+    </div>
     <div id="message" class="ui positive message hidden"></div>
   </div>
 </template>

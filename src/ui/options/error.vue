@@ -1,3 +1,36 @@
+<script>
+  export default {
+    async mounted() {
+      $('#resetStorage').on('click', async (event) => {
+        event.preventDefault();
+
+        let reset = false;
+        try {
+          reset = await browser.runtime.sendMessage({
+            method: 'resetStorage'
+          });
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('[resetStorage] couldnt send message', error);
+        }
+
+        if (!reset) {
+          $('#preferenceserrorcontent').html(`
+            Now this is embarrassing. Storage reset didn't work either.
+            At this point you probably have to reinstall the Add-on.
+            Sorry again, but there's not much I can do about it since
+            this is almost certainly a Firefox API problem right now.
+          `);
+        } else {
+          this.$emit('initialize');
+          $('#preferenceserror').modal('hide');
+          showMessage('Storage successfully reset.', true);
+        }
+      });
+    }
+  }
+</script>
+
 <template>
   <div id="preferenceserror" class="ui tiny modal">
     <h2 class="ui header">

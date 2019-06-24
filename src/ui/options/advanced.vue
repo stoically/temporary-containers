@@ -1,12 +1,109 @@
+<script>
+  export default {
+    data: () => ({
+      loaded: false
+    }),
+    props: ['preferences'],
+    watch: {
+      async preferences() {
+        $('#saveAdvancedGeneralPreferences').on('click', window.saveAdvancedPreferences);
+        $('#saveAdvancedDeleteHistoryPreferences').on('click', window.saveAdvancedPreferences);
+        $('#deletesHistoryContainerWarningRead').on('click', window.requestHistoryPermissions);
+        $('#contextMenuBookmarks').on('click', window.requestBookmarksPermissions);
+        $('#deletesHistoryContextMenuBookmarks').on('click', window.requestBookmarksPermissions);
+
+        $('#setCookiesDomainForm').form({
+          fields: {
+            setCookiesDomainPattern: 'empty',
+            setCookiesDomainUrl: 'empty'
+          },
+          onSuccess: (event) => {
+            event.preventDefault();
+            setCookiesDomainAddRule();
+          }
+        });
+
+        $('#setCookiesDomainPatternDiv').popup({
+          html: domainPatternToolTip,
+          inline: true,
+          position: 'bottom left'
+        });
+
+        const popupToolTip =
+          '<div style="width:500px;">' +
+          'The popup lets you<ul>' +
+          '<li> Configure Isolation Per Domain' +
+          '<li> Convert Temporary to Permanent Container' +
+          '<li> Convert Permanent to Temporary Container' +
+          '<li> Open current tab URL in new Temporary Container' +
+          '<li> Open current tab URL in new "Deletes History Temporary Container"' +
+          '<li> Open Preferences/Options' +
+          '<li> Open new Temporary Container' +
+          '<li> Open new "Deletes History Temporary Container"' +
+          '</ul></div>';
+
+        $('#popupField').popup({
+          html: popupToolTip,
+          inline: true,
+          position: 'bottom left'
+        });
+
+        $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistory.automaticMode);
+        document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistory.contextMenu;
+        document.querySelector('#deletesHistoryContextMenuBookmarksCheckbox').checked = preferences.deletesHistory.contextMenuBookmarks;
+        $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistory.containerRemoval);
+        $('#deletesHistorycontainerAlwaysPerDomain').dropdown('set selected', preferences.deletesHistory.containerAlwaysPerDomain);
+        $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistory.containerIsolation);
+        $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistory.containerMouseClicks);
+
+        document.querySelector('#browserActionPopup').checked = preferences.browserActionPopup;
+        document.querySelector('#pageAction').checked = preferences.pageAction;
+        document.querySelector('#contextMenu').checked = preferences.contextMenu;
+        document.querySelector('#contextMenuBookmarksCheckbox').checked = preferences.contextMenuBookmarks;
+        document.querySelector('#keyboardShortcutsAltC').checked = preferences.keyboardShortcuts.AltC;
+        document.querySelector('#keyboardShortcutsAltP').checked = preferences.keyboardShortcuts.AltP;
+        document.querySelector('#keyboardShortcutsAltN').checked = preferences.keyboardShortcuts.AltN;
+        document.querySelector('#keyboardShortcutsAltShiftC').checked = preferences.keyboardShortcuts.AltShiftC;
+        document.querySelector('#keyboardShortcutsAltX').checked = preferences.keyboardShortcuts.AltX;
+        document.querySelector('#replaceTabs').checked = preferences.replaceTabs;
+        document.querySelector('#closeRedirectorTabs').checked = preferences.closeRedirectorTabs.active;
+        document.querySelector('#ignoreRequestsToAMO').checked = preferences.ignoreRequestsToAMO;
+        document.querySelector('#ignoreRequestsToPocket').checked = preferences.ignoreRequestsToPocket;
+        $('#automaticModeNewTab').dropdown('set selected', preferences.automaticMode.newTab);
+
+        const historyPermission = await browser.permissions.contains({permissions: ['history']});
+        if (historyPermission) {
+          $('#deletesHistoryContainerWarningRead')
+            .checkbox('check')
+            .checkbox('set disabled');
+
+          $('#keyboardShortcutsAltPField').removeClass('hidden');
+          $('#deletesHistoryStatisticsField').removeClass('hidden');
+        }
+
+        window.updateSetCookiesDomainRules();
+
+        const bookmarksPermission = await browser.permissions.contains({permissions: ['bookmarks']});
+        if (!bookmarksPermission) {
+          $('#contextMenuBookmarks').checkbox('uncheck');
+          $('#deletesHistoryContextMenuBookmarks').checkbox('uncheck');
+        }
+
+        this.loaded = true;
+      }
+    }
+  }
+</script>
+
 <template>
-  <div class="ui tab segment" data-tab="advanced">
+  <div v-show="loaded" class="ui tab segment" data-tab="advanced">
     <div class="ui top attached tabular menu">
       <a class="active item" data-tab="advanced/general">General</a>
       <a class="item" data-tab="advanced/setcookies">Set Cookies</a>
       <a class="item" data-tab="advanced/deletehistory">Delete History</a>
     </div>
     <div class="ui bottom attached active tab segment" data-tab="advanced/general">
-      <form class="ui form">
+      <div class="ui form">
         <div class="field" id="popupField">
           <div class="field">
             <label>Icon Popup</label>
@@ -130,10 +227,10 @@
         <div class="field">
           <button id="saveAdvancedGeneralPreferences" class="ui button primary">Save</button>
         </div>
-      </form>
+      </div>
     </div>
     <div class="ui bottom attached tab segment" data-tab="advanced/setcookies">
-      <form class="ui form" id="setCookiesDomainForm">
+      <div class="ui form" id="setCookiesDomainForm">
         <h4>
           Configure cookies to be set on certain domains in Temporary Containers
         </h4>
@@ -212,10 +309,10 @@
           <div class="ui bulleted list" id="setCookiesDomainCookies">
           </div>
         </div>
-      </form>
+      </div>
     </div>
     <div class="ui bottom attached tab segment" data-tab="advanced/deletehistory">
-      <form class="ui form">
+      <div class="ui form">
         <div class="field">
           <label>"Deletes History Temporary Containers"</label>
           <div class="ui negative message">
@@ -323,7 +420,7 @@
         <div class="field">
           <button id="saveAdvancedDeleteHistoryPreferences" class="ui button primary">Save</button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
