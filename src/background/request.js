@@ -173,20 +173,6 @@ class Request {
     }
 
     if (macAssignment) {
-      if (tab && tab.url && request && request.url) {
-        const parsedTabUrl = new URL(tab.url);
-        const parsedRequestUrl = new URL(request.url);
-        if (tab.cookieStoreId === macAssignment.cookieStoreId &&
-              parsedTabUrl.hostname === parsedRequestUrl.hostname &&
-              tab.id === request.tabId) {
-          debug('[_webRequestOnBeforeRequest] the request url is mac assigned to this container');
-          return;
-        }
-      }
-      if (tab && this.mac.containerConfirmed[tab.id] && tab.cookieStoreId === this.mac.containerConfirmed[tab.id]) {
-        debug('[_webRequestOnBeforeRequest] mac assigned but we are in a confirmed container', request, tab, macAssignment);
-        return;
-      }
       debug('[_webRequestOnBeforeRequest] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
       return this.mac.maybeReopenConfirmPage(macAssignment, request, tab);
     }
