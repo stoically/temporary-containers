@@ -1,4 +1,4 @@
-const initialize = async () => {
+export default async function initialize() {
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
   $('.ui.accordion').accordion({
@@ -164,6 +164,4 @@ const initialize = async () => {
   } catch (error) {
     showPreferencesError(error);
   }
-};
-
-document.addEventListener('DOMContentLoaded', initialize);
+}

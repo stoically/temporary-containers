@@ -4,14 +4,14 @@
   "description": "Temporary Containers",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -rf web-ext-artifacts .cache dist && cp README.md LICENSE src/core && npm run lint && npm test && parcel build src/ui/options.html --no-minify --no-source-maps && web-ext build -s dist && addons-linter web-ext-artifacts/temporary_containers-*.zip && ncu",
-    "build-sign": "rm -rf web-ext-artifacts .cache dist && cp README.md LICENSE src/core && node build-sign.js && npm run lint && npm test && parcel build src/ui/options.html --no-minify --no-source-maps && web-ext sign --channel unlisted -s dist && git checkout -- src/manifest.json && ncu",
+    "build": "rm -rf web-ext-artifacts .cache dist && cp README.md LICENSE src/core && npm run lint && npm test && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps && web-ext build -s dist && addons-linter web-ext-artifacts/temporary_containers-*.zip && ncu",
+    "build-sign": "rm -rf web-ext-artifacts .cache dist && cp README.md LICENSE src/core && node build-sign.js && npm run lint && npm test && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps && web-ext sign --channel unlisted -s dist && git checkout -- src/manifest.json && ncu",
     "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha --reporter=dot ./test/setup.js test/*.test.js --timeout 60000",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug --inspect",
     "test-functional": "mocha ./test/functional/*.test.js --timeout 10000",
     "check-dependencies": "ncu",
-    "watch": "rm -rf .cache dist && parcel src/ui/options.html --no-hmr"
+    "watch": "rm -rf .cache dist && parcel src/ui/options.html src/ui/popup.html --no-hmr"
   },
   "repository": {
     "type": "git",
@@ -59,7 +59,7 @@
   "staticFiles": {
     "staticPath": [
       "src/core",
-      "src/ui/static"
+      "src/ui/vendor"
     ]
   },
   "private": true,
