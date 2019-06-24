@@ -8,17 +8,18 @@ Detailed information about the Add-on [can be found on AMO](https://addons.mozil
 
 * Clone the repository
 * `npm install`
-* `npm install -g web-ext`
+* `npm run watch`
 
 ### Run in Firefox
 
-* `web-ext run -s src`
+* `npm install -g web-ext`
+* `web-ext run -s dist`
     * starts the default system Firefox, loads the Add-on and watches for changes
     * append `-p profilename` to start Firefox with a different profile
 
 or
 
-* Open `about:debugging` and `Load Temporary Add-on` which is located in the `src` directory
+* Open `about:debugging` and `Load Temporary Add-on` which is located in the `dist` directory
 
 
 Check `about:debugging` and click `Debug` under Temporary Container to see the console.
@@ -56,7 +57,7 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 
 
 ## Libraries
-The included [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are awesome and are used for the preferences & popup UI, though not for the background and content script.
+[Vue.js](https://vuejs.org), [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are used for the preferences & popup UI.
 
 
 ## Limitations
