@@ -1,0 +1,155 @@
+{
+  "automaticMode": {
+    "message": "Automatic Mode"
+  },
+  "optionsSave": {
+    "message": "Save"
+  },
+  "optionsNavGeneral": {
+    "message": "General"
+  },
+  "optionsNavIsolation": {
+    "message": "Isolation"
+  },
+  "optionsNavAdvanced": {
+    "message": "Advanced"
+  },
+  "optionsNavStatistics": {
+    "message": "Statistics"
+  },
+  "optionsNavExportImport": {
+    "message": "Export/Import"
+  },
+  "optionsGeneralNotifications": {
+    "message": "Notifications when Temporary Containers are deleted"
+  },
+  "optionsGeneralContainerNamePrefix": {
+    "message": "Container Name Prefix"
+  },
+  "optionsGeneralContainerColor": {
+    "message": "Container Color"
+  },
+  "optionsGeneralContainerColorBlue": {
+    "message": "blue"
+  },
+  "optionsGeneralContainerColorTurquoise": {
+    "message": "turquoise"
+  },
+  "optionsGeneralContainerColorGreen": {
+    "message": "green"
+  },
+  "optionsGeneralContainerColorYellow": {
+    "message": "yellow"
+  },
+  "optionsGeneralContainerColorOrange": {
+    "message": "orange"
+  },
+  "optionsGeneralContainerColorRed": {
+    "message": "red"
+  },
+  "optionsGeneralContainerColorPink": {
+    "message": "pink"
+  },
+  "optionsGeneralContainerColorPurple": {
+    "message": "purple"
+  },
+  "optionsGeneralContainerColorToolbar": {
+    "message": "toolbar (black/gray)"
+  },
+  "optionsGeneralContainerRandomColor": {
+    "message": "Random Container Color"
+  },
+  "optionsGeneralContainerIcon": {
+    "message": "Container Icon"
+  },
+  "optionsGeneralContainerIconFingerprint": {
+    "message": "fingerprint"
+  },
+  "optionsGeneralContainerIconBriefcase": {
+    "message": "briefcase"
+  },
+  "optionsGeneralContainerIconDollar": {
+    "message": "dollar"
+  },
+  "optionsGeneralContainerIconCart": {
+    "message": "cart"
+  },
+  "optionsGeneralContainerIconCircle": {
+    "message": "circle"
+  },
+  "optionsGeneralContainerIconGift": {
+    "message": "gift"
+  },
+  "optionsGeneralContainerIconVacation": {
+    "message": "vacation"
+  },
+  "optionsGeneralContainerIconFood": {
+    "message": "food"
+  },
+  "optionsGeneralContainerIconFruit": {
+    "message": "fruit"
+  },
+  "optionsGeneralContainerIconPet": {
+    "message": "pet"
+  },
+  "optionsGeneralContainerIconTree": {
+    "message": "tree"
+  },
+  "optionsGeneralContainerIconChill": {
+    "message": "chill"
+  },
+  "optionsGeneralContainerIconFence": {
+    "message": "fence"
+  },
+  "optionsGeneralContainerIconRandom": {
+    "message": "Random Container Icon"
+  },
+  "optionsGeneralContainerNumber": {
+    "message": "Container Number"
+  },
+  "optionsGeneralContainerNumberKeepCounting": {
+    "message": "Keep counting (default)"
+  },
+  "optionsGeneralContainerNumberReuseNumbers": {
+    "message": "Reuse available numbers"
+  },
+  "optionsGeneralContainerDeleteTime": {
+    "message": "Delete no longer needed Temporary Containers"
+  },
+  "optionsGeneralContainerDeleteTimeTooltip": {
+    "message": "\"X minutes\" lets you \"undo close tabs\" in that timeframe"
+  },
+  "optionsGeneralContainerDeleteTime15Minutes": {
+    "message": "15 minutes after the last tab in it closes (default)"
+  },
+  "optionsGeneralContainerDeleteTime5Minutes": {
+    "message": "5 minutes after the last tab in it closes"
+  },
+  "optionsGeneralContainerDeleteTime2Minutes": {
+    "message": "2 minutes after the last tab in it closes"
+  },
+  "optionsGeneralContainerDeleteTimeInstant": {
+    "message": "After the last tab in it closes"
+  },
+  "optionsGeneralToolbarIconColor": {
+    "message": "Toolbar Icon Color"
+  },
+  "optionsGeneralToolbarIconColorTooltip": {
+    "message": "When switching back to default you might need to restart the browser depending on your theme"
+  },
+  "optionsGeneralToolbarIconColorDefault": {
+    "message": "default"
+  },
+  "optionsGeneralToolbarIconColorBlackSimple": {
+    "message": "black (simple)"
+  },
+  "optionsGeneralToolbarIconColorBlueSimple": {
+    "message": "blue (simple)"
+  },
+  "optionsGeneralToolbarIconColorRedSimple": {
+    "message": "red (simple)"
+  },
+  "optionsGeneralToolbarIconColorWhiteSimple": {
+    "message": "white (simple)"
+  }
+}

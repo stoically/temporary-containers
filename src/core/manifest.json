@@ -7,6 +7,7 @@
   "icons": {
     "48": "icons/tmpcontainer-48.png"
   },
+  "default_locale": "en",
   "browser_action": {
     "browser_style": false,
     "default_area": "tabstrip",

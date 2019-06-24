@@ -63,8 +63,7 @@ class BrowserAction {
       tabId: tabId
     });
     browser.browserAction.setTitle({
-      title: 'Automatic Mode active. The next website you navigate to will be reopened ' +
-             'in a Temporay Container. Click to open a new Tab in a new Temporary Container (Alt+C)',
+      title: 'Automatic Mode on navigation active',
       tabId: tabId
     });
     browser.browserAction.setBadgeText({

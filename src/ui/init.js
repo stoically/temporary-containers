@@ -32,6 +32,12 @@ export default function init(App) {
     loadScript('/vue/vue.runtime.min.js'),
     import('./shared.js')
   ]).then(() => {
+    Vue.mixin({
+      methods: {
+        t: browser.i18n.getMessage
+      }
+    });
+
     new Vue({
       el: '#app',
       render: h => h(App)

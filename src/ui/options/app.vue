@@ -36,11 +36,11 @@
   <div>
     <div id="container" class="ui container hidden">
       <div class="ui menu">
-        <a class="item" data-tab="general">General</a>
-        <a class="item" data-tab="isolation">Isolation</a>
-        <a class="item" data-tab="advanced">Advanced</a>
-        <a class="item" data-tab="statistics">Statistics</a>
-        <a class="item" data-tab="export_import">Export/Import</a>
+        <a class="item" data-tab="general">{{t('optionsNavGeneral')}}</a>
+        <a class="item" data-tab="isolation">{{t('optionsNavIsolation')}}</a>
+        <a class="item" data-tab="advanced">{{t('optionsNavAdvanced')}}</a>
+        <a class="item" data-tab="statistics">{{t('optionsNavStatistics')}}</a>
+        <a class="item" data-tab="export_import">{{t('optionsNavExportImport')}}</a>
       </div>
       <general></general>
       <isolation></isolation>
