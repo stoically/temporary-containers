@@ -110,7 +110,9 @@ global.loadBackground = async (preferences = {}) => {
     reason: 'install'
   });
   Object.assign(background.storage.local.preferences, preferences);
+  // eslint-disable-next-line require-atomic-updates
   background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'always';
+  // eslint-disable-next-line require-atomic-updates
   background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'always';
   await background.initialize();
   return background;

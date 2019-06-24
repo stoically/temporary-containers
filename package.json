@@ -59,7 +59,7 @@
   "staticFiles": {
     "staticPath": [
       "src/core",
-      "src/ui/vendor"
+      "src/ui/static"
     ]
   },
   "private": true,

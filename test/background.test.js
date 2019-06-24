@@ -128,6 +128,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves({id: 1});
       await background.initialize();
+      // eslint-disable-next-line require-atomic-updates
       background.storage.local.preferences.automaticMode.newTab = 'created';
       await background.runtime.onStartup();
       await nextTick();
