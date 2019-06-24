@@ -2,11 +2,11 @@ class TemporaryContainers {
   constructor() {
     this.initialized = false;
 
-    this.storage = new window.Storage;
+    this.storage = new window.TmpStorage;
     this.utils = new window.Utils(this);
     this.runtime = new window.Runtime(this);
     this.management = new window.Management(this);
-    this.request = new window.Request(this);
+    this.request = new window.TmpRequest(this);
     this.container = new window.Container(this);
     this.mouseclick = new window.MouseClick(this);
     this.tabs = new window.Tabs(this);

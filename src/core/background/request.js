@@ -1,4 +1,4 @@
-class Request {
+class TmpRequest {
   constructor(background) {
     this.background = background;
     this.canceledTabs = {};
@@ -315,4 +315,4 @@ class Request {
   }
 }
 
-window.Request = Request;
+window.TmpRequest = TmpRequest;

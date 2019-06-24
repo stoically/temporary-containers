@@ -18,6 +18,7 @@ browser.webRequest.onBeforeRequest.addListener(async (request) => {
       retry++;
       if (retry > MAX_RETRIES) {
         console.log('[onBeforeRequest] max retries reached, giving up', request);
+        // eslint-disable-next-line require-atomic-updates
         waitingForInitializingFailed = true;
         return;
       }

@@ -1,4 +1,4 @@
-class Storage {
+class TmpStorage {
   constructor() {
     this.loaded = false;
     this.loading = false;
@@ -221,4 +221,4 @@ class Storage {
   }
 }
 
-window.Storage = Storage;
+window.TmpStorage = TmpStorage;

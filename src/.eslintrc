@@ -1,31 +1,6 @@
 {
-    "env": {
-        "browser": true,
-        "node": false
-    },
-    "globals": {
-        "tmp": true,
-        "debug": true,
-        "lib": true,
-        "psl": true,
-        "log": true,
-        "delay": true,
-        "globToRegexp": true,
-        "PQueue": true,
-        "versionCompare": true,
-        "Container": true,
-        "MultiAccountContainers": true,
-        "MouseClick": true,
-        "Request": true,
-        "Storage": true,
-        "Tabs": true,
-        "Runtime": true,
-        "BrowserAction": true,
-        "PageAction": true,
-        "ContextMenu": true,
-        "Commands": true,
-        "Migration": true,
-        "Utils": true,
-        "Cookies": true
-    }
+	"env": {
+		"browser": true,
+		"node": false
+	}
 }
