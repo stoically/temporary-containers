@@ -13,6 +13,12 @@ class Isolation {
   }
 
   async maybeIsolate({tab, request, openerTab, macAssignment}) {
+    if (tab && request && request.originUrl && this.mac.isConfirmPage(request.originUrl)) {
+      debug('[maybeIsolate] we are coming from a mac confirm page');
+      this.mac.containerConfirmed[tab.id] = tab.cookieStoreId;
+      return;
+    }
+
     if (this.mouseclick.linksClicked[request.url] && tab && tab.cookieStoreId !== 'firefox-default' &&
       this.container.urlCreatedContainer[request.url] === tab.cookieStoreId) {
       debug('[maybeIsolate] link click already created this container, we can stop here', request, tab);
@@ -42,6 +48,12 @@ class Isolation {
       return false;
     }
 
+    if (macAssignment && tab && this.mac.containerConfirmed[tab.id] &&
+      tab.cookieStoreId === this.mac.containerConfirmed[tab.id]) {
+      debug('[maybeIsolate] confirmed container, not isolating', this.mac.containerConfirmed, macAssignment);
+      return;
+    }
+
     debug('[maybeIsolate] isolating', tab, request);
     if (this.request.cancelRequest(request)) {
       debug('[maybeIsolate] canceling request');
@@ -50,7 +62,7 @@ class Isolation {
 
     if (macAssignment && (!tab || (tab && tab.cookieStoreId !== macAssignment.cookieStoreId))) {
       debug('[maybeIsolate] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
-      this.mac.maybeReopenConfirmPage(macAssignment, request, tab);
+      this.mac.maybeReopenConfirmPage(macAssignment, request, tab, true);
       return false;
     }
 
@@ -104,8 +116,8 @@ class Isolation {
     }
 
     return this.shouldIsolateMac({tab, macAssignment}) ||
-      (!macAssignment && await this.shouldIsolateNavigation({request, tab, openerTab})) ||
-      (!macAssignment && await this.shouldIsolateAlways({request, tab, openerTab}));
+      await this.shouldIsolateNavigation({request, tab, openerTab}) ||
+      await this.shouldIsolateAlways({request, tab, openerTab});
   }
 
   async shouldIsolateNavigation({request, tab, openerTab}) {

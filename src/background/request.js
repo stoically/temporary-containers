@@ -167,22 +167,12 @@ class Request {
       }
     }
 
-    if (!macAssignment) {
-      let containerExists = false;
-      if (tab && tab.cookieStoreId === 'firefox-default') {
-        containerExists = true;
-      } else {
-        try {
-          containerExists = await browser.contextualIdentities.get(tab.cookieStoreId);
-        } catch (error) {
-          debug('[_webRequestOnBeforeRequest] container doesnt exist anymore', tab);
-        }
-      }
-      if (tab && tab.cookieStoreId !== 'firefox-default' && containerExists) {
-        debug('[_webRequestOnBeforeRequest] onBeforeRequest tab belongs to a non-default container', tab, request);
-        return;
-      }
-    } else {
+    if (tab && tab.cookieStoreId !== 'firefox-default') {
+      debug('[_webRequestOnBeforeRequest] onBeforeRequest tab belongs to a non-default container', tab, request);
+      return;
+    }
+
+    if (macAssignment) {
       if (tab && tab.url && request && request.url) {
         const parsedTabUrl = new URL(tab.url);
         const parsedRequestUrl = new URL(request.url);
@@ -193,8 +183,8 @@ class Request {
           return;
         }
       }
-      if (tab && tab.cookieStoreId && this.container.isTemporary(tab.cookieStoreId)) {
-        debug('[_webRequestOnBeforeRequest] mac assigned but we are already in a tmp container', request, tab, macAssignment);
+      if (tab && this.mac.containerConfirmed[tab.id] && tab.cookieStoreId === this.mac.containerConfirmed[tab.id]) {
+        debug('[_webRequestOnBeforeRequest] mac assigned but we are in a confirmed container', request, tab, macAssignment);
         return;
       }
       debug('[_webRequestOnBeforeRequest] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
