@@ -1,6 +1,6 @@
 window.preferences = {};
-const messageBox = $('#message');
 window.showMessage = (message, keepOpen = false) => {
+  const messageBox = $('#message');
   messageBox.html(message);
   messageBox.addClass('positive');
   messageBox.removeClass('negative');
@@ -12,14 +12,16 @@ window.showMessage = (message, keepOpen = false) => {
     messageBox.addClass('hidden');
   }, 3000);
 };
+
 window.showError = (error) => {
+  const messageBox = $('#message');
   messageBox.html(error);
   messageBox.addClass('negative');
   messageBox.removeClass('positive');
   messageBox.removeClass('hidden');
 };
-window.showPreferencesError = (error) => {
 
+window.showPreferencesError = (error) => {
   if (error) {
     // eslint-disable-next-line no-console
     console.error(error);

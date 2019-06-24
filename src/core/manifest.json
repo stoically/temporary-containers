@@ -30,7 +30,7 @@
   },
   "page_action": {
     "browser_style": false,
-    "default_popup": "ui/popup.html",
+    "default_popup": "popup.html",
     "default_icon": {
       "19": "icons/pageaction-gray-19.svg",
       "38": "icons/pageaction-gray-38.svg"
@@ -69,7 +69,7 @@
     }
   },
   "options_ui": {
-    "page": "ui/options.html",
+    "page": "options.html",
     "open_in_tab": true
   },
   "permissions": [
@@ -128,7 +128,7 @@
   "applications": {
     "gecko": {
       "id": "{c607c8df-14a7-4f28-894f-29e8722976af}",
-      "strict_min_version": "59.0"
+      "strict_min_version": "60.0"
     }
   }
 }

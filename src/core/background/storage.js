@@ -142,7 +142,7 @@ class Storage {
           // eslint-disable-next-line no-console
           console.error('[_load] storage seems to not get initialized correctly, showing preferences', this.loadErrorCount);
           this.loadErrorRetryTime = 5000;
-          const optionsUrl = browser.runtime.getURL('ui/options.html');
+          const optionsUrl = browser.runtime.getURL('options.html');
           await browser.tabs.create({
             url: optionsUrl
           });

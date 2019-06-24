@@ -4,7 +4,7 @@ const webExtensionsGeckoDriver = require('webextensions-geckodriver');
 const webdriver = webExtensionsGeckoDriver.webdriver;
 const until = webdriver.until;
 const By = webdriver.By;
-const manifestPath = path.resolve(path.join(__dirname, './../../src/manifest.json'));
+const manifestPath = path.resolve(path.join(__dirname, './../../src/core/manifest.json'));
 
 describe('Temporary Containers', () => {
   let helper;

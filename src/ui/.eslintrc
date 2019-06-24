@@ -1,4 +1,8 @@
 {
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "sourceType": "module"
+    },
     "rules": {
         "no-undef": 0,
         "no-unused-vars": 0

@@ -38,7 +38,7 @@ class Migration {
         this.storage.local.preferences.automaticModeNewTab = 'created';
         await this.storage.persist();
 
-        const url = browser.runtime.getURL('ui/notifications/update_from_0.57_and_below.html');
+        const url = browser.runtime.getURL('notifications/update_from_0.57_and_below.html');
         browser.tabs.create({
           url
         });
@@ -172,7 +172,7 @@ class Migration {
       debug('updated from version <= 0.87, inform user about management permission');
       const mangementPermission = await browser.permissions.contains({permissions: ['management']});
       if (!mangementPermission) {
-        const url = browser.runtime.getURL('ui/notifications/update_from_0.87_and_below.html');
+        const url = browser.runtime.getURL('notifications/update_from_0.87_and_below.html');
         browser.tabs.create({
           url
         });

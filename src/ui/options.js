@@ -1,11 +1,50 @@
-const initialize = async () => {
-  $('.menu .item').tab({
-    history: true,
-    historyType: 'hash'
-  });
+export default async function initialize() {
   $('.ui.dropdown').dropdown();
   $('.ui.checkbox').checkbox();
   $('.ui.accordion').accordion({exclusive: false});
+
+  $('#saveContainerPreferences').on('click', window.saveContainerPreferences);
+  $('#saveAdvancedGeneralPreferences').on('click', window.saveAdvancedPreferences);
+  $('#saveAdvancedDeleteHistoryPreferences').on('click', window.saveAdvancedPreferences);
+  $('#saveIsolationGlobalPreferences').on('click', window.saveIsolationGlobalPreferences);
+  $('#saveIsolationMacPreferences').on('click', window.saveIsolationGlobalPreferences);
+  $('#saveStatisticsPreferences').on('click', window.saveStatisticsPreferences);
+  $('#resetStatistics').on('click', window.resetStatistics);
+  $('#deletesHistoryStatisticsField').on('click', window.showDeletesHistoryStatistics);
+  $('#deletesHistoryContainerWarningRead').on('click', window.requestHistoryPermissions);
+  $('#notifications').on('click', window.requestNotificationsPermissions);
+  $('#contextMenuBookmarks').on('click', window.requestBookmarksPermissions);
+  $('#deletesHistoryContextMenuBookmarks').on('click', window.requestBookmarksPermissions);
+  $('#exportPreferences').on('click', window.exportPreferencesButton);
+  $('#importPreferences').on('change', window.importPreferencesButton);
+
+  $('#resetStorage').on('click', async (event) => {
+    event.preventDefault();
+
+    let reset = false;
+    try {
+      reset = await browser.runtime.sendMessage({
+        method: 'resetStorage'
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[resetStorage] couldnt send message', error);
+    }
+
+    if (!reset) {
+      $('#preferenceserrorcontent').html(`
+        Now this is embarrassing. Storage reset didn't work either.
+        At this point you probably have to reinstall the Add-on.
+        Sorry again, but there's not much I can do about it since
+        this is almost certainly a Firefox API problem right now.
+      `);
+    } else {
+      initialize(event);
+      $('#preferenceserror').modal('hide');
+      showMessage('Storage successfully reset.', true);
+    }
+  });
+
   try {
     const setCurrentPreferences = () => {
       document.querySelector('#automaticMode').checked = preferences.automaticMode.active;
@@ -75,12 +114,12 @@ const initialize = async () => {
       document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
       document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistory.statistics;
 
-      updateIsolationGlobalExcludeDomains();
-      updateIsolationDomains();
-      updateIsolationDomainExcludeDomains();
-      updateSetCookiesDomainRules();
-      updateStatistics();
-      showDeletesHistoryStatistics();
+      window.updateIsolationGlobalExcludeDomains();
+      window.updateIsolationDomains();
+      window.updateIsolationDomainExcludeDomains();
+      window.updateSetCookiesDomainRules();
+      window.updateStatistics();
+      window.showDeletesHistoryStatistics();
     };
 
     if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
@@ -98,7 +137,7 @@ const initialize = async () => {
 
     const storage = await browser.storage.local.get(['preferences', 'tempContainers']);
     if (!storage.preferences || !Object.keys(storage.preferences).length) {
-      showPreferencesError();
+      window.showPreferencesError();
       return;
     }
     preferences = storage.preferences;
@@ -267,53 +306,7 @@ const initialize = async () => {
       $('#deletesHistoryContextMenuBookmarks').checkbox('uncheck');
     }
 
-    if (!window.location.hash) {
-      $('.menu .item').tab('change tab', 'general');
-    }
   } catch (error) {
-    showPreferencesError(error);
+    window.showPreferencesError(error);
   }
-};
-
-document.addEventListener('DOMContentLoaded', initialize);
-$('#saveContainerPreferences').on('click', saveContainerPreferences);
-$('#saveAdvancedGeneralPreferences').on('click', saveAdvancedPreferences);
-$('#saveAdvancedDeleteHistoryPreferences').on('click', saveAdvancedPreferences);
-$('#saveIsolationGlobalPreferences').on('click', saveIsolationGlobalPreferences);
-$('#saveIsolationMacPreferences').on('click', saveIsolationGlobalPreferences);
-$('#saveStatisticsPreferences').on('click', saveStatisticsPreferences);
-$('#resetStatistics').on('click', resetStatistics);
-$('#deletesHistoryStatisticsField').on('click', showDeletesHistoryStatistics);
-$('#deletesHistoryContainerWarningRead').on('click', requestHistoryPermissions);
-$('#notifications').on('click', requestNotificationsPermissions);
-$('#contextMenuBookmarks').on('click', requestBookmarksPermissions);
-$('#deletesHistoryContextMenuBookmarks').on('click', requestBookmarksPermissions);
-$('#exportPreferences').on('click', exportPreferencesButton);
-$('#importPreferences').on('change', importPreferencesButton);
-
-$('#resetStorage').on('click', async (event) => {
-  event.preventDefault();
-
-  let reset = false;
-  try {
-    reset = await browser.runtime.sendMessage({
-      method: 'resetStorage'
-    });
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('[resetStorage] couldnt send message', error);
-  }
-
-  if (!reset) {
-    $('#preferenceserrorcontent').html(`
-      Now this is embarrassing. Storage reset didn't work either.
-      At this point you probably have to reinstall the Add-on.
-      Sorry again, but there's not much I can do about it since
-      this is almost certainly a Firefox API problem right now.
-    `);
-  } else {
-    initialize(event);
-    $('#preferenceserror').modal('hide');
-    showMessage('Storage successfully reset.', true);
-  }
-});
+}

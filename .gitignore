@@ -4,7 +4,9 @@
 /.nyc_output
 /coverage
 /semantic
-/src/README.md
-/src/LICENSE
+/src/core/README.md
+/src/core/LICENSE
 /src/.web-extension-id
 /.web-ext-artifacts
+/.cache
+/dist

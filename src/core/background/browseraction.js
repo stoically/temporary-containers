@@ -28,7 +28,7 @@ class BrowserAction {
 
   setPopup() {
     browser.browserAction.setPopup({
-      popup: 'ui/popup.html'
+      popup: 'popup.html'
     });
     browser.browserAction.setTitle({title: 'Temporary Containers'});
   }

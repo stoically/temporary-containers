@@ -39,7 +39,7 @@ const initialize = async () => {
 
     $('#preferences').on('click', () => {
       browser.tabs.create({
-        url: browser.runtime.getURL('ui/options.html')
+        url: browser.runtime.getURL('options.html')
       });
       window.close();
     });
