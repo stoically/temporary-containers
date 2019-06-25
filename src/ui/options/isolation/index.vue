@@ -10,17 +10,16 @@ export default {
     Mac
   },
   props: {
-    appInitialized: Boolean,
-    preferences: {
+    app: {
       type: Object,
-      default: () => {}
+      required: true
     }
   }
 };
 </script>
 
 <template>
-  <div v-show="appInitialized">
+  <div v-show="app.initialized">
     <div class="ui top attached tabular menu">
       <a
         class="active item"
@@ -46,21 +45,27 @@ export default {
       data-tab="isolation/global"
     >
       <global
-        v-if="appInitialized"
-        :preferences="preferences"
+        v-if="app.initialized"
+        :app="app"
       />
     </div>
     <div
       class="ui bottom attached tab segment"
       data-tab="isolation/perdomain"
     >
-      <per-domain v-if="appInitialized" />
+      <per-domain
+        v-if="app.initialized"
+        :app="app"
+      />
     </div>
     <div
       class="ui bottom attached tab segment"
       data-tab="isolation/mac"
     >
-      <mac v-if="appInitialized" />
+      <mac
+        v-if="app.initialized"
+        :app="app"
+      />
     </div>
   </div>
 </template>

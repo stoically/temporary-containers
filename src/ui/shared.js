@@ -61,40 +61,6 @@ window.showPreferencesError = (error) => {
     .modal('show');
 };
 
-window.saveIsolationGlobalPreferences = async (event) => {
-  event.preventDefault();
-
-  preferences.isolation.global.navigation.action = document.querySelector('#isolationGlobal').value;
-  preferences.isolation.global.mouseClick = {
-    middle: {
-      action: document.querySelector('#isolationGlobalMouseClickMiddle').value,
-      container: document.querySelector('#linkClickGlobalMiddleCreatesContainer').value
-    },
-    ctrlleft: {
-      action: document.querySelector('#isolationGlobalMouseClickCtrlLeft').value,
-      container: document.querySelector('#linkClickGlobalCtrlLeftCreatesContainer').value
-    },
-    left: {
-      action: document.querySelector('#isolationGlobalMouseClickLeft').value,
-      container: document.querySelector('#linkClickGlobalLeftCreatesContainer').value
-    }
-  };
-
-  preferences.isolation.global.excluded = isolationGlobalExcludedDomains;
-
-  preferences.isolation.global.excludedContainers = {};
-  const excludedContainers = $('#isolationGlobalExcludeContainers').dropdown('get values');
-  if (excludedContainers) {
-    excludedContainers.map(excludeContainer => {
-      preferences.isolation.global.excludedContainers[excludeContainer] = {};
-    });
-  }
-
-  preferences.isolation.mac.action = document.querySelector('#isolationMac').value;
-
-  await savePreferences();
-};
-
 window.isolationDomainAddRule = async () => {
   const domainPattern = document.querySelector('#isolationDomainPattern').value;
 

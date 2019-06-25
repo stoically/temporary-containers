@@ -1,45 +1,48 @@
 <script>
 export default {
   props: {
-    preferences: {
+    app: {
       type: Object,
-      default: () => {}
+      required: true
     }
   },
-  data: () => ({
-    show: false
-  }),
+  data() {
+    return {
+      preferences: this.app.preferences,
+      show: false
+    };
+  },
   async mounted() {
     $('#isolationGlobal .ui.accordion').accordion({exclusive: false});
     $('#isolationGlobal .ui.dropdown').dropdown();
 
-    $('#isolationGlobalNavigationAction').dropdown('set selected', preferences.isolation.global.navigation.action);
-    if (preferences.isolation.global.navigation.action !== 'never') {
+    $('#isolationGlobalNavigationAction').dropdown('set selected', this.preferences.isolation.global.navigation.action);
+    if (this.preferences.isolation.global.navigation.action !== 'never') {
       $('#isolationGlobalAccordion').accordion('open', 0);
     }
 
-    $('#isolationGlobalMouseClickMiddle').dropdown('set selected', preferences.isolation.global.mouseClick.middle.action);
-    $('#isolationGlobalMouseClickCtrlLeft').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.action);
-    $('#isolationGlobalMouseClickLeft').dropdown('set selected', preferences.isolation.global.mouseClick.left.action);
-    if (preferences.isolation.global.mouseClick.middle.action !== 'never' ||
-          preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
-          preferences.isolation.global.mouseClick.left.action !== 'never') {
+    $('#isolationGlobalMouseClickMiddle').dropdown('set selected', this.preferences.isolation.global.mouseClick.middle.action);
+    $('#isolationGlobalMouseClickCtrlLeft').dropdown('set selected', this.preferences.isolation.global.mouseClick.ctrlleft.action);
+    $('#isolationGlobalMouseClickLeft').dropdown('set selected', this.preferences.isolation.global.mouseClick.left.action);
+    if (this.preferences.isolation.global.mouseClick.middle.action !== 'never' ||
+          this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
+          this.preferences.isolation.global.mouseClick.left.action !== 'never') {
       $('#isolationGlobalAccordion').accordion('open', 1);
     }
 
-    if (Object.keys(preferences.isolation.global.excludedContainers).length) {
+    if (Object.keys(this.preferences.isolation.global.excludedContainers).length) {
       $('#isolationGlobalAccordion').accordion('open', 2);
     }
 
-    isolationGlobalExcludedDomains = preferences.isolation.global.excluded;
-    if (Object.keys(preferences.isolation.global.excluded).length) {
+    isolationGlobalExcludedDomains = this.preferences.isolation.global.excluded;
+    if (Object.keys(this.preferences.isolation.global.excluded).length) {
       $('#isolationGlobalAccordion').accordion('open', 3);
     }
 
 
-    $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.middle.container);
-    $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.ctrlleft.container);
-    $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', preferences.isolation.global.mouseClick.left.container);
+    $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', this.preferences.isolation.global.mouseClick.middle.container);
+    $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', this.preferences.isolation.global.mouseClick.ctrlleft.container);
+    $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', this.preferences.isolation.global.mouseClick.left.container);
 
     const excludeContainers = [];
     const containers = await browser.contextualIdentities.query({});
@@ -50,7 +53,7 @@ export default {
       excludeContainers.push({
         name: container.name,
         value: container.cookieStoreId,
-        selected: !!preferences.isolation.global.excludedContainers[container.cookieStoreId]
+        selected: !!this.preferences.isolation.global.excludedContainers[container.cookieStoreId]
       });
     });
     $('#isolationGlobalExcludeContainers').dropdown({
@@ -64,6 +67,41 @@ export default {
     });
 
     window.updateIsolationGlobalExcludeDomains();
+
+
+    window.saveIsolationGlobalPreferences = async (event) => {
+      event.preventDefault();
+
+      this.preferences.isolation.global.navigation.action = document.querySelector('#isolationGlobalNavigationAction').value;
+      this.preferences.isolation.global.mouseClick = {
+        middle: {
+          action: document.querySelector('#isolationGlobalMouseClickMiddle').value,
+          container: document.querySelector('#linkClickGlobalMiddleCreatesContainer').value
+        },
+        ctrlleft: {
+          action: document.querySelector('#isolationGlobalMouseClickCtrlLeft').value,
+          container: document.querySelector('#linkClickGlobalCtrlLeftCreatesContainer').value
+        },
+        left: {
+          action: document.querySelector('#isolationGlobalMouseClickLeft').value,
+          container: document.querySelector('#linkClickGlobalLeftCreatesContainer').value
+        }
+      };
+
+      this.preferences.isolation.global.excluded = isolationGlobalExcludedDomains;
+
+      this.preferences.isolation.global.excludedContainers = {};
+      const excludedContainers = $('#isolationGlobalExcludeContainers').dropdown('get values');
+      if (excludedContainers) {
+        excludedContainers.map(excludeContainer => {
+          this.preferences.isolation.global.excludedContainers[excludeContainer] = {};
+        });
+      }
+
+      this.preferences.isolation.mac.action = document.querySelector('#isolationMac').value;
+
+      // await savePreferences();
+    };
 
     $('#saveIsolationGlobalPreferences').on('click', window.saveIsolationGlobalPreferences);
 

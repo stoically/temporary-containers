@@ -170,21 +170,22 @@ export default {
     </div>
     <div
       class="ui tab segment"
+      data-tab="isolation"
+    >
+      <isolation
+        v-if="app.initialized"
+        :app="app"
+      />
+    </div>
+    <div
+      class="ui tab segment"
       data-tab="advanced"
     >
       <advanced
         :app="app"
       />
     </div>
-    <!-- <div
-      class="ui tab segment"
-      data-tab="isolation"
-    >
-      <isolation
-        :app-initialized="initialized"
-        :preferences="preferences"
-      />
-    </div>
+    <!--
     <div
       class="ui tab segment"
       data-tab="statistics"
