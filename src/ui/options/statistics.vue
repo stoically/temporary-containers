@@ -1,48 +1,89 @@
 <script>
-  export default {
-    data: () => ({
-      loaded: false
-    }),
-    props: ['preferences'],
-    watch: {
-      preferences() {
-        $('#saveStatisticsPreferences').on('click', window.saveStatisticsPreferences);
-        $('#resetStatistics').on('click', window.resetStatistics);
-        $('#deletesHistoryStatisticsField').on('click', window.showDeletesHistoryStatistics);
-
-        document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
-        document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistory.statistics;
-
-        const deletesHistoryStatisticsToolTip =
-          '<div style="width:500px;">' +
-          'The overall statistics include all Temporary Containers already<br>' +
-          'This will show and collect separate statistics about how many "Deletes History<br>' +
-          'Temporary Container" plus cookies and URLs with them got deleted.</div>';
-
-        $('#deletesHistoryStatisticsField').popup({
-          html: deletesHistoryStatisticsToolTip,
-          inline: true,
-          position: 'bottom left'
-        });
-
-        window.updateStatistics();
-        window.showDeletesHistoryStatistics();
-
-        this.loaded = true;
-      }
+export default {
+  props: {
+    preferences: {
+      type: Object,
+      default: () => {}
     }
+  },
+  data: () => ({
+    loaded: false
+  }),
+  watch: {
+    preferences() {
+      $('#saveStatisticsPreferences').on('click', window.saveStatisticsPreferences);
+      $('#resetStatistics').on('click', window.resetStatistics);
+      $('#deletesHistoryStatisticsField').on('click', window.showDeletesHistoryStatistics);
+
+      document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
+      document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistory.statistics;
+
+      const deletesHistoryStatisticsToolTip =
+        '<div style="width:500px;">' +
+        'The overall statistics include all Temporary Containers already<br>' +
+        'This will show and collect separate statistics about how many "Deletes History<br>' +
+        'Temporary Container" plus cookies and URLs with them got deleted.</div>';
+
+      $('#deletesHistoryStatisticsField').popup({
+        html: deletesHistoryStatisticsToolTip,
+        inline: true,
+        position: 'bottom left'
+      });
+
+      window.updateStatistics();
+      window.showDeletesHistoryStatistics();
+
+      this.loaded = true;
+    }
+  },
+  mounted() {
+    window.saveStatisticsPreferences = async (event) => {
+      event.preventDefault();
+      preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
+      preferences.deletesHistory.statistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
+      await savePreferences();
+    };
+
+    window.resetStatistics = async (event) => {
+      event.preventDefault();
+      await browser.runtime.sendMessage({
+        method: 'resetStatistics'
+      });
+
+      updateStatistics();
+      showMessage('Statistics have been reset.');
+    };
+
+    window.showDeletesHistoryStatistics = async () => {
+      const checked = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
+      if (checked) {
+        $('#deletesHistoryStatistics').removeClass('hidden');
+      } else {
+        $('#deletesHistoryStatistics').addClass('hidden');
+      }
+    };
   }
+};
 </script>
 
 <template>
-  <div v-show="loaded" class="ui tab segment" data-tab="statistics">
+  <div
+    v-show="loaded"
+    class="ui tab segment"
+    data-tab="statistics"
+  >
     <div class="ui two column grid">
       <div class="column">
         <div class="ui raised segment">
-          <div class="ui green ribbon label">Deleted</div>
+          <div class="ui green ribbon label">
+            Deleted
+          </div>
           <div class="ui horizontal statistics">
             <div class="ui green statistic">
-              <div class="value" id="containersDeleted">
+              <div
+                id="containersDeleted"
+                class="value"
+              >
                 0
               </div>
               <div class="label">
@@ -50,7 +91,10 @@
               </div>
             </div>
             <div class="ui green statistic">
-              <div class="value" id="cookiesDeleted">
+              <div
+                id="cookiesDeleted"
+                class="value"
+              >
                 0
               </div>
               <div class="label">
@@ -58,7 +102,10 @@
               </div>
             </div>
             <div class="ui green statistic">
-              <div class="value" id="cacheDeleted">
+              <div
+                id="cacheDeleted"
+                class="value"
+              >
                 0
               </div>
               <div class="label">
@@ -69,11 +116,19 @@
         </div>
       </div>
       <div class="column">
-        <div class="ui inverted segment hidden" id="deletesHistoryStatistics">
+        <div
+          id="deletesHistoryStatistics"
+          class="ui inverted segment hidden"
+        >
           <div class="ui horizontal statistics">
-            <div class="ui purple ribbon label">Deleted</div>
+            <div class="ui purple ribbon label">
+              Deleted
+            </div>
             <div class="ui purple inverted statistic">
-              <div class="value" id="deletesHistoryContainersDeleted">
+              <div
+                id="deletesHistoryContainersDeleted"
+                class="value"
+              >
                 0
               </div>
               <div class="label">
@@ -81,7 +136,10 @@
               </div>
             </div>
             <div class="ui purple inverted statistic">
-              <div class="value" id="deletesHistoryCookiesDeleted">
+              <div
+                id="deletesHistoryCookiesDeleted"
+                class="value"
+              >
                 0
               </div>
               <div class="label">
@@ -89,7 +147,10 @@
               </div>
             </div>
             <div class="ui purple inverted statistic">
-              <div class="value" id="deletesHistoryUrlsDeleted">
+              <div
+                id="deletesHistoryUrlsDeleted"
+                class="value"
+              >
                 0
               </div>
               <div class="label">
@@ -102,21 +163,44 @@
     </div>
     <br>
     <div class="ui form">
-      <div class="field" id="statisticsField">
+      <div
+        id="statisticsField"
+        class="field"
+      >
         <div class="ui checkbox">
-          <input type="checkbox" id="statisticsCheckbox">
+          <input
+            id="statisticsCheckbox"
+            type="checkbox"
+          >
           <label>Collect local statistics about Temporary Containers</label>
         </div>
       </div>
-      <div class="field hidden" id="deletesHistoryStatisticsField">
+      <div
+        id="deletesHistoryStatisticsField"
+        class="field hidden"
+      >
         <div class="ui checkbox">
-          <input type="checkbox" id="deletesHistoryStatisticsCheckbox">
-          <label>Collect local statistics about "Deletes History Temporary Containers" [?]</label>
+          <input
+            id="deletesHistoryStatisticsCheckbox"
+            type="checkbox"
+          >
+          <label>Collect local statistics about "Deletes History Temporary Containers"</label>
         </div>
       </div>
       <div class="field">
-        <button id="saveStatisticsPreferences" class="ui button primary">Save</button>
-        <button id="resetStatistics" class="ui button negative primary" data-tooltip="No confirmation">Reset Statistics</button>
+        <button
+          id="saveStatisticsPreferences"
+          class="ui button primary"
+        >
+          Save
+        </button>
+        <button
+          id="resetStatistics"
+          class="ui button negative primary"
+          data-tooltip="No confirmation"
+        >
+          Reset Statistics
+        </button>
       </div>
     </div>
   </div>

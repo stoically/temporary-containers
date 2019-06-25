@@ -1,4 +1,26 @@
-window.preferences = {};
+import { timingSafeEqual } from 'crypto';
+
+export default (App) => ({
+  el: '#app',
+  render: h => h(App),
+  mounted() {
+    this.$on('savePreferences', async preferences => {
+      try {
+        await browser.runtime.sendMessage({
+          method: 'savePreferences',
+          payload: {
+            preferences
+          }
+        });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('error while saving preferences', error);
+        showError('Error while saving preferences!');
+      }
+    });
+  }
+});
+
 window.showMessage = (message, keepOpen = false) => {
   const messageBox = $('#message');
   messageBox.html(message);
@@ -39,24 +61,6 @@ window.showPreferencesError = (error) => {
     .modal('show');
 };
 
-window.savePreferences = async () => {
-  try {
-    await browser.runtime.sendMessage({
-      method: 'savePreferences',
-      payload: {
-        preferences
-      }
-    });
-
-    showMessage('Preferences saved.');
-
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log('error while saving preferences', error);
-    showError('Error while saving preferences!');
-  }
-};
-
 window.saveIsolationGlobalPreferences = async (event) => {
   event.preventDefault();
 
@@ -91,7 +95,7 @@ window.saveIsolationGlobalPreferences = async (event) => {
   await savePreferences();
 };
 
-const isolationDomainAddRule = async () => {
+window.isolationDomainAddRule = async () => {
   const domainPattern = document.querySelector('#isolationDomainPattern').value;
 
   preferences.isolation.domain[domainPattern] = {
@@ -143,7 +147,7 @@ window.isolationDomainEditRule = (domainPattern) => {
   }
 };
 
-let isolationDomainRulesClickEvent = false;
+window.isolationDomainRulesClickEvent = false;
 window.updateIsolationDomains = () => {
   const isolationDomainRules = $('#isolationDomains');
   const domainRules = Object.keys(preferences.isolation.domain);
@@ -224,8 +228,8 @@ window.isolationDomainAddExcludeDomainRule = () => {
 };
 
 
-let isolationGlobalExcludedDomains = {};
-let isolationGlobalExcludeDomainPatternsClickEvent = false;
+window.isolationGlobalExcludedDomains = {};
+window.isolationGlobalExcludeDomainPatternsClickEvent = false;
 window.updateIsolationGlobalExcludeDomains = () => {
   const isolationGlobalExcludeDomainPatternsDiv = $('#isolationGlobalExcludedDomains');
   const isolationGlobalExcludeDomainPatterns = Object.keys(isolationGlobalExcludedDomains);
@@ -257,8 +261,8 @@ window.updateIsolationGlobalExcludeDomains = () => {
 };
 
 
-let isolationDomainExcludedDomains = {};
-let isolationDomainExcludeDomainPatternsClickEvent = false;
+window.isolationDomainExcludedDomains = {};
+window.isolationDomainExcludeDomainPatternsClickEvent = false;
 window.updateIsolationDomainExcludeDomains = () => {
   const isolationDomainExcludeDomainPatternsDiv = $('#isolationDomainExcludedDomains');
   const isolationDomainExcludeDomainPatterns = Object.keys(isolationDomainExcludedDomains);
@@ -290,67 +294,6 @@ window.updateIsolationDomainExcludeDomains = () => {
 };
 
 
-window.setCookiesDomainAddRule = async () => {
-  const domainPattern = document.querySelector('#setCookiesDomainPattern').value;
-  const setCookieRule = {
-    domain: document.querySelector('#setCookiesDomainDomain').value,
-    expirationDate: document.querySelector('#setCookiesDomainExpirationDate').value,
-    firstPartyDomain: document.querySelector('#setCookiesFirstPartyDomain').value,
-    httpOnly: document.querySelector('#setCookiesDomainHttpOnly').value,
-    name: document.querySelector('#setCookiesDomainName').value,
-    path: document.querySelector('#setCookiesDomainPath').value,
-    sameSite: document.querySelector('#setCookiesSameSite').value,
-    secure: document.querySelector('#setCookiesDomainSecure').value,
-    url: document.querySelector('#setCookiesDomainUrl').value,
-    value: document.querySelector('#setCookiesDomainValue').value
-  };
-
-  if (!preferences.cookies.domain[domainPattern]) {
-    preferences.cookies.domain[domainPattern] = [];
-  }
-  preferences.cookies.domain[domainPattern].push(setCookieRule);
-  await savePreferences();
-  updateSetCookiesDomainRules();
-};
-
-window.updateSetCookiesDomainRules = () => {
-  const setCookiesDomainCookies = $('#setCookiesDomainCookies');
-  const domainRules = Object.keys(preferences.cookies.domain);
-  if (!domainRules.length) {
-    setCookiesDomainCookies.html('No Cookies added');
-    return;
-  }
-  setCookiesDomainCookies.html('');
-  domainRules.map((domainPattern) => {
-    const domainPatternCookies = preferences.cookies.domain[domainPattern];
-    domainPatternCookies.map((domainPatternCookie, index) => {
-      if (!domainPatternCookie) {
-        return;
-      }
-      setCookiesDomainCookies.append(
-        `<div class="item" id="${encodeURIComponent(domainPattern)}" idIndex="${index}">${domainPattern} [${index}]: ` +
-        ` ${domainPatternCookie.name} ${domainPatternCookie.value} ` +
-        '<a href="#" id="setCookiesRemoveDomainPatterns" data-tooltip="Remove Cookie (no confirmation)" ' +
-        '><i class="icon-trash-empty"></i></a></div>');
-    });
-  });
-
-  setCookiesDomainCookies.on('click', async (event) => {
-    event.preventDefault();
-    const clickTarget = $(event.target).parent().attr('id');
-    const domainPattern = $(event.target).parent().parent().attr('id');
-    const domainPatternIndex = $(event.target).parent().parent().attr('idIndex');
-    if (clickTarget === 'setCookiesRemoveDomainPatterns') {
-      delete preferences.cookies.domain[decodeURIComponent(domainPattern)][domainPatternIndex];
-      const cookies = preferences.cookies.domain[decodeURIComponent(domainPattern)].filter(cookie => typeof cookie === 'object');
-      if (!cookies.length) {
-        delete preferences.cookies.domain[decodeURIComponent(domainPattern)];
-      }
-      await savePreferences();
-      updateSetCookiesDomainRules();
-    }
-  });
-};
 
 window.updateStatistics = async () => {
   const storage = await browser.storage.local.get('statistics');
@@ -367,95 +310,6 @@ window.updateStatistics = async () => {
   $('#deletesHistoryContainersDeleted').html(storage.statistics.deletesHistory.containersDeleted);
   $('#deletesHistoryCookiesDeleted').html(storage.statistics.deletesHistory.cookiesDeleted);
   $('#deletesHistoryUrlsDeleted').html(storage.statistics.deletesHistory.urlsDeleted);
-};
-
-window.saveAdvancedPreferences = async (event) => {
-  event.preventDefault();
-
-  preferences.browserActionPopup = document.querySelector('#browserActionPopup').checked;
-  preferences.pageAction = document.querySelector('#pageAction').checked;
-  preferences.contextMenu = document.querySelector('#contextMenu').checked;
-  preferences.contextMenuBookmarks = document.querySelector('#contextMenuBookmarksCheckbox').checked;
-  preferences.keyboardShortcuts.AltC = document.querySelector('#keyboardShortcutsAltC').checked;
-  preferences.keyboardShortcuts.AltP = document.querySelector('#keyboardShortcutsAltP').checked;
-  preferences.keyboardShortcuts.AltN = document.querySelector('#keyboardShortcutsAltN').checked;
-  preferences.keyboardShortcuts.AltShiftC = document.querySelector('#keyboardShortcutsAltShiftC').checked;
-  preferences.keyboardShortcuts.AltX = document.querySelector('#keyboardShortcutsAltX').checked;
-  preferences.replaceTabs = document.querySelector('#replaceTabs').checked;
-  preferences.closeRedirectorTabs.active = document.querySelector('#closeRedirectorTabs').checked;
-  preferences.ignoreRequestsToAMO = document.querySelector('#ignoreRequestsToAMO').checked;
-  preferences.ignoreRequestsToPocket = document.querySelector('#ignoreRequestsToPocket').checked;
-  preferences.automaticMode.newTab = document.querySelector('#automaticModeNewTab').value;
-
-  preferences.deletesHistory.automaticMode = document.querySelector('#deletesHistoryContainer').value;
-  preferences.deletesHistory.contextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
-  preferences.deletesHistory.contextMenuBookmarks = document.querySelector('#deletesHistoryContextMenuBookmarksCheckbox').checked;
-  preferences.deletesHistory.containerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
-  preferences.deletesHistory.containerAlwaysPerDomain = document.querySelector('#deletesHistorycontainerAlwaysPerDomain').value;
-  preferences.deletesHistory.containerIsolation = document.querySelector('#deletesHistoryContainerIsolation').value;
-  preferences.deletesHistory.containerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
-
-  // TODO this might cause saving preferences that got selected on global mouseclicks but not saved
-  saveIsolationGlobalPreferences(event);
-};
-
-
-window.saveStatisticsPreferences = async (event) => {
-  event.preventDefault();
-  preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
-  preferences.deletesHistory.statistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
-  await savePreferences();
-};
-
-window.resetStatistics = async (event) => {
-  event.preventDefault();
-  await browser.runtime.sendMessage({
-    method: 'resetStatistics'
-  });
-
-  updateStatistics();
-  showMessage('Statistics have been reset.');
-};
-
-window.showDeletesHistoryStatistics = async () => {
-  const checked = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
-  if (checked) {
-    $('#deletesHistoryStatistics').removeClass('hidden');
-  } else {
-    $('#deletesHistoryStatistics').addClass('hidden');
-  }
-};
-
-window.requestHistoryPermissions = async () => {
-  const allowed = await browser.permissions.request({
-    permissions: ['history']
-  });
-  if (!allowed) {
-    $('#deletesHistoryContainerWarningRead')
-      .checkbox('uncheck');
-  } else {
-    $('#deletesHistoryContainerWarningRead')
-      .checkbox('check')
-      .checkbox('set disabled');
-
-    $('#keyboardShortcutsAltPField').removeClass('hidden');
-
-    await browser.runtime.sendMessage({
-      method: 'historyPermissionAllowed'
-    });
-  }
-};
-
-
-
-window.requestBookmarksPermissions = async () => {
-  const allowed = await browser.permissions.request({
-    permissions: ['bookmarks']
-  });
-  if (!allowed) {
-    $('#contextMenuBookmarks').checkbox('uncheck');
-    $('#deletesHistoryContextMenuBookmarks').checkbox('uncheck');
-  }
 };
 
 window.formatBytes = (bytes, decimals) => {

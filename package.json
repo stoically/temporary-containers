@@ -4,8 +4,8 @@
   "description": "Temporary Containers",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "build": "rm -rf web-ext-artifacts .cache dist && cp README.md LICENSE src/core && npm run lint && npm test && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps && web-ext build -s dist && addons-linter web-ext-artifacts/temporary_containers-*.zip && ncu",
-    "build-sign": "rm -rf web-ext-artifacts .cache dist && cp README.md LICENSE src/core && node build-sign.js && npm run lint && npm test && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps && web-ext sign --channel unlisted -s dist && git checkout -- src/manifest.json && ncu",
+    "build": "rm -rf web-ext-artifacts .cache dist && npm run lint && npm test && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps && cp README.md LICENSE dist && web-ext build -s dist && addons-linter web-ext-artifacts/temporary_containers-*.zip && ncu",
+    "build-sign": "rm -rf web-ext-artifacts .cache dist && node build-sign.js && npm run lint && npm test && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps && cp README.md LICENSE dist && web-ext sign --channel unlisted -s dist && git checkout -- src/manifest.json && ncu",
     "lint": "eslint src",
     "test": "nyc --reporter=html --reporter=text mocha --reporter=dot ./test/setup.js test/*.test.js --timeout 60000",
     "test-watch": "mocha ./test/setup.js test/*.test.js --watch --tmp-debug --inspect",
@@ -40,7 +40,8 @@
     "babel-eslint": "^10.0.2",
     "chai": "^4.2.0",
     "coveralls": "^3.0.4",
-    "eslint": "^6.0.0",
+    "eslint": "^6.0.1",
+    "eslint-plugin-vue": "^5.2.3",
     "mocha": "^6.1.4",
     "npm-check-updates": "^3.1.12",
     "nyc": "^14.1.1",
@@ -60,7 +61,11 @@
     "staticPath": [
       "src/core",
       "src/ui/static"
-    ]
+    ],
+    "watcherGlob": "src/core"
+  },
+  "posthtml": {
+    "recognizeSelfClosing": true
   },
   "private": true,
   "nyc": {

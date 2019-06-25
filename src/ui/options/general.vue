@@ -1,184 +1,289 @@
 <script>
-  export default {
-    methods: {
-      save() {
-        if (!this.loaded) {
-          return;
-        }
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
 
-        preferences.automaticMode.active = document.querySelector('#automaticMode').checked;
-        preferences.notifications = document.querySelector('#notificationsCheckbox').checked;
-        preferences.container.namePrefix = document.querySelector('#containerNamePrefix').value;
-        preferences.container.color = document.querySelector('#containerColor').value;
-        preferences.container.colorRandom = document.querySelector('#containerColorRandom').checked;
-        preferences.container.icon = document.querySelector('#containerIcon').value;
-        preferences.container.iconRandom = document.querySelector('#containerIconRandom').checked;
-        preferences.container.numberMode = document.querySelector('#containerNumberMode').value;
-        preferences.container.removal = document.querySelector('#containerRemoval').value;
-        preferences.iconColor = document.querySelector('#iconColor').value;
-
-        window.savePreferences();
-      },
-
-      async requestNotificationsPermissions() {
-        const allowed = await browser.permissions.request({
-          permissions: ['notifications']
-        });
-        if (!allowed) {
-          $('#notifications')
-            .checkbox('uncheck');
+export default {
+  props: {
+    app: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    return {
+      preferences: this.app.preferences,
+      permissions: this.app.permissions,
+      initialized: false,
+      show: false,
+      containerColors: [
+        'blue',
+        'turquoise',
+        'green',
+        'yellow',
+        'orange',
+        'red',
+        'pink',
+        'purple',
+      ],
+      containerIcons: [
+        'fingerprint',
+        'briefcase',
+        'dollar',
+        'cart',
+        'circle',
+        'gift',
+        'vacation',
+        'food',
+        'fruit',
+        'pet',
+        'tree',
+        'chill'
+      ],
+      toolbarIconColors: [
+        'default',
+        'black-simple',
+        'blue-simple',
+        'red-simple',
+        'white-simple'
+      ]
+    };
+  },
+  watch: {
+    preferences: {
+      async handler(newPreferences) {
+        // old preferences are not available when deep watching
+        // https://github.com/vuejs/vue/issues/2164#issuecomment-432872718
+        if (newPreferences.container.colorRandom) {
+          $('#containerColor .dropdown').addClass('disabled');
         } else {
-          this.save();
+          $('#containerColor .dropdown').removeClass('disabled');
         }
-      }
-    },
-    data: () => ({
-      loaded: false
-    }),
-    props: ['preferences'],
-    watch: {
-      async preferences() {
-        if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
-          const toolbarOption = document.createElement('option');
-          toolbarOption.value = 'toolbar';
-          toolbarOption.text = 'toolbar (black/gray)';
-          document.querySelector('#containerColor').add(toolbarOption);
-
-          const fenceOption = document.createElement('option');
-          fenceOption.value = 'fence';
-          fenceOption.text = 'fence';
-          document.querySelector('#containerIcon').add(fenceOption);
+        if (newPreferences.container.iconRandom) {
+          $('#containerIcon .dropdown').addClass('disabled');
+        } else {
+          $('#containerIcon .dropdown').removeClass('disabled');
         }
+      },
+      deep: true
+    }
+  },
+  async mounted() {
+    if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
+      this.containerColors.push('toolbar');
+      this.containerIcons.push('fence');
+    }
 
-        document.querySelector('#automaticMode').checked = preferences.automaticMode.active;
-        document.querySelector('#notificationsCheckbox').checked = preferences.notifications;
-        document.querySelector('#containerNamePrefix').value = preferences.container.namePrefix;
-        $('#containerColor').dropdown('set selected', preferences.container.color);
-        document.querySelector('#containerColorRandom').checked = preferences.container.colorRandom;
-        $('#containerIcon').dropdown('set selected', preferences.container.icon);
-        document.querySelector('#containerIconRandom').checked = preferences.container.iconRandom;
-        $('#containerNumberMode').dropdown('set selected', preferences.container.numberMode);
-        $('#containerRemoval').dropdown('set selected', preferences.container.removal);
-        $('#iconColor').dropdown('set selected', preferences.iconColor);
+    this.containerColors = this.containerColors.map(containerColor => ({
+      id: containerColor,
+      text: this.t(`optionsGeneralContainerColor${containerColor.capitalize()}`)
+    }));
 
-        const automaticModeToolTip =
+    this.containerIcons = this.containerIcons.map(containerIcon => ({
+      id: containerIcon,
+      text: this.t(`optionsGeneralContainerIcon${containerIcon.capitalize()}`)
+    }));
+
+    this.toolbarIconColors = this.toolbarIconColors.map(toolbarIconColor => ({
+      id: toolbarIconColor,
+      text: this.t(`optionsGeneralToolbarIconColor${toolbarIconColor.capitalize().replace('-s', 'S')}`)
+    }));
+
+    if (!this.permissions.notifications) {
+      this.preferences.notifications = false;
+    }
+    this.initialized = true;
+
+    this.$nextTick(async () => {
+      $('#general .ui.dropdown').dropdown();
+      $('#general .ui.checkbox').checkbox();
+
+      const automaticModeToolTip =
           '<div style="width:500px;">' +
           'Automatically reopen tabs in new Temporary Containers when<ul>' +
           '<li> Opening a new tab' +
           '<li> A tab tries to load a link in the default container' +
           '<li> An external program opens a link in the browser</ul></div>';
 
-        $('#automaticModeField').popup({
-          html: automaticModeToolTip,
-          inline: true,
-          position: 'bottom left'
-        });
+      $('#automaticModeField').popup({
+        html: automaticModeToolTip,
+        inline: true,
+        position: 'bottom left'
+      });
 
-        const notificationsPermission = await browser.permissions.contains({permissions: ['notifications']});
-        if (!notificationsPermission) {
-          $('#notifications')
-            .checkbox('uncheck');
-        }
-
-        $('#general .dropdown').dropdown({
-          onChange: this.save
-        });
-
-        this.loaded = true;
-      }
-    }
+      this.show = true;
+    });
   }
+};
 </script>
 
 <template>
-  <div id="general" v-show="loaded" class="ui tab segment" data-tab="general">
+  <div
+    v-if="initialized"
+    v-show="show"
+    id="general"
+  >
     <div class="ui form">
-      <div class="field" id="automaticModeField">
+      <div
+        id="automaticModeField"
+        class="field"
+      >
         <div class="ui checkbox">
-          <input v-on:change="save" type="checkbox" id="automaticMode">
-          <label>{{t('automaticMode')}}</label>
+          <input
+            id="automaticMode"
+            v-model="preferences.automaticMode.active"
+            type="checkbox"
+          >
+          <label>{{ t('automaticMode') }}</label>
         </div>
         <span class="float right">
-          <a id="automaticModeInfo" class="icon-info-circled" href="https://github.com/stoically/temporary-containers/wiki/Automatic-Mode" target="_blank"></a>
+          <a
+            id="automaticModeInfo"
+            class="icon-info-circled"
+            href="https://github.com/stoically/temporary-containers/wiki/Automatic-Mode"
+            target="_blank"
+          />
         </span>
       </div>
 
-      <div class="field" id="notificationsField">
-        <div class="ui checkbox" v-on:click="requestNotificationsPermissions" id="notifications">
-          <input type="checkbox" id="notificationsCheckbox">
-          <label>{{t('optionsGeneralNotifications')}}</label>
+      <div
+        id="notificationsField"
+        class="field"
+      >
+        <div
+          id="notifications"
+          class="ui checkbox"
+        >
+          <input
+            id="notificationsCheckbox"
+            v-model="preferences.notifications"
+            type="checkbox"
+          >
+          <label>{{ t('optionsGeneralNotifications') }}</label>
         </div>
       </div>
       <div class="field">
-        <label>{{t('optionsGeneralContainerNamePrefix')}}</label>
-        <input type="text" v-on:input="save" id="containerNamePrefix">
+        <label>{{ t('optionsGeneralContainerNamePrefix') }}</label>
+        <input
+          id="containerNamePrefix"
+          v-model="preferences.container.namePrefix"
+          type="text"
+        >
       </div>
-      <div class="field">
-        <label>{{t('optionsGeneralContainerColor')}}</label>
-        <select id="containerColor" v-on:change="save" class="ui fluid dropdown">
-          <option value="blue">{{t('optionsGeneralContainerColorBlue')}}</option>
-          <option value="turquoise">{{t('optionsGeneralContainerColorTurquoise')}}</option>
-          <option value="green">{{t('optionsGeneralContainerColorGreen')}}</option>
-          <option value="yellow">{{t('optionsGeneralContainerColorYellow')}}</option>
-          <option value="orange">{{t('optionsGeneralContainerColorOrange')}}</option>
-          <option value="red">{{t('optionsGeneralContainerColorRed')}}</option>
-          <option value="pink">{{t('optionsGeneralContainerColorPink')}}</option>
-          <option value="purple">{{t('optionsGeneralContainerColorPurple')}}</option>
-        </select>
-      </div>
-      <div class="field">
-          <div class="ui checkbox">
-            <input v-on:change="save" type="checkbox" id="containerColorRandom">
-            <label>{{t('optionsGeneralContainerRandomColor')}}</label>
-          </div>
-      </div>
-      <div class="field">
-        <label>{{t('optionsGeneralContainerIcon')}}</label>
-        <select id="containerIcon" class="ui fluid dropdown">
-          <option value="fingerprint">{{t('optionsGeneralContainerIconFingerprint')}}</option>
-          <option value="briefcase">{{t('optionsGeneralContainerIconBriefcase')}}</option>
-          <option value="dollar">{{t('optionsGeneralContainerIconDollar')}}</option>
-          <option value="cart">{{t('optionsGeneralContainerIconCart')}}</option>
-          <option value="circle">{{t('optionsGeneralContainerIconCircle')}}</option>
-          <option value="gift">{{t('optionsGeneralContainerIconGift')}}</option>
-          <option value="vacation">{{t('optionsGeneralContainerIconVacation')}}</option>
-          <option value="food">{{t('optionsGeneralContainerIconFood')}}</option>
-          <option value="fruit">{{t('optionsGeneralContainerIconFruit')}}</option>
-          <option value="pet">{{t('optionsGeneralContainerIconPet')}}</option>
-          <option value="tree">{{t('optionsGeneralContainerIconTree')}}</option>
-          <option value="chill">{{t('optionsGeneralContainerIconChill')}}</option>
+      <div
+        id="containerColor"
+        class="field"
+      >
+        <label>{{ t('optionsGeneralContainerColor') }}</label>
+        <select
+          v-model="preferences.container.color"
+          :disabled="preferences.container.colorRandom"
+          class="ui fluid dropdown"
+        >
+          <option
+            v-for="containerColor in containerColors"
+            :key="containerColor.id"
+            :value="containerColor.id"
+          >
+            {{ containerColor.text }}
+          </option>
         </select>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input v-on:change="save" type="checkbox" id="containerIconRandom">
-          <label>{{t('optionsGeneralContainerIconRandom')}}</label>
+          <input
+            id="containerColorRandom"
+            v-model="preferences.container.colorRandom"
+            type="checkbox"
+          >
+          <label>{{ t('optionsGeneralContainerRandomColor') }}</label>
+        </div>
+      </div>
+      <div
+        id="containerIcon"
+        class="field"
+      >
+        <label>{{ t('optionsGeneralContainerIcon') }}</label>
+        <select
+          v-model="preferences.container.icon"
+          :disabled="preferences.container.iconRandom"
+          class="ui fluid dropdown"
+        >
+          <option
+            v-for="containerIcon in containerIcons"
+            :key="containerIcon.id"
+            :value="containerIcon.id"
+          >
+            {{ containerIcon.text }}
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="ui checkbox">
+          <input
+            id="containerIconRandom"
+            v-model="preferences.container.iconRandom"
+            type="checkbox"
+          >
+          <label>{{ t('optionsGeneralContainerIconRandom') }}</label>
         </div>
       </div>
       <div class="field">
-        <label>{{t('optionsGeneralContainerNumber')}}</label>
-        <select id="containerNumberMode" class="ui fluid dropdown">
-          <option value="keep">{{t('optionsGeneralContainerNumberKeepCounting')}}</option>
-          <option value="reuse">{{t('optionsGeneralContainerNumberReuseNumbers')}}</option>
+        <label>{{ t('optionsGeneralContainerNumber') }}</label>
+        <select
+          id="containerNumberMode"
+          v-model="preferences.container.numberMode"
+          class="ui fluid dropdown"
+        >
+          <option value="keep">
+            {{ t('optionsGeneralContainerNumberKeepCounting') }}
+          </option>
+          <option value="reuse">
+            {{ t('optionsGeneralContainerNumberReuseNumbers') }}
+          </option>
         </select>
       </div>
-      <div class="field" :data-tooltip="t('optionsGeneralContainerDeleteTimeTooltip')">
-        <label>{{t('optionsGeneralContainerDeleteTime')}}</label>
-        <select id="containerRemoval" class="ui fluid dropdown">
-          <option value="15minutes">{{t('optionsGeneralContainerDeleteTime15Minutes')}}</option>
-          <option value="5minutes">{{t('optionsGeneralContainerDeleteTime5Minutes')}}</option>
-          <option value="2minutes">{{t('optionsGeneralContainerDeleteTime2Minutes')}}</option>
-          <option value="instant">{{t('optionsGeneralContainerDeleteTimeInstant')}}</option>
+      <div
+        class="field"
+        :data-tooltip="t('optionsGeneralContainerRemovalTooltip')"
+      >
+        <label>{{ t('optionsGeneralContainerRemoval') }}</label>
+        <select
+          id="containerRemoval"
+          v-model="preferences.container.removal"
+          class="ui fluid dropdown"
+        >
+          <option value="15minutes">
+            {{ t('optionsGeneralContainerRemoval15Minutes') }}
+          </option>
+          <option value="5minutes">
+            {{ t('optionsGeneralContainerRemoval5Minutes') }}
+          </option>
+          <option value="2minutes">
+            {{ t('optionsGeneralContainerRemoval2Minutes') }}
+          </option>
+          <option value="instant">
+            {{ t('optionsGeneralContainerRemovalInstant') }}
+          </option>
         </select>
       </div>
-      <div class="field" :data-tooltip="t('optionsGeneralToolbarIconColorTooltip')">
-        <label>{{t('optionsGeneralToolbarIconColor')}}</label>
-        <select id="iconColor" class="ui fluid dropdown">
-          <option value="default">{{t('optionsGeneralToolbarIconColorDefault')}}</option>
-          <option value="black-simple">{{t('optionsGeneralToolbarIconColorBlackSimple')}}</option>
-          <option value="blue-simple">{{t('optionsGeneralToolbarIconColorBlueSimple')}}</option>
-          <option value="red-simple">{{t('optionsGeneralToolbarIconColorRedSimple')}}</option>
-          <option value="white-simple">{{t('optionsGeneralToolbarIconColorWhiteSimple')}}</option>
+      <div
+        class="field"
+        :data-tooltip="t('optionsGeneralToolbarIconColorTooltip')"
+      >
+        <label>{{ t('optionsGeneralToolbarIconColor') }}</label>
+        <select
+          id="iconColor"
+          v-model="preferences.iconColor"
+          class="ui fluid dropdown"
+        >
+          <option
+            v-for="toolbarIconColor in toolbarIconColors"
+            :key="toolbarIconColor.id"
+            :value="toolbarIconColor.id"
+          >
+            {{ toolbarIconColor.text }}
+          </option>
         </select>
       </div>
     </div>

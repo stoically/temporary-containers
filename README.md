@@ -57,7 +57,7 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 
 
 ## Libraries
-[Vue.js](https://vuejs.org), [SemanticUI](https://semantic-ui.com/) and its dependency [jQuery](https://jquery.com/) are used for the preferences & popup UI.
+[Vue.js](https://vuejs.org) and [SemanticUI](https://semantic-ui.com/) are used for the preferences & popup UI.
 
 
 ## Limitations

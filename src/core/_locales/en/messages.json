@@ -113,22 +113,22 @@
   "optionsGeneralContainerNumberReuseNumbers": {
     "message": "Reuse available numbers"
   },
-  "optionsGeneralContainerDeleteTime": {
+  "optionsGeneralContainerRemoval": {
     "message": "Delete no longer needed Temporary Containers"
   },
-  "optionsGeneralContainerDeleteTimeTooltip": {
+  "optionsGeneralContainerRemovalTooltip": {
     "message": "\"X minutes\" lets you \"undo close tabs\" in that timeframe"
   },
-  "optionsGeneralContainerDeleteTime15Minutes": {
+  "optionsGeneralContainerRemoval15Minutes": {
     "message": "15 minutes after the last tab in it closes (default)"
   },
-  "optionsGeneralContainerDeleteTime5Minutes": {
+  "optionsGeneralContainerRemoval5Minutes": {
     "message": "5 minutes after the last tab in it closes"
   },
-  "optionsGeneralContainerDeleteTime2Minutes": {
+  "optionsGeneralContainerRemoval2Minutes": {
     "message": "2 minutes after the last tab in it closes"
   },
-  "optionsGeneralContainerDeleteTimeInstant": {
+  "optionsGeneralContainerRemovalInstant": {
     "message": "After the last tab in it closes"
   },
   "optionsGeneralToolbarIconColor": {

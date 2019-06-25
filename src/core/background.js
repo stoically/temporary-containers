@@ -29,10 +29,11 @@ class TemporaryContainers {
     // TODO cache permissions in storage based on firefox version >=60.0b1
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1402850
     // https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/runtime/getBrowserInfo
+    const {permissions} = await browser.permissions.getAll();
     this.permissions = {
-      bookmarks: await browser.permissions.contains({permissions: ['bookmarks']}),
-      history: await browser.permissions.contains({permissions: ['history']}),
-      notifications: await browser.permissions.contains({permissions: ['notifications']})
+      bookmarks: permissions.includes('bookmarks'),
+      history: permissions.includes('history'),
+      notifications: permissions.includes('notifications'),
     };
 
     await this.storage.load();
