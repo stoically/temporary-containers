@@ -25,7 +25,7 @@ class Isolation {
       return;
     }
 
-    if (!await this.shouldIsolate({tab, request, openerTab, macAssignment}) && !this.mouseclick.linksClicked[request.url]) {
+    if (!await this.shouldIsolate({tab, request, openerTab, macAssignment})) {
       debug('[maybeIsolate] decided to not isolate', tab, request);
       return false;
     }
@@ -72,17 +72,21 @@ class Isolation {
       request,
       deletesHistory: this.storage.local.preferences.deletesHistory.containerIsolation === 'automatic'
     };
-    if (this.mouseclick.linksClicked[request.url] &&
-        this.mouseclick.linksClicked[request.url].clickType === 'left' &&
-        !this.storage.local.preferences.replaceTabs) {
-      debug('[maybeIsolate] creating new container because request got left clicked', this.mouseclick.linksClicked[request.url], tab);
-      await this.container.createTabInTempContainer(params);
-      if (tab && this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
-        debug('[maybeIsolate] looks like the left clicked opened a new tab, remove it', tab);
-        await this.tabs.remove(tab);
+
+    let reload = false;
+    if (this.mouseclick.linksClicked[request.url]) {
+      const clickType = this.mouseclick.linksClicked[request.url].clickType;
+      if (this.storage.local.preferences.isolation.global.mouseClick[clickType].container === 'deleteshistory') {
+        params.deletesHistory = true;
       }
-    } else if (this.mouseclick.linksClicked[request.url] ||
-      tab.url === 'about:home' || tab.url === 'about:newtab' || tab.url === 'about:blank' ||
+
+      if (tab && clickType === 'left' &&
+        this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
+        reload = true;
+      }
+    }
+
+    if (reload || tab.url === 'about:home' || tab.url === 'about:newtab' || tab.url === 'about:blank' ||
       this.storage.local.preferences.replaceTabs) {
       await this.container.reloadTabInTempContainer(params);
     } else {
@@ -94,12 +98,8 @@ class Isolation {
 
   async shouldIsolate({tab, request, openerTab, macAssignment}) {
     debug('[shouldIsolate]', tab, request);
-    if (!tab || !tab.url) {
-      debug('[shouldIsolate] we cant proceed without tab url information', tab, request);
-      return false;
-    }
 
-    if (this.container.isClean(tab.cookieStoreId)) {
+    if (tab && this.container.isClean(tab.cookieStoreId)) {
       debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
       if (!this.request.cleanRequests[request.requestId]) {
         this.request.cleanRequests[request.requestId] = true;
@@ -115,20 +115,26 @@ class Isolation {
       return false;
     }
 
-    return this.shouldIsolateMac({tab, macAssignment}) ||
+    return this.mouseclick.linksClicked[request.url] ||
+      this.shouldIsolateMac({tab, macAssignment}) ||
       await this.shouldIsolateNavigation({request, tab, openerTab}) ||
       await this.shouldIsolateAlways({request, tab, openerTab});
   }
 
   async shouldIsolateNavigation({request, tab, openerTab}) {
+    if (!tab || !tab.url) {
+      debug('[shouldIsolateNavigation] we cant proceed without tab url information', tab, request);
+      return false;
+    }
+
     if ((tab.url === 'about:blank' || tab.url === 'about:newtab' || tab.url === 'about:home') && !openerTab) {
-      debug('[shouldIsolate] not isolating because the tab url is blank/newtab/home and no openerTab');
+      debug('[shouldIsolateNavigation] not isolating because the tab url is blank/newtab/home and no openerTab');
       return false;
     }
 
     if (openerTab && tab.url === 'about:blank' && this.container.isPermanent(tab.cookieStoreId) &&
       openerTab.cookieStoreId !== tab.cookieStoreId) {
-      debug('[shouldIsolate] the tab loads a permanent container that is different from the openerTab, probaby explicitly selected in the context menu');
+      debug('[shouldIsolateNavigation] the tab loads a permanent container that is different from the openerTab, probaby explicitly selected in the context menu');
       return false;
     }
 
@@ -150,17 +156,17 @@ class Isolation {
           if (!this.matchDomainPattern(request.url, excludedDomainPattern)) {
             continue;
           }
-          debug('[shouldIsolate] not isolating because excluded domain pattern matches', request.url, excludedDomainPattern);
+          debug('[shouldIsolateNavigation] not isolating because excluded domain pattern matches', request.url, excludedDomainPattern);
           return false;
         }
       }
 
       if (patternPreferences.navigation) {
         const navigationPreferences = patternPreferences.navigation;
-        debug('[shouldIsolate] found pattern', domainPattern, navigationPreferences);
+        debug('[shouldIsolateNavigation] found pattern', domainPattern, navigationPreferences);
 
         if (navigationPreferences.action === 'global') {
-          debug('[shouldIsolate] breaking because "global"');
+          debug('[shouldIsolateNavigation] breaking because "global"');
           break;
         }
 
@@ -179,11 +185,16 @@ class Isolation {
       return true;
     }
 
-    debug('[shouldIsolate] not isolating');
+    debug('[shouldIsolateNavigation] not isolating');
     return false;
   }
 
   async shouldIsolateAlways({request, tab, openerTab}) {
+    if (!tab || !tab.url) {
+      debug('[shouldIsolateAlways] we cant proceed without tab url information', tab, request);
+      return false;
+    }
+
     for (let domainPattern in this.storage.local.preferences.isolation.domain) {
       const patternPreferences = this.storage.local.preferences.isolation.domain[domainPattern];
       if (!this.matchDomainPattern(request.url, domainPattern)) {

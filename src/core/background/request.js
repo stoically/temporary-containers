@@ -153,9 +153,7 @@ class TmpRequest {
       return isolated;
     }
 
-    if (this.mouseclick.linksClicked[request.url] ||
-      !this.storage.local.preferences.automaticMode.active ||
-      this.mouseclick.unhandledLinksClicked[request.url]) {
+    if (!this.storage.local.preferences.automaticMode.active || !tab) {
       return;
     }
 

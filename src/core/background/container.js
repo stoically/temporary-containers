@@ -91,9 +91,6 @@ class Container {
     const containerOptions = this.getContainerNameIconColor((request && request.url) || url);
     this.storage.local.tempContainersNumbers.push(containerOptions.number);
 
-    if (!deletesHistory) {
-      deletesHistory = this.mouseclick.shouldOpenDeletesHistoryContainer(url);
-    }
     if (deletesHistory) {
       if (this.permissions.history) {
         containerOptions.name += '-deletes-history';

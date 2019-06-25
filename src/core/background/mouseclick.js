@@ -2,7 +2,6 @@ class MouseClick {
   constructor(background) {
     this.background = background;
     this.linksClicked = {};
-    this.unhandledLinksClicked = {};
 
     this.checkClickPreferences.bind(this);
   }
@@ -22,50 +21,35 @@ class MouseClick {
       return;
     }
 
-    let url;
     let clickType;
-    if (typeof message !== 'object') {
-      url = message;
-    } else {
-      url = message.href;
-      if (message.event.button === 1) {
-        clickType = 'middle';
-      } else if (message.event.button === 0 &&
-                 !message.event.ctrlKey &&
-                 !message.event.metaKey) {
-        clickType = 'left';
-      } else if (message.event.button === 0 &&
-                (message.event.ctrlKey || message.event.metaKey)) {
-        clickType = 'ctrlleft';
-      }
-      if (!this.checkClick(clickType, message, sender)) {
-        this.unhandledLinksClicked[url] = {};
-        delay(1000).then(() => {
-          debug('[linkClicked] cleaning up unhandledLinksClicked', url);
-          delete this.unhandledLinksClicked[url];
-        });
-        return;
-      }
+    const url = message.href;
+    if (message.event.button === 1) {
+      clickType = 'middle';
+    } else if (message.event.button === 0 &&
+                !message.event.ctrlKey &&
+                !message.event.metaKey) {
+      clickType = 'left';
+    } else if (message.event.button === 0 &&
+              (message.event.ctrlKey || message.event.metaKey)) {
+      clickType = 'ctrlleft';
     }
-    if (this.unhandledLinksClicked[url]) {
-      delete this.unhandledLinksClicked[url];
+    if (!this.checkClick(clickType, message, sender)) {
+      return;
     }
-    const tab = sender.tab;
 
-    if (!this.linksClicked[url]) {
-      this.linksClicked[url] = {
-        tabs: {},
-        containers: {},
-        count: 0
-      };
+    if (this.linksClicked[url]) {
+      debug('[linkClicked] aborting linksClicked cleanup', url);
+      this.linksClicked[url].abortController.abort();
     }
-    this.linksClicked[url].clickType = clickType;
-    this.linksClicked[url].tab = tab;
-    this.linksClicked[url].tabs[tab.id] = true;
-    this.linksClicked[url].containers[tab.cookieStoreId] = true;
-    this.linksClicked[url].count++;
 
-    delay(1000).then(() => {
+    const abortController = new AbortController;
+    this.linksClicked[url] = {
+      clickType,
+      tab: sender.tab,
+      abortController
+    };
+
+    delay(1500, {signal: abortController.signal}).then(() => {
       debug('[linkClicked] cleaning up linksClicked', url);
       delete this.linksClicked[url];
     });
@@ -137,18 +121,6 @@ class MouseClick {
     debug('[checkClick] no website pattern found, checking global preferences');
     return this.checkClickPreferences(this.storage.local.preferences.isolation.global.mouseClick[type],
       parsedClickedURL, parsedSenderTabURL);
-  }
-
-
-  shouldOpenDeletesHistoryContainer(url) {
-    if (this.linksClicked[url] &&
-        this.linksClicked[url].clickType) {
-      const clickType = this.linksClicked[url].clickType;
-      if (this.storage.local.preferences.isolation.global.mouseClick[clickType].container === 'deleteshistory') {
-        return true;
-      }
-    }
-    return false;
   }
 }
 
