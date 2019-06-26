@@ -185,6 +185,14 @@ class Migration {
       });
       await this.storage.persist();
     }
+    if (versionCompare('0.103', previousVersion) >= 0) {
+      debug('updated from version <= 0.103, possibly set deletesHistory.active');
+      const history = await browser.permissions.contains({permissions: ['history']});
+      if (history) {
+        this.storage.local.preferences.deletesHistory.active = true;
+        await this.storage.persist();
+      }
+    }
   }
 }
 

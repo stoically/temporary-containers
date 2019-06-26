@@ -1,15 +1,19 @@
 <script>
 export default {
   props: {
-    preferences: {
+    app: {
       type: Object,
-      default: () => {}
+      required: true
     }
+  },
+  data() {
+    return {
+      preferences: this.app.preferences,
+      show: false
+    };
   },
   mounted() {
     $('#isolationMac.ui.dropdown').dropdown();
-    $('#isolationMac').dropdown('set selected', preferences.isolation.mac.action);
-    $('#saveIsolationMacPreferences').on('click', window.saveIsolationGlobalPreferences);
   }
 };
 </script>
@@ -24,35 +28,35 @@ export default {
       <i class="icon-info-circled" /> Multi-Account Containers Isolation?
     </a><br><br>
     <div class="ui form">
-      <h4>
-        Open new Temporary Containers if a permanent container tab tries to load
-        a domain that isn't assigned to "Always open in" that container with
-        <a
-          href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"
-          target="_blank"
-        >Multi-Account Containers</a>
-        (Note: This is different from the Per Domain "Always open in" configuration)
-      </h4>
       <div class="field">
         <select
           id="isolationMac"
+          v-model="preferences.isolation.mac.action"
           class="ui fluid dropdown"
         >
           <option value="disabled">
             Disabled
           </option>
           <option value="enabled">
-            Enabled
+            Open new Temporary Containers if a permanent container tab tries to load
+            a domain that isn't assigned to "Always open in" that container
           </option>
         </select>
       </div>
       <div class="field">
-        <button
-          id="saveIsolationMacPreferences"
-          class="ui button primary"
-        >
-          Save
-        </button>
+        <div class="ui message">
+          This is not related to the Per Domain Isolation "Always open in" configuration, but instead applies to the
+          <a
+            href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"
+            target="_blank"
+          >Multi-Account Containers</a> Add-on, which needs to be installed and configured properly for this to work.
+          To add new sites to permanent containers with MAC you need to disable this configuration temporarly,
+          <a
+            href="https://github.com/stoically/temporary-containers/issues/170"
+            target="_blank"
+          >here's</a>
+          some discussion about how this could be made simpler in the future.
+        </div>
       </div>
     </div>
   </div>

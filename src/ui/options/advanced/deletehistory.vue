@@ -9,58 +9,25 @@ export default {
   data() {
     return {
       preferences: this.app.preferences,
-      permissions: this.app.permissions
+      show: false
     };
   },
-  async mounted() {
-
-    $('#deletesHistoryContainer').dropdown('set selected', preferences.deletesHistory.automaticMode);
-    document.querySelector('#deletesHistoryContextMenu').checked = preferences.deletesHistory.contextMenu;
-    document.querySelector('#deletesHistoryContextMenuBookmarksCheckbox').checked = preferences.deletesHistory.contextMenuBookmarks;
-    $('#deletesHistoryContainerRemoval').dropdown('set selected', preferences.deletesHistory.containerRemoval);
-    $('#deletesHistorycontainerAlwaysPerDomain').dropdown('set selected', preferences.deletesHistory.containerAlwaysPerDomain);
-    $('#deletesHistoryContainerIsolation').dropdown('set selected', preferences.deletesHistory.containerIsolation);
-    $('#deletesHistoryContainerMouseClicks').dropdown('set selected', preferences.deletesHistory.containerMouseClicks);
-
-    window.requestHistoryPermissions = async () => {
-      this.permissions.history = await browser.permissions.request({
-        permissions: ['history']
-      });
-      if (this.permissions.history) {
-        $('#keyboardShortcutsAltPField').removeClass('hidden');
-
-        await browser.runtime.sendMessage({
-          method: 'historyPermissionAllowed'
-        });
-      }
-    };
-    preferences.deletesHistory.automaticMode = document.querySelector('#deletesHistoryContainer').value;
-    preferences.deletesHistory.contextMenu = document.querySelector('#deletesHistoryContextMenu').checked;
-    preferences.deletesHistory.contextMenuBookmarks = document.querySelector('#deletesHistoryContextMenuBookmarksCheckbox').checked;
-    preferences.deletesHistory.containerRemoval = document.querySelector('#deletesHistoryContainerRemoval').value;
-    preferences.deletesHistory.containerAlwaysPerDomain = document.querySelector('#deletesHistorycontainerAlwaysPerDomain').value;
-    preferences.deletesHistory.containerIsolation = document.querySelector('#deletesHistoryContainerIsolation').value;
-    preferences.deletesHistory.containerMouseClicks = document.querySelector('#deletesHistoryContainerMouseClicks').value;
-    $('#deletesHistoryContextMenuBookmarks').on('click', window.requestBookmarksPermissions);
-    const historyPermission = await browser.permissions.contains({permissions: ['history']});
-    if (historyPermission) {
-      $('#deletesHistoryContainerWarningRead')
-        .checkbox('check')
-        .checkbox('set disabled');
-
-      $('#keyboardShortcutsAltPField').removeClass('hidden');
-      $('#deletesHistoryStatisticsField').removeClass('hidden');
-    }
-
-    $('#deletesHistoryContainerWarningRead').on('click', window.requestHistoryPermissions);
-
-    $('#saveAdvancedDeleteHistoryPreferences').on('click', window.saveAdvancedPreferences);
+  mounted() {
+    this.$nextTick(() => {
+      $('#advancedDeletesHistory .ui.checkbox').checkbox();
+      $('#advancedDeletesHistory .ui.dropdown').dropdown();
+      this.show = true;
+    });
   }
 };
 </script>
 
 <template>
-  <div class="ui form">
+  <div
+    v-show="show"
+    id="advancedDeletesHistory"
+    class="ui form"
+  >
     <div class="field">
       <label>"Deletes History Temporary Containers"</label>
       <div class="ui negative message">
@@ -85,8 +52,8 @@ export default {
           >
             <input
               id="deletesHistoryContainerWarningReadCheckbox"
-              v-model="permissions.history"
-              :disabled="permissions.history"
+              v-model="preferences.deletesHistory.active"
+              :disabled="preferences.deletesHistory.active"
               type="checkbox"
             >
             <label>I have read the Warning and understand the implications that come with using "Deletes History Temporary Containers".
@@ -111,6 +78,7 @@ export default {
       <label>Automatically create "Deletes History Temporary Containers"</label>
       <select
         id="deletesHistoryContainer"
+        v-model="preferences.deletesHistory.automaticMode"
         class="ui fluid dropdown"
       >
         <option value="never">
@@ -126,6 +94,7 @@ export default {
       <div class="ui checkbox">
         <input
           id="deletesHistoryContextMenu"
+          v-model="preferences.deletesHistory.contextMenu"
           type="checkbox"
         >
         <label>Show additional "Deletes History Temporary Containers" entry in the right click on links context menu</label>
@@ -138,6 +107,7 @@ export default {
       >
         <input
           id="deletesHistoryContextMenuBookmarksCheckbox"
+          v-model="preferences.deletesHistory.contextMenuBookmarks"
           type="checkbox"
         >
         <label>Show additional "Deletes History Temporary Containers" entry in the right click on bookmarks context menu</label>
@@ -150,6 +120,7 @@ export default {
       <label>Delete no longer needed "Deletes History Temporary Containers"</label>
       <select
         id="deletesHistoryContainerRemoval"
+        v-model="preferences.deletesHistory.containerRemoval"
         class="ui fluid dropdown"
       >
         <option value="15minutes">
@@ -164,6 +135,7 @@ export default {
       <label>Isolation - Always per domain</label>
       <select
         id="deletesHistorycontainerAlwaysPerDomain"
+        v-model="preferences.deletesHistory.containerAlwaysPerDomain"
         class="ui fluid dropdown"
       >
         <option value="never">
@@ -179,6 +151,7 @@ export default {
       <label>Isolation - Navigating in tabs</label>
       <select
         id="deletesHistoryContainerIsolation"
+        v-model="preferences.deletesHistory.containerIsolation"
         class="ui fluid dropdown"
       >
         <option value="never">
@@ -194,6 +167,7 @@ export default {
       <label>Isolation - Mouse clicks in "Deletes History Temporary Containers"</label>
       <select
         id="deletesHistoryContainerMouseClicks"
+        v-model="preferences.deletesHistory.containerMouseClicks"
         class="ui fluid dropdown"
       >
         <option value="never">
@@ -209,6 +183,7 @@ export default {
       <label>Isolation - Middle Mouse Click in Temporary Containers</label>
       <select
         id="linkClickGlobalMiddleCreatesContainer"
+        v-model="preferences.isolation.global.mouseClick.middle.container"
         class="ui fluid dropdown"
       >
         <option value="default">
@@ -223,6 +198,7 @@ export default {
       <label>Isolation - Ctrl/Cmd+Left Mouse Click in Temporary Containers</label>
       <select
         id="linkClickGlobalCtrlLeftCreatesContainer"
+        v-model="preferences.isolation.global.mouseClick.ctrlleft.container"
         class="ui fluid dropdown"
       >
         <option value="default">
@@ -237,6 +213,7 @@ export default {
       <label>Isolation - Left Mouse Click in Temporary Containers</label>
       <select
         id="linkClickGlobalLeftCreatesContainer"
+        v-model="preferences.isolation.global.mouseClick.left.container"
         class="ui fluid dropdown"
       >
         <option value="default">
@@ -246,14 +223,6 @@ export default {
           Open new "Deletes History Temporary Containers" with Left Mouse clicks instead of Temporary Containers
         </option>
       </select>
-    </div>
-    <div class="field">
-      <button
-        id="saveAdvancedDeleteHistoryPreferences"
-        class="ui button primary"
-      >
-        Save
-      </button>
     </div>
   </div>
 </template>

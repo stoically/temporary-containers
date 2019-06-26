@@ -49,7 +49,7 @@ export default {
         :app="app"
       />
     </div>
-    <div
+    <!-- <div
       class="ui bottom attached tab segment"
       data-tab="isolation/perdomain"
     >
@@ -57,7 +57,7 @@ export default {
         v-if="app.initialized"
         :app="app"
       />
-    </div>
+    </div> -->
     <div
       class="ui bottom attached tab segment"
       data-tab="isolation/mac"

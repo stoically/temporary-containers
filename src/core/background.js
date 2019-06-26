@@ -23,9 +23,6 @@ class TemporaryContainers {
 
 
   async initialize() {
-    // register message listener
-    browser.runtime.onMessage.addListener(this.runtime.onMessage.bind(this));
-
     // TODO cache permissions in storage based on firefox version >=60.0b1
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1402850
     // https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/runtime/getBrowserInfo
@@ -62,6 +59,7 @@ window.TemporaryContainers = TemporaryContainers;
 window.tmp = new TemporaryContainers();
 browser.runtime.onInstalled.addListener(tmp.runtime.onInstalled.bind(tmp));
 browser.runtime.onStartup.addListener(tmp.runtime.onStartup.bind(tmp));
+browser.runtime.onMessage.addListener(tmp.runtime.onMessage.bind(tmp));
 
 /* istanbul ignore next */
 if (!browser._mochaTest) {

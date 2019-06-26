@@ -13,10 +13,6 @@ export default {
     };
   },
   async mounted() {
-    if (!this.permissions.bookmarks) {
-      this.preferences.contextMenuBookmarks = false;
-    }
-
     const popupToolTip = `
       <div style="width:500px;">
       The popup lets you<ul>
@@ -39,6 +35,17 @@ export default {
 
     $('#advancedGeneral .ui.dropdown').dropdown();
     $('#advancedGeneral .ui.checkbox').checkbox();
+  },
+  methods: {
+    resetStorage() {
+      const confirmed = window.confirm(`
+        Wipe storage and reset it to default?\n
+        This can't be undone.
+      `);
+      if (confirmed) {
+        this.$root.$emit('resetStorage');
+      }
+    }
   }
 };
 </script>
@@ -53,7 +60,7 @@ export default {
       class="field"
     >
       <div class="field">
-        <label>Icon Popup</label>
+        <label>Toolbar Icon Popup</label>
         <div class="ui checkbox">
           <input
             id="browserActionPopup"
@@ -195,6 +202,33 @@ export default {
       </div>
     </div>
     <div class="field">
+      <label>Automatic Mode</label>
+      <div class="ui negative message">
+        <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
+        use the address bar for search engines. If you select "Don't reopen new tabs in Temporary Containers"
+        here, cookies can get written into and read from the permanent default container as long as the new
+        tab didn't get reopened in a Temporary Container.<br>
+        <br>
+        If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
+        and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo then it should be no problem
+        to use the "Don't reopen new tabs" preference.
+      </div>
+      <div data-tooltip="&quot;Deletes History Temporary Containers&quot; always reopen new tabs to avoid leaving traces in recently closed tabs">
+        <select
+          id="automaticModeNewTab"
+          v-model="preferences.automaticMode.newTab"
+          class="ui fluid dropdown"
+        >
+          <option value="created">
+            Reopen new tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected but it prevents new tabs from writing and reading cookies in the default container and doesn't clutter recently closed tabs with "new tabs" (Default)
+          </option>
+          <option value="navigation">
+            Don't reopen new tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening but new tabs can set and read cookies in the default container
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
       <label>Ignoring requests to</label>
       <div class="ui notice message">
         Note: Ticked checkbox means that the Domains get ignored from Temporary Containers. However, starting with
@@ -224,31 +258,13 @@ export default {
       </div>
     </div>
     <div class="field">
-      <label>Automatic Mode</label>
-      <div class="ui negative message">
-        <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
-        use the address bar for search engines. If you select "Don't reopen new tabs in Temporary Containers"
-        here, cookies can get written into and read from the permanent default container as long as the new
-        tab didn't get reopened in a Temporary Container.<br>
-        <br>
-        If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
-        and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo then it should be no problem
-        to use the "Don't reopen new tabs" preference.
-      </div>
-      <div data-tooltip="&quot;Deletes History Temporary Containers&quot; always reopen new tabs to avoid leaving traces in recently closed tabs">
-        <select
-          id="automaticModeNewTab"
-          v-model="preferences.automaticMode.newTab"
-          class="ui fluid dropdown"
-        >
-          <option value="created">
-            Reopen new tabs in Temporary Containers. Flickers a bit and some Add-ons that intervene with initial tab opening might not work as expected but it prevents new tabs from writing and reading cookies in the default container and doesn't clutter recently closed tabs with "new tabs" (Default)
-          </option>
-          <option value="navigation">
-            Don't reopen new tabs in Temporary Containers but instead on navigation. Prevents initial flickering and increases compatibility with other Add-ons that intervene with initial tab opening but new tabs can set and read cookies in the default container
-          </option>
-        </select>
-      </div>
+      <label>Reset Storage</label>
+      <button
+        class="ui negative button"
+        @click="resetStorage"
+      >
+        Wipe storage and reset it to default
+      </button>
     </div>
   </div>
 </template>

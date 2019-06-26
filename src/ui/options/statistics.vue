@@ -1,76 +1,56 @@
 <script>
 export default {
   props: {
-    preferences: {
+    app: {
       type: Object,
-      default: () => {}
+      required: true
     }
   },
-  data: () => ({
-    loaded: false
-  }),
-  watch: {
-    preferences() {
-      $('#saveStatisticsPreferences').on('click', window.saveStatisticsPreferences);
-      $('#resetStatistics').on('click', window.resetStatistics);
-      $('#deletesHistoryStatisticsField').on('click', window.showDeletesHistoryStatistics);
-
-      document.querySelector('#statisticsCheckbox').checked = preferences.statistics;
-      document.querySelector('#deletesHistoryStatisticsCheckbox').checked = preferences.deletesHistory.statistics;
-
-      const deletesHistoryStatisticsToolTip =
-        '<div style="width:500px;">' +
-        'The overall statistics include all Temporary Containers already<br>' +
-        'This will show and collect separate statistics about how many "Deletes History<br>' +
-        'Temporary Container" plus cookies and URLs with them got deleted.</div>';
-
-      $('#deletesHistoryStatisticsField').popup({
-        html: deletesHistoryStatisticsToolTip,
-        inline: true,
-        position: 'bottom left'
-      });
-
-      window.updateStatistics();
-      window.showDeletesHistoryStatistics();
-
-      this.loaded = true;
-    }
-  },
-  mounted() {
-    window.saveStatisticsPreferences = async (event) => {
-      event.preventDefault();
-      preferences.statistics = document.querySelector('#statisticsCheckbox').checked;
-      preferences.deletesHistory.statistics = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
-      await savePreferences();
+  data() {
+    return {
+      preferences: this.app.preferences,
+      permissions: this.app.permissions,
+      statistics: this.app.storage.statistics
     };
+  },
+  async mounted() {
+    $('#statistics .ui.checkbox').checkbox();
 
-    window.resetStatistics = async (event) => {
-      event.preventDefault();
+    const deletesHistoryStatisticsToolTip =
+      '<div style="width:500px;">' +
+      'The overall statistics include all Temporary Containers already<br>' +
+      'This will show and collect separate statistics about how many "Deletes History<br>' +
+      'Temporary Container" plus cookies and URLs with them got deleted.</div>';
+
+    $('#deletesHistoryStatisticsField').popup({
+      html: deletesHistoryStatisticsToolTip,
+      inline: true,
+      position: 'bottom left'
+    });
+  },
+  methods: {
+    async resetStatistics() {
+      const confirmed = window.confirm(`
+        Reset statistics?
+      `);
+      if (!confirmed) {
+        return;
+      }
+
       await browser.runtime.sendMessage({
         method: 'resetStatistics'
       });
 
-      updateStatistics();
-      showMessage('Statistics have been reset.');
-    };
-
-    window.showDeletesHistoryStatistics = async () => {
-      const checked = document.querySelector('#deletesHistoryStatisticsCheckbox').checked;
-      if (checked) {
-        $('#deletesHistoryStatistics').removeClass('hidden');
-      } else {
-        $('#deletesHistoryStatistics').addClass('hidden');
-      }
-    };
+      this.$root.$emit('initialize');
+      this.$root.$emit('showMessage', 'Statistics have been reset.');
+    }
   }
 };
 </script>
 
 <template>
   <div
-    v-show="loaded"
-    class="ui tab segment"
-    data-tab="statistics"
+    id="statistics"
   >
     <div class="ui two column grid">
       <div class="column">
@@ -84,7 +64,7 @@ export default {
                 id="containersDeleted"
                 class="value"
               >
-                0
+                {{ statistics.containersDeleted }}
               </div>
               <div class="label">
                 Temporary Containers
@@ -95,7 +75,7 @@ export default {
                 id="cookiesDeleted"
                 class="value"
               >
-                0
+                {{ statistics.cookiesDeleted }}
               </div>
               <div class="label">
                 Cookies
@@ -106,7 +86,7 @@ export default {
                 id="cacheDeleted"
                 class="value"
               >
-                0
+                {{ formatBytes(statistics.cacheDeleted, 0) }}
               </div>
               <div class="label">
                 Cache
@@ -118,7 +98,8 @@ export default {
       <div class="column">
         <div
           id="deletesHistoryStatistics"
-          class="ui inverted segment hidden"
+          class="ui inverted segment"
+          :class="{hidden: !preferences.deletesHistory.statistics}"
         >
           <div class="ui horizontal statistics">
             <div class="ui purple ribbon label">
@@ -129,7 +110,7 @@ export default {
                 id="deletesHistoryContainersDeleted"
                 class="value"
               >
-                0
+                {{ statistics.deletesHistory.containersDeleted }}
               </div>
               <div class="label">
                 "Deletes History Temporary Containers"
@@ -140,7 +121,7 @@ export default {
                 id="deletesHistoryCookiesDeleted"
                 class="value"
               >
-                0
+                {{ statistics.deletesHistory.cookiesDeleted }}
               </div>
               <div class="label">
                 Cookies
@@ -151,7 +132,7 @@ export default {
                 id="deletesHistoryUrlsDeleted"
                 class="value"
               >
-                0
+                {{ statistics.deletesHistory.urlsDeleted }}
               </div>
               <div class="label">
                 URLs from History
@@ -170,6 +151,7 @@ export default {
         <div class="ui checkbox">
           <input
             id="statisticsCheckbox"
+            v-model="preferences.statistics"
             type="checkbox"
           >
           <label>Collect local statistics about Temporary Containers</label>
@@ -177,11 +159,13 @@ export default {
       </div>
       <div
         id="deletesHistoryStatisticsField"
-        class="field hidden"
+        class="field"
+        :class="{hidden: !permissions.history}"
       >
         <div class="ui checkbox">
           <input
             id="deletesHistoryStatisticsCheckbox"
+            v-model="preferences.deletesHistory.statistics"
             type="checkbox"
           >
           <label>Collect local statistics about "Deletes History Temporary Containers"</label>
@@ -189,15 +173,9 @@ export default {
       </div>
       <div class="field">
         <button
-          id="saveStatisticsPreferences"
-          class="ui button primary"
-        >
-          Save
-        </button>
-        <button
           id="resetStatistics"
           class="ui button negative primary"
-          data-tooltip="No confirmation"
+          @click="resetStatistics"
         >
           Reset Statistics
         </button>

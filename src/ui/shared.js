@@ -1,65 +1,42 @@
-import { timingSafeEqual } from 'crypto';
-
-export default (App) => ({
-  el: '#app',
-  render: h => h(App),
-  mounted() {
-    this.$on('savePreferences', async preferences => {
-      try {
-        await browser.runtime.sendMessage({
-          method: 'savePreferences',
-          payload: {
-            preferences
-          }
-        });
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('error while saving preferences', error);
-        showError('Error while saving preferences!');
+export default (App) => {
+  Vue.mixin({
+    methods: {
+      t: browser.i18n.getMessage,
+      formatBytes(bytes, decimals) {
+        // https://stackoverflow.com/a/18650828
+        if (bytes == 0) return '0 Bytes';
+        let k = 1024,
+          dm = decimals === undefined ? 2 : decimals,
+          sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+          i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
       }
-    });
-  }
-});
+    }
+  });
 
-window.showMessage = (message, keepOpen = false) => {
-  const messageBox = $('#message');
-  messageBox.html(message);
-  messageBox.addClass('positive');
-  messageBox.removeClass('negative');
-  messageBox.removeClass('hidden');
-  if (keepOpen) {
-    return;
-  }
-  setTimeout(() => {
-    messageBox.addClass('hidden');
-  }, 3000);
+  return {
+    el: '#app',
+    render: h => h(App),
+    mounted() {
+      this.$on('savePreferences', async preferences => {
+        try {
+          await browser.runtime.sendMessage({
+            method: 'savePreferences',
+            payload: {
+              preferences
+            }
+          });
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.log('error while saving preferences', error);
+          showError('Error while saving preferences!');
+        }
+      });
+    }
+  };
 };
 
-window.showError = (error) => {
-  const messageBox = $('#message');
-  messageBox.html(error);
-  messageBox.addClass('negative');
-  messageBox.removeClass('positive');
-  messageBox.removeClass('hidden');
-};
 
-window.showPreferencesError = (error) => {
-  if (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    $('#preferenceserrordesc').html(`<br><br>
-      The following error was observed, would be really helpful
-      if you could file an <a href="https://github.com/stoically/temporary-containers/issues" target="_blank">issue on GitHub</a> with it:
-      <br><br>
-      ${error.toString()}
-    `);
-  }
-  $('#preferenceserror')
-    .modal({
-      closable: false
-    })
-    .modal('show');
-};
 
 window.isolationDomainAddRule = async () => {
   const domainPattern = document.querySelector('#isolationDomainPattern').value;
@@ -170,16 +147,6 @@ window.updateIsolationDomains = () => {
   }
 };
 
-window.isolationGlobalAddExcludeDomainRule = () => {
-  const excludeDomainPattern = document.querySelector('#isolationGlobalExcludeDomainPattern').value;
-  if (!excludeDomainPattern) {
-    $('#isolationGlobalExcludeDomainPatternDiv').addClass('error');
-    return;
-  }
-  $('#isolationGlobalExcludeDomainPatternDiv').removeClass('error');
-  isolationGlobalExcludedDomains[excludeDomainPattern] = {};
-  updateIsolationGlobalExcludeDomains();
-};
 
 
 window.isolationDomainAddExcludeDomainRule = () => {
@@ -191,39 +158,6 @@ window.isolationDomainAddExcludeDomainRule = () => {
   $('#isolationDomainExcludeDomainPatternDiv').removeClass('error');
   isolationDomainExcludedDomains[excludeDomainPattern] = {};
   updateIsolationDomainExcludeDomains();
-};
-
-
-window.isolationGlobalExcludedDomains = {};
-window.isolationGlobalExcludeDomainPatternsClickEvent = false;
-window.updateIsolationGlobalExcludeDomains = () => {
-  const isolationGlobalExcludeDomainPatternsDiv = $('#isolationGlobalExcludedDomains');
-  const isolationGlobalExcludeDomainPatterns = Object.keys(isolationGlobalExcludedDomains);
-  if (!isolationGlobalExcludeDomainPatterns.length) {
-    isolationGlobalExcludeDomainPatternsDiv.html('No domains excluded');
-    return;
-  }
-  isolationGlobalExcludeDomainPatternsDiv.html('');
-  isolationGlobalExcludeDomainPatterns.map((domainPattern) => {
-    const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
-      domainPattern +
-      ' <a href="#" id="removeDomainPattern" data-tooltip="Remove (no confirmation)" ' +
-      '><i class="icon-trash-empty"></i>️</a></div>');
-    isolationGlobalExcludeDomainPatternsDiv.append(el);
-  });
-
-  if (!isolationGlobalExcludeDomainPatternsClickEvent) {
-    isolationGlobalExcludeDomainPatternsDiv.on('click', async (event) => {
-      event.preventDefault();
-      const targetId = $(event.target).parent().attr('id');
-      const domainPattern = $(event.target).parent().parent().attr('id');
-      if (targetId === 'removeDomainPattern') {
-        delete isolationGlobalExcludedDomains[decodeURIComponent(domainPattern)];
-        updateIsolationGlobalExcludeDomains();
-      }
-    });
-    isolationGlobalExcludeDomainPatternsClickEvent = true;
-  }
 };
 
 
@@ -257,33 +191,4 @@ window.updateIsolationDomainExcludeDomains = () => {
     });
     isolationDomainExcludeDomainPatternsClickEvent = true;
   }
-};
-
-
-
-window.updateStatistics = async () => {
-  const storage = await browser.storage.local.get('statistics');
-  if (!storage.statistics) {
-    showError('Error while loading statistics.');
-    return;
-  }
-  $('#containersDeleted').html(storage.statistics.containersDeleted);
-  $('#cookiesDeleted').html(storage.statistics.cookiesDeleted);
-  $('#cacheDeleted').html(formatBytes(storage.statistics.cacheDeleted, 0));
-
-  $('#statisticsStartTime').html(storage.statistics.startTime);
-
-  $('#deletesHistoryContainersDeleted').html(storage.statistics.deletesHistory.containersDeleted);
-  $('#deletesHistoryCookiesDeleted').html(storage.statistics.deletesHistory.cookiesDeleted);
-  $('#deletesHistoryUrlsDeleted').html(storage.statistics.deletesHistory.urlsDeleted);
-};
-
-window.formatBytes = (bytes, decimals) => {
-  // https://stackoverflow.com/a/18650828
-  if (bytes == 0) return '0 Bytes';
-  let k = 1024,
-    dm = decimals === undefined ? 2 : decimals,
-    sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-    i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
 };

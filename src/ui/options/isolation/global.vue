@@ -9,6 +9,7 @@ export default {
   data() {
     return {
       preferences: this.app.preferences,
+      storage: this.app.storage,
       show: false
     };
   },
@@ -16,14 +17,8 @@ export default {
     $('#isolationGlobal .ui.accordion').accordion({exclusive: false});
     $('#isolationGlobal .ui.dropdown').dropdown();
 
-    $('#isolationGlobalNavigationAction').dropdown('set selected', this.preferences.isolation.global.navigation.action);
-    if (this.preferences.isolation.global.navigation.action !== 'never') {
-      $('#isolationGlobalAccordion').accordion('open', 0);
-    }
+    $('#isolationGlobalAccordion').accordion('open', 0);
 
-    $('#isolationGlobalMouseClickMiddle').dropdown('set selected', this.preferences.isolation.global.mouseClick.middle.action);
-    $('#isolationGlobalMouseClickCtrlLeft').dropdown('set selected', this.preferences.isolation.global.mouseClick.ctrlleft.action);
-    $('#isolationGlobalMouseClickLeft').dropdown('set selected', this.preferences.isolation.global.mouseClick.left.action);
     if (this.preferences.isolation.global.mouseClick.middle.action !== 'never' ||
           this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
           this.preferences.isolation.global.mouseClick.left.action !== 'never') {
@@ -40,14 +35,11 @@ export default {
     }
 
 
-    $('#linkClickGlobalMiddleCreatesContainer').dropdown('set selected', this.preferences.isolation.global.mouseClick.middle.container);
-    $('#linkClickGlobalCtrlLeftCreatesContainer').dropdown('set selected', this.preferences.isolation.global.mouseClick.ctrlleft.container);
-    $('#linkClickGlobalLeftCreatesContainer').dropdown('set selected', this.preferences.isolation.global.mouseClick.left.container);
 
     const excludeContainers = [];
     const containers = await browser.contextualIdentities.query({});
     containers.map(container => {
-      if (storage.tempContainers[container.cookieStoreId]) {
+      if (this.storage.tempContainers[container.cookieStoreId]) {
         return;
       }
       excludeContainers.push({
@@ -66,8 +58,48 @@ export default {
       isolationGlobalAddExcludeDomainRule();
     });
 
-    window.updateIsolationGlobalExcludeDomains();
+    window.isolationGlobalExcludedDomains = {};
+    window.isolationGlobalExcludeDomainPatternsClickEvent = false;
+    window.updateIsolationGlobalExcludeDomains = () => {
+      const isolationGlobalExcludeDomainPatternsDiv = $('#isolationGlobalExcludedDomains');
+      const isolationGlobalExcludeDomainPatterns = Object.keys(isolationGlobalExcludedDomains);
+      if (!isolationGlobalExcludeDomainPatterns.length) {
+        isolationGlobalExcludeDomainPatternsDiv.html('No domains excluded');
+        return;
+      }
+      isolationGlobalExcludeDomainPatternsDiv.html('');
+      isolationGlobalExcludeDomainPatterns.map((domainPattern) => {
+        const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
+      domainPattern +
+      ' <a href="#" id="removeDomainPattern" data-tooltip="Remove (no confirmation)" ' +
+      '><i class="icon-trash-empty"></i>️</a></div>');
+        isolationGlobalExcludeDomainPatternsDiv.append(el);
+      });
 
+      if (!isolationGlobalExcludeDomainPatternsClickEvent) {
+        isolationGlobalExcludeDomainPatternsDiv.on('click', async (event) => {
+          event.preventDefault();
+          const targetId = $(event.target).parent().attr('id');
+          const domainPattern = $(event.target).parent().parent().attr('id');
+          if (targetId === 'removeDomainPattern') {
+            delete isolationGlobalExcludedDomains[decodeURIComponent(domainPattern)];
+            updateIsolationGlobalExcludeDomains();
+          }
+        });
+        isolationGlobalExcludeDomainPatternsClickEvent = true;
+      }
+    };
+
+    window.isolationGlobalAddExcludeDomainRule = () => {
+      const excludeDomainPattern = document.querySelector('#isolationGlobalExcludeDomainPattern').value;
+      if (!excludeDomainPattern) {
+        $('#isolationGlobalExcludeDomainPatternDiv').addClass('error');
+        return;
+      }
+      $('#isolationGlobalExcludeDomainPatternDiv').removeClass('error');
+      isolationGlobalExcludedDomains[excludeDomainPattern] = {};
+      updateIsolationGlobalExcludeDomains();
+    };
 
     window.saveIsolationGlobalPreferences = async (event) => {
       event.preventDefault();
@@ -100,10 +132,8 @@ export default {
 
       this.preferences.isolation.mac.action = document.querySelector('#isolationMac').value;
 
-      // await savePreferences();
+      window.updateIsolationGlobalExcludeDomains();
     };
-
-    $('#saveIsolationGlobalPreferences').on('click', window.saveIsolationGlobalPreferences);
 
     this.show = true;
   }
@@ -121,7 +151,14 @@ export default {
       target="_blank"
     >
       <i class="icon-info-circled" /> Global Isolation?
-    </a><br><br>
+    </a>
+    <div class="ui message">
+      Isolation lets you configure that navigating in tabs (also known as "web browsing") should
+      open new Temporary Containers instead of navigating to the target <a
+        href="https://simple.wikipedia.org/wiki/Domain_name"
+        target="_blank"
+      >domain</a>, hence isolating the origin domain.
+    </div>
     <div class="ui form">
       <div
         id="isolationGlobalAccordion"
@@ -137,19 +174,20 @@ export default {
           <div class="field">
             <select
               id="isolationGlobalNavigationAction"
+              v-model="preferences.isolation.global.navigation.action"
               class="ui fluid dropdown"
             >
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                If the Navigation Target domain does not exactly match the active tabs domain - Subdomains also get isolated
-              </option>
-              <option value="notsamedomain">
-                If the Navigation Target domain does not match the active tabs domain - Subdomains won't get isolated
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomainexact">
+                If the navigation target domain does not exactly match the active tabs domain - Subdomains also get isolated
+              </option>
+              <option value="notsamedomain">
+                If the navigation target domain does not match the active tabs domain - Subdomains won't get isolated
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -161,23 +199,29 @@ export default {
           </h4>
         </div>
         <div class="ui segment content">
+          <div class="ui small message">
+            The Navigating in Tabs configuration also covers mouse clicks (since they result in a navigation), so you might not need to additionally
+            configure mouse clicks, unless you want a more strict configuration for specific mouse clicks. Navigating in Tabs is also more reliable,
+            so you should prefer that if possible.
+          </div>
           <div class="field">
             <label>Middle Mouse</label>
             <select
               id="isolationGlobalMouseClickMiddle"
+              v-model="preferences.isolation.global.mouseClick.middle.action"
               class="ui fluid dropdown"
             >
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                If the clicked Link domain does not exactly match the active tabs domain - Subdomains also get isolated
-              </option>
-              <option value="notsamedomain">
-                If the clicked Link domain does not match the active tabs domain - Subdomains won't get isolated
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomainexact">
+                If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated
+              </option>
+              <option value="notsamedomain">
+                If the clicked link domain does not match the active tabs domain - Subdomains won't get isolated
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -185,19 +229,20 @@ export default {
             <label>Ctrl/Cmd+Left Mouse</label>
             <select
               id="isolationGlobalMouseClickCtrlLeft"
+              v-model="preferences.isolation.global.mouseClick.ctrlleft.action"
               class="ui fluid dropdown"
             >
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                If the clicked Link domain does not exactly match the active tabs domain - Subdomains also get isolated
-              </option>
-              <option value="notsamedomain">
-                If the clicked Link domain does not match the active tabs domain - Subdomains won't get isolated
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomainexact">
+                If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated
+              </option>
+              <option value="notsamedomain">
+                If the clicked link domain does not match the active tabs domain - Subdomains won't get isolated
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -205,19 +250,20 @@ export default {
             <label>Left Mouse</label>
             <select
               id="isolationGlobalMouseClickLeft"
+              v-model="preferences.isolation.global.mouseClick.left.action"
               class="ui fluid dropdown"
             >
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                If the clicked Link domain does not exactly match the current tabs domain - Subdomains also get isolated
-              </option>
-              <option value="notsamedomain">
-                If the clicked Link domain does not match the current tabs domain - Subdomains won't get isolated
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomainexact">
+                If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated
+              </option>
+              <option value="notsamedomain">
+                If the clicked link domain does not match the active tabs domain - Subdomains won't get isolated
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -242,7 +288,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Exclude domains from Isolation
+            Exclude target domains from Isolation
           </h4>
         </div>
         <div class="ui segment content">
@@ -274,15 +320,6 @@ export default {
             </div>
           </div>
         </div>
-      </div>
-      <br>
-      <div class="field">
-        <button
-          id="saveIsolationGlobalPreferences"
-          class="ui button primary"
-        >
-          Save
-        </button>
       </div>
     </div>
   </div>

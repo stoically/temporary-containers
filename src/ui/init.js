@@ -35,12 +35,6 @@ export default function init(App) {
     loadScript('/vue/vue.runtime.min.js'),
     import('./shared.js')
   ]).then(promises => {
-    Vue.mixin({
-      methods: {
-        t: browser.i18n.getMessage
-      }
-    });
-
     const shared = promises.pop().default;
     new Vue(shared(App));
   });

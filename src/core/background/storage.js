@@ -69,6 +69,7 @@ class TmpStorage {
         domain: {}
       },
       deletesHistory: {
+        active: false,
         automaticMode: 'never',
         contextMenu: false,
         contextMenuBookmarks: false,
@@ -185,7 +186,7 @@ class TmpStorage {
 
   async install() {
     this.loading = true;
-    this.local = this.storageDefault;
+    this.local = JSON.parse(JSON.stringify(this.storageDefault));
     const persisted = await this.persist();
     if (!persisted) {
       debug('[install] something went wrong while initializing storage');

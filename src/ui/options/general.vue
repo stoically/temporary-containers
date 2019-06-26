@@ -13,7 +13,6 @@ export default {
   data() {
     return {
       preferences: this.app.preferences,
-      permissions: this.app.permissions,
       initialized: false,
       show: false,
       containerColors: [
@@ -89,24 +88,20 @@ export default {
       text: this.t(`optionsGeneralToolbarIconColor${toolbarIconColor.capitalize().replace('-s', 'S')}`)
     }));
 
-    if (!this.permissions.notifications) {
-      this.preferences.notifications = false;
-    }
     this.initialized = true;
 
     this.$nextTick(async () => {
       $('#general .ui.dropdown').dropdown();
       $('#general .ui.checkbox').checkbox();
 
-      const automaticModeToolTip =
-          '<div style="width:500px;">' +
-          'Automatically reopen tabs in new Temporary Containers when<ul>' +
-          '<li> Opening a new tab' +
-          '<li> A tab tries to load a link in the default container' +
-          '<li> An external program opens a link in the browser</ul></div>';
-
       $('#automaticModeField').popup({
-        html: automaticModeToolTip,
+        html: `
+          <div style="width:500px;">
+          Automatically reopen tabs in new Temporary Containers when<ul>
+          <li> Opening a new tab
+          <li> A tab tries to load a link in the default container
+          <li> An external program opens a link in the browser</ul></div>
+        `,
         inline: true,
         position: 'bottom left'
       });

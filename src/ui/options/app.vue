@@ -26,27 +26,40 @@ export default {
   watch: {
     app: {
       handler: async (app, oldApp) => {
-        console.log(app.preferences);
-        if (!oldApp.preferences) {
+        if (!app.initialized || !oldApp.preferences) {
           return;
         }
 
-        if (preferences.notifications && !app.permissions.notifications) {
-          app.permissions.notifications = await browser.permissions.request({
-            permissions: ['notifications']
-          });
-          if (!app.permissions.notifications) {
-            app.preferences.notifications = false;
-          }
+        if (app.preferences.notifications && !app.permissions.notifications) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.notifications = app.permissions.notifications =
+            await browser.permissions.request({
+              permissions: ['notifications']
+            });
         }
 
-        if (preferences.contextMenuBookmarks && !app.permissions.bookmarks) {
-          app.permissions.bookmarks = await browser.permissions.request({
-            permissions: ['bookmarks']
-          });
-          if (!app.permissions.bookmarks) {
-            app.preferences.contextMenuBookmarks = false;
-          }
+        if (app.preferences.contextMenuBookmarks && !app.permissions.bookmarks) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.contextMenuBookmarks = app.permissions.bookmarks =
+            await browser.permissions.request({
+              permissions: ['bookmarks']
+            });
+        }
+
+        if (app.preferences.deletesHistory.contextMenuBookmarks && !app.permissions.bookmarks) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.deletesHistory.contextMenuBookmarks = app.permissions.bookmarks =
+            await browser.permissions.request({
+              permissions: ['bookmarks']
+            });
+        }
+
+        if (app.preferences.deletesHistory.active && !app.permissions.history) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.deletesHistory.active = app.permissions.history =
+            await browser.permissions.request({
+              permissions: ['history']
+            });
         }
 
         try {
@@ -59,24 +72,38 @@ export default {
         } catch (error) {
           // eslint-disable-next-line no-console
           console.log('error while saving preferences', error);
-          showError('Error while saving preferences!');
+          this.$root.$emit('showError', 'Error while saving preferences');
         }
       },
       deep: true
     }
   },
-  mounted() {
-    this.initialize();
+  async mounted() {
+    $('.menu .item').tab({
+      history: true,
+      historyType: 'hash'
+    });
+    let stateChanged = false;
+    $.address.change(() => stateChanged = true);
+
+    await this.initialize();
+
+    if (!stateChanged) {
+      // looks like jquery.address fired before tabs mounted, retrigger
+      const hash = document.location.hash;
+      $.address.value('_');
+      $.address.value(hash.replace('#/', ''));
+    }
+
+    this.$root.$on('initialize', () => {
+      this.app.initialized = false;
+      this.$nextTick(() => {
+        this.initialize();
+      });
+    });
   },
   methods: {
     async initialize() {
-      $('.menu .item').tab({
-        history: true,
-        historyType: 'hash'
-      });
-      let stateChanged = false;
-      $.address.change(() => stateChanged = true);
-
       const {permissions: allPermissions} = await browser.permissions.getAll();
       const permissions = {
         bookmarks: allPermissions.includes('bookmarks'),
@@ -84,49 +111,32 @@ export default {
         notifications: allPermissions.includes('notifications')
       };
 
+      let storage;
       try {
         // eslint-disable-next-line require-atomic-updates
-        window.storage = await browser.storage.local.get(['preferences', 'tempContainers']);
+        storage = await browser.storage.local.get(['preferences', 'statistics', 'tempContainers']);
         if (!storage.preferences || !Object.keys(storage.preferences).length) {
-          window.showPreferencesError();
+          this.$root.$emit('showPreferencesError');
           return;
         }
-        window.preferences = storage.preferences;
-
       } catch (error) {
-        window.showPreferencesError(error);
+        this.$root.$emit('showPreferencesError', error);
       }
 
-      window.domainPatternToolTip =
-        '<div style="width:750px;">' +
-        'Exact match: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>' +
-        'Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>' +
-        '<br>' +
-        'Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>, ' +
-        'so you might need two patterns.</div>' +
-        '<br>' +
-        'Advanced: Parsed as RegExp when <strong>/pattern/flags</strong> is given ' +
-        'and matches the full URL instead of just domain.';
 
       this.app = {
         initialized: true,
-        preferences,
+        storage,
+        preferences: storage.preferences,
         permissions
       };
-
-      if (!stateChanged) {
-        // looks like jquery.address fired before tabs mounted, retrigger
-        const hash = document.location.hash;
-        $.address.value('_');
-        $.address.value(hash.replace('#/', ''));
-      }
     }
   }
 };
 </script>
 
 <style>
-  #container { padding: 25px; }
+  #container { padding: 25px; overflow-wrap: break-word; }
   .hidden { display: none !important; }
 </style>
 
@@ -158,7 +168,7 @@ export default {
         data-tab="export_import"
       >{{ t('optionsNavExportImport') }}</a>
     </div>
-
+    <message />
     <div
       class="ui tab segment"
       data-tab="general"
@@ -173,7 +183,6 @@ export default {
       data-tab="isolation"
     >
       <isolation
-        v-if="app.initialized"
         :app="app"
       />
     </div>
@@ -185,23 +194,24 @@ export default {
         :app="app"
       />
     </div>
-    <!--
     <div
       class="ui tab segment"
       data-tab="statistics"
     >
-      <statistics :preferences="preferences" />
+      <statistics
+        v-if="app.initialized"
+        :app="app"
+      />
     </div>
     <div
       class="ui tab segment"
       data-tab="export_import"
     >
       <export-import
-        :preferences="preferences"
-        @initialize="initialize"
+        v-if="app.initialized"
+        :app="app"
       />
-    </div> -->
-    <message />
-    <error @initialize="initialize" />
+    </div>
+    <error :app="app" />
   </div>
 </template>

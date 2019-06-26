@@ -43,6 +43,9 @@ class Runtime {
       if (message.payload.preferences.notifications) {
         this.permissions.notifications = true;
       }
+      if (message.payload.preferences.deletesHistory.active) {
+        this.permissions.history = true;
+      }
       this.storage.local.preferences = message.payload.preferences;
       await this.storage.persist();
 
@@ -61,18 +64,17 @@ class Runtime {
 
     case 'resetStatistics':
       debug('[onMessage] resetting statistics');
-      this.storage.local.statistics = this.storage.storageDefault.statistics;
+      this.storage.local.statistics = JSON.parse(JSON.stringify(this.storage.storageDefault.statistics));
       this.storage.local.statistics.startTime = new Date;
       await this.storage.persist();
       break;
 
-    case 'historyPermissionAllowed':
-      debug('[onMessage] history permission');
-      this.permissions.history = true;
-      break;
-
     case 'resetStorage':
       debug('[onMessage] resetting storage', message, sender);
+      this.browseraction.unsetPopup();
+      this.contextmenu.remove();
+      this.browseraction.setIcon('default');
+      await browser.storage.local.clear();
       return this.storage.install();
 
     case 'createTabInTempContainer':

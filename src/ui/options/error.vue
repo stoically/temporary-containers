@@ -1,8 +1,39 @@
 <script>
 export default {
+  props: {
+    app: {
+      type: Object,
+      required: true
+    }
+  },
   async mounted() {
-    $('#resetStorage').on('click', async (event) => {
-      event.preventDefault();
+    this.$root.$on('showPreferencesError', error => {
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        $('#preferenceserrordesc').html(`<br><br>
+          The following error was observed, would be really helpful
+          if you could file an <a href="https://github.com/stoically/temporary-containers/issues" target="_blank">issue on GitHub</a> with it:
+          <br><br>
+          ${error.toString()}
+        `);
+      }
+      $('#preferenceserror')
+        .modal({
+          closable: false
+        })
+        .modal('show');
+    });
+
+    this.$root.$on('resetStorage', () => {
+      this.resetStorage();
+    });
+  },
+  methods: {
+    async resetStorage(event) {
+      if (event) {
+        event.preventDefault();
+      }
 
       let reset = false;
       try {
@@ -11,22 +42,22 @@ export default {
         });
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('[resetStorage] couldnt send message', error);
+        console.error('[resetStorage] failed', error);
       }
 
       if (!reset) {
         $('#preferenceserrorcontent').html(`
-          Now this is embarrassing. Storage reset didn't work either.
+          Storage reset didn't work.
           At this point you probably have to reinstall the Add-on.
           Sorry again, but there's not much I can do about it since
           this is almost certainly a Firefox API problem right now.
         `);
       } else {
-        this.$emit('initialize');
+        this.$root.$emit('initialize');
         $('#preferenceserror').modal('hide');
-        showMessage('Storage successfully reset.', true);
+        this.$root.$emit('showMessage', 'Storage successfully reset');
       }
-    });
+    }
   }
 };
 </script>
@@ -49,6 +80,7 @@ export default {
         id="resetStorage"
         class="ui button negative primary"
         data-tooltip="No confirmation"
+        @click="resetStorage"
       >
         Reset storage
       </button><br><br>
