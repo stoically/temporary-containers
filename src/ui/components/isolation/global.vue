@@ -21,24 +21,33 @@ export default {
     };
   },
   async mounted() {
-    $('#isolationGlobal .ui.accordion').accordion({exclusive: false});
-    $('#isolationGlobal .ui.dropdown').dropdown();
+    this.$nextTick(() => {
+      $('#isolationGlobal .ui.accordion').accordion({
+        ...this.popup ? {
+          animateChildren: false,
+          duration: 0} : {},
+        exclusive: false
+      });
+      $('#isolationGlobal .ui.dropdown').dropdown();
 
-    $('#isolationGlobalAccordion').accordion('open', 0);
+      $('#isolationGlobalAccordion').accordion('open', 0);
 
-    if (this.preferences.isolation.global.mouseClick.middle.action !== 'never' ||
+      if (this.preferences.isolation.global.mouseClick.middle.action !== 'never' ||
       this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
       this.preferences.isolation.global.mouseClick.left.action !== 'never') {
-      $('#isolationGlobalAccordion').accordion('open', 1);
-    }
+        $('#isolationGlobalAccordion').accordion('open', 1);
+      }
 
-    if (Object.keys(this.preferences.isolation.global.excludedContainers).length) {
-      $('#isolationGlobalAccordion').accordion('open', 2);
-    }
+      if (Object.keys(this.preferences.isolation.global.excludedContainers).length) {
+        $('#isolationGlobalAccordion').accordion('open', 2);
+      }
 
-    if (Object.keys(this.preferences.isolation.global.excluded).length) {
-      $('#isolationGlobalAccordion').accordion('open', 3);
-    }
+      if (Object.keys(this.preferences.isolation.global.excluded).length) {
+        $('#isolationGlobalAccordion').accordion('open', 3);
+      }
+
+      this.show = true;
+    });
 
     const excludeContainers = [];
     const containers = await browser.contextualIdentities.query({});
@@ -53,7 +62,10 @@ export default {
       });
     });
     $('#isolationGlobalExcludeContainers').dropdown({
-      placeholder: 'Select permanent containers to exclude from Isolation',
+      placeholder: !this.popup ?
+        'Select permanent containers to exclude from Isolation' :
+        'Permanent containers to exclude'
+      ,
       values: excludeContainers,
       onChange: (selectedContainers) => {
         this.preferences.isolation.global.excludedContainers = {};
@@ -75,8 +87,6 @@ export default {
         this.excludeDomainPattern = '';
       }
     });
-
-    this.show = true;
   },
   methods: {
     removeExcludedDomain(excludedDomainPattern) {
@@ -92,13 +102,17 @@ export default {
     id="isolationGlobal"
   >
     <a
+      v-if="!popup"
       class="ui blue ribbon label"
       href="https://github.com/stoically/temporary-containers/wiki/Global-Isolation"
       target="_blank"
     >
       <i class="icon-info-circled" /> Global Isolation?
     </a>
-    <div class="ui message">
+    <div
+      v-if="!popup"
+      class="ui message"
+    >
       Isolation lets you configure that navigating in tabs ("web browsing") should
       open new Temporary Containers instead of navigating to the target <a
         href="https://simple.wikipedia.org/wiki/Domain_name"
@@ -113,10 +127,16 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Navigating in Tabs should open new Temporary Containers
+            {{ !popup ?
+              'Navigating in Tabs should open new Temporary Containers' :
+              'Navigating'
+            }}
           </h4>
         </div>
-        <div class="ui segment content">
+        <div
+          class="ui content"
+          :class="{segment: !popup, 'popup-margin': popup}"
+        >
           <div class="field">
             <select
               v-model="preferences.isolation.global.navigation.action"
@@ -126,10 +146,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomainexact">
-                If the navigation target domain does not exactly match the active tabs domain - Subdomains also get isolated
+                {{ !popup ?
+                  'If the navigation target domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
+                }}
               </option>
               <option value="notsamedomain">
-                If the navigation target domain does not match the active tabs domain - Subdomains won't get isolated
+                {{ !popup ?
+                  'If the navigation target domain does not match the active tabs domain - Subdomains won\'t get isolated' :
+                  'Not same domain'
+                }}
               </option>
               <option value="always">
                 Always
@@ -140,11 +166,20 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Mouse Clicks on links should open new Temporary Containers
+            {{ !popup ?
+              'Mouse Clicks on links should open new Temporary Containers' :
+              'Mouse Clicks'
+            }}
           </h4>
         </div>
-        <div class="ui segment content">
-          <div class="ui small message">
+        <div
+          class="ui content"
+          :class="{segment: !popup, 'popup-margin': popup}"
+        >
+          <div
+            v-if="!popup"
+            class="ui small message"
+          >
             The Navigating in Tabs configuration also covers mouse clicks (since they result in a navigation), so you might not need to additionally
             configure mouse clicks, unless you want a more strict configuration for specific mouse clicks. Navigating in Tabs is also more reliable,
             so you should prefer that if possible.
@@ -159,10 +194,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomainexact">
-                If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated
+                {{ !popup ?
+                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
+                }}
               </option>
               <option value="notsamedomain">
-                If the clicked link domain does not match the active tabs domain - Subdomains won't get isolated
+                {{ !popup ?
+                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
+                  'Not same domain'
+                }}
               </option>
               <option value="always">
                 Always
@@ -179,10 +220,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomainexact">
-                If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated
+                {{ !popup ?
+                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
+                }}
               </option>
               <option value="notsamedomain">
-                If the clicked link domain does not match the active tabs domain - Subdomains won't get isolated
+                {{ !popup ?
+                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
+                  'Not same domain'
+                }}
               </option>
               <option value="always">
                 Always
@@ -199,10 +246,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomainexact">
-                If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated
+                {{ !popup ?
+                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
+                }}
               </option>
               <option value="notsamedomain">
-                If the clicked link domain does not match the active tabs domain - Subdomains won't get isolated
+                {{ !popup ?
+                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
+                  'Not same domain'
+                }}
               </option>
               <option value="always">
                 Always
@@ -213,10 +266,16 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Exclude permanent containers from Isolation
+            {{ !popup ?
+              'Exclude permanent containers from Isolation' :
+              'Exclude permanent containers'
+            }}
           </h4>
         </div>
-        <div class="ui segment content">
+        <div
+          class="ui content"
+          :class="{segment: !popup, 'popup-margin': popup}"
+        >
           <div class="field">
             <div
               id="isolationGlobalExcludeContainers"
@@ -230,10 +289,16 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Exclude target domains from Isolation
+            {{ !popup ?
+              'Exclude target domains from Isolation' :
+              'Exclude target domains'
+            }}
           </h4>
         </div>
-        <div class="ui segment content">
+        <div
+          class="ui content"
+          :class="{segment: !popup, 'popup-margin': popup}"
+        >
           <div class="field">
             <form
               id="isolationGlobalExcludeDomainsForm"

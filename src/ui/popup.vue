@@ -1,4 +1,5 @@
 <script>
+import IsolationGlobal from './components/isolation/global';
 import IsolationPerDomain from './components/isolation/perdomain';
 import Actions from './components/actions';
 import Statistics from './components/statistics';
@@ -7,6 +8,7 @@ import Message from './components/message';
 
 export default {
   components: {
+    IsolationGlobal,
     IsolationPerDomain,
     Actions,
     Statistics,
@@ -43,7 +45,7 @@ export default {
         });
 
         this.show = true;
-        $.tab('change tab', 'isolation-per-domain');
+        $.tab('change tab', 'isolation-global');
       });
     }
   },
@@ -95,12 +97,18 @@ export default {
 </script>
 
 <style>
-  #container {
-    padding: 10px;
-    padding-top: 5px;
-    min-height: 250px;
-  }
-  .hidden { display: none; }
+#container {
+  padding: 10px;
+  padding-top: 5px;
+  min-height: 250px;
+}
+.hidden { display: none; }
+.popup-margin {
+  margin: 0 15px 10px 0;
+}
+.popup-exclude-margin {
+  margin: 0 15px 10px 25px;
+}
 </style>
 
 <template>
@@ -110,6 +118,12 @@ export default {
     class="pusher"
   >
     <div class="ui sidebar vertical menu">
+      <a
+        class="item"
+        @click="changeTab('isolation-global')"
+      >
+        <i class="icon-circle-empty" /> Isolation Global
+      </a>
       <a
         class="item"
         @click="changeTab('isolation-per-domain')"
@@ -195,6 +209,12 @@ export default {
             </div>
           </div>
           <message />
+          <div
+            class="ui tab"
+            data-tab="isolation-global"
+          >
+            <isolation-global :app="app" />
+          </div>
           <div
             class="ui tab"
             data-tab="isolation-per-domain"

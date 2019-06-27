@@ -181,16 +181,6 @@ export default {
 };
 </script>
 
-<style>
-.popup-margin {
-  margin: 0 15px 10px 0;
-}
-.popup-exclude-margin {
-  margin: 0 15px 10px 25px;
-}
-</style>
-
-
 <template>
   <div
     v-show="show"
