@@ -1,3 +1,3 @@
 import init from './init';
-import App from './options/app.vue';
+import App from './components/options.vue';
 init(App);

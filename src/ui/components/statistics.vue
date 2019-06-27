@@ -10,23 +10,25 @@ export default {
     return {
       preferences: this.app.preferences,
       permissions: this.app.permissions,
-      statistics: this.app.storage.statistics
+      statistics: this.app.storage.statistics,
+      popup: this.app.popup
     };
   },
   async mounted() {
     $('#statistics .ui.checkbox').checkbox();
 
-    const deletesHistoryStatisticsToolTip =
-      '<div style="width:500px;">' +
-      'The overall statistics include all Temporary Containers already<br>' +
-      'This will show and collect separate statistics about how many "Deletes History<br>' +
-      'Temporary Container" plus cookies and URLs with them got deleted.</div>';
-
-    $('#deletesHistoryStatisticsField').popup({
-      html: deletesHistoryStatisticsToolTip,
-      inline: true,
-      position: 'bottom left'
-    });
+    if (!this.popup) {
+      $('#deletesHistoryStatisticsField').popup({
+        html: `
+          <div style="width:500px;">
+          The overall statistics include all Temporary Containers already<br>
+          This will show and collect separate statistics about how many "Deletes History<br>
+          Temporary Container" plus cookies and URLs with them got deleted.</div>
+        `,
+        inline: true,
+        position: 'bottom left'
+      });
+    }
   },
   methods: {
     async resetStatistics() {
@@ -43,6 +45,15 @@ export default {
 
       this.$root.$emit('initialize');
       this.$root.$emit('showMessage', 'Statistics have been reset.');
+    },
+    formatBytes(bytes, decimals) {
+    // https://stackoverflow.com/a/18650828
+      if (bytes == 0) return '0 Bytes';
+      let k = 1024,
+        dm = decimals === undefined ? 2 : decimals,
+        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+        i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
     }
   }
 };
@@ -52,7 +63,10 @@ export default {
   <div
     id="statistics"
   >
-    <div class="ui two column grid">
+    <div
+      class="ui"
+      :class="{'two column grid': !popup, 'one column grid': popup}"
+    >
       <div class="column">
         <div class="ui raised segment">
           <div class="ui green ribbon label">
@@ -67,7 +81,10 @@ export default {
                 {{ statistics.containersDeleted }}
               </div>
               <div class="label">
-                Temporary Containers
+                {{ !popup ?
+                  'Temporary Containers' :
+                  'tmp'
+                }}
               </div>
             </div>
             <div class="ui green statistic">
@@ -95,7 +112,10 @@ export default {
           </div>
         </div>
       </div>
-      <div class="column">
+      <div
+        v-if="!popup"
+        class="column"
+      >
         <div
           id="deletesHistoryStatistics"
           class="ui inverted segment"
@@ -113,7 +133,7 @@ export default {
                 {{ statistics.deletesHistory.containersDeleted }}
               </div>
               <div class="label">
-                "Deletes History Temporary Containers"
+                Temporary Containers
               </div>
             </div>
             <div class="ui purple inverted statistic">
@@ -154,7 +174,12 @@ export default {
             v-model="preferences.statistics"
             type="checkbox"
           >
-          <label>Collect local statistics about Temporary Containers</label>
+          <label>
+            {{ !popup ?
+              'Collect local statistics about Temporary Containers' :
+              'Collect local statistics'
+            }}
+          </label>
         </div>
       </div>
       <div
@@ -168,7 +193,12 @@ export default {
             v-model="preferences.deletesHistory.statistics"
             type="checkbox"
           >
-          <label>Collect local statistics about "Deletes History Temporary Containers"</label>
+          <label>
+            {{ !popup ?
+              'Collect local statistics about "Deletes History Temporary Containers"' :
+              'Collect local "Deletes History" statistics'
+            }}
+          </label>
         </div>
       </div>
       <div class="field">

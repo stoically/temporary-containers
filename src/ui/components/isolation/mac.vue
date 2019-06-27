@@ -24,9 +24,10 @@ export default {
       class="ui blue ribbon label"
       href="https://github.com/stoically/temporary-containers/wiki/Multi-Account-Containers-Isolation"
       target="_blank"
+      style="margin-bottom: 15px"
     >
       <i class="icon-info-circled" /> Multi-Account Containers Isolation?
-    </a><br><br>
+    </a>
     <div class="ui form">
       <div class="field">
         <select

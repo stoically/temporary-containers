@@ -1,3 +1,3 @@
 import init from './init';
-import App from './popup/app.vue';
-init(App);
+import App from './components/popup.vue';
+init(App, {popup: true});

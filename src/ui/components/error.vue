@@ -30,6 +30,15 @@ export default {
     });
   },
   methods: {
+    resetStorageConfirm() {
+      const confirmed = window.confirm(`
+        Wipe storage and reset it to default?\n
+        This can't be undone.
+      `);
+      if (confirmed) {
+        this.resetStorage();
+      }
+    },
     async resetStorage(event) {
       if (event) {
         event.preventDefault();
@@ -79,8 +88,7 @@ export default {
       <button
         id="resetStorage"
         class="ui button negative primary"
-        data-tooltip="No confirmation"
-        @click="resetStorage"
+        @click="resetStorageConfirm"
       >
         Reset storage
       </button><br><br>

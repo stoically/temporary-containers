@@ -1,4 +1,4 @@
-export default function init(App) {
+export default function init(App, params = {}) {
   // Workaround until parcel supports externals
   // https://github.com/parcel-bundler/parcel/issues/144
 
@@ -31,10 +31,11 @@ export default function init(App) {
     loadScript('/jquery/jquery.min.js'),
     loadScript('/jquery/jquery.address.js'),
     loadScript('/semantic/semantic.min.js'),
-    loadScript('/vue/vue.runtime.min.js'),
-    import('./shared.js')
+    loadScript('/vue/vue.runtime.js'),
+    import('./root')
   ]).then(promises => {
-    const shared = promises.pop().default;
-    new Vue(shared(App));
-  }).catch(console.error);
+    const root = promises.pop().default;
+    root(App, params);
+  })
+    .catch(console.error);
 }
