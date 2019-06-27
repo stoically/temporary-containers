@@ -9,6 +9,7 @@ export default {
   data() {
     return {
       preferences: this.app.preferences,
+      popup: this.app.popup,
       show: false
     };
   },
@@ -39,12 +40,18 @@ export default {
             Disabled
           </option>
           <option value="enabled">
-            Open new Temporary Containers if a permanent container tab tries to load
-            a domain that isn't assigned to "Always open in" that container
+            {{ !popup ?
+              `Open new Temporary Containers if a permanent container tab tries to load
+              a domain that isn't assigned to "Always open in" that container` :
+              'Enabled'
+            }}
           </option>
         </select>
       </div>
-      <div class="field">
+      <div
+        v-if="!popup"
+        class="field"
+      >
         <div class="ui message">
           This applies to the
           <a

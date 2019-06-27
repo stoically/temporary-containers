@@ -186,16 +186,14 @@ export default {
     v-show="show"
     id="isolationDomain"
   >
-    <div v-if="!popup">
-      <a
-        class="ui blue ribbon label"
-        href="https://github.com/stoically/temporary-containers/wiki/Per-domain-Isolation"
-        target="_blank"
-        style="margin-bottom: 15px"
-      >
-        <i class="icon-info-circled" /> Per Domain Isolation?
-      </a>
-    </div>
+    <a
+      class="ui blue ribbon label"
+      href="https://github.com/stoically/temporary-containers/wiki/Per-domain-Isolation"
+      target="_blank"
+      style="margin-bottom: 15px"
+    >
+      <i class="icon-info-circled" /> Per Domain Isolation?
+    </a>
     <div class="ui form">
       <form
         id="isolationDomainForm"

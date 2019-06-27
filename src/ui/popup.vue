@@ -1,6 +1,7 @@
 <script>
 import IsolationGlobal from './components/isolation/global';
 import IsolationPerDomain from './components/isolation/perdomain';
+import IsolationMac from './components/isolation/mac';
 import Actions from './components/actions';
 import Statistics from './components/statistics';
 import Error from './components/error';
@@ -10,6 +11,7 @@ export default {
   components: {
     IsolationGlobal,
     IsolationPerDomain,
+    IsolationMac,
     Actions,
     Statistics,
     Message,
@@ -100,7 +102,7 @@ export default {
 #container {
   padding: 10px;
   padding-top: 5px;
-  min-height: 250px;
+  min-height: 280px;
 }
 .hidden { display: none; }
 .popup-margin {
@@ -129,6 +131,12 @@ export default {
         @click="changeTab('isolation-per-domain')"
       >
         <i class="icon-circle-empty" /> Isolation Per Domain
+      </a>
+      <a
+        class="item"
+        @click="changeTab('isolation-mac')"
+      >
+        <i class="icon-circle-empty" /> Isolation MAC
       </a>
       <a
         class="item"
@@ -220,6 +228,12 @@ export default {
             data-tab="isolation-per-domain"
           >
             <isolation-per-domain :app="app" />
+          </div>
+          <div
+            class="ui tab"
+            data-tab="isolation-mac"
+          >
+            <isolation-mac :app="app" />
           </div>
           <div
             class="ui tab"

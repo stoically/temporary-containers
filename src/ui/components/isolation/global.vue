@@ -102,13 +102,16 @@ export default {
     id="isolationGlobal"
   >
     <a
-      v-if="!popup"
       class="ui blue ribbon label"
       href="https://github.com/stoically/temporary-containers/wiki/Global-Isolation"
       target="_blank"
     >
       <i class="icon-info-circled" /> Global Isolation?
     </a>
+    <div
+      v-if="popup"
+      style="margin-top: 10px"
+    />
     <div
       v-if="!popup"
       class="ui message"
