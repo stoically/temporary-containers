@@ -40,7 +40,9 @@ export default {
       domainPattern: '',
       domainPatternDisabled: false,
       domain: JSON.parse(JSON.stringify(domainDefaults)),
-      editing: false
+      excludeDomainPattern: '',
+      editing: false,
+      show: false
     };
   },
   watch: {
@@ -51,19 +53,19 @@ export default {
     }
   },
   async mounted() {
-    $('#isolationDomain .ui.accordion').accordion(
-      !this.popup ?
-        {
-          exclusive: false
-        }
-        :
-        {
+    this.$nextTick(() => {
+      $('#isolationDomain .ui.accordion').accordion({
+        ...this.popup ? {
           animateChildren: false,
-          duration: 0
-        }
-    );
-    $('#isolationDomain .ui.dropdown').dropdown();
-    $('#isolationDomain .ui.checkbox').checkbox();
+          duration: 0} : {},
+        exclusive: false
+      });
+
+      $('#isolationDomain .ui.dropdown').dropdown();
+      $('#isolationDomain .ui.checkbox').checkbox();
+
+      this.show = true;
+    });
 
     $.fn.form.settings.rules.domainPattern = (value) => {
       return !this.editing && !this.preferences.isolation.domain[value];
@@ -96,6 +98,17 @@ export default {
           this.$set(this.preferences.isolation.domain, this.domainPattern, JSON.parse(JSON.stringify(this.domain)));
         }
         this.reset();
+      }
+    });
+
+    $('#isolationDomainExcludeDomainsForm').form({
+      fields: {
+        isolationDomainExcludeDomainPattern: 'empty'
+      },
+      onSuccess: (event) => {
+        event.preventDefault();
+        this.$set(this.domain.excluded, this.excludeDomainPattern, {});
+        this.excludeDomainPattern = '';
       }
     });
 
@@ -160,13 +173,29 @@ export default {
           this.editing = false;
         }
       }
+    },
+    removeExcludedDomain(excludedDomainPattern) {
+      this.$delete(this.domain.excluded, excludedDomainPattern);
     }
   }
 };
 </script>
 
+<style>
+.popup-margin {
+  margin: 0 15px 10px 0;
+}
+.popup-exclude-margin {
+  margin: 0 15px 10px 25px;
+}
+</style>
+
+
 <template>
-  <div id="isolationDomain">
+  <div
+    v-show="show"
+    id="isolationDomain"
+  >
     <div v-if="!popup">
       <a
         class="ui blue ribbon label"
@@ -177,16 +206,17 @@ export default {
         <i class="icon-info-circled" /> Per Domain Isolation?
       </a>
     </div>
-    <form
-      id="isolationDomainForm"
-      class="ui form"
-    >
-      <domain-pattern
-        id="isolationDomainPattern"
-        :tooltip="!popup ? undefined : {hidden: true}"
-        :disabled="domainPatternDisabled"
-        :domain-pattern.sync="domainPattern"
-      />
+    <div class="ui form">
+      <form
+        id="isolationDomainForm"
+      >
+        <domain-pattern
+          id="isolationDomainPattern"
+          :tooltip="!popup ? undefined : {hidden: true}"
+          :disabled="domainPatternDisabled"
+          :domain-pattern.sync="domainPattern"
+        />
+      </form>
       <div
         id="isolationPerDomainAccordion"
         class="ui accordion"
@@ -202,7 +232,7 @@ export default {
         </div>
         <div
           class="ui content"
-          :class="{segment: !popup}"
+          :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <select
@@ -244,7 +274,7 @@ export default {
         </div>
         <div
           class="ui content"
-          :class="{segment: !popup}"
+          :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <select
@@ -286,7 +316,7 @@ export default {
         </div>
         <div
           class="ui content"
-          :class="{segment: !popup}"
+          :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <label>Middle Mouse</label>
@@ -387,46 +417,82 @@ export default {
         </div>
         <div
           class="ui content"
-          :class="{segment: !popup}"
+          :class="{segment: !popup, 'popup-exclude-margin': popup}"
         >
           <div class="field">
-            <div class="field">
-              <label>Domain Pattern</label>
-              <input
+            <form
+              id="isolationDomainExcludeDomainsForm"
+              class="ui form"
+            >
+              <domain-pattern
                 id="isolationDomainExcludeDomainPattern"
-                type="text"
-              >
-            </div>
-            <div class="field">
-              <button class="ui button primary">
-                Add excluded domain
-              </button>
-            </div>
-            <div>
-              <h3>Excluded target domains</h3>
-              <div class="ui bulleted list" />
+                :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
+                :domain-pattern.sync="excludeDomainPattern"
+              />
+              <div class="field">
+                <button class="ui button primary">
+                  Exclude
+                </button>
+              </div>
+            </form>
+            <div style="margin-top: 20px;">
+              <h3>Excluded domains</h3>
+              <div v-if="!Object.keys(domain.excluded).length">
+                No domains excluded
+              </div>
+              <div v-else>
+                <div
+                  v-for="(_, excludedDomainPattern) in domain.excluded"
+                  :key="excludedDomainPattern"
+                >
+                  <button
+                    class="ui right negative small button"
+                    style="margin-top: 10px"
+                    data-tooltip="Remove"
+                    @click="removeExcludedDomain(excludedDomainPattern)"
+                  >
+                    <i class="icon-trash-empty" />
+                  </button>
+                  {{ excludedDomainPattern }}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <br>
-      <div class="field">
-        <button
-          class="ui button primary"
-          :disabled="!domainPattern.trim()"
-        >
-          {{ editing ? 'Done editing' : 'Add' }}
-          {{ domainPattern }}
-        </button>
+    </div>
+    <br>
+    <div class="field">
+      <button
+        form="isolationDomainForm"
+        class="ui button primary"
+        :disabled="!domainPattern.trim()"
+      >
+        {{ editing ? 'Done editing' : 'Add' }}
+        {{ domainPattern }}
+      </button>
+    </div>
+    <br>
+    <div :class="{'ui accordion': popup}">
+      <div :class="{title: popup}">
+        <h3>
+          <i
+            v-if="popup"
+            class="dropdown icon"
+          />
+          Per Domain Patterns
+        </h3>
       </div>
-      <br>
-    </form>
-    <div>
-      <h3>Per Domain Patterns</h3>
-      <div v-if="!Object.keys(preferences.isolation.domain).length">
+      <div
+        v-if="!Object.keys(preferences.isolation.domain).length"
+        :class="{'ui content': popup}"
+      >
         No domains added yet
       </div>
-      <div v-else>
+      <div
+        v-else
+        :class="{'ui content': popup}"
+      >
         <div
           v-for="(_domainPrefs, _domainPattern) in preferences.isolation.domain"
           :key="_domainPattern"
