@@ -186,12 +186,27 @@ class Migration {
       await this.storage.persist();
     }
     if (versionCompare('0.103', previousVersion) >= 0) {
-      debug('updated from version <= 0.103, possibly set deletesHistory.active');
+      debug('updated from version <= 0.103, migrate deletesHistory.active and ignoreRequestsTo');
       const history = await browser.permissions.contains({permissions: ['history']});
       if (history) {
         this.storage.local.preferences.deletesHistory.active = true;
-        await this.storage.persist();
       }
+
+      if (this.storage.local.preferences.ignoreRequestsToAMO === false) {
+        this.storage.local.preferences.ignoreRequests =
+          this.storage.local.preferences.ignoreRequests.filter(ignoredPattern =>
+            ignoredPattern !== 'addons.mozilla.org'
+          );
+      }
+      if (this.storage.local.preferences.ignoreRequestsToPocket === false) {
+        this.storage.local.preferences.ignoreRequests =
+          this.storage.local.preferences.ignoreRequests.filter(ignoredPattern =>
+            ignoredPattern !== 'getpocket.com'
+          );
+      }
+      delete this.storage.local.preferences.ignoreRequestsToAMO;
+      delete this.storage.local.preferences.ignoreRequestsToPocket;
+      await this.storage.persist();
     }
   }
 }

@@ -134,16 +134,11 @@ class TmpRequest {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    if ((request.url.startsWith('http://addons.mozilla.org') ||
-        request.url.startsWith('https://addons.mozilla.org')) &&
-        this.storage.local.preferences.ignoreRequestsToAMO) {
-      debug('[_webRequestOnBeforeRequest] we are ignoring requests to addons.mozilla.org because we arent allowed to cancel requests anyway', request);
-      return;
-    }
-
-    if (request.url.startsWith('https://getpocket.com') &&
-        this.storage.local.preferences.ignoreRequestsToPocket) {
-      debug('[_webRequestOnBeforeRequest] we are ignoring requests to getpocket.com because of #52', request);
+    if (this.storage.local.preferences.ignoreRequests.length &&
+      this.storage.local.preferences.ignoreRequests.find(ignorePattern => {
+        return this.isolation.matchDomainPattern(request.url, ignorePattern);
+      })) {
+      debug('[_webRequestOnBeforeRequest] request url is on the ignoreRequests list', request);
       return;
     }
 

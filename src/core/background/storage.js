@@ -64,8 +64,7 @@ class TmpStorage {
         delay: 2000,
         domains: ['t.co', 'outgoing.prod.mozaws.net']
       },
-      ignoreRequestsToAMO: true,
-      ignoreRequestsToPocket: true,
+      ignoreRequests: ['getpocket.com', 'addons.mozilla.org'],
       cookies: {
         domain: {}
       },
