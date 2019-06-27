@@ -30,6 +30,10 @@ class Runtime {
 
     case 'savePreferences':
       debug('[onMessage] saving preferences');
+      if (message.payload.migrate) {
+        await this.migration.onUpdate({previousVersion: message.payload.previousVersion});
+      }
+
       if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
         this.browseraction.setIcon(message.payload.preferences.iconColor);
       }
@@ -39,6 +43,9 @@ class Runtime {
         } else {
           this.browseraction.unsetPopup();
         }
+      }
+      if (this.storage.local.preferences.isolation.active !== message.payload.preferences.isolation.active) {
+        this.browseraction.toggleIsolationBadge();
       }
       if (message.payload.preferences.notifications) {
         this.permissions.notifications = true;
@@ -55,10 +62,6 @@ class Runtime {
         this.storage.local.preferences.deletesHistory.contextMenuBookmarks !== message.payload.preferences.deletesHistory.contextMenuBookmarks)  {
         await this.contextmenu.remove();
         this.contextmenu.add();
-      }
-
-      if (message.payload.migrate) {
-        await this.migration.onUpdate({previousVersion: message.payload.previousVersion});
       }
       break;
 

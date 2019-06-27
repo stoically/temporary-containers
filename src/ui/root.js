@@ -20,36 +20,8 @@ export default (App, {popup = false}) => {
             return;
           }
 
-          if (app.preferences.notifications && !app.permissions.notifications) {
-            // eslint-disable-next-line require-atomic-updates
-            app.preferences.notifications = app.permissions.notifications =
-              await browser.permissions.request({
-                permissions: ['notifications']
-              });
-          }
-
-          if (app.preferences.contextMenuBookmarks && !app.permissions.bookmarks) {
-            // eslint-disable-next-line require-atomic-updates
-            app.preferences.contextMenuBookmarks = app.permissions.bookmarks =
-              await browser.permissions.request({
-                permissions: ['bookmarks']
-              });
-          }
-
-          if (app.preferences.deletesHistory.contextMenuBookmarks && !app.permissions.bookmarks) {
-            // eslint-disable-next-line require-atomic-updates
-            app.preferences.deletesHistory.contextMenuBookmarks = app.permissions.bookmarks =
-              await browser.permissions.request({
-                permissions: ['bookmarks']
-              });
-          }
-
-          if (app.preferences.deletesHistory.active && !app.permissions.history) {
-            // eslint-disable-next-line require-atomic-updates
-            app.preferences.deletesHistory.active = app.permissions.history =
-              await browser.permissions.request({
-                permissions: ['history']
-              });
+          if (!popup) {
+            await this.checkPermissions(app);
           }
 
           try {
@@ -70,6 +42,7 @@ export default (App, {popup = false}) => {
     },
     mounted() {
       this.initialize();
+
       this.$root.$on('initialize', () => {
         this.app.initialized = false;
         this.$nextTick(() => {
@@ -113,6 +86,39 @@ export default (App, {popup = false}) => {
           preferences: storage.preferences,
           permissions
         };
+      },
+      async checkPermissions(app) {
+        if (app.preferences.notifications && !app.permissions.notifications) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.notifications = app.permissions.notifications =
+            await browser.permissions.request({
+              permissions: ['notifications']
+            });
+        }
+
+        if (app.preferences.contextMenuBookmarks && !app.permissions.bookmarks) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.contextMenuBookmarks = app.permissions.bookmarks =
+            await browser.permissions.request({
+              permissions: ['bookmarks']
+            });
+        }
+
+        if (app.preferences.deletesHistory.contextMenuBookmarks && !app.permissions.bookmarks) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.deletesHistory.contextMenuBookmarks = app.permissions.bookmarks =
+            await browser.permissions.request({
+              permissions: ['bookmarks']
+            });
+        }
+
+        if (app.preferences.deletesHistory.active && !app.permissions.history) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.deletesHistory.active = app.permissions.history =
+            await browser.permissions.request({
+              permissions: ['history']
+            });
+        }
       }
     },
     render(h) {

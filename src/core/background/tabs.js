@@ -103,6 +103,9 @@ class Tabs {
       return;
     }
     await this.pageaction.showOrHide(tab);
+    if (!this.storage.local.preferences.isolation.active) {
+      this.browseraction.toggleIsolationBadge();
+    }
     await this.maybeReloadInTempContainer(tab, changeInfo);
   }
 

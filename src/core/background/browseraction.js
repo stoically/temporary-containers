@@ -16,6 +16,9 @@ class BrowserAction {
     if (this.storage.local.preferences.iconColor !== 'default') {
       this.setIcon(this.storage.local.preferences.iconColor);
     }
+    if (!this.storage.local.preferences.isolation.active) {
+      this.toggleIsolationBadge();
+    }
   }
 
 
@@ -58,15 +61,11 @@ class BrowserAction {
 
 
   addBadge(tabId) {
-    browser.browserAction.setBadgeBackgroundColor({
-      color: '#FF613D',
-      tabId: tabId
-    });
     browser.browserAction.setTitle({
       title: 'Automatic Mode on navigation active',
       tabId: tabId
     });
-    browser.browserAction.setBadgeText({
+    this.setBadgeText({
       text: 'A',
       tabId: tabId
     });
@@ -75,13 +74,42 @@ class BrowserAction {
 
   removeBadge(tabId) {
     browser.browserAction.setTitle({
-      title: 'Open a new Tab in a new Temporary Container (Alt+C)',
+      title: !this.storage.local.preferences.browserActionPopup ?
+        'Open a new Tab in a new Temporary Container (Alt+C)' :
+        'Temporary Containers',
       tabId
     });
-    browser.browserAction.setBadgeText({
+    this.setBadgeText({
       text: '',
       tabId
     });
+  }
+
+  async setBadgeText({tabId, text}) {
+    if (!this.storage.local.preferences.isolation.active && !text.startsWith('!')) {
+      browser.browserAction.setBadgeBackgroundColor({
+        color: 'red',
+        tabId: tabId
+      });
+      text = `! ${text}`.trim();
+    } else if (this.storage.local.preferences.isolation.active) {
+      browser.browserAction.setBadgeBackgroundColor({
+        color: '#FF613D',
+        tabId: tabId
+      });
+      text = text.replace('!', '').trim();
+    }
+
+    browser.browserAction.setBadgeText({
+      text,
+      tabId
+    });
+  }
+
+  async toggleIsolationBadge() {
+    const [activeTab] = await browser.tabs.query({active: true, currentWindow: true});
+    const text = await browser.browserAction.getBadgeText({tabId: activeTab.id});
+    this.setBadgeText({tabId: activeTab.id, text});
   }
 }
 

@@ -13,6 +13,10 @@ class Isolation {
   }
 
   async maybeIsolate({tab, request, openerTab, macAssignment}) {
+    if (!this.storage.local.preferences.isolation.active) {
+      debug('[maybeIsolate] isolation is disabled');
+      return;
+    }
     if (tab && request && request.originUrl && this.mac.isConfirmPage(request.originUrl)) {
       debug('[maybeIsolate] we are coming from a mac confirm page');
       this.mac.containerConfirmed[tab.id] = tab.cookieStoreId;

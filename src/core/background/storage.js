@@ -20,6 +20,7 @@ class TmpStorage {
       },
       iconColor: 'default',
       isolation: {
+        active: true,
         global: {
           navigation: {
             action: 'never'

@@ -410,7 +410,10 @@ export default {
       </div>
       <br>
       <div class="field">
-        <button class="ui button primary">
+        <button
+          class="ui button primary"
+          :disabled="!domainPattern.trim()"
+        >
           {{ editing ? 'Done editing' : 'Add' }}
           {{ domainPattern }}
         </button>

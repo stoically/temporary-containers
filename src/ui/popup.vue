@@ -1,9 +1,9 @@
 <script>
-import IsolationPerDomain from './isolation/perdomain';
-import Actions from './actions';
-import Statistics from './statistics';
-import Error from './error';
-import Message from './message';
+import IsolationPerDomain from './components/isolation/perdomain';
+import Actions from './components/actions';
+import Statistics from './components/statistics';
+import Error from './components/error';
+import Message from './components/message';
 
 export default {
   components: {
@@ -19,11 +19,21 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      initialized: false
+    };
+  },
   watch: {
     app(app) {
-      if (app.initialized) {
-        $.tab('change tab', 'isolation-per-domain');
+      if (!app.initialized) {
+        return;
       }
+
+      this.initialized = true;
+      this.$nextTick(() => {
+        $.tab('change tab', 'isolation-per-domain');
+      });
     }
   },
   mounted() {
@@ -59,11 +69,14 @@ export default {
       });
       window.close();
     },
-    preferences() {
+    openPreferences() {
       browser.tabs.create({
         url: browser.runtime.getURL('options.html')
       });
       window.close();
+    },
+    toggleIsolation() {
+      this.app.preferences.isolation.active = !this.app.preferences.isolation.active;
     }
   }
 };
@@ -79,7 +92,10 @@ export default {
 </style>
 
 <template>
-  <div class="pusher">
+  <div
+    v-if="initialized"
+    class="pusher"
+  >
     <div class="ui sidebar vertical menu">
       <a
         class="item"
@@ -115,9 +131,26 @@ export default {
             </a>
             <div class="right menu">
               <a
+                v-if="app.preferences.isolation.active"
+                class="item"
+                title="Disable Isolation"
+                @click="toggleIsolation"
+              >
+                <i class="dont icon" />
+              </a>
+              <a
+                v-else
+                class="item"
+                title="Enable Isolation"
+                @click="toggleIsolation"
+              >
+                <i class="exclamation red icon" />
+
+              </a>
+              <a
                 class="item"
                 title="Open Preferences/Options"
-                @click="preferences"
+                @click="openPreferences"
               >
                 <i class="icon-cog-alt" />
               </a>
@@ -139,7 +172,7 @@ export default {
                   height="16"
                 >
                   <image
-                    xlink:href="../../core/icons/page-w-16.svg"
+                    xlink:href="../core/icons/page-w-16.svg"
                     x="0"
                     y="0"
                     width="100%"

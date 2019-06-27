@@ -1,11 +1,11 @@
 <script>
-import General from './general';
-import Isolation from './isolation';
-import Advanced from './advanced';
-import Statistics from './statistics';
-import ExportImport from './export_import';
-import Message from './message';
-import Error from './error';
+import General from './components/general';
+import Isolation from './components/isolation';
+import Advanced from './components/advanced';
+import Statistics from './components/statistics';
+import ExportImport from './components/export_import';
+import Message from './components/message';
+import Error from './components/error';
 
 export default {
   components: {
@@ -23,13 +23,7 @@ export default {
       required: true
     }
   },
-  watch: {
-    app() {
-      console.log('!?!?', this.app);
-    }
-  },
   async mounted() {
-    console.log(this.app);
     $('.menu .item').tab({
       history: true,
       historyType: 'hash'
