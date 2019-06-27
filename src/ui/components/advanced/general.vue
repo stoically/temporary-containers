@@ -17,7 +17,8 @@ export default {
       html: `
         <div style="width:500px;">
         The popup lets you<ul>
-        <li> Configure Isolation Per Domain
+        <li> Configure Isolation
+        <li> Disable Isolation globally
         <li> Convert Temporary to Permanent Container
         <li> Convert Permanent to Temporary Container
         <li> Open current tab URL in new Temporary Container

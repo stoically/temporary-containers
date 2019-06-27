@@ -31,7 +31,7 @@ export default function init(App, params = {}) {
     loadScript('/jquery/jquery.min.js'),
     loadScript('/jquery/jquery.address.js'),
     loadScript('/semantic/semantic.min.js'),
-    loadScript('/vue/vue.runtime.js'),
+    loadScript('/vue/vue.runtime.min.js'),
     import('./root')
   ]).then(promises => {
     const root = promises.pop().default;

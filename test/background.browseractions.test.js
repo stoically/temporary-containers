@@ -16,7 +16,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       browser.contextualIdentities.create.should.have.been.calledWith({
         name: 'tmp1',
-        color: 'red',
+        color: 'toolbar',
         icon: 'circle'
       });
       browser.tabs.create.should.have.been.calledWith({

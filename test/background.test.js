@@ -28,9 +28,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       browser.runtime.onInstalled.addListener.should.have.been.calledOnce;
       browser.runtime.onStartup.addListener.should.have.been.calledOnce;
-
-      browser.runtime.onMessage.addListener.yield();
-      background.runtime.onMessage.should.have.been.calledOnce;
+      browser.runtime.onMessage.addListener.should.have.been.calledOnce;
 
       browser.windows.onFocusChanged.addListener.yield();
       background.contextmenu.windowsOnFocusChanged.should.have.been.calledOnce;
