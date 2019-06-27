@@ -47,17 +47,15 @@ export default {
     addCookie() {
       const domain = this.preferences.cookies.domain;
       if (!domain[this.domainPattern]) {
-        domain[this.domainPattern] = [];
+        this.$set(domain, this.domainPattern, []);
       }
       domain[this.domainPattern].unshift({...this.cookie});
-      this.preferences.cookies.domain = {...domain};
     },
     removeCookie(cookiesDomainPattern, index) {
       this.preferences.cookies.domain[cookiesDomainPattern].splice(index, 1);
       if (!this.preferences.cookies.domain[cookiesDomainPattern].length) {
-        delete this.preferences.cookies.domain[cookiesDomainPattern];
+        this.$delete(this.preferences.cookies.domain, cookiesDomainPattern);
       }
-      this.preferences.cookies.domain = {...this.preferences.cookies.domain};
     },
     cookieKeys(domainCookie) {
       return Object.keys(this.cookie).filter(key => domainCookie[key]);
@@ -212,7 +210,7 @@ export default {
         </button>
       </div>
     </form>
-    <div style="margin-top: 50px;">
+    <div style="margin-top: 30px;">
       <h3>Cookies</h3>
       <div>
         <div v-if="!Object.keys(preferences.cookies.domain).length">

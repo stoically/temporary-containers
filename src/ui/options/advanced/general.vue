@@ -13,22 +13,20 @@ export default {
     };
   },
   async mounted() {
-    const popupToolTip = `
-      <div style="width:500px;">
-      The popup lets you<ul>
-      <li> Configure Isolation Per Domain
-      <li> Convert Temporary to Permanent Container
-      <li> Convert Permanent to Temporary Container
-      <li> Open current tab URL in new Temporary Container
-      <li> Open current tab URL in new "Deletes History Temporary Container"
-      <li> Open Preferences/Options
-      <li> Open new Temporary Container
-      <li> Open new "Deletes History Temporary Container"
-      </ul></div>
-    `;
-
     $('#popupField').popup({
-      html: popupToolTip,
+      html: `
+        <div style="width:500px;">
+        The popup lets you<ul>
+        <li> Configure Isolation Per Domain
+        <li> Convert Temporary to Permanent Container
+        <li> Convert Permanent to Temporary Container
+        <li> Open current tab URL in new Temporary Container
+        <li> Open current tab URL in new "Deletes History Temporary Container"
+        <li> Open Preferences/Options
+        <li> Open new Temporary Container
+        <li> Open new "Deletes History Temporary Container"
+        </ul></div>
+      `,
       inline: true,
       position: 'bottom left'
     });
@@ -60,14 +58,17 @@ export default {
       class="field"
     >
       <div class="field">
-        <label>Toolbar Icon Popup</label>
+        <label>
+          Toolbar Icon Popup
+          <span class="icon-info-circled" />
+        </label>
         <div class="ui checkbox">
           <input
             id="browserActionPopup"
             v-model="preferences.browserActionPopup"
             type="checkbox"
           >
-          <label>Show the popup when pressing the Toolbar Icon instead of opening Temporary Container</label>
+          <label>Show popup when pressing the toolbar icon instead of opening new Temporary Container</label>
         </div>
       </div>
       <div class="field">
@@ -77,7 +78,7 @@ export default {
             v-model="preferences.pageAction"
             type="checkbox"
           >
-          <label>Show additional Icon in the address bar that reveals the popup</label>
+          <label>Show icon in the address bar that reveals the popup</label>
         </div>
       </div>
     </div>
@@ -123,7 +124,7 @@ export default {
           v-model="preferences.keyboardShortcuts.AltC"
           type="checkbox"
         >
-        <label>Alt+C - Open a new Tab in a new Temporary Container</label>
+        <label>Alt+C - Open a new tab in a new Temporary Container</label>
       </div>
     </div>
     <div
@@ -137,7 +138,7 @@ export default {
           v-model="preferences.keyboardShortcuts.AltP"
           type="checkbox"
         >
-        <label>Alt+P - Open a new Tab in a new 'Deletes History Temporary Container'</label>
+        <label>Alt+P - Open a new tab in a new 'Deletes History Temporary Container'</label>
       </div>
     </div>
     <div
@@ -150,7 +151,7 @@ export default {
           v-model="preferences.keyboardShortcuts.AltN"
           type="checkbox"
         >
-        <label>Alt+N - Open a new 'No Container' Tab</label>
+        <label>Alt+N - Open a new 'No Container' tab</label>
       </div>
     </div>
     <div
@@ -163,7 +164,7 @@ export default {
           v-model="preferences.keyboardShortcuts.AltShiftC"
           type="checkbox"
         >
-        <label>Alt+Shift+C - Open a new 'No Container' Tab in a new Window</label>
+        <label>Alt+Shift+C - Open a new 'No Container' tab in a new window</label>
       </div>
     </div>
     <div
@@ -176,7 +177,7 @@ export default {
           v-model="preferences.keyboardShortcuts.AltX"
           type="checkbox"
         >
-        <label>Alt+X - Open a new Tab in the same Container as the currently active Tab</label>
+        <label>Alt+X - Open a new tab in the same container as the currently active tab</label>
       </div>
     </div>
     <div class="field">
@@ -187,7 +188,7 @@ export default {
           v-model="preferences.replaceTabs"
           type="checkbox"
         >
-        <label>Instead of creating a new Tab replace the currently active Tab</label>
+        <label>Instead of creating a new tab replace the currently active tab</label>
       </div>
     </div>
     <div class="field">

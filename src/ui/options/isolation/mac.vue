@@ -45,11 +45,12 @@ export default {
       </div>
       <div class="field">
         <div class="ui message">
-          This is not related to the Per Domain Isolation "Always open in" configuration, but instead applies to the
+          This applies to the
           <a
             href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"
             target="_blank"
           >Multi-Account Containers</a> Add-on, which needs to be installed and configured properly for this to work.
+          It's not related to the Per Domain Isolation "Always open in" configuration.
           To add new sites to permanent containers with MAC you need to disable this configuration temporarly,
           <a
             href="https://github.com/stoically/temporary-containers/issues/170"

@@ -1,27 +1,26 @@
-import clonedeep from 'lodash.clonedeep';
-window.clonedeep = clonedeep;
-
 export default function init(App) {
   // Workaround until parcel supports externals
   // https://github.com/parcel-bundler/parcel/issues/144
 
   const loadStylesheet = (href) => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const stylesheet = document.createElement('link');
       stylesheet.rel = 'stylesheet';
       stylesheet.type = 'text/css';
       stylesheet.href = href;
       stylesheet.onload = resolve;
+      stylesheet.onerror = reject;
       document.head.appendChild(stylesheet);
     });
   };
 
   const loadScript = (href) => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.async = false;
       script.src = href;
       script.onload = resolve;
+      script.onerror = reject;
       document.body.appendChild(script);
     });
   };
@@ -37,5 +36,5 @@ export default function init(App) {
   ]).then(promises => {
     const shared = promises.pop().default;
     new Vue(shared(App));
-  });
+  }).catch(console.error);
 }

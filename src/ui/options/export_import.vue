@@ -103,7 +103,7 @@ export default {
         <div class="ui notice message">
           Preferences that include permanent containers are stripped from the
           export since it's not possible to make sure that those containers exist
-          when importing, which leads to unexpected behavior.
+          when importing, which would lead to unexpected behavior.
         </div>
         <div class="field">
           <button

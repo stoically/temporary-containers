@@ -8,23 +8,18 @@ export default {
   },
   data() {
     return {
-      preferences: this.app.preferences,
-      show: false
+      preferences: this.app.preferences
     };
   },
   mounted() {
-    this.$nextTick(() => {
-      $('#advancedDeletesHistory .ui.checkbox').checkbox();
-      $('#advancedDeletesHistory .ui.dropdown').dropdown();
-      this.show = true;
-    });
+    $('#advancedDeletesHistory .ui.checkbox').checkbox();
+    $('#advancedDeletesHistory .ui.dropdown').dropdown();
   }
 };
 </script>
 
 <template>
   <div
-    v-show="show"
     id="advancedDeletesHistory"
     class="ui form"
   >
@@ -36,7 +31,7 @@ export default {
           "Deletes History Temporary Container" will get deleted from your entire history.
           This means if you visited the same Website URL in another Container, Temporary Container
           or in the Default Container before or while visiting it in a "Deletes History Temporary Container"
-          then those visits will get deleted from History too. This is true until Firefox supports a special history for container tabs.
+          then those visits will get deleted from history too. This is true until Firefox supports a special history for container tabs.
           <a
             href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320"
             target="_blank"

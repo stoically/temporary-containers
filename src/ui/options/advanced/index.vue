@@ -29,9 +29,9 @@ export default {
       </a>
       <a
         class="item"
-        data-tab="advanced/setcookies"
+        data-tab="advanced/cookies"
       >
-        Set Cookies
+        Cookies
       </a>
       <a
         class="item"
@@ -51,7 +51,7 @@ export default {
     </div>
     <div
       class="ui bottom attached tab segment"
-      data-tab="advanced/setcookies"
+      data-tab="advanced/cookies"
     >
       <cookies
         v-if="app.initialized"

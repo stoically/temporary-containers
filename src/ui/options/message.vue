@@ -8,6 +8,7 @@ export default {
   },
   mounted() {
     this.$root.$on('showMessage', message => {
+      this.error = false;
       this.message = message;
 
       setTimeout(() => {

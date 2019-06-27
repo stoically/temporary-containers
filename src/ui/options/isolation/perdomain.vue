@@ -1,55 +1,147 @@
 <script>
+import DomainPattern from '../domainpattern';
+
+const domainDefaults = {
+  always: {
+    action: 'disabled',
+    allowedInPermanent: false
+  },
+  navigation: {
+    action: 'global'
+  },
+  mouseClick: {
+    middle: {
+      action: 'global'
+    },
+    ctrlleft: {
+      action: 'global'
+    },
+    left: {
+      action: 'global'
+    }
+  },
+  excluded: {}
+};
+
 export default {
+  components: {
+    DomainPattern
+  },
   props: {
-    preferences: {
+    app: {
       type: Object,
-      default: () => {}
+      required: true
+    }
+  },
+  data() {
+    return {
+      preferences: this.app.preferences,
+      domainPattern: '',
+      domainPatternDisabled: false,
+      domain: JSON.parse(JSON.stringify(domainDefaults)),
+      editing: false
+    };
+  },
+  watch: {
+    domainPattern(domainPattern) {
+      if (!this.editing && this.preferences.isolation.domain[domainPattern]) {
+        $('#isolationDomainForm').form('validate form');
+      }
     }
   },
   mounted() {
     $('#isolationDomain .ui.accordion').accordion({exclusive: false});
     $('#isolationDomain .ui.dropdown').dropdown();
+    $('#isolationDomain .ui.checkbox').checkbox();
 
-    $('#isolationDomainPatternDiv').popup({
-      html: domainPatternToolTip,
-      inline: true,
-      position: 'bottom left'
-    });
-
-    $('#isolationGlobalExcludeDomainPatternDiv').popup({
-      html: domainPatternToolTip,
-      inline: true,
-      position: 'bottom left'
-    });
-
-    $('#isolationDomainExcludeDomainPatternDiv').popup({
-      html: domainPatternToolTip,
-      inline: true,
-      position: 'bottom left'
-    });
-
-    $('#isolationDomainExcludeDomainSave').on('click', (event) => {
-      event.preventDefault();
-      isolationDomainAddExcludeDomainRule();
-    });
-
+    $.fn.form.settings.rules.domainPattern = (value) => {
+      return !this.editing && !this.preferences.isolation.domain[value];
+    };
 
     $('#isolationDomainForm').form({
+      inline: true,
       fields: {
-        isolationDomainPattern: 'empty'
+        isolationDomainPattern: {
+          rules: [
+            {
+              type: 'empty',
+              prompt: 'Domain Pattern can\'t be empty'
+            },
+            {
+              type: 'domainPattern',
+              prompt: 'Domain Pattern already exists'
+            }
+          ]
+        }
       },
       onSuccess: (event) => {
-        event.preventDefault();
-        isolationDomainAddRule();
+        if (event) {
+          event.preventDefault();
+        }
+
+        if (this.editing) {
+          this.editing = false;
+        } else {
+          this.$set(this.preferences.isolation.domain, this.domainPattern, JSON.parse(JSON.stringify(this.domain)));
+        }
+        this.reset();
       }
     });
+  },
+  methods: {
+    reset() {
+      this.domainPattern = '';
+      this.domainPatternDisabled = false;
+      this.domain = JSON.parse(JSON.stringify(domainDefaults));
+      $('#isolationPerDomainAccordion').accordion('close', 0);
+      $('#isolationPerDomainAccordion').accordion('close', 1);
+      $('#isolationPerDomainAccordion').accordion('close', 2);
+      $('#isolationPerDomainAccordion').accordion('close', 3);
+      this.resetDropdowns();
+    },
+    resetDropdowns() {
+      $('#isolationDomain .ui.dropdown').dropdown('destroy');
+      this.$nextTick(() => {
+        $('#isolationDomain .ui.dropdown').dropdown();
+      });
+    },
+    edit(domainPattern) {
+      this.editing = true;
+      this.domain = this.preferences.isolation.domain[domainPattern];
+      this.domainPattern = domainPattern;
+      this.domainPatternDisabled = true;
+      this.resetDropdowns();
 
-    window.updateIsolationDomains();
-    window.updateIsolationDomainExcludeDomains();
+      $('#isolationPerDomainAccordion').accordion(
+        this.domain.always.action === domainDefaults.always.action ? 'close' : 'open', 0
+      );
+      $('#isolationPerDomainAccordion').accordion(
+        this.domain.navigation.action === domainDefaults.navigation.action ? 'close' : 'open', 1
+      );
+      $('#isolationPerDomainAccordion').accordion(
+        this.domain.mouseClick.middle.action === domainDefaults.mouseClick.middle.action &&
+        this.domain.mouseClick.ctrlleft.action === domainDefaults.mouseClick.ctrlleft.action &&
+        this.domain.mouseClick.left.action === domainDefaults.mouseClick.left.action ? 'close' : 'open', 2
+      );
+      $('#isolationPerDomainAccordion').accordion(
+        !Object.keys(this.domain.excluded).length ? 'close' : 'open', 3
+      );
+    },
+    remove(domainPattern) {
+      const confirmed = window.confirm(`
+        Remove ${domainPattern}?
+      `);
+      if (confirmed) {
+        this.$delete(this.preferences.isolation.domain, domainPattern);
+        if (this.editing && this.domainPattern === domainPattern) {
+          this.reset();
+          this.editing = false;
+        }
+      }
+    }
   }
 };
 </script>
-
 
 <template>
   <div id="isolationDomain">
@@ -64,16 +156,11 @@ export default {
       id="isolationDomainForm"
       class="ui form"
     >
-      <div
-        id="isolationDomainPatternDiv"
-        class="field"
-      >
-        <label>Domain Pattern</label>
-        <input
-          id="isolationDomainPattern"
-          type="text"
-        >
-      </div>
+      <domain-pattern
+        id="isolationDomainPattern"
+        :disabled="domainPatternDisabled"
+        :domain-pattern.sync="domainPattern"
+      />
       <div
         id="isolationPerDomainAccordion"
         class="ui accordion"
@@ -88,15 +175,13 @@ export default {
           <div class="field">
             <select
               id="isolationDomainAlways"
+              v-model="domain.always.action"
               class="ui fluid dropdown"
             >
               <option value="enabled">
                 Enabled
               </option>
-              <option
-                value="disabled"
-                selected="selected"
-              >
+              <option value="disabled">
                 Disabled
               </option>
             </select>
@@ -105,6 +190,7 @@ export default {
             <div class="ui checkbox">
               <input
                 id="isolationDomainAlwaysAllowedInPermanent"
+                v-model="domain.always.allowedInPermanent"
                 type="checkbox"
               >
               <label>Allow to load in permanent containers</label>
@@ -121,12 +207,10 @@ export default {
           <div class="field">
             <select
               id="isolationDomainNavigation"
+              v-model="domain.navigation.action"
               class="ui fluid dropdown"
             >
-              <option
-                value="global"
-                selected="selected"
-              >
+              <option value="global">
                 Use Global
               </option>
               <option value="always">
@@ -155,12 +239,10 @@ export default {
             <label>Middle Mouse</label>
             <select
               id="isolationDomainMouseClickMiddle"
+              v-model="domain.mouseClick.middle.action"
               class="ui fluid dropdown"
             >
-              <option
-                value="global"
-                selected="selected"
-              >
+              <option value="global">
                 Use Global
               </option>
               <option value="always">
@@ -181,12 +263,10 @@ export default {
             <label>Ctrl/Cmd+Left Mouse</label>
             <select
               id="isolationDomainMouseClickCtrlLeft"
+              v-model="domain.mouseClick.ctrlleft.action"
               class="ui fluid dropdown"
             >
-              <option
-                value="global"
-                selected="selected"
-              >
+              <option value="global">
                 Use Global
               </option>
               <option value="always">
@@ -207,12 +287,10 @@ export default {
             <label>Left Mouse</label>
             <select
               id="isolationDomainMouseClickLeft"
+              v-model="domain.mouseClick.left.action"
               class="ui fluid dropdown"
             >
-              <option
-                value="global"
-                selected="selected"
-              >
+              <option value="global">
                 Use Global
               </option>
               <option value="always">
@@ -253,7 +331,7 @@ export default {
                 id="isolationDomainExcludeDomainSave"
                 class="ui button primary"
               >
-                Exclude
+                Add excluded domain
               </button>
             </div>
             <div>
@@ -272,17 +350,41 @@ export default {
           id="isolationDomainSave"
           class="ui button primary"
         >
-          Add or Edit
+          {{ editing ? `Done editing ${domainPattern}` : 'Add' }}
         </button>
       </div>
       <br>
-      <div>
-        <h3>Domains</h3>
-        <div
-          id="isolationDomains"
-          class="ui bulleted list"
-        />
-      </div>
     </form>
+    <div>
+      <h3>Per Domain Patterns</h3>
+      <div v-if="!Object.keys(preferences.isolation.domain).length">
+        No domains added yet
+      </div>
+      <div v-else>
+        <div
+          v-for="(_domainPrefs, _domainPattern) in preferences.isolation.domain"
+          :key="_domainPattern"
+        >
+          <div class="ui divider" />
+          <div>
+            <button
+              class="ui right primary tiny button"
+              data-tooltip="Edit"
+              @click="edit(_domainPattern)"
+            >
+              <i class="icon-pencil" />
+            </button>
+            <button
+              class="ui right negative tiny button"
+              data-tooltip="Remove"
+              @click="remove(_domainPattern)"
+            >
+              <i class="icon-trash-empty" />
+            </button>
+            {{ _domainPattern }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

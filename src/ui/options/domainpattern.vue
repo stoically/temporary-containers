@@ -4,12 +4,19 @@ export default {
     id: {
       type: String,
       required: true
+    },
+    position: {
+      type: String,
+      default: 'bottom left'
+    },
+    domainPattern: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
-  },
-  data() {
-    return {
-      domainPattern: ''
-    };
   },
   watch: {
     domainPattern(newDomainPattern) {
@@ -17,7 +24,7 @@ export default {
     }
   },
   mounted() {
-    $('#domainPatternDiv').popup({
+    $(`#${this.id}Div`).popup({
       html: `
         <div style="width:750px;">
         Exact match: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>
@@ -30,7 +37,7 @@ export default {
         and matches the full URL instead of just domain
       `,
       inline: true,
-      position: 'bottom left'
+      position: this.position
     });
   }
 };
@@ -38,13 +45,14 @@ export default {
 
 <template>
   <div
-    id="domainPatternDiv"
+    :id="`${id}Div`"
     class="field"
   >
     <label>Domain Pattern</label>
     <input
       :id="id"
       v-model="domainPattern"
+      :disabled="disabled"
       type="text"
     >
   </div>

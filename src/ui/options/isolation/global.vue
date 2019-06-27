@@ -1,5 +1,10 @@
 <script>
+import DomainPattern from '../domainpattern';
+
 export default {
+  components: {
+    DomainPattern
+  },
   props: {
     app: {
       type: Object,
@@ -10,7 +15,8 @@ export default {
     return {
       preferences: this.app.preferences,
       storage: this.app.storage,
-      show: false
+      show: false,
+      excludeDomainPattern: ''
     };
   },
   async mounted() {
@@ -20,8 +26,8 @@ export default {
     $('#isolationGlobalAccordion').accordion('open', 0);
 
     if (this.preferences.isolation.global.mouseClick.middle.action !== 'never' ||
-          this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
-          this.preferences.isolation.global.mouseClick.left.action !== 'never') {
+      this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
+      this.preferences.isolation.global.mouseClick.left.action !== 'never') {
       $('#isolationGlobalAccordion').accordion('open', 1);
     }
 
@@ -29,12 +35,9 @@ export default {
       $('#isolationGlobalAccordion').accordion('open', 2);
     }
 
-    isolationGlobalExcludedDomains = this.preferences.isolation.global.excluded;
     if (Object.keys(this.preferences.isolation.global.excluded).length) {
       $('#isolationGlobalAccordion').accordion('open', 3);
     }
-
-
 
     const excludeContainers = [];
     const containers = await browser.contextualIdentities.query({});
@@ -50,92 +53,34 @@ export default {
     });
     $('#isolationGlobalExcludeContainers').dropdown({
       placeholder: 'Select permanent containers to exclude from Isolation',
-      values: excludeContainers
-    });
-
-    $('#isolationGlobalExcludeDomainSave').on('click', (event) => {
-      event.preventDefault();
-      isolationGlobalAddExcludeDomainRule();
-    });
-
-    window.isolationGlobalExcludedDomains = {};
-    window.isolationGlobalExcludeDomainPatternsClickEvent = false;
-    window.updateIsolationGlobalExcludeDomains = () => {
-      const isolationGlobalExcludeDomainPatternsDiv = $('#isolationGlobalExcludedDomains');
-      const isolationGlobalExcludeDomainPatterns = Object.keys(isolationGlobalExcludedDomains);
-      if (!isolationGlobalExcludeDomainPatterns.length) {
-        isolationGlobalExcludeDomainPatternsDiv.html('No domains excluded');
-        return;
-      }
-      isolationGlobalExcludeDomainPatternsDiv.html('');
-      isolationGlobalExcludeDomainPatterns.map((domainPattern) => {
-        const el = $(`<div class="item" id="${encodeURIComponent(domainPattern)}">` +
-      domainPattern +
-      ' <a href="#" id="removeDomainPattern" data-tooltip="Remove (no confirmation)" ' +
-      '><i class="icon-trash-empty"></i>️</a></div>');
-        isolationGlobalExcludeDomainPatternsDiv.append(el);
-      });
-
-      if (!isolationGlobalExcludeDomainPatternsClickEvent) {
-        isolationGlobalExcludeDomainPatternsDiv.on('click', async (event) => {
-          event.preventDefault();
-          const targetId = $(event.target).parent().attr('id');
-          const domainPattern = $(event.target).parent().parent().attr('id');
-          if (targetId === 'removeDomainPattern') {
-            delete isolationGlobalExcludedDomains[decodeURIComponent(domainPattern)];
-            updateIsolationGlobalExcludeDomains();
-          }
-        });
-        isolationGlobalExcludeDomainPatternsClickEvent = true;
-      }
-    };
-
-    window.isolationGlobalAddExcludeDomainRule = () => {
-      const excludeDomainPattern = document.querySelector('#isolationGlobalExcludeDomainPattern').value;
-      if (!excludeDomainPattern) {
-        $('#isolationGlobalExcludeDomainPatternDiv').addClass('error');
-        return;
-      }
-      $('#isolationGlobalExcludeDomainPatternDiv').removeClass('error');
-      isolationGlobalExcludedDomains[excludeDomainPattern] = {};
-      updateIsolationGlobalExcludeDomains();
-    };
-
-    window.saveIsolationGlobalPreferences = async (event) => {
-      event.preventDefault();
-
-      this.preferences.isolation.global.navigation.action = document.querySelector('#isolationGlobalNavigationAction').value;
-      this.preferences.isolation.global.mouseClick = {
-        middle: {
-          action: document.querySelector('#isolationGlobalMouseClickMiddle').value,
-          container: document.querySelector('#linkClickGlobalMiddleCreatesContainer').value
-        },
-        ctrlleft: {
-          action: document.querySelector('#isolationGlobalMouseClickCtrlLeft').value,
-          container: document.querySelector('#linkClickGlobalCtrlLeftCreatesContainer').value
-        },
-        left: {
-          action: document.querySelector('#isolationGlobalMouseClickLeft').value,
-          container: document.querySelector('#linkClickGlobalLeftCreatesContainer').value
+      values: excludeContainers,
+      onChange: (selectedContainers) => {
+        this.preferences.isolation.global.excludedContainers = {};
+        if (selectedContainers) {
+          selectedContainers.split(',').map(excludeContainer => {
+            this.$set(this.preferences.isolation.global.excludedContainers, excludeContainer, {});
+          });
         }
-      };
-
-      this.preferences.isolation.global.excluded = isolationGlobalExcludedDomains;
-
-      this.preferences.isolation.global.excludedContainers = {};
-      const excludedContainers = $('#isolationGlobalExcludeContainers').dropdown('get values');
-      if (excludedContainers) {
-        excludedContainers.map(excludeContainer => {
-          this.preferences.isolation.global.excludedContainers[excludeContainer] = {};
-        });
       }
+    });
 
-      this.preferences.isolation.mac.action = document.querySelector('#isolationMac').value;
-
-      window.updateIsolationGlobalExcludeDomains();
-    };
+    $('#isolationGlobalExcludeDomainsForm').form({
+      fields: {
+        isolationGlobalExcludeDomainPattern: 'empty'
+      },
+      onSuccess: (event) => {
+        event.preventDefault();
+        this.$set(this.preferences.isolation.global.excluded, this.excludeDomainPattern, {});
+        this.excludeDomainPattern = '';
+      }
+    });
 
     this.show = true;
+  },
+  methods: {
+    removeExcludedDomain(excludedDomainPattern) {
+      this.$delete(this.preferences.isolation.global.excluded, excludedDomainPattern);
+    }
   }
 };
 </script>
@@ -153,7 +98,7 @@ export default {
       <i class="icon-info-circled" /> Global Isolation?
     </a>
     <div class="ui message">
-      Isolation lets you configure that navigating in tabs (also known as "web browsing") should
+      Isolation lets you configure that navigating in tabs ("web browsing") should
       open new Temporary Containers instead of navigating to the target <a
         href="https://simple.wikipedia.org/wiki/Domain_name"
         target="_blank"
@@ -173,7 +118,6 @@ export default {
         <div class="ui segment content">
           <div class="field">
             <select
-              id="isolationGlobalNavigationAction"
               v-model="preferences.isolation.global.navigation.action"
               class="ui fluid dropdown"
             >
@@ -207,7 +151,6 @@ export default {
           <div class="field">
             <label>Middle Mouse</label>
             <select
-              id="isolationGlobalMouseClickMiddle"
               v-model="preferences.isolation.global.mouseClick.middle.action"
               class="ui fluid dropdown"
             >
@@ -228,7 +171,6 @@ export default {
           <div class="field">
             <label>Ctrl/Cmd+Left Mouse</label>
             <select
-              id="isolationGlobalMouseClickCtrlLeft"
               v-model="preferences.isolation.global.mouseClick.ctrlleft.action"
               class="ui fluid dropdown"
             >
@@ -249,7 +191,6 @@ export default {
           <div class="field">
             <label>Left Mouse</label>
             <select
-              id="isolationGlobalMouseClickLeft"
               v-model="preferences.isolation.global.mouseClick.left.action"
               class="ui fluid dropdown"
             >
@@ -293,30 +234,42 @@ export default {
         </div>
         <div class="ui segment content">
           <div class="field">
-            <div
-              id="isolationGlobalExcludeDomainPatternDiv"
-              class="field"
+            <form
+              id="isolationGlobalExcludeDomainsForm"
+              class="ui form"
             >
-              <label>Domain Pattern</label>
-              <input
+              <domain-pattern
                 id="isolationGlobalExcludeDomainPattern"
-                type="text"
-              >
-            </div>
-            <div class="field">
-              <button
-                id="isolationGlobalExcludeDomainSave"
-                class="ui button primary"
-              >
-                Exclude
-              </button>
-            </div>
-            <div>
-              <h3>Excluded domains</h3>
-              <div
-                id="isolationGlobalExcludedDomains"
-                class="ui bulleted list"
+                position="top left"
+                :domain-pattern.sync="excludeDomainPattern"
               />
+              <div class="field">
+                <button class="ui button primary">
+                  Exclude
+                </button>
+              </div>
+            </form>
+            <div style="margin-top: 20px;">
+              <h3>Excluded domains</h3>
+              <div v-if="!Object.keys(preferences.isolation.global.excluded).length">
+                No domains excluded
+              </div>
+              <div v-else>
+                <div
+                  v-for="(_, excludedDomainPattern) in preferences.isolation.global.excluded"
+                  :key="excludedDomainPattern"
+                >
+                  <button
+                    class="ui right negative small button"
+                    style="margin-top: 10px"
+                    data-tooltip="Remove"
+                    @click="removeExcludedDomain(excludedDomainPattern)"
+                  >
+                    <i class="icon-trash-empty" />
+                  </button>
+                  {{ excludedDomainPattern }}
+                </div>
+              </div>
             </div>
           </div>
         </div>

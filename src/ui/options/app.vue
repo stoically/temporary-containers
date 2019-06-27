@@ -6,7 +6,6 @@ import Statistics from './statistics';
 import ExportImport from './export_import';
 import Message from './message';
 import Error from './error';
-import { stat } from 'fs';
 
 export default {
   components: {
@@ -123,7 +122,6 @@ export default {
         this.$root.$emit('showPreferencesError', error);
       }
 
-
       this.app = {
         initialized: true,
         storage,
@@ -136,7 +134,7 @@ export default {
 </script>
 
 <style>
-  #container { padding: 25px; overflow-wrap: break-word; }
+  #container { padding: 25px; }
   .hidden { display: none !important; }
 </style>
 
