@@ -32,6 +32,7 @@ class TemporaryContainers {
       history: permissions.includes('history'),
       notifications: permissions.includes('notifications'),
     };
+    this.browserVersion = parseInt((await browser.runtime.getBrowserInfo()).version);
 
     await this.storage.load();
 

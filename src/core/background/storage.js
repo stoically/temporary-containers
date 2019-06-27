@@ -11,7 +11,7 @@ class TmpStorage {
       notifications: false,
       container: {
         namePrefix: 'tmp',
-        color: 'red',
+        color: 'toolbar',
         colorRandom: false,
         icon: 'circle',
         iconRandom: false,
@@ -188,6 +188,9 @@ class TmpStorage {
   async install() {
     this.loading = true;
     this.local = JSON.parse(JSON.stringify(this.storageDefault));
+    if (parseInt((await browser.runtime.getBrowserInfo()).version) < 67) {
+      this.local.preferences.container.color = 'red';
+    }
     const persisted = await this.persist();
     if (!persisted) {
       debug('[install] something went wrong while initializing storage');

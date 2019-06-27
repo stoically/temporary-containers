@@ -52,7 +52,7 @@ class Container {
     this.tabs = this.background.tabs;
     this.statistics = this.background.statistics;
 
-    if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
+    if (this.background.browserVersion >= 67) {
       this.containerColors.push('toolbar');
       this.containerIcons.push('fence');
     }
