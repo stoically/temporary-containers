@@ -15,6 +15,7 @@ export default {
     return {
       preferences: this.app.preferences,
       storage: this.app.storage,
+      popup: this.app.popup,
       show: false,
       excludeDomainPattern: ''
     };
@@ -240,7 +241,7 @@ export default {
             >
               <domain-pattern
                 id="isolationGlobalExcludeDomainPattern"
-                position="top left"
+                :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
                 :domain-pattern.sync="excludeDomainPattern"
               />
               <div class="field">

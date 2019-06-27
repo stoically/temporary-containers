@@ -183,6 +183,7 @@ export default {
     >
       <domain-pattern
         id="isolationDomainPattern"
+        :tooltip="!popup ? undefined : {hidden: true}"
         :disabled="domainPatternDisabled"
         :domain-pattern.sync="domainPattern"
       />

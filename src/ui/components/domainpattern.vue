@@ -5,9 +5,12 @@ export default {
       type: String,
       required: true
     },
-    position: {
-      type: String,
-      default: 'bottom left'
+    tooltip: {
+      type: Object,
+      default: () => ({
+        hidden: false,
+        position: 'bottom left'
+      })
     },
     domainPattern: {
       type: String,
@@ -24,21 +27,23 @@ export default {
     }
   },
   mounted() {
-    $(`#${this.id}Div`).popup({
-      html: `
-        <div style="width:750px;">
-        Exact match: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>
-        Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>
-        <br>
-        Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>,
-        so you might need two patterns.</div>
-        <br>
-        Advanced: Parsed as RegExp when <strong>/pattern/flags</strong> is given
-        and matches the full URL instead of just domain
-      `,
-      inline: true,
-      position: this.position
-    });
+    if (!this.tooltip.hidden) {
+      $(`#${this.id}Div`).popup({
+        html: `
+          <div style="width:750px;">
+          Exact match: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>
+          Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>
+          <br>
+          Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>,
+          so you might need two patterns.</div>
+          <br>
+          Advanced: Parsed as RegExp when <strong>/pattern/flags</strong> is given
+          and matches the full URL instead of just domain
+        `,
+        inline: true,
+        position: this.tooltip.position
+      });
+    }
   }
 };
 </script>

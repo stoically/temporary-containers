@@ -21,7 +21,8 @@ export default {
   },
   data() {
     return {
-      initialized: false
+      initialized: false,
+      show: false
     };
   },
   watch: {
@@ -32,19 +33,19 @@ export default {
 
       this.initialized = true;
       this.$nextTick(() => {
+        $('.ui.accordion').accordion({
+          animateChildren: false,
+          duration: 0
+        });
+
+        $('.ui.sidebar').sidebar({
+          transition: 'overlay'
+        });
+
+        this.show = true;
         $.tab('change tab', 'isolation-per-domain');
       });
     }
-  },
-  mounted() {
-    $('.ui.accordion').accordion({
-      animateChildren: false,
-      duration: 0
-    });
-
-    $('.ui.sidebar').sidebar({
-      transition: 'overlay'
-    });
   },
   methods: {
     changeTab(tab) {
@@ -69,10 +70,21 @@ export default {
       });
       window.close();
     },
-    openPreferences() {
-      browser.tabs.create({
+    async openPreferences() {
+      const tabs = await browser.tabs.query({
         url: browser.runtime.getURL('options.html')
       });
+      if (tabs.length) {
+        const tab = tabs[0];
+        if (tab.windowId !== browser.windows.WINDOW_ID_CURRENT) {
+          await browser.windows.update(tab.windowId, {focused: true});
+        }
+        browser.tabs.update(tab.id, {active: true});
+      } else {
+        browser.tabs.create({
+          url: browser.runtime.getURL('options.html')
+        });
+      }
       window.close();
     },
     toggleIsolation() {
@@ -94,6 +106,7 @@ export default {
 <template>
   <div
     v-if="initialized"
+    v-show="show"
     class="pusher"
   >
     <div class="ui sidebar vertical menu">
@@ -145,7 +158,6 @@ export default {
                 @click="toggleIsolation"
               >
                 <i class="exclamation red icon" />
-
               </a>
               <a
                 class="item"
@@ -187,28 +199,19 @@ export default {
             class="ui tab"
             data-tab="isolation-per-domain"
           >
-            <isolation-per-domain
-              v-if="app.initialized"
-              :app="app"
-            />
+            <isolation-per-domain :app="app" />
           </div>
           <div
             class="ui tab"
             data-tab="actions"
           >
-            <actions
-              v-if="app.initialized"
-              :app="app"
-            />
+            <actions :app="app" />
           </div>
           <div
             class="ui tab"
             data-tab="statistics"
           >
-            <statistics
-              v-if="app.initialized"
-              :app="app"
-            />
+            <statistics :app="app" />
           </div>
           <error :app="app" />
         </div>
