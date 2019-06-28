@@ -10,7 +10,8 @@ export default (App, {popup = false}) => {
     data: () => ({
       app: {
         initialized: false,
-        popup
+        popup,
+        expandedPreferences: false
       }
     }),
     watch: {
@@ -35,6 +36,16 @@ export default (App, {popup = false}) => {
             // eslint-disable-next-line no-console
             console.log('error while saving preferences', error);
             this.$root.$emit('showError', 'Error while saving preferences');
+          }
+
+          if (app.preferences.expandPreferences && !this.expandedPreferences) {
+            Array.from(Array(15)).map((_, idx) => {
+              $('.ui.accordion').accordion('open', idx);
+            });
+            this.expandedPreferences = true;
+          } else if (!app.preferences.expandPreferences && this.expandedPreferences) {
+            this.expandedPreferences = false;
+            this.$root.$emit('initialize');
           }
         },
         deep: true

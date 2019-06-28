@@ -142,10 +142,13 @@ export default {
       this.domainPattern = '';
       this.domainPatternDisabled = false;
       this.domain = JSON.parse(JSON.stringify(domainDefaults));
-      $('#isolationPerDomainAccordion').accordion('close', 0);
-      $('#isolationPerDomainAccordion').accordion('close', 1);
-      $('#isolationPerDomainAccordion').accordion('close', 2);
-      $('#isolationPerDomainAccordion').accordion('close', 3);
+
+      if (!this.preferences.expandPreferences) {
+        $('#isolationPerDomainAccordion').accordion('close', 0);
+        $('#isolationPerDomainAccordion').accordion('close', 1);
+        $('#isolationPerDomainAccordion').accordion('close', 2);
+        $('#isolationPerDomainAccordion').accordion('close', 3);
+      }
       this.resetDropdowns();
     },
     resetDropdowns() {
@@ -161,20 +164,22 @@ export default {
       this.domainPatternDisabled = true;
       this.resetDropdowns();
 
-      $('#isolationPerDomainAccordion').accordion(
-        this.domain.always.action === domainDefaults.always.action ? 'close' : 'open', 0
-      );
-      $('#isolationPerDomainAccordion').accordion(
-        this.domain.navigation.action === domainDefaults.navigation.action ? 'close' : 'open', 1
-      );
-      $('#isolationPerDomainAccordion').accordion(
-        this.domain.mouseClick.middle.action === domainDefaults.mouseClick.middle.action &&
+      if (!this.preferences.expandPreferences) {
+        $('#isolationPerDomainAccordion').accordion(
+          this.domain.always.action === domainDefaults.always.action ? 'close' : 'open', 0
+        );
+        $('#isolationPerDomainAccordion').accordion(
+          this.domain.navigation.action === domainDefaults.navigation.action ? 'close' : 'open', 1
+        );
+        $('#isolationPerDomainAccordion').accordion(
+          this.domain.mouseClick.middle.action === domainDefaults.mouseClick.middle.action &&
         this.domain.mouseClick.ctrlleft.action === domainDefaults.mouseClick.ctrlleft.action &&
         this.domain.mouseClick.left.action === domainDefaults.mouseClick.left.action ? 'close' : 'open', 2
-      );
-      $('#isolationPerDomainAccordion').accordion(
-        !Object.keys(this.domain.excluded).length ? 'close' : 'open', 3
-      );
+        );
+        $('#isolationPerDomainAccordion').accordion(
+          !Object.keys(this.domain.excluded).length ? 'close' : 'open', 3
+        );
+      }
     },
     remove(domainPattern) {
       const confirmed = window.confirm(`

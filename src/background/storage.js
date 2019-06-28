@@ -68,6 +68,7 @@ class TmpStorage {
       cookies: {
         domain: {}
       },
+      expandPreferences: false,
       deletesHistory: {
         active: false,
         automaticMode: 'never',

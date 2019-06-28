@@ -338,5 +338,13 @@ export default {
         <div class="m-b" />
       </div>
     </div>
+    <div class="m-b" />
+    <div class="ui checkbox">
+      <input
+        v-model="preferences.expandPreferences"
+        type="checkbox"
+      >
+      <label>Expand all preferences by default</label>
+    </div>
   </div>
 </template>
