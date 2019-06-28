@@ -195,6 +195,11 @@ export default {
     },
     removeExcludedDomain(excludedDomainPattern) {
       this.$delete(this.domain.excluded, excludedDomainPattern);
+    },
+    expandIsolationDomainFilter() {
+      window.setTimeout(() => {
+        $('#isolationDomainsAccordion').accordion('open', 0);
+      }, 100);
     }
   }
 };
@@ -479,7 +484,10 @@ export default {
       </button>
     </div>
     <br>
-    <div :class="{'ui accordion': popup}">
+    <div
+      id="isolationDomainsAccordion"
+      :class="{'ui accordion': popup}"
+    >
       <div
         v-if="!Object.keys(isolationDomains).length && !isolationDomainFilter"
         style="margin-top: 10px"
@@ -507,6 +515,7 @@ export default {
                 type="text"
                 size="15"
                 placeholder="Filter domains"
+                @focus="expandIsolationDomainFilter"
               >
               <i class="circular search link icon" />
             </span>
