@@ -13,6 +13,7 @@ export default {
   data() {
     return {
       preferences: this.app.preferences,
+      permissions: this.app.permissions,
       initialized: false,
       show: false,
       containerColors: [
@@ -106,6 +107,26 @@ export default {
         position: 'bottom left'
       });
 
+      $('#popupField').popup({
+        html: `
+        <div style="width:500px;">
+        The popup lets you<ul>
+        <li> Configure Isolation
+        <li> Disable/Enable Isolation globally
+        <li> Convert Temporary to Permanent Container
+        <li> Convert Permanent to Temporary Container
+        <li> Open current tab URL in new Temporary Container
+        ${this.permissions.history ? '<li> Open current tab URL in new "Deletes History Temporary Container"' : ''}
+        <li> Open Preferences/Options
+        <li> Open new Temporary Container
+        ${this.permissions.history ? '<li> Open new "Deletes History Temporary Container"' : ''}
+        <li> View Statistics
+        </ul></div>
+      `,
+        inline: true,
+        position: 'bottom left'
+      });
+
       this.show = true;
     });
   }
@@ -140,11 +161,23 @@ export default {
           />
         </span>
       </div>
-
       <div
-        id="notificationsField"
+        id="popupField"
         class="field"
       >
+        <div class="ui checkbox">
+          <input
+            id="browserActionPopup"
+            v-model="preferences.browserActionPopup"
+            type="checkbox"
+          >
+          <label>Show popup when pressing the toolbar icon</label>
+        </div>
+        <span
+          class="float right icon-info-circled"
+        />
+      </div>
+      <div class="field">
         <div
           id="notifications"
           class="ui checkbox"

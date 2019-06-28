@@ -84,6 +84,7 @@ export default {
           await browser.windows.update(tab.windowId, {focused: true});
         }
         browser.tabs.update(tab.id, {active: true});
+        browser.tabs.reload(tab.id);
       } else {
         browser.tabs.create({
           url: browser.runtime.getURL('options.html')

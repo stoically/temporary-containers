@@ -62,7 +62,7 @@
       "src/core",
       "src/ui/static"
     ],
-    "watcherGlob": "src/core"
+    "watcherGlob": "**"
   },
   "posthtml": {
     "recognizeSelfClosing": true

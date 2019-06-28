@@ -40,6 +40,7 @@ class TmpRequest {
 
 
   async webRequestOnBeforeRequest(request) {
+    debug('[webRequestOnBeforeRequest] incoming request', request);
     const requestIdUrl = `${request.requestId}+${request.url}`;
     if (requestIdUrl in this.requestIdUrlSeen) {
       return;
@@ -77,7 +78,6 @@ class TmpRequest {
 
 
   async _webRequestOnBeforeRequest(request) {
-    debug('[_webRequestOnBeforeRequest] incoming request', request);
     if (request.tabId === -1) {
       debug('[_webRequestOnBeforeRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
       return;

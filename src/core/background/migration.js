@@ -185,7 +185,8 @@ class Migration {
       });
       await this.storage.persist();
     }
-    if (versionCompare('0.103', previousVersion) >= 0) {
+    if ((versionCompare('0.103', previousVersion) >= 0 && !details.previousVersion.startsWith('1.0beta')) ||
+      (details.previousVersion.startsWith('1.0beta') && versionCompare('1.0.1', previousVersion) >= 0)) {
       debug('updated from version <= 0.103, migrate deletesHistory.active and ignoreRequestsTo');
       const history = await browser.permissions.contains({permissions: ['history']});
       if (history) {

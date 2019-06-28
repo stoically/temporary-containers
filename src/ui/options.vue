@@ -23,7 +23,16 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      installed: false
+    };
+  },
   async mounted() {
+    if (window.location.search === '?installed') {
+      this.installed = true;
+    }
+
     $('.menu .item').tab({
       history: true,
       historyType: 'hash'
@@ -77,6 +86,7 @@ export default {
       >{{ t('optionsNavExportImport') }}</a>
     </div>
     <message />
+
     <div
       class="ui tab segment"
       data-tab="general"

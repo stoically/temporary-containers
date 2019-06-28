@@ -17,7 +17,7 @@ class BrowserAction {
       this.setIcon(this.storage.local.preferences.iconColor);
     }
     if (!this.storage.local.preferences.isolation.active) {
-      this.toggleIsolationBadge();
+      this.addIsolationInactiveBadge();
     }
   }
 
@@ -61,11 +61,19 @@ class BrowserAction {
 
 
   addBadge(tabId) {
+    if (!this.storage.local.preferences.isolation.active) {
+      return;
+    }
+
     browser.browserAction.setTitle({
       title: 'Automatic Mode on navigation active',
       tabId: tabId
     });
-    this.setBadgeText({
+    browser.browserAction.setBadgeBackgroundColor({
+      color: '#FF613D',
+      tabId: tabId
+    });
+    browser.browserAction.setBadgeText({
       text: 'A',
       tabId: tabId
     });
@@ -73,43 +81,35 @@ class BrowserAction {
 
 
   removeBadge(tabId) {
+    if (!this.storage.local.preferences.isolation.active) {
+      return;
+    }
+
     browser.browserAction.setTitle({
       title: !this.storage.local.preferences.browserActionPopup ?
         'Open a new Tab in a new Temporary Container (Alt+C)' :
         'Temporary Containers',
       tabId
     });
-    this.setBadgeText({
-      text: '',
-      tabId
-    });
-  }
-
-  async setBadgeText({tabId, text}) {
-    if (!this.storage.local.preferences.isolation.active && !text.startsWith('!')) {
-      browser.browserAction.setBadgeBackgroundColor({
-        color: 'red',
-        tabId: tabId
-      });
-      text = `! ${text}`.trim();
-    } else if (this.storage.local.preferences.isolation.active) {
-      browser.browserAction.setBadgeBackgroundColor({
-        color: '#FF613D',
-        tabId: tabId
-      });
-      text = text.replace('!', '').trim();
-    }
-
     browser.browserAction.setBadgeText({
-      text,
-      tabId
+      text: '',
+      tabId: tabId
     });
   }
 
-  async toggleIsolationBadge() {
-    const [activeTab] = await browser.tabs.query({active: true, currentWindow: true});
-    const text = await browser.browserAction.getBadgeText({tabId: activeTab.id});
-    this.setBadgeText({tabId: activeTab.id, text});
+  addIsolationInactiveBadge() {
+    browser.browserAction.setBadgeBackgroundColor({
+      color: 'red'
+    });
+    browser.browserAction.setBadgeText({
+      text: '!'
+    });
+  }
+
+  removeIsolationInactiveBadge() {
+    browser.browserAction.setBadgeText({
+      text: ''
+    });
   }
 }
 

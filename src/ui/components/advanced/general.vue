@@ -19,25 +19,6 @@ export default {
     };
   },
   async mounted() {
-    $('#popupField').popup({
-      html: `
-        <div style="width:500px;">
-        The popup lets you<ul>
-        <li> Configure Isolation
-        <li> Disable Isolation globally
-        <li> Convert Temporary to Permanent Container
-        <li> Convert Permanent to Temporary Container
-        <li> Open current tab URL in new Temporary Container
-        <li> Open current tab URL in new "Deletes History Temporary Container"
-        <li> Open Preferences/Options
-        <li> Open new Temporary Container
-        <li> Open new "Deletes History Temporary Container"
-        </ul></div>
-      `,
-      inline: true,
-      position: 'bottom left'
-    });
-
     $('#advancedGeneral .ui.dropdown').dropdown();
     $('#advancedGeneral .ui.checkbox').checkbox();
     $('#advancedGeneral .ui.accordion').accordion({exclusive: false});
@@ -93,16 +74,6 @@ export default {
         </h4>
       </div>
       <div class="ui content">
-        <div class="ui negative message">
-          <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
-          use the address bar for search engines. If you select "Don't reopen new tabs in Temporary Containers"
-          here, cookies can get written into and read from the permanent default container as long as the new
-          tab didn't get reopened in a Temporary Container.<br>
-          <br>
-          If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
-          and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo then it should be no problem
-          to use the "Don't reopen new tabs" preference.
-        </div>
         <div
           :data-tooltip="app.permissions.history ?
             '&quot;Deletes History Temporary Containers&quot; always reopen new tabs to avoid leaving traces in recently closed tabs' : false"
@@ -125,29 +96,25 @@ export default {
             </option>
           </select>
         </div>
+        <div class="ui negative message">
+          <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
+          use the address bar for search engines. If you select "Don't reopen new tabs in Temporary Containers"
+          here, cookies can get written into and read from the permanent default container as long as the new
+          tab didn't get reopened in a Temporary Container.<br>
+          <br>
+          If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
+          and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo then it should be no problem
+          to use the "Don't reopen new tabs" preference.
+        </div>
         <div class="m-b" />
       </div>
       <div class="title">
         <h4>
           <i class="dropdown icon" />
-          Toolbar Icon Popup
-          <span
-            id="popupField"
-            class="icon-info-circled"
-          />
+          Popup
         </h4>
       </div>
       <div class="ui content">
-        <div class="field">
-          <div class="ui checkbox">
-            <input
-              id="browserActionPopup"
-              v-model="preferences.browserActionPopup"
-              type="checkbox"
-            >
-            <label>Show popup when pressing the toolbar icon</label>
-          </div>
-        </div>
         <div class="field">
           <div class="ui checkbox">
             <input
@@ -312,7 +279,7 @@ export default {
       </div>
       <div class="ui content">
         <div class="ui notice message">
-          Note: To ignore Mozilla domains its needed to remove them from the <i>about:config</i>
+          Note: To unignore Mozilla domains its needed to remove them from the <i>about:config</i>
           key <strong>extensions.webextensions.restrictedDomains</strong> list, if they're listed there.
           To fully unignore requests to addons.mozilla.org you need to configure <strong>privacy.resistFingerprinting.block_mozAddonManager</strong>
           in <i>about:config</i> to Boolean <i>true</i> as well.

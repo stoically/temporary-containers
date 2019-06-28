@@ -49,6 +49,15 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       background.request.webRequestOnBeforeRequest.should.have.been.calledOnce;
     });
 
+    it('installing should initialize storage and open welcome page', async () => {
+      const background = await loadUninstalledBackground(preferences);
+      await background.runtime.onInstalled({
+        reason: 'install'
+      });
+      expect(background.storage.local).to.be.not.null;
+      browser.tabs.create.should.have.been.calledOnce;
+    });
+
     it('should have registered a container cleanup interval', async () => {
       const background = await loadBareBackground(preferences);
       sinon.stub(background.container, 'cleanup');

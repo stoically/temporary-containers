@@ -60,10 +60,12 @@ export default {
           >Multi-Account Containers</a> Add-on, which needs to be installed and configured properly for this to work.
           It's not related to the Per Domain Isolation "Always open in" configuration.
           To add new sites to permanent containers with MAC you need to disable this configuration temporarly,
+          or use the toolbar icon popup to disable Isolation globally (circle icon), which makes assigning new sites easier.
+          You can enable the popup in the general preferences.
           <a
             href="https://github.com/stoically/temporary-containers/issues/170"
             target="_blank"
-          >here's</a>
+          >Here's</a>
           some discussion about how this could be made simpler in the future.
         </div>
       </div>

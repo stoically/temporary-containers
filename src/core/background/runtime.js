@@ -45,7 +45,11 @@ class Runtime {
         }
       }
       if (this.storage.local.preferences.isolation.active !== message.payload.preferences.isolation.active) {
-        this.browseraction.toggleIsolationBadge();
+        if (message.payload.preferences.isolation.active) {
+          this.browseraction.removeIsolationInactiveBadge();
+        } else {
+          this.browseraction.addIsolationInactiveBadge();
+        }
       }
       if (message.payload.preferences.notifications) {
         this.permissions.notifications = true;
@@ -137,7 +141,11 @@ class Runtime {
 
     switch (details.reason) {
     case 'install':
-      return this.storage.install();
+      await this.storage.install();
+      browser.tabs.create({
+        url: browser.runtime.getURL('options.html')
+      });
+      return;
 
     case 'update':
       return this.migration.onUpdate(details);

@@ -1,6 +1,6 @@
 preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(preferences)}`, () => {
 
-  describe('Multi-Account Containers', () => {
+  describe('Multi-Account Containers Confirm Page reopening', () => {
     [
       false,
       true

@@ -92,9 +92,7 @@ global.loadBareBackground = async (preferences = {}, build = {}) => {
   global.clock = sinon.useFakeTimers();
 
   const background = global.background;
-  await background.runtime.onInstalled({
-    reason: 'install'
-  });
+  await background.storage.install();
   Object.assign(background.storage.local.preferences, preferences);
   return background;
 };
@@ -107,9 +105,7 @@ global.loadBackground = async (preferences = {}) => {
   global.background = global.webExtension.background.window.tmp;
   global.clock = sinon.useFakeTimers();
 
-  await background.runtime.onInstalled({
-    reason: 'install'
-  });
+  await background.storage.install();
   Object.assign(background.storage.local.preferences, preferences);
   // eslint-disable-next-line require-atomic-updates
   background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'always';
