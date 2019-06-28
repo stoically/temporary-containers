@@ -60,7 +60,7 @@ class Runtime {
       this.storage.local.preferences = message.payload.preferences;
       await this.storage.persist();
 
-      browser.runtime.sendMessage({info: 'preferencesUpdated', fromTabId: sender.tab && sender.tab.id});
+      browser.runtime.sendMessage({info: 'preferencesUpdated', fromTabId: sender && sender.tab && sender.tab.id});
 
       if (this.storage.local.preferences.contextMenu !== message.payload.preferences.contextMenu ||
         this.storage.local.preferences.contextMenuBookmarks !== message.payload.preferences.contextMenuBookmarks ||
