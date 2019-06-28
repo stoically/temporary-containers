@@ -104,7 +104,10 @@ class Isolation {
     debug('[shouldIsolate]', tab, request);
 
     if (tab && this.container.isClean(tab.cookieStoreId)) {
-      debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because the tmp container is still clean');
+      // TODO removing this clean check can result in endless loops,
+      // which is a sign that the clean container logic might be flawed;
+      // needs some investigation
+      debug('[shouldIsolate] not reopening because the tmp container is still clean');
       if (!this.request.cleanRequests[request.requestId]) {
         this.request.cleanRequests[request.requestId] = true;
         delay(300000).then(() => {
@@ -115,7 +118,7 @@ class Isolation {
     }
 
     if (this.request.cleanRequests[request.requestId]) {
-      debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because of clean requests, redirect', request);
+      debug('[shouldIsolate] not reopening because of clean requests, redirect', request);
       return false;
     }
 
@@ -206,19 +209,19 @@ class Isolation {
       }
       if (patternPreferences.always) {
         const preferences = patternPreferences.always;
-        debug('[maybeAlwaysOpenInTemporaryContainer] found pattern for incoming request url', domainPattern, preferences);
+        debug('[shouldIsolateAlways] found pattern for incoming request url', domainPattern, preferences);
         if (preferences.action === 'disabled') {
-          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because "always" disabled');
+          debug('[shouldIsolateAlways] not reopening because "always" disabled');
           continue;
         }
 
         if (preferences.allowedInPermanent && this.container.isPermanent(tab.cookieStoreId)) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] not reopening because allowed to load in permanent container');
+          debug('[shouldIsolateAlways] not reopening because allowed to load in permanent container');
           continue;
         }
 
         if (!this.container.isTemporary(tab.cookieStoreId)) {
-          debug('[maybeAlwaysOpenInTemporaryContainer] reopening because not in a tmp container');
+          debug('[shouldIsolateAlways] reopening because not in a tmp container');
           return true;
         }
 
@@ -227,10 +230,10 @@ class Isolation {
           if (openerTab && !openerTab.url.startsWith('about:') &&
               this.matchDomainPattern(openerTab.url, domainPattern)) {
             openerMatches = true;
-            debug('[maybeAlwaysOpenInTemporaryContainer] opener tab url matched the pattern', openerTab.url, domainPattern);
+            debug('[shouldIsolateAlways] opener tab url matched the pattern', openerTab.url, domainPattern);
           }
           if (!openerMatches) {
-            debug('[maybeAlwaysOpenInTemporaryContainer] reopening because the tab/opener url doesnt match the pattern', tab.url, openerTab, domainPattern);
+            debug('[shouldIsolateAlways] reopening because the tab/opener url doesnt match the pattern', tab.url, openerTab, domainPattern);
             return true;
           }
         }
@@ -241,6 +244,10 @@ class Isolation {
   shouldIsolateMac({tab, macAssignment}) {
     if (this.storage.local.preferences.isolation.mac.action === 'disabled') {
       debug('[shouldIsolateMac] mac isolation disabled');
+      return false;
+    }
+    if (!this.container.isPermanent(tab.cookieStoreId)) {
+      debug('[shouldIsolateMac] we are not in a permanent container');
       return false;
     }
     if (!macAssignment || (macAssignment && tab.cookieStoreId !== macAssignment.cookieStoreId)) {

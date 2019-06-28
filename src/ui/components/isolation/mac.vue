@@ -29,7 +29,29 @@ export default {
     >
       <i class="icon-info-circled" /> Multi-Account Containers Isolation?
     </a>
+
     <div class="ui form">
+      <div
+        v-if="!popup"
+        class="field"
+      >
+        <div class="ui message">
+          This applies to the
+          <a
+            href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"
+            target="_blank"
+          >Multi-Account Containers</a> Add-on, which needs to be installed and configured properly for this to work.
+          <strong>It's not related to the Per Domain Isolation "Always open in" configuration.</strong>
+          To add new sites to permanent containers with MAC you need to disable this configuration temporarly,
+          or use the toolbar icon popup to disable Isolation globally (circle icon), which makes assigning new sites easier.
+          You can enable the popup in the general preferences.
+          <a
+            href="https://github.com/stoically/temporary-containers/issues/170"
+            target="_blank"
+          >Here's</a>
+          some discussion about how this could be made simpler in the future.
+        </div>
+      </div>
       <div class="field">
         <select
           id="isolationMac"
@@ -47,27 +69,6 @@ export default {
             }}
           </option>
         </select>
-      </div>
-      <div
-        v-if="!popup"
-        class="field"
-      >
-        <div class="ui message">
-          This applies to the
-          <a
-            href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"
-            target="_blank"
-          >Multi-Account Containers</a> Add-on, which needs to be installed and configured properly for this to work.
-          It's not related to the Per Domain Isolation "Always open in" configuration.
-          To add new sites to permanent containers with MAC you need to disable this configuration temporarly,
-          or use the toolbar icon popup to disable Isolation globally (circle icon), which makes assigning new sites easier.
-          You can enable the popup in the general preferences.
-          <a
-            href="https://github.com/stoically/temporary-containers/issues/170"
-            target="_blank"
-          >Here's</a>
-          some discussion about how this could be made simpler in the future.
-        </div>
       </div>
     </div>
   </div>

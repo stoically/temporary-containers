@@ -1,5 +1,5 @@
 preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(preferences)}`, () => {
-  let tab;
+  let background, tab;
 
   const defaultIsolationDomainPreferences = {
     always: {
@@ -35,6 +35,8 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     ].map(navigatingIn => { describe(`navigatingIn: ${navigatingIn}`, () => {
 
       const navigateTo = async (url) => {
+        background.container.markUnclean(tab.id);
+
         switch (navigatingIn) {
         case 'sametab.global':
         case 'sametab.perdomain':
@@ -54,7 +56,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
       describe('Isolation', () => {
         beforeEach(async () => {
-          const background = await loadBareBackground(preferences, {apiFake: true});
+          background = await loadBareBackground(preferences, {apiFake: true});
           await background.initialize();
           const url = 'https://example.com';
           if (originContainerType === 'permanent') {
@@ -310,52 +312,78 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
 
       describe('Multi-Account Containers Isolation', () => {
-        beforeEach(async () => {
-          const background = await loadBareBackground(preferences, {apiFake: true});
-          await background.initialize();
-          tab = await browser.tabs._create({
-            active: true,
-            url: 'https://example.com',
-            cookieStoreId: 'firefox-container-1'
+        describe('navigating in a permanent container', () => {
+
+          beforeEach(async () => {
+            background = await loadBareBackground(preferences, {apiFake: true});
+            await background.initialize();
+            tab = await browser.tabs._create({
+              active: true,
+              url: 'https://example.com',
+              cookieStoreId: 'firefox-container-1'
+            });
           });
+
+          describe('with "enabled"', () => {
+            beforeEach(async () => {
+              background.storage.local.preferences.isolation.mac.action = 'enabled';
+            });
+            describe('if the navigation target isnt assigned to the current container', () => {
+              beforeEach(async () => {
+                browser.runtime.sendMessage.resolves({
+                  userContextId: '1',
+                  neverAsk: false
+                });
+                await navigateTo('https://assigned.com');
+              });
+
+              it('should not open a new Temporary Container', () => {
+                browser.tabs.create.should.not.have.been.called;
+              });
+            });
+
+            describe('if the navigation target isnt assigned to the current container', () => {
+              beforeEach(async () => {
+                browser.runtime.sendMessage.resolves(null);
+                await navigateTo('https://notassigned.com');
+              });
+
+              it('should open a new Temporary Container', () => {
+                browser.tabs.create.should.have.been.calledOnce;
+              });
+            });
+          });
+
         });
 
-        describe('navigating with "enabled"', () => {
+        describe('navigating in a temporary container', () => {
           beforeEach(async () => {
-            background.storage.local.preferences.isolation.mac.action = 'enabled';
+            background = await loadBareBackground(preferences, {apiFake: true});
+            await background.initialize();
+            tab = await background.container.createTabInTempContainer({});
+            browser.tabs.create.resetHistory();
+
           });
-          describe('if the navigation target is assigned to the current container', () => {
+
+          describe('with "enabled" and target domain not assigned with MAC', () => {
             beforeEach(async () => {
-              browser.runtime.sendMessage.resolves({
-                userContextId: '1',
-                neverAsk: false
-              });
-              await navigateTo('https://assigned.com');
+              background.storage.local.preferences.isolation.mac.action = 'enabled';
+              browser.runtime.sendMessage.resolves(null);
+              await navigateTo('http://example.com');
             });
+
 
             it('should not open a new Temporary Container', () => {
               browser.tabs.create.should.not.have.been.called;
             });
           });
-
-          describe('if the navigation target isnt assigned to the current container', () => {
-            beforeEach(async () => {
-              browser.runtime.sendMessage.resolves(null);
-              await navigateTo('https://notassigned.com');
-            });
-
-            it('should open a new Temporary Container', () => {
-              browser.tabs.create.should.have.been.calledOnce;
-            });
-          });
-
         });
       });
 
 
       describe('Always open in', () => {
         beforeEach(async () => {
-          const background = await loadBareBackground(preferences, {apiFake: true});
+          background = await loadBareBackground(preferences, {apiFake: true});
           await background.initialize();
           const url = 'https://example.com';
           if (originContainerType === 'permanent') {
