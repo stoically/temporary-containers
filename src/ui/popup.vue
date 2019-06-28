@@ -207,7 +207,7 @@ export default {
                   height="16"
                 >
                   <image
-                    xlink:href="../core/icons/page-w-16.svg"
+                    xlink:href="../icons/page-w-16.svg"
                     x="0"
                     y="0"
                     width="100%"

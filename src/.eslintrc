@@ -2,5 +2,16 @@
 	"env": {
 		"browser": true,
 		"node": false
+	},
+	"globals": {
+		"tmp": "readonly",
+		"debug": "readonly",
+		"lib": "readonly",
+		"psl": "readonly",
+		"log": "readonly",
+		"delay": "readonly",
+		"globToRegexp": "readonly",
+		"PQueue": "readonly",
+		"versionCompare": "readonly"
 	}
 }

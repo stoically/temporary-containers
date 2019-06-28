@@ -46,7 +46,7 @@
     "npm-check-updates": "^3.1.12",
     "nyc": "^14.1.1",
     "parcel-bundler": "^1.12.3",
-    "parcel-plugin-static-files-copy": "^2.1.2",
+    "parcel-plugin-static-files-copy": "stoically/parcel-plugin-static-files-copy#excludeGlob",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "vue-template-compiler": "^2.6.10",
@@ -59,10 +59,17 @@
   ],
   "staticFiles": {
     "staticPath": [
-      "src/core",
+      "src",
       "src/ui/static"
     ],
-    "watcherGlob": "**"
+    "watcherGlob": "**",
+    "excludeGlob": [
+      "ui",
+      "ui/**"
+    ],
+    "globOptions": {
+      "dot": true
+    }
   },
   "posthtml": {
     "recognizeSelfClosing": true
