@@ -68,7 +68,6 @@ class TmpStorage {
       cookies: {
         domain: {}
       },
-      expandPreferences: false,
       deletesHistory: {
         active: false,
         automaticMode: 'never',
@@ -81,6 +80,10 @@ class TmpStorage {
         statistics: false
       },
       statistics: false,
+      ui: {
+        expandPreferences: false,
+        popupDefaultTab: 'isolation-per-domain'
+      },
     };
 
     this.storageDefault = {

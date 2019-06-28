@@ -125,6 +125,31 @@ export default {
             <label>Show icon in the address bar that reveals the popup</label>
           </div>
         </div>
+        <div class="item field">
+          <label>
+            Default Tab
+          </label>
+          <select
+            v-model="preferences.ui.popupDefaultTab"
+            class="ui fluid dropdown"
+          >
+            <option value="isolation-per-domain">
+              Isolation Per Domain
+            </option>
+            <option value="isolation-global">
+              Isolation Global
+            </option>
+            <option value="isolation-mac">
+              Isolation Multi-Account Containers
+            </option>
+            <option value="actions">
+              Actions
+            </option>
+            <option value="statistics">
+              Statistics
+            </option>
+          </select>
+        </div>
         <div class="m-b" />
       </div>
       <div class="title">
@@ -341,7 +366,7 @@ export default {
     <div class="m-b" />
     <div class="ui checkbox">
       <input
-        v-model="preferences.expandPreferences"
+        v-model="preferences.ui.expandPreferences"
         type="checkbox"
       >
       <label>Expand all preferences by default</label>

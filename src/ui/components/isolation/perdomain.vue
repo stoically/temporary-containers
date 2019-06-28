@@ -143,7 +143,7 @@ export default {
       this.domainPatternDisabled = false;
       this.domain = JSON.parse(JSON.stringify(domainDefaults));
 
-      if (!this.preferences.expandPreferences) {
+      if (!this.preferences.ui.expandPreferences) {
         $('#isolationPerDomainAccordion').accordion('close', 0);
         $('#isolationPerDomainAccordion').accordion('close', 1);
         $('#isolationPerDomainAccordion').accordion('close', 2);
@@ -164,7 +164,7 @@ export default {
       this.domainPatternDisabled = true;
       this.resetDropdowns();
 
-      if (!this.preferences.expandPreferences) {
+      if (!this.preferences.ui.expandPreferences) {
         $('#isolationPerDomainAccordion').accordion(
           this.domain.always.action === domainDefaults.always.action ? 'close' : 'open', 0
         );

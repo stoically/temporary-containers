@@ -47,7 +47,7 @@ export default {
         });
 
         this.show = true;
-        $.tab('change tab', 'isolation-global');
+        $.tab('change tab', this.app.preferences.ui.popupDefaultTab);
       });
     }
   },
@@ -123,15 +123,15 @@ export default {
     <div class="ui sidebar vertical menu">
       <a
         class="item"
-        @click="changeTab('isolation-global')"
-      >
-        <i class="icon-circle-empty" /> Isolation Global
-      </a>
-      <a
-        class="item"
         @click="changeTab('isolation-per-domain')"
       >
         <i class="icon-circle-empty" /> Isolation Per Domain
+      </a>
+      <a
+        class="item"
+        @click="changeTab('isolation-global')"
+      >
+        <i class="icon-circle-empty" /> Isolation Global
       </a>
       <a
         class="item"

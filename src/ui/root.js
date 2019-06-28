@@ -38,12 +38,12 @@ export default (App, {popup = false}) => {
             this.$root.$emit('showError', 'Error while saving preferences');
           }
 
-          if (app.preferences.expandPreferences && !this.expandedPreferences) {
+          if (app.preferences.ui.expandPreferences && !this.expandedPreferences) {
             Array.from(Array(15)).map((_, idx) => {
               $('.ui.accordion').accordion('open', idx);
             });
             this.expandedPreferences = true;
-          } else if (!app.preferences.expandPreferences && this.expandedPreferences) {
+          } else if (!app.preferences.ui.expandPreferences && this.expandedPreferences) {
             this.expandedPreferences = false;
             this.$root.$emit('initialize');
           }
