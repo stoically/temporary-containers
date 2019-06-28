@@ -48,6 +48,16 @@ export default {
         $.address.value(hash.replace('#/', ''));
       }
     }, 100);
+
+    browser.runtime.onMessage.addListener(message => {
+      if (typeof message !== 'object') {
+        return;
+      }
+      if (message.info && message.info === 'preferencesUpdated' &&
+        (!message.fromTabId || (message.fromTabId !== this.app.currentTab.id))) {
+        this.$root.$emit('initialize');
+      }
+    });
   }
 };
 </script>
@@ -86,7 +96,6 @@ export default {
       >{{ t('optionsNavExportImport') }}</a>
     </div>
     <message />
-
     <div
       class="ui tab segment"
       data-tab="general"

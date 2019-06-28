@@ -21,6 +21,7 @@ export default {
     };
   },
   async mounted() {
+
     this.$nextTick(() => {
       $('#isolationGlobal .ui.accordion').accordion({
         ...this.popup ? {
@@ -67,13 +68,15 @@ export default {
         'Permanent containers to exclude'
       ,
       values: excludeContainers,
-      onChange: (selectedContainers) => {
-        this.preferences.isolation.global.excludedContainers = {};
-        if (selectedContainers) {
-          selectedContainers.split(',').map(excludeContainer => {
-            this.$set(this.preferences.isolation.global.excludedContainers, excludeContainer, {});
-          });
+      onAdd: (addedContainer) => {
+        if (this.preferences.isolation.global.excludedContainers[addedContainer]) {
+          return;
         }
+        this.$set(this.preferences.isolation.global.excludedContainers, addedContainer, {});
+      },
+      onRemove: (removedContainer) => {
+        console.log(removedContainer);
+        this.$delete(this.preferences.isolation.global.excludedContainers, removedContainer, {});
       }
     });
 
@@ -87,6 +90,7 @@ export default {
         this.excludeDomainPattern = '';
       }
     });
+
   },
   methods: {
     removeExcludedDomain(excludedDomainPattern) {

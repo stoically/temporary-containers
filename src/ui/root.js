@@ -10,9 +10,9 @@ export default (App, {popup = false}) => {
     data: () => ({
       app: {
         initialized: false,
-        popup,
-        expandedPreferences: false
-      }
+        popup
+      },
+      expandedPreferences: false
     }),
     watch: {
       app: {
@@ -55,7 +55,11 @@ export default (App, {popup = false}) => {
       this.initialize();
 
       this.$root.$on('initialize', () => {
-        this.app.initialized = false;
+        this.app = {
+          initialized: false,
+          preferences: false,
+          popup
+        };
         this.$nextTick(() => {
           this.initialize();
         });
@@ -82,17 +86,20 @@ export default (App, {popup = false}) => {
           this.$root.$emit('showPreferencesError', error);
         }
 
-        let activeTab = false;
+        let activeTab;
         if (popup) {
           const [tab] = await browser.tabs.query({currentWindow: true, active: true});
-          tab.parsedUrl = new URL(tab.url);
           activeTab = tab;
+          activeTab.parsedUrl = new URL(tab.url);
         }
+
+        const currentTab = await browser.tabs.getCurrent();
 
         this.app = {
           initialized: true,
           popup,
           activeTab,
+          currentTab,
           storage,
           preferences: storage.preferences,
           permissions

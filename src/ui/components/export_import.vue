@@ -58,7 +58,7 @@ export default {
             resolve(JSON.parse(event.target.result));
           } catch (error) {
           // eslint-disable-next-line no-console
-            console.log('error while importing preferences', error);
+            console.error('error while importing preferences', error);
             this.$root.$emit('showError', 'Error while importing preferences!');
           }
         };
