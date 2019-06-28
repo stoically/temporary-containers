@@ -1,7 +1,12 @@
 <script>
 import DomainPattern from '../domainpattern';
 
+Array.prototype.move = function(from, to) {
+  this.splice(to, 0, this.splice(from, 1)[0]);
+};
+
 const domainDefaults = {
+  pattern: '',
   always: {
     action: 'disabled',
     allowedInPermanent: false
@@ -37,7 +42,6 @@ export default {
     return {
       preferences: this.app.preferences,
       popup: this.app.popup,
-      domainPattern: '',
       domainPatternDisabled: false,
       domain: JSON.parse(JSON.stringify(domainDefaults)),
       excludeDomainPattern: '',
@@ -48,22 +52,25 @@ export default {
   },
   computed: {
     isolationDomains() {
-      if (!this.isolationDomainFilter) {
-        return this.preferences.isolation.domain;
-      }
-      return Object.keys(this.preferences.isolation.domain).reduce((accumulator, domainPattern) => {
-        if (domainPattern.includes(this.isolationDomainFilter)) {
-          accumulator[domainPattern] = this.preferences.isolation.domain[domainPattern];
+      return this.preferences.isolation.domain.reduce((accumulator, isolated, index) => {
+        isolated._index = index;
+        if (!isolated.pattern.includes(this.isolationDomainFilter)) {
+          return accumulator;
         }
+        accumulator.push(isolated);
         return accumulator;
-      }, {});
+      }, []);
     }
   },
   watch: {
-    domainPattern(domainPattern) {
-      if (!this.editing && this.preferences.isolation.domain[domainPattern]) {
-        $('#isolationDomainForm').form('validate form');
-      }
+    domain: {
+      handler(domain, oldDomain) {
+        if (!this.editing &&
+          this.preferences.isolation.domain.find(_domain => _domain.pattern === domain.pattern)) {
+          $('#isolationDomainForm').form('validate form');
+        }
+      },
+      deep: true
     }
   },
   async mounted() {
@@ -82,7 +89,7 @@ export default {
     });
 
     $.fn.form.settings.rules.domainPattern = (value) => {
-      return !this.editing && !this.preferences.isolation.domain[value];
+      return !this.editing && !this.preferences.isolation.domain.find(domain => domain.pattern === value);
     };
 
     $('#isolationDomainForm').form({
@@ -107,11 +114,11 @@ export default {
         }
 
         if (this.editing) {
+          this.reset();
           this.editing = false;
         } else {
-          this.$set(this.preferences.isolation.domain, this.domainPattern, JSON.parse(JSON.stringify(this.domain)));
+          this.preferences.isolation.domain.push(JSON.parse(JSON.stringify(this.domain)));
         }
-        this.reset();
       }
     });
 
@@ -133,15 +140,15 @@ export default {
       if (this.preferences.isolation.domain[this.app.activeTab.parsedUrl.hostname]) {
         this.edit(this.app.activeTab.parsedUrl.hostname);
       } else {
-        this.domainPattern = this.app.activeTab.parsedUrl.hostname;
+        this.domain.pattern = this.app.activeTab.parsedUrl.hostname;
       }
     }
   },
   methods: {
     reset() {
-      this.domainPattern = '';
-      this.domainPatternDisabled = false;
       this.domain = JSON.parse(JSON.stringify(domainDefaults));
+      this.domain.pattern = '';
+      this.domainPatternDisabled = false;
 
       if (!this.preferences.ui.expandPreferences) {
         $('#isolationPerDomainAccordion').accordion('close', 0);
@@ -157,10 +164,9 @@ export default {
         $('#isolationDomain .ui.dropdown').dropdown();
       });
     },
-    edit(domainPattern) {
+    edit(index) {
       this.editing = true;
-      this.domain = this.preferences.isolation.domain[domainPattern];
-      this.domainPattern = domainPattern;
+      this.domain = this.preferences.isolation.domain[index];
       this.domainPatternDisabled = true;
       this.resetDropdowns();
 
@@ -181,13 +187,13 @@ export default {
         );
       }
     },
-    remove(domainPattern) {
+    remove(index, pattern) {
       const confirmed = window.confirm(`
-        Remove ${domainPattern}?
+        Remove ${pattern}?
       `);
       if (confirmed) {
-        this.$delete(this.preferences.isolation.domain, domainPattern);
-        if (this.editing && this.domainPattern === domainPattern) {
+        this.$delete(this.preferences.isolation.domain, index);
+        if (this.editing && this.domain.pattern === pattern) {
           this.reset();
           this.editing = false;
         }
@@ -200,6 +206,14 @@ export default {
       window.setTimeout(() => {
         $('#isolationDomainsAccordion').accordion('open', 0);
       }, 100);
+    },
+    move(event) {
+      if (event.moved) {
+        this.preferences.isolation.domain.move(
+          this.isolationDomains[event.moved.oldIndex]._index,
+          this.isolationDomains[event.moved.newIndex]._index,
+        );
+      }
     }
   }
 };
@@ -226,7 +240,7 @@ export default {
           id="isolationDomainPattern"
           :tooltip="!popup ? undefined : {hidden: true}"
           :disabled="domainPatternDisabled"
-          :domain-pattern.sync="domainPattern"
+          :domain-pattern.sync="domain.pattern"
         />
       </form>
       <div
@@ -244,7 +258,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{segment: !popup, 'popup-margin': popup}"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <select
@@ -286,7 +300,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{segment: !popup, 'popup-margin': popup}"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <select
@@ -328,7 +342,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{segment: !popup, 'popup-margin': popup}"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <label>Middle Mouse</label>
@@ -428,43 +442,45 @@ export default {
           </h4>
         </div>
         <div
-          class="content"
-          :class="{segment: !popup, 'popup-exclude-margin': popup}"
+          class="content popup-exclude-margin"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
-          <div class="field">
-            <form
-              id="isolationDomainExcludeDomainsForm"
-              class="ui form"
-            >
-              <domain-pattern
-                id="isolationDomainExcludeDomainPattern"
-                :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
-                :domain-pattern.sync="excludeDomainPattern"
-              />
-              <div class="field">
-                <button class="ui button primary">
-                  Exclude
-                </button>
-              </div>
-            </form>
-            <div style="margin-top: 20px;">
-              <div v-if="!Object.keys(domain.excluded).length">
-                No domains excluded
-              </div>
-              <div v-else>
-                <div
-                  v-for="(_, excludedDomainPattern) in domain.excluded"
-                  :key="excludedDomainPattern"
-                >
-                  <div style="margin-top: 5px" />
-                  <span
-                    :data-tooltip="Remove"
-                    style="margin-top: 10px; color: red; cursor: pointer;"
-                    @click="removeExcludedDomain(excludedDomainPattern)"
+          <div>
+            <div class="field">
+              <form
+                id="isolationDomainExcludeDomainsForm"
+                class="ui form"
+              >
+                <domain-pattern
+                  id="isolationDomainExcludeDomainPattern"
+                  :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
+                  :domain-pattern.sync="excludeDomainPattern"
+                />
+                <div class="field">
+                  <button class="ui button primary">
+                    Exclude
+                  </button>
+                </div>
+              </form>
+              <div style="margin-top: 20px;">
+                <div v-if="!Object.keys(domain.excluded).length">
+                  No domains excluded
+                </div>
+                <div v-else>
+                  <div
+                    v-for="(_, excludedDomainPattern) in domain.excluded"
+                    :key="excludedDomainPattern"
                   >
-                    <i class="icon-trash-empty" />
-                  </span>
-                  {{ excludedDomainPattern }}
+                    <div style="margin-top: 5px" />
+                    <span
+                      :data-tooltip="Remove"
+                      style="margin-top: 10px; color: red; cursor: pointer;"
+                      @click="removeExcludedDomain(excludedDomainPattern)"
+                    >
+                      <i class="icon-trash-empty" />
+                    </span>
+                    {{ excludedDomainPattern }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -477,10 +493,10 @@ export default {
       <button
         form="isolationDomainForm"
         class="ui button primary"
-        :disabled="!domainPattern.trim()"
+        :disabled="!domain.pattern.trim()"
       >
         {{ editing ? 'Done editing' : 'Add' }}
-        {{ domainPattern }}
+        {{ domain.pattern }}
       </button>
     </div>
     <br>
@@ -525,31 +541,47 @@ export default {
           </h4>
         </div>
         <div :class="{'content': popup}">
-          <div
-            v-for="(_domainPrefs, _domainPattern) in isolationDomains"
-            :key="_domainPattern"
+          <div style="margin-top: 5px" />
+          <draggable
+            v-model="isolationDomains"
+            group="isolationDomains"
+            @change="move"
           >
-            <div style="margin-top: 5px" />
-            <div>
+            <div
+              v-for="isolatedDomain in isolationDomains"
+              :key="isolatedDomain.pattern"
+            >
               <span
-                :data-tooltip="`Edit ${_domainPattern}`"
+                :data-tooltip="`Edit ${isolatedDomain.pattern}`"
                 style="cursor: pointer;"
                 data-position="right center"
-                @click="edit(_domainPattern)"
+                @click="edit(isolatedDomain._index)"
               >
                 <i class="icon-pencil" />
               </span>
               <span
-                :data-tooltip="`Remove ${_domainPattern}`"
+                :data-tooltip="`Remove ${isolatedDomain.pattern}`"
                 data-position="right center"
                 style="color: red; cursor: pointer;"
-                @click="remove(_domainPattern)"
+                @click="remove(isolatedDomain._index, isolatedDomain.pattern)"
               >
                 <i class="icon-trash-empty" />
               </span>
-              {{ _domainPattern }}
+              <span
+                :data-tooltip="!popup && isolationDomains.length > 1 ?
+                  'Move up/down - First in the list matches first' : undefined"
+                data-position="right center"
+                :style="isolationDomains.length > 1 ? 'cursor: pointer' : ''"
+              >
+                <i
+                  v-if="isolationDomains.length > 1"
+                  class="hand paper icon"
+                  style="color: #2185d0"
+                />
+                {{ isolatedDomain.pattern }}
+              </span>
             </div>
-          </div>
+          </draggable>
         </div>
       </div>
     </div>

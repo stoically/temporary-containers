@@ -142,7 +142,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{segment: !popup, 'popup-margin': popup}"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <select
@@ -181,7 +181,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{segment: !popup, 'popup-margin': popup}"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div
             v-if="!popup"
@@ -281,7 +281,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{segment: !popup, 'popup-margin': popup}"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <div
@@ -305,7 +305,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{segment: !popup, 'popup-margin': popup}"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div class="field">
             <form

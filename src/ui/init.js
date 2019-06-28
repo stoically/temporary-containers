@@ -31,7 +31,9 @@ export default function init(App, params = {}) {
     loadScript('/jquery/jquery.min.js'),
     loadScript('/jquery/jquery.address.js'),
     loadScript('/semantic/semantic.min.js'),
+    loadScript('/sortable/Sortable.min.js'),
     loadScript('/vue/vue.runtime.min.js'),
+    loadScript('/vue/vuedraggable.umd.min.js'),
     import('./root')
   ]).then(promises => {
     const root = promises.pop().default;

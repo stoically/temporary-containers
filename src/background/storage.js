@@ -42,7 +42,7 @@ class TmpStorage {
           excluded: {},
           excludedContainers: {}
         },
-        domain: {},
+        domain: [],
         mac: {
           action: 'disabled',
         }

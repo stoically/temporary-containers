@@ -8,6 +8,10 @@ class Migration {
   /* istanbul ignore next */
   async onUpdate(details) {
     debug('[onUpdate]', details);
+    if (details.temporary) {
+      debug('[onUpdate] skipping migration because temporary install', details);
+      return;
+    }
     await this.storage.load();
 
     const previousVersion = details.previousVersion.replace('beta', '.');
@@ -207,6 +211,18 @@ class Migration {
       }
       delete this.storage.local.preferences.ignoreRequestsToAMO;
       delete this.storage.local.preferences.ignoreRequestsToPocket;
+      await this.storage.persist();
+    }
+    if ((versionCompare('0.103', previousVersion) >= 0 && !details.previousVersion.startsWith('1.0beta')) ||
+      (details.previousVersion.startsWith('1.0beta') && versionCompare('1.0.6', previousVersion) >= 0)) {
+      debug('updated from version <= 0.103, migrate per domain isolation to array');
+      const perDomainIsolation = [];
+      Object.keys(this.storage.local.preferences.isolation.domain).map(domainPattern => {
+        perDomainIsolation.push(Object.assign({
+          pattern: domainPattern,
+        }, this.storage.local.preferences.isolation.domain[domainPattern]));
+      });
+      this.storage.local.preferences.isolation.domain = perDomainIsolation;
       await this.storage.persist();
     }
   }
