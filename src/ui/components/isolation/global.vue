@@ -137,7 +137,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
@@ -176,7 +176,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div
@@ -276,7 +276,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
@@ -299,7 +299,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">

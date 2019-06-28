@@ -73,7 +73,7 @@ export default {
           Automatic Mode
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <div
           :data-tooltip="app.permissions.history ?
             '&quot;Deletes History Temporary Containers&quot; always reopen new tabs to avoid leaving traces in recently closed tabs' : false"
@@ -114,7 +114,7 @@ export default {
           Popup
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <div class="field">
           <div class="ui checkbox">
             <input
@@ -133,7 +133,7 @@ export default {
           Context Menu
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <div class="field">
           <div class="ui checkbox">
             <input
@@ -165,7 +165,7 @@ export default {
           Keyboard shortcuts
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <div class="ui notice message">
           Starting with Firefox 66 it's possible to reassign keyboard shortcuts on the Add-ons overview page.
         </div>
@@ -243,7 +243,7 @@ export default {
           Replace tabs in case of Isolation
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <div class="ui checkbox">
           <input
             id="replaceTabs"
@@ -260,7 +260,7 @@ export default {
           Redirector tabs
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <div class="ui checkbox">
           <input
             id="closeRedirectorTabs"
@@ -277,7 +277,7 @@ export default {
           Ignoring requests to
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <div class="ui notice message">
           Note: To unignore Mozilla domains its needed to remove them from the <i>about:config</i>
           key <strong>extensions.webextensions.restrictedDomains</strong> list, if they're listed there.
@@ -328,7 +328,7 @@ export default {
           Reset Storage
         </h4>
       </div>
-      <div class="ui content">
+      <div class="content">
         <button
           class="ui negative button"
           @click="resetStorage"

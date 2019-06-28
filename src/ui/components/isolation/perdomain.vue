@@ -41,9 +41,23 @@ export default {
       domainPatternDisabled: false,
       domain: JSON.parse(JSON.stringify(domainDefaults)),
       excludeDomainPattern: '',
+      isolationDomainFilter: '',
       editing: false,
       show: false
     };
+  },
+  computed: {
+    isolationDomains() {
+      if (!this.isolationDomainFilter) {
+        return this.preferences.isolation.domain;
+      }
+      return Object.keys(this.preferences.isolation.domain).reduce((accumulator, domainPattern) => {
+        if (domainPattern.includes(this.isolationDomainFilter)) {
+          accumulator[domainPattern] = this.preferences.isolation.domain[domainPattern];
+        }
+        return accumulator;
+      }, {});
+    }
   },
   watch: {
     domainPattern(domainPattern) {
@@ -219,7 +233,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
@@ -261,7 +275,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
@@ -303,7 +317,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-margin': popup}"
         >
           <div class="field">
@@ -404,7 +418,7 @@ export default {
           </h4>
         </div>
         <div
-          class="ui content"
+          class="content"
           :class="{segment: !popup, 'popup-exclude-margin': popup}"
         >
           <div class="field">
@@ -434,7 +448,7 @@ export default {
                 >
                   <div style="margin-top: 5px" />
                   <span
-                    data-tooltip="Remove"
+                    :data-tooltip="Remove"
                     style="margin-top: 10px; color: red; cursor: pointer;"
                     @click="removeExcludedDomain(excludedDomainPattern)"
                   >
@@ -462,15 +476,15 @@ export default {
     <br>
     <div :class="{'ui accordion': popup}">
       <div
-        v-if="!Object.keys(preferences.isolation.domain).length"
+        v-if="!Object.keys(isolationDomains).length && !isolationDomainFilter"
         style="margin-top: 10px"
-        :class="{'ui content': popup}"
+        :class="{'content': popup}"
       >
-        No domain patterns added yet
+        No domains added yet
       </div>
       <div
         v-else
-        :class="{'ui content': popup}"
+        :class="{'content': popup}"
       >
         <div :class="{title: popup}">
           <h4>
@@ -478,30 +492,49 @@ export default {
               v-if="popup"
               class="dropdown icon"
             />
-            Per Domain Patterns
+            <span
+              v-if="Object.keys(isolationDomains).length > 1 || isolationDomainFilter"
+              class="ui icon mini input"
+              style="margin-right: 10px"
+            >
+              <input
+                v-model="isolationDomainFilter"
+                type="text"
+                size="15"
+                placeholder="Filter domains"
+              >
+              <i class="circular search link icon" />
+            </span>
+            <span v-else>
+              Domains
+            </span>
           </h4>
         </div>
-        <div
-          v-for="(_domainPrefs, _domainPattern) in preferences.isolation.domain"
-          :key="_domainPattern"
-        >
-          <div style="margin-top: 5px" />
-          <div>
-            <span
-              data-tooltip="Edit"
-              style="cursor: pointer;"
-              @click="edit(_domainPattern)"
-            >
-              <i class="icon-pencil" />
-            </span>
-            <span
-              data-tooltip="Remove"
-              style="color: red; cursor: pointer;"
-              @click="remove(_domainPattern)"
-            >
-              <i class="icon-trash-empty" />
-            </span>
-            {{ _domainPattern }}
+        <div :class="{'content': popup}">
+          <div
+            v-for="(_domainPrefs, _domainPattern) in isolationDomains"
+            :key="_domainPattern"
+          >
+            <div style="margin-top: 5px" />
+            <div>
+              <span
+                :data-tooltip="`Edit ${_domainPattern}`"
+                style="cursor: pointer;"
+                data-position="right center"
+                @click="edit(_domainPattern)"
+              >
+                <i class="icon-pencil" />
+              </span>
+              <span
+                :data-tooltip="`Remove ${_domainPattern}`"
+                data-position="right center"
+                style="color: red; cursor: pointer;"
+                @click="remove(_domainPattern)"
+              >
+                <i class="icon-trash-empty" />
+              </span>
+              {{ _domainPattern }}
+            </div>
           </div>
         </div>
       </div>
