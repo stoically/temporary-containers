@@ -283,6 +283,7 @@ export default {
             <div
               id="isolationGlobalExcludeContainers"
               class="ui dropdown fluid selection multiple"
+              :style="popup ? 'max-width: 280px' : ''"
             >
               <div class="text" />
               <i class="dropdown icon" />
@@ -329,7 +330,8 @@ export default {
                 >
                   <div style="margin-top: 5px" />
                   <span
-                    data-tooltip="Remove"
+                    :data-tooltip="`Remove ${excludedDomainPattern}`"
+                    data-position="right center"
                     style="color: red; cursor: pointer;"
                     @click="removeExcludedDomain(excludedDomainPattern)"
                   >
