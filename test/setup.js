@@ -31,7 +31,7 @@ if (!process.listenerCount('unhandledRejection')) {
 }
 const path = require('path');
 const webExtensionsJSDOM = require('webextensions-jsdom');
-const manifestPath = path.resolve(path.join(__dirname, '../src/core/manifest.json'));
+const manifestPath = path.resolve(path.join(__dirname, '../src/manifest.json'));
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
 global.sinon = require('sinon');

@@ -424,7 +424,6 @@ export default {
               </div>
             </form>
             <div style="margin-top: 20px;">
-              <h3>Excluded domains</h3>
               <div v-if="!Object.keys(domain.excluded).length">
                 No domains excluded
               </div>
@@ -433,14 +432,14 @@ export default {
                   v-for="(_, excludedDomainPattern) in domain.excluded"
                   :key="excludedDomainPattern"
                 >
-                  <button
-                    class="ui right negative small button"
-                    style="margin-top: 10px"
+                  <div style="margin-top: 5px" />
+                  <span
                     data-tooltip="Remove"
+                    style="margin-top: 10px; color: red; cursor: pointer;"
                     @click="removeExcludedDomain(excludedDomainPattern)"
                   >
                     <i class="icon-trash-empty" />
-                  </button>
+                  </span>
                   {{ excludedDomainPattern }}
                 </div>
               </div>
@@ -462,45 +461,46 @@ export default {
     </div>
     <br>
     <div :class="{'ui accordion': popup}">
-      <div :class="{title: popup}">
-        <h3>
-          <i
-            v-if="popup"
-            class="dropdown icon"
-          />
-          Per Domain Patterns
-        </h3>
-      </div>
       <div
         v-if="!Object.keys(preferences.isolation.domain).length"
+        style="margin-top: 10px"
         :class="{'ui content': popup}"
       >
-        No domains added yet
+        No domain patterns added yet
       </div>
       <div
         v-else
         :class="{'ui content': popup}"
       >
+        <div :class="{title: popup}">
+          <h4>
+            <i
+              v-if="popup"
+              class="dropdown icon"
+            />
+            Per Domain Patterns
+          </h4>
+        </div>
         <div
           v-for="(_domainPrefs, _domainPattern) in preferences.isolation.domain"
           :key="_domainPattern"
         >
-          <div class="ui divider" />
+          <div style="margin-top: 5px" />
           <div>
-            <button
-              class="ui right primary tiny button"
+            <span
               data-tooltip="Edit"
+              style="cursor: pointer;"
               @click="edit(_domainPattern)"
             >
               <i class="icon-pencil" />
-            </button>
-            <button
-              class="ui right negative tiny button"
+            </span>
+            <span
               data-tooltip="Remove"
+              style="color: red; cursor: pointer;"
               @click="remove(_domainPattern)"
             >
               <i class="icon-trash-empty" />
-            </button>
+            </span>
             {{ _domainPattern }}
           </div>
         </div>

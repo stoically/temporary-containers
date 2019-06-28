@@ -319,7 +319,6 @@ export default {
               </div>
             </form>
             <div style="margin-top: 20px;">
-              <h3>Excluded domains</h3>
               <div v-if="!Object.keys(preferences.isolation.global.excluded).length">
                 No domains excluded
               </div>
@@ -328,14 +327,14 @@ export default {
                   v-for="(_, excludedDomainPattern) in preferences.isolation.global.excluded"
                   :key="excludedDomainPattern"
                 >
-                  <button
-                    class="ui right negative small button"
-                    style="margin-top: 10px"
+                  <div style="margin-top: 5px" />
+                  <span
                     data-tooltip="Remove"
+                    style="color: red; cursor: pointer;"
                     @click="removeExcludedDomain(excludedDomainPattern)"
                   >
                     <i class="icon-trash-empty" />
-                  </button>
+                  </span>
                   {{ excludedDomainPattern }}
                 </div>
               </div>

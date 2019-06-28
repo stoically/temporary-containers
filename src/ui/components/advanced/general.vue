@@ -293,14 +293,14 @@ export default {
               v-for="ignoredPattern in preferences.ignoreRequests"
               :key="ignoredPattern"
             >
-              <button
-                class="ui right negative small button"
-                style="margin-top: 10px"
+              <div style="margin-top: 5px" />
+              <span
                 data-tooltip="Remove"
+                style="color: red; cursor: pointer;"
                 @click="removeIgnoredDomain(ignoredPattern)"
               >
                 <i class="icon-trash-empty" />
-              </button>
+              </span>
               {{ ignoredPattern }}
             </div>
           </div>
