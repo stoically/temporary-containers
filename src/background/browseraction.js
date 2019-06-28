@@ -92,17 +92,27 @@ class BrowserAction {
       tabId
     });
     browser.browserAction.setBadgeText({
-      text: '',
+      text: null,
       tabId: tabId
     });
   }
 
-  addIsolationInactiveBadge() {
+  async addIsolationInactiveBadge() {
     browser.browserAction.setBadgeBackgroundColor({
       color: 'red'
     });
     browser.browserAction.setBadgeText({
       text: '!'
+    });
+
+    const tabs = await browser.tabs.query({currentWindow: true, active: true});
+    browser.browserAction.setBadgeBackgroundColor({
+      color: 'red',
+      tabId: tabs[0].id
+    });
+    browser.browserAction.setBadgeText({
+      text: null,
+      tabId: tabs[0].id
     });
   }
 
