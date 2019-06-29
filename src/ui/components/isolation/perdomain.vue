@@ -42,7 +42,6 @@ export default {
     return {
       preferences: this.app.preferences,
       popup: this.app.popup,
-      domainPatternDisabled: false,
       domain: JSON.parse(JSON.stringify(domainDefaults)),
       excludeDomainPattern: '',
       isolationDomainFilter: '',
@@ -89,7 +88,12 @@ export default {
     });
 
     $.fn.form.settings.rules.domainPattern = (value) => {
-      return !this.editing && !this.preferences.isolation.domain.find(domain => domain.pattern === value);
+      if (this.editing) {
+        this.reset();
+        return true;
+      } else {
+        return !this.preferences.isolation.domain.find(domain => domain.pattern === value);
+      }
     };
 
     $('#isolationDomainForm').form({
@@ -138,8 +142,11 @@ export default {
       if (!this.app.activeTab.url.startsWith('http')) {
         return;
       }
-      if (this.preferences.isolation.domain[this.app.activeTab.parsedUrl.hostname]) {
-        this.edit(this.app.activeTab.parsedUrl.hostname);
+      const isolationDomainIndex = this.preferences.isolation.domain.findIndex(
+        domain => domain.pattern === this.app.activeTab.parsedUrl.hostname
+      );
+      if (isolationDomainIndex >= 0) {
+        this.edit(isolationDomainIndex);
       } else {
         this.domain.pattern = this.app.activeTab.parsedUrl.hostname;
       }
@@ -149,7 +156,6 @@ export default {
     reset() {
       this.domain = JSON.parse(JSON.stringify(domainDefaults));
       this.domain.pattern = '';
-      this.domainPatternDisabled = false;
 
       if (!this.preferences.ui.expandPreferences) {
         $('#isolationPerDomainAccordion').accordion('close', 0);
@@ -168,7 +174,6 @@ export default {
     edit(index) {
       this.editing = true;
       this.domain = this.preferences.isolation.domain[index];
-      this.domainPatternDisabled = true;
       this.resetDropdowns();
 
       if (!this.preferences.ui.expandPreferences) {
@@ -240,7 +245,6 @@ export default {
         <domain-pattern
           id="isolationDomainPattern"
           :tooltip="!popup ? undefined : {hidden: true}"
-          :disabled="domainPatternDisabled"
           :domain-pattern.sync="domain.pattern"
         />
       </form>
@@ -570,7 +574,7 @@ export default {
               </span>
               <span
                 :data-tooltip="!popup && isolationDomains.length > 1 ?
-                  'Move up/down - First in the list matches first' : undefined"
+                  'Drag up/down - First in the list matches first' : undefined"
                 data-position="right center"
                 :style="isolationDomains.length > 1 ? 'cursor: pointer' : ''"
               >
