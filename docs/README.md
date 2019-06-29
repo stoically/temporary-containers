@@ -8,10 +8,6 @@ The Automatic Mode will overwrite your standard ways of opening new tabs - even 
 - Middle Mouse: Always
 
 
-
-**How to stay logged in on some websites in Automatic Mode?**
-
-
 **How does it enhance my privacy?**
 Every new Container [isolates local data that websites create](https://wiki.mozilla.org/Security/Contextual_Identity_Project/Containers#What_is_.28and_isn.27t.29_separated_between_Containers) (First- and Third-Party Cookies, localStorage, indexedDB, HTTP data cache, Image Cache and any other areas supported by originAttributes - except HSTS and OCSP) from each other - that makes it harder to track you and thus enhances your privacy. Also - when the last tab in an automatically created Temporary Container closes it gets deleted (after 15minutes by default, so you can Undo Close Tabs in that timeframe) - and with it all data that websites created inside that Container. As a bonus it'll strip referer information if you use configured Websites, Isolation or Mouse Clicks to open new Temporary Containers. Besides enhancing privacy containers also do something for security. They help preventing CSRF, clickjacking, or other attacks which rely on the presence of ambient credentials. For more details and comparisons with other privacy enhancing methods check the bottom of this description.
 

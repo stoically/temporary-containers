@@ -1,3 +1,5 @@
+# Guide
+
 Enhance your privacy in Firefox with Temporary Containers
 
 Since version 57 of Firefox - Codename Firefox Quantum - it is possible for Add-ons to activate the new Container feature without the need for the user to manually edit the browser configuration. Just install an Add-on that supports Containers and you're good to go.
