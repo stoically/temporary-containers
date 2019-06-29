@@ -307,7 +307,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     });
 
     it('should open in a new temporary container', async () => {
-      expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.exist;
+      expect(background.mouseclick.isolated[fakeMessage.payload.href]).to.exist;
       browser.contextualIdentities.create.should.have.been.calledOnce;
       browser.tabs.create.should.have.been.calledOnce;
       browser.tabs.remove.should.not.have.been.calledOnce;
@@ -358,11 +358,11 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
       const background = await loadBackground(preferences);
       await background.runtime.onMessage(fakeMessage, fakeSender);
-      expect(background.mouseclick.linksClicked[fakeMessage.payload.href]).to.exist;
+      expect(background.mouseclick.isolated[fakeMessage.payload.href]).to.exist;
 
       clock.tick(1500);
       await new Promise(process.nextTick);
-      expect(background.mouseclick.linksClicked).to.deep.equal({});
+      expect(background.mouseclick.isolated).to.deep.equal({});
     });
   });
 

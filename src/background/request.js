@@ -51,9 +51,9 @@ class TmpRequest {
       });
     }
 
-    if (this.mouseclick.linksClicked[request.url]) {
-      debug('[webRequestOnBeforeRequest] aborting linksClicked cleanup', request.url);
-      this.mouseclick.linksClicked[request.url].abortController.abort();
+    if (this.mouseclick.isolated[request.url]) {
+      debug('[webRequestOnBeforeRequest] aborting isolated cleanup', request.url);
+      this.mouseclick.isolated[request.url].abortController.abort();
     }
 
     let returnVal;
@@ -63,10 +63,10 @@ class TmpRequest {
       debug('[webRequestOnBeforeRequest] handling request failed', error);
     }
 
-    if (this.mouseclick.linksClicked[request.url]) {
+    if (this.mouseclick.isolated[request.url]) {
       delay(1500).then(() => {
-        debug('[webRequestOnBeforeRequest] cleaning up linksClicked', request.url);
-        delete this.mouseclick.linksClicked[request.url];
+        debug('[webRequestOnBeforeRequest] cleaning up isolated', request.url);
+        delete this.mouseclick.isolated[request.url];
       });
     }
 

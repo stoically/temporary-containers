@@ -1,7 +1,7 @@
 class MouseClick {
   constructor(background) {
     this.background = background;
-    this.linksClicked = {};
+    this.isolated = {};
 
     this.checkClickPreferences.bind(this);
   }
@@ -37,21 +37,21 @@ class MouseClick {
       return;
     }
 
-    if (this.linksClicked[url]) {
-      debug('[linkClicked] aborting linksClicked cleanup', url);
-      this.linksClicked[url].abortController.abort();
+    if (this.isolated[url]) {
+      debug('[linkClicked] aborting isolated cleanup', url);
+      this.isolated[url].abortController.abort();
     }
 
     const abortController = new AbortController;
-    this.linksClicked[url] = {
+    this.isolated[url] = {
       clickType,
       tab: sender.tab,
       abortController
     };
 
     delay(1500, {signal: abortController.signal}).then(() => {
-      debug('[linkClicked] cleaning up linksClicked', url);
-      delete this.linksClicked[url];
+      debug('[linkClicked] cleaning up isolated', url);
+      delete this.isolated[url];
     });
   }
 

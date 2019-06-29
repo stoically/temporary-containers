@@ -23,7 +23,7 @@ class Isolation {
       return;
     }
 
-    if (this.mouseclick.linksClicked[request.url] && tab && tab.cookieStoreId !== 'firefox-default' &&
+    if (this.mouseclick.isolated[request.url] && tab && tab.cookieStoreId !== 'firefox-default' &&
       this.container.urlCreatedContainer[request.url] === tab.cookieStoreId) {
       debug('[maybeIsolate] link click already created this container, we can stop here', request, tab);
       return;
@@ -78,14 +78,14 @@ class Isolation {
     };
 
     let reload = false;
-    if (this.mouseclick.linksClicked[request.url]) {
-      const clickType = this.mouseclick.linksClicked[request.url].clickType;
+    if (this.mouseclick.isolated[request.url]) {
+      const clickType = this.mouseclick.isolated[request.url].clickType;
       if (this.storage.local.preferences.isolation.global.mouseClick[clickType].container === 'deleteshistory') {
         params.deletesHistory = true;
       }
 
       if (tab && clickType === 'left' &&
-        this.mouseclick.linksClicked[request.url].tab.id !== tab.id) {
+        this.mouseclick.isolated[request.url].tab.id !== tab.id) {
         reload = true;
       }
     }
@@ -122,7 +122,7 @@ class Isolation {
       return false;
     }
 
-    return this.mouseclick.linksClicked[request.url] ||
+    return this.mouseclick.isolated[request.url] ||
       this.shouldIsolateMac({tab, macAssignment}) ||
       await this.shouldIsolateNavigation({request, tab, openerTab}) ||
       await this.shouldIsolateAlways({request, tab, openerTab});
