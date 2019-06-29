@@ -20,17 +20,7 @@ export default (App, {popup = false}) => {
           if (!app.initialized) {
             return;
           } else if (!oldApp.preferences) {
-            this.$nextTick(() => {
-              if (app.preferences.ui.expandPreferences && !this.expandedPreferences) {
-                Array.from(Array(15)).map((_, idx) => {
-                  $('.ui.accordion').accordion('open', idx);
-                });
-                this.expandedPreferences = true;
-              } else if (!app.preferences.ui.expandPreferences && this.expandedPreferences) {
-                this.expandedPreferences = false;
-                this.$root.$emit('initialize');
-              }
-            });
+            this.maybeExpandPreferences(app);
             return;
           }
 
@@ -47,9 +37,11 @@ export default (App, {popup = false}) => {
             });
           } catch (error) {
             // eslint-disable-next-line no-console
-            console.log('error while saving preferences', error);
-            this.$root.$emit('showError', 'Error while saving preferences');
+            console.error('error while saving preferences', error);
+            this.$root.$emit('showError', `Error while saving preferences: ${error.toString()}`);
           }
+
+          this.maybeExpandPreferences(app);
         },
         deep: true
       }
@@ -63,6 +55,7 @@ export default (App, {popup = false}) => {
           preferences: false,
           popup
         };
+        this.expandedPreferences = false;
         this.$nextTick(() => {
           this.initialize();
         });
@@ -140,6 +133,19 @@ export default (App, {popup = false}) => {
               permissions: ['history']
             });
         }
+      },
+      maybeExpandPreferences(app) {
+        this.$nextTick(() => {
+          if (app.preferences.ui.expandPreferences && !this.expandedPreferences) {
+            Array.from(Array(15)).map((_, idx) => {
+              $('.ui.accordion').accordion('open', idx);
+            });
+            this.expandedPreferences = true;
+          } else if (!app.preferences.ui.expandPreferences && this.expandedPreferences) {
+            this.expandedPreferences = false;
+            this.$root.$emit('initialize');
+          }
+        });
       }
     },
     render(h) {
