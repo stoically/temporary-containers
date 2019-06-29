@@ -51,7 +51,24 @@ class TmpRequest {
       });
     }
 
-    const returnVal = await this._webRequestOnBeforeRequest(request);
+    if (this.mouseclick.linksClicked[request.url]) {
+      debug('[webRequestOnBeforeRequest] aborting linksClicked cleanup', request.url);
+      this.mouseclick.linksClicked[request.url].abortController.abort();
+    }
+
+    let returnVal;
+    try {
+      returnVal = await this._webRequestOnBeforeRequest(request);
+    } catch (error) {
+      debug('[webRequestOnBeforeRequest] handling request failed', error);
+    }
+
+    if (this.mouseclick.linksClicked[request.url]) {
+      delay(1500).then(() => {
+        debug('[webRequestOnBeforeRequest] cleaning up linksClicked', request.url);
+        delete this.mouseclick.linksClicked[request.url];
+      });
+    }
 
     if (!this.lastSeenRequestUrl[request.requestId]) {
       delay(300000).then(() => {
