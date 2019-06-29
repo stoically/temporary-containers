@@ -17,7 +17,20 @@ export default (App, {popup = false}) => {
     watch: {
       app: {
         async handler(app, oldApp) {
-          if (!app.initialized || !oldApp.preferences) {
+          if (!app.initialized) {
+            return;
+          } else if (!oldApp.preferences) {
+            this.$nextTick(() => {
+              if (app.preferences.ui.expandPreferences && !this.expandedPreferences) {
+                Array.from(Array(15)).map((_, idx) => {
+                  $('.ui.accordion').accordion('open', idx);
+                });
+                this.expandedPreferences = true;
+              } else if (!app.preferences.ui.expandPreferences && this.expandedPreferences) {
+                this.expandedPreferences = false;
+                this.$root.$emit('initialize');
+              }
+            });
             return;
           }
 
@@ -36,16 +49,6 @@ export default (App, {popup = false}) => {
             // eslint-disable-next-line no-console
             console.log('error while saving preferences', error);
             this.$root.$emit('showError', 'Error while saving preferences');
-          }
-
-          if (app.preferences.ui.expandPreferences && !this.expandedPreferences) {
-            Array.from(Array(15)).map((_, idx) => {
-              $('.ui.accordion').accordion('open', idx);
-            });
-            this.expandedPreferences = true;
-          } else if (!app.preferences.ui.expandPreferences && this.expandedPreferences) {
-            this.expandedPreferences = false;
-            this.$root.$emit('initialize');
           }
         },
         deep: true

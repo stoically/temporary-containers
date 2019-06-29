@@ -10,8 +10,7 @@ export default {
     return {
       preferences: this.app.preferences,
       permissions: this.app.permissions,
-      lastSyncExport: false,
-      syncStorageInUse: 0,
+      lastSyncExport: false
     };
   },
   async mounted() {
