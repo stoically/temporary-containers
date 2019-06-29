@@ -32,10 +32,9 @@ export default {
   },
   methods: {
     async resetStatistics() {
-      const confirmed = window.confirm(`
+      if (!window.confirm(`
         Reset statistics?
-      `);
-      if (!confirmed) {
+      `)) {
         return;
       }
 

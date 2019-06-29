@@ -15,9 +15,15 @@ export default {
         this.message = false;
       }, 3000);
     });
-    this.$root.$on('showError', message => {
+    this.$root.$on('showError', (message, options = {}) => {
       this.error = true;
       this.message = message;
+
+      if (options.close) {
+        setTimeout(() => {
+          this.message = false;
+        }, 5000);
+      }
     });
   }
 };

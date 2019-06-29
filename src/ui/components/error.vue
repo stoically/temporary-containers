@@ -31,19 +31,14 @@ export default {
   },
   methods: {
     resetStorageConfirm() {
-      const confirmed = window.confirm(`
+      if (window.confirm(`
         Wipe storage and reset it to default?\n
         This can't be undone.
-      `);
-      if (confirmed) {
+      `)) {
         this.resetStorage();
       }
     },
     async resetStorage(event) {
-      if (event) {
-        event.preventDefault();
-      }
-
       let reset = false;
       try {
         reset = await browser.runtime.sendMessage({

@@ -202,10 +202,9 @@ export default {
       }
     },
     remove(index, pattern) {
-      const confirmed = window.confirm(`
+      if (window.confirm(`
         Remove ${pattern}?
-      `);
-      if (confirmed) {
+      `)) {
         this.$delete(this.preferences.isolation.domain, index);
         if (this.editing && this.domain.pattern === pattern) {
           this.reset();

@@ -38,11 +38,10 @@ export default {
   },
   methods: {
     resetStorage() {
-      const confirmed = window.confirm(`
+      if (window.confirm(`
         Wipe storage and reset it to default?\n
         This can't be undone.
-      `);
-      if (confirmed) {
+      `)) {
         this.$root.$emit('resetStorage');
       }
     },
@@ -358,7 +357,7 @@ export default {
           class="ui negative button"
           @click="resetStorage"
         >
-          Wipe storage and reset it to default
+          Wipe local storage and reset it to default
         </button>
         <div class="m-b" />
       </div>

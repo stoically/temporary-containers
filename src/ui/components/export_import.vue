@@ -9,21 +9,39 @@ export default {
   data() {
     return {
       preferences: this.app.preferences,
-      permissions: this.app.permissions
+      permissions: this.app.permissions,
+      lastSyncExport: false,
+      syncStorageInUse: 0,
     };
   },
-  methods: {
-    async exportPreferences(event) {
-      event.preventDefault();
-      const {preferences} = await browser.storage.local.get('preferences');
+  async mounted() {
+    const {export: importPreferences} = await browser.storage.sync.get('export');
+    if (importPreferences) {
+      this.lastSyncExport = importPreferences;
+    }
 
+    browser.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== 'sync' || !changes.export) {
+        return;
+      }
+      this.lastSyncExport = changes.export.newValue;
+    });
+  },
+  methods: {
+    getPreferences() {
+      const preferences = JSON.parse(JSON.stringify(this.preferences));
       preferences.isolation.global.excludedContainers = [];
 
-      const exportedPreferences = JSON.stringify({
+      const exportedPreferences = {
         version: browser.runtime.getManifest().version,
         date: Date.now(),
         preferences,
-      }, null, 2);
+      };
+
+      return exportedPreferences;
+    },
+    exportPreferences(event) {
+      const exportedPreferences = JSON.stringify(this.getPreferences(), null, 2);
 
       const date = new Date();
       const dateString = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
@@ -35,22 +53,58 @@ export default {
       a.dispatchEvent(new MouseEvent('click'));
     },
 
+    async exportPreferencesSync() {
+      try {
+        const {export: importPreferences} = await browser.storage.sync.get('export');
+        if (importPreferences && !window.confirm(`
+          There's already an export in Firefox Sync:\n
+          Date: ${new Date(importPreferences.date).toLocaleString()}\n
+          Version: ${importPreferences.version}\n\n
+          Overwrite Firefox Sync export?\n
+        `)) {
+          return;
+        }
+        await browser.storage.sync.set({
+          export: this.getPreferences()
+        });
+        this.$root.$emit('showMessage', 'Successfully exported to Firefox Sync');
+      } catch (error) {
+        this.$root.$emit('showError', `Exporting to Firefox Sync failed: ${error.toString()}`);
+      }
+    },
+
+
+    async importPreferencesSync() {
+      try {
+        const {export: importPreferences} = await browser.storage.sync.get('export');
+        if (!importPreferences || !Object.keys(importPreferences).length) {
+          this.$root.$emit('showError', 'No preferences found in Firefox Sync', {close: true});
+          return;
+        }
+        if (this.confirmedImportPreferences(importPreferences)) {
+          this.setImportedPreferences(importPreferences);
+        }
+      } catch (error) {
+        this.$root.$emit('showError', `Importing from Firefox Sync failed: ${error.toString()}`);
+      }
+    },
+
+    confirmedImportPreferences(importPreferences, fileName) {
+      return window.confirm(`
+        ${fileName  ? `Import preferences from ${fileName}?` : 'Import preferences?'}\n
+        Date: ${new Date(importPreferences.date).toLocaleString()}\n
+        Version: ${importPreferences.version}\n\n
+        All existing preferences are overwritten.
+      `);
+    },
+
     async importPreferences(event) {
-      event.preventDefault();
       const file = event.target.files[0];
       if (!file) {
         return;
       }
 
-      const confirmed = window.confirm(`
-        Do you want to import ${file.name}?\n
-        All existing preferences are overwritten.
-      `);
-      if (!confirmed) {
-        return;
-      }
-
-      const importedPreferences = await new Promise(resolve => {
+      const importPreferences = await new Promise(resolve => {
         const reader = new FileReader();
         reader.readAsText(file, 'UTF-8');
         reader.onload = async (event) => {
@@ -64,6 +118,12 @@ export default {
         };
       });
 
+      if (this.confirmedImportPreferences(importPreferences, file.name)) {
+        this.setImportedPreferences(importPreferences);
+      }
+    },
+
+    async setImportedPreferences(importedPreferences) {
       // TODO file firefox bug, we're in a input handler, so requesting permissions should work
       if (!this.permissions.notifications) {
         importedPreferences.preferences.notifications = false;
@@ -89,12 +149,29 @@ export default {
 
       this.$root.$emit('showMessage', 'Preferences imported.');
     },
+
+    async wipePreferencesSync() {
+      if (!window.confirm(`
+        Wipe Firefox sync export?\n
+        This can't be undone.
+      `)) {
+        return;
+      }
+
+      try {
+        await browser.storage.sync.clear();
+        this.lastSyncExport = false;
+        this.$root.$emit('showMessage', 'Successfully wiped Firefox Sync export');
+      } catch (error) {
+        this.$root.$emit('showError', `Wiping Firefox Sync failed: ${error.toString()}`);
+      }
+    }
   }
 };
 </script>
 
 <template>
-  <form class="ui form">
+  <div class="ui form">
     <div class="ui two column very relaxed grid">
       <div class="column">
         <div class="field">
@@ -107,12 +184,42 @@ export default {
         </div>
         <div class="field">
           <button
-            id="exportPreferences"
             class="ui button primary"
             @click="exportPreferences"
           >
-            Export into file
+            Export to file
           </button>
+        </div>
+        <div class="field">
+          <button
+            class="ui button primary"
+            @click="exportPreferencesSync"
+          >
+            Export to Firefox Sync
+          </button>
+        </div>
+        <div class="field">
+          <button
+            class="ui button negative primary"
+            @click="wipePreferencesSync"
+          >
+            Wipe Firefox Sync export
+          </button>
+        </div>
+        <div
+          v-if="lastSyncExport"
+          class="field"
+        >
+          <div style="margin-top: 30px" />
+          <h5>Last Firefox Sync export</h5>
+          <ul>
+            <li>
+              Date: {{ new Date(lastSyncExport.date).toLocaleString() }}
+            </li>
+            <li>
+              Version: {{ lastSyncExport.version }}
+            </li>
+          </ul>
         </div>
       </div>
       <div class="column">
@@ -122,7 +229,7 @@ export default {
         <div class="ui notice message">
           Currently it's not possible to request permissions while importing,
           so if you have notifications, bookmarks context menu, or deletes history
-          preferences in your import file, those will get ignored and you have
+          preferences in your import, those will get ignored and you have
           to reconfigure them.
         </div>
         <div class="field">
@@ -138,7 +245,15 @@ export default {
             </div>
           </label>
         </div>
+        <div class="field">
+          <button
+            class="ui button primary"
+            @click="importPreferencesSync"
+          >
+            Import from Firefox Sync
+          </button>
+        </div>
       </div>
     </div>
-  </form>
+  </div>
 </template>
