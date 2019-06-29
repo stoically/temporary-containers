@@ -39,21 +39,9 @@ export default {
       };
     });
 
-    browser.downloads.onChanged.addListener(async downloadDelta => {
-      if (!this.download) {
-        return;
-      }
-      if (this.download.id === downloadDelta.id && downloadDelta.state.current === 'complete') {
-        URL.revokeObjectURL(downloadDelta.url);
-        const lastFileExport = {
-          date: this.download.date,
-          version: this.download.version
-        };
-        await browser.storage.local.set({lastFileExport});
-        this.lastFileExport = lastFileExport;
-        this.download = false;
-      }
-    });
+    if (this.permissions.downloads) {
+      this.addDownloadListener();
+    }
   },
   methods: {
     getPreferences() {
@@ -77,6 +65,7 @@ export default {
         if (!this.permissions.downloads) {
           return;
         }
+        this.addDownloadListener();
       }
 
       const preferences = this.getPreferences();
@@ -216,6 +205,24 @@ export default {
       } catch (error) {
         this.$root.$emit('showError', `Wiping Firefox Sync failed: ${error.toString()}`);
       }
+    },
+
+    addDownloadListener() {
+      browser.downloads.onChanged.addListener(async downloadDelta => {
+        if (!this.download) {
+          return;
+        }
+        if (this.download.id === downloadDelta.id && downloadDelta.state.current === 'complete') {
+          URL.revokeObjectURL(downloadDelta.url);
+          const lastFileExport = {
+            date: this.download.date,
+            version: this.download.version
+          };
+          await browser.storage.local.set({lastFileExport});
+          this.lastFileExport = lastFileExport;
+          this.download = false;
+        }
+      });
     }
   }
 };
