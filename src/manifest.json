@@ -86,6 +86,7 @@
   ],
   "optional_permissions": [
     "bookmarks",
+    "downloads",
     "history",
     "notifications"
   ],

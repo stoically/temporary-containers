@@ -118,7 +118,7 @@ export default {
     />
     <div
       v-if="!popup"
-      class="ui message"
+      class="ui small message"
     >
       Isolation lets you configure that navigating in tabs ("web browsing") should
       open new Temporary Containers instead of navigating to the target <a

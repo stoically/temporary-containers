@@ -10,20 +10,49 @@ export default {
     return {
       preferences: this.app.preferences,
       permissions: this.app.permissions,
-      lastSyncExport: false
+      lastSyncExport: false,
+      lastFileExport: false,
+      download: false,
+      addonVersion: browser.runtime.getManifest().version
     };
   },
   async mounted() {
     const {export: importPreferences} = await browser.storage.sync.get('export');
     if (importPreferences) {
-      this.lastSyncExport = importPreferences;
+      this.lastSyncExport = {
+        date: importPreferences.date,
+        version: importPreferences.version
+      };
+    }
+    const {lastFileExport} = await browser.storage.local.get('lastFileExport');
+    if (lastFileExport) {
+      this.lastFileExport = lastFileExport;
     }
 
     browser.storage.onChanged.addListener((changes, areaName) => {
       if (areaName !== 'sync' || !changes.export) {
         return;
       }
-      this.lastSyncExport = changes.export.newValue;
+      this.lastSyncExport = {
+        date: changes.export.newValue.date,
+        version: changes.export.newValue.version,
+      };
+    });
+
+    browser.downloads.onChanged.addListener(async downloadDelta => {
+      if (!this.download) {
+        return;
+      }
+      if (this.download.id === downloadDelta.id && downloadDelta.state.current === 'complete') {
+        URL.revokeObjectURL(downloadDelta.url);
+        const lastFileExport = {
+          date: this.download.date,
+          version: this.download.version
+        };
+        await browser.storage.local.set({lastFileExport});
+        this.lastFileExport = lastFileExport;
+        this.download = false;
+      }
     });
   },
   methods: {
@@ -39,17 +68,40 @@ export default {
 
       return exportedPreferences;
     },
-    exportPreferences(event) {
-      const exportedPreferences = JSON.stringify(this.getPreferences(), null, 2);
 
-      const date = new Date();
+    async exportPreferences(event) {
+      if (!this.permissions.downloads) {
+        this.permissions.downloads = await browser.permissions.request({
+          permissions: ['downloads']
+        });
+        if (!this.permissions.downloads) {
+          return;
+        }
+      }
+
+      const preferences = this.getPreferences();
+      const exportedPreferences = JSON.stringify(preferences, null, 2);
+
+      console.log(preferences.date);
+      const date = new Date(preferences.date);
       const dateString = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
       const timeString = [date.getHours(), date.getMinutes(), date.getSeconds()].join('.');
-      const a = document.createElement('a');
-      a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(exportedPreferences);
-      a.setAttribute('download', `temporary_containers_preferences_${dateString}_${timeString}.json`);
-      a.setAttribute('type', 'text/plain');
-      a.dispatchEvent(new MouseEvent('click'));
+      const blob = new Blob([exportedPreferences], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+
+      try {
+        this.download = {
+          id: await browser.downloads.download({
+            url,
+            filename: `temporary_containers_preferences_${dateString}_${timeString}.json`,
+            saveAs: true
+          }),
+          date: preferences.date,
+          version: preferences.version
+        };
+      } catch (error) {
+        this.$root.$emit('showError', `Exporting to file failed: ${error.toString()}`, {close: true});
+      }
     },
 
     async exportPreferencesSync() {
@@ -176,18 +228,37 @@ export default {
         <div class="field">
           <label>Export Preferences</label>
         </div>
-        <div class="ui notice message">
+        <div class="ui small notice message">
           Preferences that include permanent containers are stripped from the
           export since it's not possible to make sure that those containers exist
           when importing, which would lead to unexpected behavior.
+          <br><br>
+          <i>Installed Add-on version: <strong>{{ addonVersion }}</strong></i>
         </div>
         <div class="field">
           <button
             class="ui button primary"
             @click="exportPreferences"
           >
-            Export to file
+            Export to local file
           </button>
+        </div>
+        <div
+          v-if="lastFileExport"
+          class="field"
+          style="margin-bottom: 30px"
+        >
+          <h5>Last local file export</h5>
+          <div>
+            <ul>
+              <li>
+                Date: {{ new Date(lastFileExport.date).toLocaleString() }}
+              </li>
+              <li>
+                Version: {{ lastFileExport.version }}
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="field">
           <button
@@ -209,23 +280,24 @@ export default {
           v-if="lastSyncExport"
           class="field"
         >
-          <div style="margin-top: 30px" />
           <h5>Last Firefox Sync export</h5>
-          <ul>
-            <li>
-              Date: {{ new Date(lastSyncExport.date).toLocaleString() }}
-            </li>
-            <li>
-              Version: {{ lastSyncExport.version }}
-            </li>
-          </ul>
+          <div>
+            <ul>
+              <li>
+                Date: {{ new Date(lastSyncExport.date).toLocaleString() }}
+              </li>
+              <li>
+                Version: {{ lastSyncExport.version }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div class="column">
         <div class="field">
           <label>Import Preferences</label>
         </div>
-        <div class="ui notice message">
+        <div class="ui small notice message">
           Currently it's not possible to request permissions while importing,
           so if you have notifications, bookmarks context menu, or deletes history
           preferences in your import, those will get ignored and you have
@@ -240,7 +312,7 @@ export default {
               @change="importPreferences"
             >
             <div class="ui button primary">
-              Import from file
+              Import from local file
             </div>
           </label>
         </div>

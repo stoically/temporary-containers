@@ -95,7 +95,7 @@ export default {
             </option>
           </select>
         </div>
-        <div class="ui negative message">
+        <div class="ui small negative message">
           <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
           use the address bar for search engines. If you select "Don't reopen new tabs in Temporary Containers"
           here, cookies can get written into and read from the permanent default container as long as the new
@@ -190,7 +190,7 @@ export default {
         </h4>
       </div>
       <div class="content">
-        <div class="ui notice message">
+        <div class="ui small message">
           Starting with Firefox 66 it's possible to reassign keyboard shortcuts on the Add-ons overview page.
         </div>
         <div
@@ -302,7 +302,7 @@ export default {
         </h4>
       </div>
       <div class="content">
-        <div class="ui notice message">
+        <div class="ui small message">
           Note: To unignore Mozilla domains its needed to remove them from the <i>about:config</i>
           key <strong>extensions.webextensions.restrictedDomains</strong> list, if they're listed there.
           To fully unignore requests to addons.mozilla.org you need to configure <strong>privacy.resistFingerprinting.block_mozAddonManager</strong>

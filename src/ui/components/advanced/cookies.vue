@@ -79,11 +79,11 @@ export default {
       <h4>
         Configure cookies to be set on certain domains in Temporary Containers
       </h4>
-      <div class="ui negative message">
+      <div class="ui small negative message">
         <strong>Warning:</strong> Setting cookies can make you easier fingerprintable. Especially
         when they contain user/session-specific data. Avoid setting cookies if you can.
       </div>
-      <div class="ui notice message">
+      <div class="ui small notice message">
         This will call <a
           href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/cookies/set"
           target="_blank"

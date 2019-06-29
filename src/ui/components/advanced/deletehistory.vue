@@ -25,25 +25,24 @@ export default {
   >
     <div class="field">
       <label>"Deletes History Temporary Containers"</label>
-      <div class="ui negative message">
+      <div class="ui small negative message">
+        <strong>Warning:</strong> Every website URL that you visit in a
+        "Deletes History Temporary Container" will get deleted from your entire history.
+        This means if you visited the same Website URL in another Container, Temporary Container
+        or in the Default Container before or while visiting it in a "Deletes History Temporary Container"
+        then those visits will get deleted from history too. This is true until Firefox supports a special history for container tabs.
+        <a
+          href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320"
+          target="_blank"
+        >The related Firefox bug can be found here</a>.<br>
+        <br>
+        Be careful. You have been warned. "Deletes History Temporary Containers" tabs have a "-deletes-history" suffix
+        in the container name to remind you.
+        <br><br>
         <strong>
-          Warning: Every website URL that you visit in a
-          "Deletes History Temporary Container" will get deleted from your entire history.
-          This means if you visited the same Website URL in another Container, Temporary Container
-          or in the Default Container before or while visiting it in a "Deletes History Temporary Container"
-          then those visits will get deleted from history too. This is true until Firefox supports a special history for container tabs.
-          <a
-            href="https://bugzilla.mozilla.org/show_bug.cgi?id=1283320"
-            target="_blank"
-          >The related Firefox bug can be found here</a>.<br>
-          <br>
-          Be careful. You have been warned. "Deletes History Temporary Containers" tabs have a "-deletes-history" suffix
-          in the container name to remind you.
-          <br><br>
-
           <div
             id="deletesHistoryContainerWarningRead"
-            class="ui checkbox"
+            class="ui small checkbox"
           >
             <input
               id="deletesHistoryContainerWarningReadCheckbox"
@@ -56,7 +55,7 @@ export default {
           </div>
         </strong>
       </div>
-      <div class="ui notice message">
+      <div class="ui small notice message">
         You can open "Deletes History Temporary Containers" - also with the keyboard shortcut Alt+P - after you read the Warning and ticked the checkbox.<br>
         <br>
         The deletion applies to the full Website URL, not only the domain. That means, if you e.g. open a news article on

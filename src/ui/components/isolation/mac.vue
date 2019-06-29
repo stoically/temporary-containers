@@ -35,7 +35,7 @@ export default {
         v-if="!popup"
         class="field"
       >
-        <div class="ui message">
+        <div class="ui small message">
           This applies to the
           <a
             href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"

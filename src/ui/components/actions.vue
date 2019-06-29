@@ -77,7 +77,7 @@ export default {
   <div class="ui segment">
     <div
       v-if="!isHttpTab"
-      class="ui message"
+      class="ui small message"
     >
       Actions aren't available in this tab
     </div>

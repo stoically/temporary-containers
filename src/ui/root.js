@@ -66,6 +66,7 @@ export default (App, {popup = false}) => {
         const {permissions: allPermissions} = await browser.permissions.getAll();
         const permissions = {
           bookmarks: allPermissions.includes('bookmarks'),
+          downloads: allPermissions.includes('downloads'),
           history: allPermissions.includes('history'),
           notifications: allPermissions.includes('notifications')
         };
