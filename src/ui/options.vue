@@ -77,23 +77,60 @@ export default {
       <a
         class="item"
         data-tab="general"
-      >{{ t('optionsNavGeneral') }}</a>
+      >
+        <i
+          class="icon-cog-alt"
+          style="margin-right: 5px"
+        />
+        {{ t('optionsNavGeneral') }}</a>
       <a
         class="item"
         data-tab="isolation"
-      >{{ t('optionsNavIsolation') }}</a>
+      >
+        <i
+          class="icon-circle-empty"
+          style="margin-right: 2px"
+        />
+        {{ t('optionsNavIsolation') }}</a>
       <a
         class="item"
         data-tab="advanced"
-      >{{ t('optionsNavAdvanced') }}</a>
+      >
+        <i
+          class="graduation cap icon"
+          style="margin-right: 5px"
+        />
+        {{ t('optionsNavAdvanced') }}</a>
       <a
         class="item"
         data-tab="statistics"
-      >{{ t('optionsNavStatistics') }}</a>
+      >
+        <i
+          class="icon-chart-bar"
+          style="margin-right: 5px"
+        />
+        {{ t('optionsNavStatistics') }}</a>
       <a
         class="item"
         data-tab="export_import"
-      >{{ t('optionsNavExportImport') }}</a>
+      >
+        <i
+          class="save icon"
+          style="margin-right: 5px"
+        />
+        {{ t('optionsNavExportImport') }}
+      </a>
+      <a
+        class="item"
+        href=""
+        target="_blank"
+      >
+        <i
+          class="question icon"
+          style="margin-right: 5px"
+        />
+        Docs
+      </a>
     </div>
     <message />
     <div
