@@ -12,5 +12,14 @@ before_install:
 script:
   - npm run build
   - npm run test-functional
+  - npm run docs:build
 
 after_success: npm run coverage
+
+deploy:
+  provider: pages
+  local_dir: docs/.vuepress/dist
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  on:
+    branch: master

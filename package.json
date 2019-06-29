@@ -11,7 +11,9 @@
     "test-watch": "mocha ./test/setup.js test/*.test.js -b --watch --tmp-debug --inspect",
     "test-functional": "mocha ./test/functional/*.test.js --timeout 10000",
     "check-dependencies": "ncu",
-    "watch": "rm -rf dist && parcel src/ui/options.html src/ui/popup.html --no-hmr"
+    "watch": "rm -rf dist && parcel src/ui/options.html src/ui/popup.html --no-hmr",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "repository": {
     "type": "git",
@@ -52,6 +54,7 @@
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "vue-template-compiler": "^2.6.10",
+    "vuepress": "^1.0.2",
     "web-ext": "^3.0.0",
     "webextensions-geckodriver": "^0.5.1",
     "webextensions-jsdom": "^0.15.3"
