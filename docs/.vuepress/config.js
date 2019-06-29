@@ -23,7 +23,14 @@ module.exports = {
     editLinkText: 'Help us improve this page!',
     sidebar: [
       ['/', 'Welcome'],
-      '/automatic-mode',
+      {
+        title: 'Automatic Mode',
+        collapsable: false,
+        children: [
+          '/automatic-mode/overview',
+          '/automatic-mode/stay-logged-in',
+        ]
+      },
       {
         title: 'Isolation',
         collapsable: false,
@@ -31,14 +38,14 @@ module.exports = {
           '/isolation/global',
           '/isolation/per-domain',
           '/isolation/multi-account-containers',
-          '/isolation/notes'
+          '/isolation/notes',
         ]
       },
-      '/api',
       '/browser-fingerprinting',
       '/container-colors',
       '/debug-log',
-      '/foxy-gestures'
+      '/foxy-gestures',
+      '/api',
     ]
   }
 }
