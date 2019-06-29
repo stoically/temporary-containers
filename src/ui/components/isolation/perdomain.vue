@@ -64,7 +64,14 @@ export default {
   watch: {
     domain: {
       handler(domain, oldDomain) {
-        if (!this.editing &&
+        if (this.editing && !domain.pattern.trim()) {
+          this.editing = false;
+          this.domain = JSON.parse(JSON.stringify(domain));
+          const domainIndex = this.preferences.isolation.domain.findIndex(isolatedDomain =>
+            !isolatedDomain.pattern.trim()
+          );
+          this.$delete(this.preferences.isolation.domain, domainIndex);
+        } else if (!this.editing &&
           this.preferences.isolation.domain.find(_domain => _domain.pattern === domain.pattern)) {
           $('#isolationDomainForm').form('validate form');
         }
@@ -121,6 +128,7 @@ export default {
           this.reset();
           this.editing = false;
         } else {
+          this.domain.pattern = this.domain.pattern.trim();
           this.preferences.isolation.domain.push(JSON.parse(JSON.stringify(this.domain)));
           this.reset();
         }
@@ -514,7 +522,7 @@ export default {
         style="margin-top: 10px"
         :class="{'content': popup}"
       >
-        No domains added yet
+        No isolated domains added yet
       </div>
       <div
         v-else
@@ -535,13 +543,13 @@ export default {
                 v-model="isolationDomainFilter"
                 type="text"
                 size="15"
-                placeholder="Filter domains"
+                placeholder="Filter isolated domains"
                 @focus="expandIsolationDomainFilter"
               >
               <i class="circular search link icon" />
             </span>
             <span v-else>
-              Domains
+              Isolated domains
             </span>
           </h4>
         </div>
