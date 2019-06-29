@@ -101,15 +101,15 @@ class MouseClick {
     const parsedClickedURL = new URL(message.href);
     debug('[checkClick] checking click', type, message, sender);
 
-    for (let domainPattern in this.storage.local.preferences.isolation.domain) {
+    for (const domainPatternPreferences of this.storage.local.preferences.isolation.domain) {
+      const domainPattern = domainPatternPreferences.pattern;
       if (!this.isolation.matchDomainPattern(sender.tab.url, domainPattern)) {
         continue;
       }
-      const domainPatternPreferences = this.storage.local.preferences.isolation.domain[domainPattern].mouseClick;
-      if (!domainPatternPreferences[type]) {
+      if (!domainPatternPreferences.mouseClick[type]) {
         continue;
       }
-      const preferences = domainPatternPreferences[type];
+      const preferences = domainPatternPreferences.mouseClick[type];
       debug('[checkClick] per website pattern found', );
       if (preferences.action === 'global') {
         debug('[checkClick] breaking because "global"');

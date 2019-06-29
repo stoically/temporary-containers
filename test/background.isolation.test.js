@@ -81,8 +81,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
             case 'sametab.perdomain':
             case 'newtab.perdomain':
-              background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
-              background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'never';
+              background.storage.local.preferences.isolation.domain = [{
+                pattern: 'example.com',
+                ...defaultIsolationDomainPreferences,
+                navigation: {
+                  action: 'never'
+                }
+              }];
               break;
             }
           });
@@ -128,8 +133,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
             case 'sametab.perdomain':
             case 'newtab.perdomain':
-              background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
-              background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'always';
+              background.storage.local.preferences.isolation.domain = [{
+                pattern: 'example.com',
+                ...defaultIsolationDomainPreferences,
+                navigation: {
+                  action: 'always'
+                }
+              }];
               break;
             }
           });
@@ -174,8 +184,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
               case 'sametab.perdomain':
               case 'newtab.perdomain':
-                background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
-                background.storage.local.preferences.isolation.domain['example.com'].excluded['excluded.com'] = {};
+                background.storage.local.preferences.isolation.domain = [{
+                  pattern: 'example.com',
+                  ...defaultIsolationDomainPreferences,
+                  excluded: {
+                    'excluded.com': {}
+                  }
+                }];
                 break;
               }
 
@@ -198,8 +213,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
             case 'sametab.perdomain':
             case 'newtab.perdomain':
-              background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
-              background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'notsamedomain';
+              background.storage.local.preferences.isolation.domain = [{
+                pattern: 'example.com',
+                ...defaultIsolationDomainPreferences,
+                navigation: {
+                  action: 'notsamedomain'
+                }
+              }];
               break;
             }
           });
@@ -258,8 +278,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
 
             case 'sametab.perdomain':
             case 'newtab.perdomain':
-              background.storage.local.preferences.isolation.domain['example.com'] = defaultIsolationDomainPreferences;
-              background.storage.local.preferences.isolation.domain['example.com'].navigation.action = 'notsamedomainexact';
+              background.storage.local.preferences.isolation.domain = [{
+                pattern: 'example.com',
+                ...defaultIsolationDomainPreferences,
+                navigation: {
+                  action: 'notsamedomainexact'
+                }
+              }];
               break;
             }
           });
@@ -399,14 +424,13 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         });
 
         it('should not open in a new temporary container if the opener tab url belonging to the request matches the pattern', async () => {
-          background.storage.local.preferences.isolation.domain = {
-            'example.com': {
-              always: {
-                action: 'enabled',
-                allowedInPermanent: false
-              }
+          background.storage.local.preferences.isolation.domain = [{
+            pattern: 'example.com',
+            always: {
+              action: 'enabled',
+              allowedInPermanent: false
             }
-          };
+          }];
 
           await browser.tabs._create({
             url: 'https://example.com',

@@ -118,6 +118,7 @@ export default {
           this.editing = false;
         } else {
           this.preferences.isolation.domain.push(JSON.parse(JSON.stringify(this.domain)));
+          this.reset();
         }
       }
     });

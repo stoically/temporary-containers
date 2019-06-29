@@ -313,7 +313,7 @@ class Container {
 
   async tryToRemoveQueue(queue) {
     debug('[tryToRemoveQueue] removal queue', queue);
-    for (let cookieStoreId of queue) {
+    for (const cookieStoreId of queue) {
       if (!this.storage.local.tempContainers[cookieStoreId]) {
         debug('[tryToRemoveQueue] unknown container, probably already removed', cookieStoreId);
         continue;
@@ -597,7 +597,7 @@ class Container {
     const containersOptions = Object.values(this.storage.local.tempContainers);
     const assignedColors = {};
     let maxColors = 0;
-    for (let containerOptions of containersOptions) {
+    for (const containerOptions of containersOptions) {
       if (typeof containerOptions !== 'object') {
         continue;
       }
@@ -610,7 +610,7 @@ class Container {
       }
     }
 
-    for (let color of this.containerColors) {
+    for (const color of this.containerColors) {
       if (!assignedColors[color] || assignedColors[color] < maxColors) {
         availableColors.push(color);
       }

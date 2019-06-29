@@ -29,7 +29,7 @@ class Cookies {
       let cookieHeader;
       let cookiesHeader = {};
       let cookieHeaderChanged = false;
-      for (let domainPattern in this.storage.local.preferences.cookies.domain) {
+      for (const domainPattern in this.storage.local.preferences.cookies.domain) {
         if (!this.isolation.matchDomainPattern(details.url, domainPattern)) {
           continue;
         }
@@ -53,7 +53,7 @@ class Cookies {
           debug('[maybeAddCookiesToHeader] found temp tab and header', details, cookieHeader, cookiesHeader);
         }
 
-        for (let cookie of this.storage.local.preferences.cookies.domain[domainPattern]) {
+        for (const cookie of this.storage.local.preferences.cookies.domain[domainPattern]) {
           if (!cookie) {
             continue;
           }

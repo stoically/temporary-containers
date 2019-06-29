@@ -3,20 +3,22 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   describe('Always Open In', () => {
     beforeEach(async () => {
       global.background = await loadBackground(preferences);
-      background.storage.local.preferences.isolation.domain = {
-        'example.com': {
+      background.storage.local.preferences.isolation.domain = [
+        {
+          pattern: 'example.com',
           always: {
             action: 'enabled',
             allowedInPermanent: false
           }
         },
-        '*.notexample.com': {
+        {
+          pattern: '*.notexample.com',
           always: {
             action: 'enabled',
             allowedInPermanent: false
           }
         }
-      };
+      ];
     });
 
     it('should open in a new temporary container', async () => {
@@ -57,14 +59,15 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     });
 
     it('should not open in a new temporary container if its allowed in permanent container', async () => {
-      background.storage.local.preferences.isolation.domain = {
-        'example.com': {
+      background.storage.local.preferences.isolation.domain = [
+        {
+          pattern: 'example.com',
           always: {
             action: 'enabled',
             allowedInPermanent: true
           }
         }
-      };
+      ];
       await helper.browser.request({
         tabId: 2,
         tabUrl: 'about:newtab',

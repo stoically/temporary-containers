@@ -151,8 +151,9 @@ class Isolation {
     const parsedURL = new URL(url);
     const parsedRequestURL = new URL(request.url);
 
-    for (let domainPattern in this.storage.local.preferences.isolation.domain) {
-      const patternPreferences = this.storage.local.preferences.isolation.domain[domainPattern];
+    for (const patternPreferences of this.storage.local.preferences.isolation.domain) {
+      const domainPattern = patternPreferences.pattern;
+
       if (!this.matchDomainPattern(
         tab.url === 'about:blank' && openerTab && openerTab.url || tab.url, domainPattern
       )) {
@@ -202,8 +203,9 @@ class Isolation {
       return false;
     }
 
-    for (let domainPattern in this.storage.local.preferences.isolation.domain) {
-      const patternPreferences = this.storage.local.preferences.isolation.domain[domainPattern];
+    for (const patternPreferences of this.storage.local.preferences.isolation.domain) {
+      const domainPattern = patternPreferences.pattern;
+
       if (!this.matchDomainPattern(request.url, domainPattern)) {
         continue;
       }

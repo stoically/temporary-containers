@@ -372,9 +372,10 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       const fakeMessage = {
         method: 'savePreferences',
         payload: {
-          preferences: Object.assign({}, background.storage.local.preferences, {
+          preferences: {
+            ...background.storage.local.preferences,
             automaticMode: true
-          })
+          }
         }
       };
       await background.runtime.onMessage(fakeMessage);

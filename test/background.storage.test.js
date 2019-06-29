@@ -80,7 +80,7 @@ describe('storage', () => {
       tempContainerCounter: 0,
       tempContainers: {},
       tabContainerMap: {},
-      preferences: Object.assign({}, background.storage.preferencesDefault),
+      preferences: {...background.storage.preferencesDefault},
       statistics: {}
     });
     background.storage.preferencesDefault.newPreference = true;
