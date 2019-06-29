@@ -217,9 +217,13 @@ export default {
       this.$delete(this.domain.excluded, excludedDomainPattern);
     },
     expandIsolationDomainFilter() {
+      if (!this.popup) {
+        return;
+      }
+
       window.setTimeout(() => {
         $('#isolationDomainsAccordion').accordion('open', 0);
-      }, 100);
+      }, 200);
     },
     move(event) {
       if (event.moved) {
@@ -545,6 +549,7 @@ export default {
                 size="15"
                 placeholder="Filter isolated domains"
                 @focus="expandIsolationDomainFilter"
+                @click="expandIsolationDomainFilter"
               >
               <i class="circular search link icon" />
             </span>
