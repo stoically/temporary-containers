@@ -380,16 +380,18 @@ class Container {
     } catch (error) {
       debug('[tryToRemove] couldnt get cookies', cookieStoreId, error);
     }
-    const containerRemoved = await this.removeContainer(cookieStoreId);
-    if (!containerRemoved) {
-      return false;
-    }
+
     const historyClearedCount = this.maybeClearHistory(cookieStoreId);
     this.statistics.update(historyClearedCount, cookies.length, cookieStoreId);
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(number => {
       return this.storage.local.tempContainers[cookieStoreId].number !== number;
     });
-    delete this.storage.local.tempContainers[cookieStoreId];
+
+    const containerRemoved = await this.removeContainer(cookieStoreId);
+    if (containerRemoved) {
+      delete this.storage.local.tempContainers[cookieStoreId];
+    }
+
     await this.storage.persist();
     return true;
   }
@@ -408,6 +410,10 @@ class Container {
     } else {
       debug('[removeContainerQueueMaybeDone] nope');
     }
+
+    // fallback cleanup of container numbers
+    this.storage.local.tempContainersNumbers = Object.values(this.storage.local.tempContainers)
+      .map(container => container.number);
   }
 
 
