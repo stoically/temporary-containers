@@ -57,7 +57,7 @@
     "vuepress": "^1.0.2",
     "web-ext": "^3.0.0",
     "webextensions-geckodriver": "^0.5.1",
-    "webextensions-jsdom": "^0.15.3"
+    "webextensions-jsdom": "^0.16.0"
   },
   "browserslist": [
     "Firefox >= 60"
