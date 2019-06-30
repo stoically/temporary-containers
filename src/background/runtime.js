@@ -11,6 +11,7 @@ class Runtime {
     this.browseraction = this.background.browseraction;
     this.migration = this.background.migration;
     this.permissions = this.background.permissions;
+    this.contextmenu = this.background.contextmenu;
 
     browser.runtime.onMessageExternal.addListener(this.onMessageExternal.bind(this));
   }

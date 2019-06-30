@@ -3,7 +3,7 @@
 
 let migrationReady;
 const migrationReadyPromise = new window.PCancelable(resolve => migrationReady = resolve);
-window.setTimeout(() => {
+const migrationReadyTimeout = window.setTimeout(() => {
   migrationReadyPromise.cancel();
 }, 15000);
 
@@ -11,13 +11,14 @@ const migrationOnInstalledListener = async function() {
   browser.runtime.onInstalled.removeListener(migrationOnInstalledListener);
   const {version} = await browser.storage.local.get('version');
   if (version) {
+    clearTimeout(migrationReadyTimeout);
     debug('[migration-legacy] version found, skip', version);
     return;
   }
 
   try {
     await migrationReadyPromise;
-    // return tmp.migration.onInstalled.call(tmp.migration, ...arguments);
+    return tmp.migration.onInstalled.call(tmp.migration, ...arguments);
   } catch (error) {
     debug('[migration-legacy] waiting for migration ready timed out');
   }
@@ -32,7 +33,7 @@ window.migrationLegacy = async (migration) => {
       window.setTimeout(() => {
         // onInstalled didnt fire, again.
         reject();
-      }, 5000);
+      }, 15000);
       debug('[migration-legacy] ready');
       migrationReady();
     });
