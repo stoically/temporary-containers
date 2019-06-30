@@ -2,12 +2,12 @@
 
 class Log {
   constructor() {
-    this.DEBUG = true;
-    this.stringify = false;
+    this.DEBUG = false;
+    this.stringify = true;
 
     this.debug = this.debug.bind(this);
 
-    if (window.localStorage.getItem('debug')) {
+    if (!browser._mochaTest && window.localStorage.getItem('debug')) {
       this.DEBUG = true;
       this.stringify = false;
     }

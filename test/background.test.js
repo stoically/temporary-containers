@@ -3,7 +3,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   describe('on require', () => {
     it('should register event listeners', async () => {
       const background = await loadBareBackground(preferences);
-      sinon.stub(background.runtime, 'onInstalled');
       sinon.stub(background.runtime, 'onStartup');
       sinon.stub(background.runtime, 'onMessage');
       sinon.stub(background.commands, 'onCommand');
@@ -82,7 +81,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         let promiseRejected = false;
         promise.catch(() => promiseRejected = true);
         expect(promiseRejected).to.be.false;
-        clock.tick(5000);
+        clock.tick(5001);
         await new Promise(process.nextTick);
         expect(promiseRejected).to.be.true;
         background.request.webRequestOnBeforeRequest.should.not.have.been.called;

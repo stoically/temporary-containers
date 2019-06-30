@@ -59,7 +59,7 @@ class TemporaryContainers {
 
     debug('[tmp] initialized');
     this.initialized = true;
-    window.tmpInitialized();
+    window.tmpInitialized(true);
 
     if (this.storage.installed && !browser._mochaTest) {
       browser.tabs.create({

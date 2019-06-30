@@ -85,11 +85,11 @@ export default (App, {popup = false}) => {
           // eslint-disable-next-line require-atomic-updates
           storage = await browser.storage.local.get(['preferences', 'statistics', 'tempContainers']);
           if (!storage.preferences || !Object.keys(storage.preferences).length) {
-            this.$root.$emit('showError', 'Loading preferences failed, please try again later');
+            this.$root.$emit('showError', 'Loading preferences failed, please try again');
             return;
           }
         } catch (error) {
-          this.$root.$emit('showError', `Loading preferences failed, please try again later. ${error.toString()}`);
+          this.$root.$emit('showError', `Loading preferences failed, please try again. ${error.toString()}`);
           return;
         }
 

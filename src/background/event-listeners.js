@@ -2,7 +2,7 @@
 // and wait for tmp to fully initialize before handling them
 const tmpInitializedPromise = new window.PCancelable(resolve => window.tmpInitialized = resolve);
 window.setTimeout(() => {
-  tmpInitializedPromise.cancel();
+  tmpInitializedPromise.cancel('[event-listeners] tmpInitialized timed out');
 }, 5000);
 
 [
@@ -35,13 +35,9 @@ window.setTimeout(() => {
   }
 ]
   .map(async event => {
-    event.func.addListener.apply(this, [async function() {
-      try {
-        if ((tmp && tmp.initialized) || await tmpInitializedPromise) {
-          return event.listener.call(this, ...arguments);
-        }
-      } catch (error) {
-        debug('[event-listeners] canceled because of time out', event.name);
+    event.func.addListener(async function() {
+      if ((tmp && tmp.initialized) || await tmpInitializedPromise) {
+        return event.listener(...arguments);
       }
-    }].concat(event.options || []));
+    }, ...event.options || []);
   });
