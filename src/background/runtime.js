@@ -31,7 +31,7 @@ class Runtime {
     case 'savePreferences':
       debug('[onMessage] saving preferences');
       if (message.payload.migrate) {
-        await this.migration.onUpdate({previousVersion: message.payload.previousVersion});
+        await this.migration.migrate(message.payload.previousVersion);
       }
 
       if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
@@ -141,7 +141,7 @@ class Runtime {
   async onInstalled(details) {
     if (details.temporary) {
       log.DEBUG = true;
-      log.temporary = true;
+      log.stringify = false;
     }
     debug('[onInstalled]', details);
   }

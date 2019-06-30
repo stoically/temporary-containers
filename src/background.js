@@ -55,8 +55,9 @@ class TemporaryContainers {
     await this.management.initialize();
     await this.tabs.initialize();
 
-    browser.runtime.onMessage.addListener(this.runtime.onMessage.bind(this.runtime));
 
+
+    debug('[tmp] initialized');
     this.initialized = true;
     window.tmpInitialized();
   }
@@ -64,8 +65,6 @@ class TemporaryContainers {
 
 window.TemporaryContainers = TemporaryContainers;
 window.tmp = new TemporaryContainers();
-browser.runtime.onStartup.addListener(tmp.runtime.onStartup.bind(tmp.runtime));
-browser.runtime.onInstalled.addListener(tmp.runtime.onInstalled.bind(tmp.runtime));
 
 /* istanbul ignore next */
 if (!browser._mochaTest) {

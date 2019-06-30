@@ -105,7 +105,8 @@
   "background": {
     "scripts": [
       "background/log.js",
-      "background/onbeforerequest.js",
+      "background/conditional-call-delay.js",
+      "background/event-listeners.js",
       "background/migration-legacy.js",
       "background/lib.js",
       "background/browseraction.js",

@@ -1,12 +1,12 @@
+/* istanbul ignore next */
 class Migration {
   constructor(background) {
     this.background = background;
   }
 
-  /* istanbul ignore next */
-  async migrate() {
+  async migrate(previousVersion) {
     this.storage = this.background.storage;
-    this.previousVersion = this.storage.local.version;
+    this.previousVersion = previousVersion || this.storage.local.version;
 
     if (!this.previousVersion) {
       await window.migrationLegacy(this);
