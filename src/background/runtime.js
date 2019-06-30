@@ -139,29 +139,15 @@ class Runtime {
 
 
   async onInstalled(details) {
-    debug('[onInstalled]', details);
     if (details.temporary) {
       log.DEBUG = true;
       log.temporary = true;
     }
-
-    switch (details.reason) {
-    case 'install':
-      await this.storage.install();
-      browser.tabs.create({
-        url: browser.runtime.getURL('options.html')
-      });
-      return;
-
-    case 'update':
-      return this.migration.onUpdate(details);
-    }
+    debug('[onInstalled]', details);
   }
 
 
   async onStartup() {
-    await this.storage.load();
-
     // queue a container cleanup
     delay(15000).then(() => {
       this.container.cleanup(true);

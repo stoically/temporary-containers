@@ -49,15 +49,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       background.request.webRequestOnBeforeRequest.should.have.been.calledOnce;
     });
 
-    it('installing should initialize storage and open welcome page', async () => {
-      const background = await loadUninstalledBackground(preferences);
-      await background.runtime.onInstalled({
-        reason: 'install'
-      });
-      expect(background.storage.local).to.be.not.null;
-      browser.tabs.create.should.have.been.calledOnce;
-    });
-
     it('should have registered a container cleanup interval', async () => {
       const background = await loadBareBackground(preferences);
       sinon.stub(background.container, 'cleanup');
@@ -72,44 +63,34 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
         sinon.stub(background.request, 'webRequestOnBeforeRequest');
 
         const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
-        let waitingForPromise = true;
-        promise.then(() => {
-          waitingForPromise = false;
-        });
-        clock.tick(100);
-        await nextTick();
-        waitingForPromise.should.be.true;
-
+        let promiseFulfilled = false;
+        promise.then(() => promiseFulfilled = true);
+        clock.tick(500);
+        await new Promise(process.nextTick);
+        expect(promiseFulfilled).to.be.false;
         await background.initialize();
-        await nextTick();
-        clock.tick(100);
-        await nextTick();
-        waitingForPromise.should.be.false;
+        await new Promise(process.nextTick);
+        expect(promiseFulfilled).to.be.true;
+        background.request.webRequestOnBeforeRequest.should.have.been.called;
       });
 
       it('wait for tmp to initialize, blocking the request until timeout and dont block the next requests anymore', async () => {
-        await loadBareBackground(preferences);
+        const background = await loadBareBackground(preferences);
+        sinon.stub(background.request, 'webRequestOnBeforeRequest');
+
         const [promise] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
-        let waitingForPromise = true;
-        promise.then(() => {
-          waitingForPromise = false;
-        });
-        for (let i = 0; i < 20; i++) {
-          clock.tick(100);
-          await nextTick();
-          waitingForPromise.should.be.true;
-        }
-        clock.tick(100);
-        await nextTick();
-        waitingForPromise.should.be.false;
+        let promiseRejected = false;
+        promise.catch(() => promiseRejected = true);
+        expect(promiseRejected).to.be.false;
+        clock.tick(5000);
+        await new Promise(process.nextTick);
+        expect(promiseRejected).to.be.true;
+        background.request.webRequestOnBeforeRequest.should.not.have.been.called;
 
         const [promise2] = browser.webRequest.onBeforeRequest.addListener.yield({requestId: 1});
-        let waitingForPromise2 = true;
-        promise2.then(() => {
-          waitingForPromise2 = false;
+        return promise2.catch(() => {
+          background.request.webRequestOnBeforeRequest.should.not.have.been.called;
         });
-        await promise2;
-        waitingForPromise2.should.be.false;
       });
     });
   });
@@ -384,17 +365,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
           automaticMode: true
         }
       });
-    });
-  });
-
-  describe('runtime.onInstalled', () => {
-    it('should call migration on updated', async () => {
-      const background = await loadUninstalledBackground(preferences);
-      const onUpdateMigrationStub = sinon.stub(background.migration, 'onUpdate');
-      browser.runtime.onInstalled.addListener.yield({
-        reason: 'update'
-      });
-      onUpdateMigrationStub.should.have.been.called;
     });
   });
 

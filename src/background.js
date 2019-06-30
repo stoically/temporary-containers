@@ -2,7 +2,7 @@ class TemporaryContainers {
   constructor() {
     this.initialized = false;
 
-    this.storage = new window.TmpStorage;
+    this.storage = new window.TmpStorage(this);
     this.utils = new window.Utils(this);
     this.runtime = new window.Runtime(this);
     this.management = new window.Management(this);
@@ -23,18 +23,21 @@ class TemporaryContainers {
 
 
   async initialize() {
-    // TODO cache permissions in storage based on firefox version >=60.0b1
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1402850
-    // https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/runtime/getBrowserInfo
+    this.version = browser.runtime.getManifest().version;
+    this.browserVersion = parseInt((await browser.runtime.getBrowserInfo()).version);
     const {permissions} = await browser.permissions.getAll();
     this.permissions = {
       bookmarks: permissions.includes('bookmarks'),
       history: permissions.includes('history'),
       notifications: permissions.includes('notifications'),
     };
-    this.browserVersion = parseInt((await browser.runtime.getBrowserInfo()).version);
 
     await this.storage.load();
+    if (this.version !== this.storage.local.version) {
+      await this.migration.migrate();
+      this.storage.local.version = this.version;
+      await this.storage.persist();
+    }
 
     this.request.initialize();
     this.runtime.initialize();
@@ -52,15 +55,17 @@ class TemporaryContainers {
     await this.management.initialize();
     await this.tabs.initialize();
 
+    browser.runtime.onMessage.addListener(this.runtime.onMessage.bind(this.runtime));
+
     this.initialized = true;
+    window.tmpInitialized();
   }
 }
 
 window.TemporaryContainers = TemporaryContainers;
 window.tmp = new TemporaryContainers();
-browser.runtime.onInstalled.addListener(tmp.runtime.onInstalled.bind(tmp));
-browser.runtime.onStartup.addListener(tmp.runtime.onStartup.bind(tmp));
-browser.runtime.onMessage.addListener(tmp.runtime.onMessage.bind(tmp));
+browser.runtime.onStartup.addListener(tmp.runtime.onStartup.bind(tmp.runtime));
+browser.runtime.onInstalled.addListener(tmp.runtime.onInstalled.bind(tmp.runtime));
 
 /* istanbul ignore next */
 if (!browser._mochaTest) {

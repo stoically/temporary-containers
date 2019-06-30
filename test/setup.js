@@ -48,6 +48,7 @@ global.URL = require('url').URL;
 global.helper = require('./helper');
 
 const buildWebExtension = async (build = {}) => {
+  global.clock = sinon.useFakeTimers({toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval']});
   const webExtension = await webExtensionsJSDOM.fromManifest(manifestPath, {
     sinon,
     apiFake: build.apiFake || undefined,
@@ -59,6 +60,7 @@ const buildWebExtension = async (build = {}) => {
       }
     }
   });
+  webExtension.background.browser.runtime.getManifest.returns({version: '0.1'});
   webExtension.background.browser.contextMenus.onShown = {
     addListener: sinon.stub()
   };
@@ -85,15 +87,11 @@ const buildWebExtension = async (build = {}) => {
 
 global.loadBareBackground = async (preferences = {}, build = {}) => {
   const webExtension = await buildWebExtension(build);
-
   global.webExtension = webExtension;
   global.browser = webExtension.background.browser;
   global.background = global.webExtension.background.window.tmp;
-  global.clock = sinon.useFakeTimers();
-
   const background = global.background;
-  await background.storage.install();
-  Object.assign(background.storage.local.preferences, preferences);
+  Object.assign(background.storage.preferencesDefault, preferences);
   return background;
 };
 
@@ -103,15 +101,15 @@ global.loadBackground = async (preferences = {}) => {
   global.webExtension = webExtension;
   global.browser = webExtension.background.browser;
   global.background = global.webExtension.background.window.tmp;
-  global.clock = sinon.useFakeTimers();
 
-  await background.storage.install();
-  Object.assign(background.storage.local.preferences, preferences);
-  // eslint-disable-next-line require-atomic-updates
-  background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'always';
-  // eslint-disable-next-line require-atomic-updates
-  background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'always';
   await background.initialize();
+  if (preferences) {
+    Object.assign(background.storage.local.preferences, preferences);
+    // eslint-disable-next-line require-atomic-updates
+    background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'always';
+    // eslint-disable-next-line require-atomic-updates
+    background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'always';
+  }
   return background;
 };
 
@@ -121,7 +119,6 @@ global.loadUninstalledBackground = async () => {
   global.webExtension = webExtension;
   global.browser = webExtension.background.browser;
   global.background = global.webExtension.background.window.tmp;
-  global.clock = sinon.useFakeTimers();
 
   const background = global.background;
   return background;

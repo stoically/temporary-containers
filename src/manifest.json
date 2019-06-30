@@ -104,9 +104,10 @@
   ],
   "background": {
     "scripts": [
-      "background/onbeforerequest.js",
-      "background/lib.js",
       "background/log.js",
+      "background/onbeforerequest.js",
+      "background/migration-legacy.js",
+      "background/lib.js",
       "background/browseraction.js",
       "background/commands.js",
       "background/container.js",

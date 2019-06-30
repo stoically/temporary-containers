@@ -432,6 +432,11 @@ class Container {
 
 
   async cleanup(browserStart) {
+    if (!this.background.initialized) {
+      debug('[cleanup] skipping because not initialized');
+      return;
+    }
+
     if (this.removingContainerQueue && !browserStart) {
       debug('[cleanup] skipping because we currently removing a queue');
       return;

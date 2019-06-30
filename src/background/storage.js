@@ -1,7 +1,7 @@
 class TmpStorage {
-  constructor() {
+  constructor(background) {
+    this.background = background;
     this.loaded = false;
-    this.loading = false;
     this.local = null;
     this.preferencesDefault = {
       automaticMode: {
@@ -101,81 +101,30 @@ class TmpStorage {
           urlsDeleted: 0
         }
       },
-      preferences: this.preferencesDefault
+      preferences: this.preferencesDefault,
+      version: false
     };
-
-    this.loadErrorRetryTime = 1000;
-    this.loadErrorCount = 0;
   }
 
   async load() {
-    if (this.loaded) {
-      debug('[load] already loaded');
-      return;
-    }
-    if (this.loading) {
-      debug('[load] we are already loading storage, just wait until its loaded');
-      while (!this.loaded) {
-        debug('[load] waiting', this.loadErrorRetryTime);
-        await delay(this.loadErrorRetryTime);
-      }
-      return;
-    }
-    this.loading = true;
-    while (!this.loaded) {
-      // we stay in this loop until we can load the storage
-      // this prevents the add-on from entering a corrupt state
-      const loaded = await this._load();
-      if (loaded) {
-        this.loaded = true;
-        this.loading = false;
-      } else {
-        debug('[load] couldnt load storage, retrying', this.loadErrorRetryTime);
-        await delay(this.loadErrorRetryTime);
-      }
-    }
-  }
+    this.local = await browser.storage.local.get();
 
-  async _load() {
-    try {
-      this.local = await browser.storage.local.get();
-      if (!this.local || !Object.keys(this.local).length) {
-        this.loadErrorCount++;
-        // eslint-disable-next-line no-console
-        console.error('[_load] empty storage loaded, this should never happen', this.loadErrorCount);
-        if (this.loadErrorCount === 10) {
-          // eslint-disable-next-line no-console
-          console.error('[_load] storage seems to not get initialized correctly, showing preferences', this.loadErrorCount);
-          this.loadErrorRetryTime = 5000;
-          const optionsUrl = browser.runtime.getURL('options.html');
-          await browser.tabs.create({
-            url: optionsUrl
-          });
-        }
-        return false;
-      }
-      debug('[_load] storage loaded', this.local);
-
-      if (this.maybeAddMissingStorage()) {
-        await this.persist();
-      }
-
-      return true;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('[_load] error while loading local storage', error);
-      return false;
+    // empty storage *should* mean new install
+    if (!this.local || !Object.keys(this.local).length) {
+      return this.install();
     }
+    debug('[load] storage loaded', this.local);
+    if (this.addMissingStorageKeys()) {
+      await this.persist();
+    }
+    this.loaded = true;
+    return true;
   }
 
   async persist() {
     try {
-      if ((!this.local || !Object.keys(this.local).length) ||
-          !this.local.tempContainers ||
-          !this.local.preferences ||
-          !this.local.statistics) {
-        debug('[persist] tried to persist corrupt storage, try to load whats in storage and dont persist', this.local);
-        this.load();
+      if (!this.local || !Object.keys(this.local).length) {
+        debug('[persist] tried to persist corrupt storage', this.local);
         return false;
       }
       await browser.storage.local.set(this.local);
@@ -187,35 +136,36 @@ class TmpStorage {
     }
   }
 
-
   async install() {
-    this.loading = true;
+    debug('[install] initializing storage');
     this.local = JSON.parse(JSON.stringify(this.storageDefault));
-    if (parseInt((await browser.runtime.getBrowserInfo()).version) < 67) {
+    this.local.version = this.background.version;
+
+    if (this.background.browserVersion < 67) {
       this.local.preferences.container.color = 'red';
     }
-    const persisted = await this.persist();
-    if (!persisted) {
+
+    if (!await this.persist()) {
       debug('[install] something went wrong while initializing storage');
       return false;
-    } else {
-      debug('[install] storage initialized', this.local);
-      this.loaded = true;
-      this.loading = false;
-      return true;
     }
+    debug('[install] storage initialized', this.local);
+
+    if (!browser._mochaTest) {
+      browser.tabs.create({
+        url: browser.runtime.getURL('options.html?installed')
+      });
+    }
+
+    return true;
   }
 
-
-  async maybeAddMissingStorage() {
+  async addMissingStorageKeys() {
     let storagePersistNeeded = false;
-
-    // TODO maybe replace with Object.assign
-    // but then we dont know whether something changed and need to persist every time
     const checkStorage = (storageDefault, storage) => {
       Object.keys(storageDefault).map(key => {
         if (storage[key] === undefined) {
-          debug('[maybeAddMissingStorage] storage not found, setting default', key, storageDefault[key]);
+          debug('[addMissingStorageKeys] storage key not found, setting default', key, storageDefault[key]);
           storage[key] = storageDefault[key];
           storagePersistNeeded = true;
         } else if (typeof storage[key] === 'object') {

@@ -214,8 +214,8 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
             case 'sametab.perdomain':
             case 'newtab.perdomain':
               background.storage.local.preferences.isolation.domain = [{
-                pattern: 'example.com',
                 ...defaultIsolationDomainPreferences,
+                pattern: 'example.com',
                 navigation: {
                   action: 'notsamedomain'
                 }
