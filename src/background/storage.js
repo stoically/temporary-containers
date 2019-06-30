@@ -1,7 +1,6 @@
 class TmpStorage {
   constructor(background) {
     this.background = background;
-    this.loaded = false;
     this.installed = false;
     this.local = null;
     this.preferencesDefault = {
@@ -107,18 +106,27 @@ class TmpStorage {
     };
   }
 
-  async load() {
+  async initialize() {
     this.local = await browser.storage.local.get();
 
     // empty storage *should* mean new install
     if (!this.local || !Object.keys(this.local).length) {
       return this.install();
     }
-    debug('[load] storage loaded', this.local);
+
+    debug('[initialize] storage initialized', this.local);
     if (this.addMissingStorageKeys()) {
       await this.persist();
     }
-    this.loaded = true;
+
+    // migrate if currently running version is different from version in storage
+    if (this.background.version !== this.local.version) {
+      await this.background.migration.migrate({
+        preferences: this.local.preferences,
+        previousVersion: this.local.version
+      });
+    }
+
     return true;
   }
 

@@ -32,12 +32,7 @@ class TemporaryContainers {
       notifications: permissions.includes('notifications'),
     };
 
-    await this.storage.load();
-    if (this.version !== this.storage.local.version) {
-      await this.migration.migrate();
-      this.storage.local.version = this.version;
-      await this.storage.persist();
-    }
+    await this.storage.initialize();
 
     this.request.initialize();
     this.runtime.initialize();
@@ -54,7 +49,6 @@ class TemporaryContainers {
 
     await this.management.initialize();
     await this.tabs.initialize();
-
 
 
     debug('[tmp] initialized');

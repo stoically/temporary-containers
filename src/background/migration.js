@@ -1,12 +1,13 @@
+/* eslint-disable require-atomic-updates */
 /* istanbul ignore next */
 class Migration {
   constructor(background) {
     this.background = background;
   }
 
-  async migrate(previousVersion) {
+  async migrate({preferences, previousVersion}) {
     this.storage = this.background.storage;
-    this.previousVersion = previousVersion || this.storage.local.version;
+    this.previousVersion = previousVersion;
 
     if (!this.previousVersion) {
       await window.migrationLegacy(this);
@@ -21,26 +22,26 @@ class Migration {
 
     if (this.updatedFromVersionEqualToOrLessThan('0.16')) {
       debug('updated from version <= 0.16, adapt old automaticmode behaviour if necessary');
-      if (!this.storage.local.preferences.automaticMode) {
-        this.storage.local.preferences.linkClickGlobal.middle.action = 'never';
-        this.storage.local.preferences.linkClickGlobal.ctrlleft.action = 'never';
+      if (!preferences.automaticMode) {
+        preferences.linkClickGlobal.middle.action = 'never';
+        preferences.linkClickGlobal.ctrlleft.action = 'never';
       }
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.33')) {
       debug('updated from version <= 0.33, make sure to set all left-clicks to "never"');
-      this.storage.local.preferences.linkClickGlobal.left.action = 'never';
-      const linkClickDomainPatterns = Object.keys(this.storage.local.preferences.linkClickDomain);
+      preferences.linkClickGlobal.left.action = 'never';
+      const linkClickDomainPatterns = Object.keys(preferences.linkClickDomain);
       if (linkClickDomainPatterns.length) {
         linkClickDomainPatterns.map(linkClickDomainPattern => {
-          this.storage.local.preferences.linkClickDomain[linkClickDomainPattern].left.action = 'never';
+          preferences.linkClickDomain[linkClickDomainPattern].left.action = 'never';
         });
       }
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.57')) {
       debug('updated from version <= 0.57, potentially inform user about automatic mode preference change');
-      if (this.storage.local.preferences.automaticMode &&
-          this.storage.local.preferences.automaticModeNewTab === 'navigation') {
-        this.storage.local.preferences.automaticModeNewTab = 'created';
+      if (preferences.automaticMode &&
+          preferences.automaticModeNewTab === 'navigation') {
+        preferences.automaticModeNewTab = 'created';
 
         const url = browser.runtime.getURL('notifications/update_from_0.57_and_below.html');
         browser.tabs.create({
@@ -50,10 +51,10 @@ class Migration {
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.59')) {
       debug('updated from version <= 0.59, potentially migrate always open in preferences');
-      const alwaysOpenInDomains = Object.keys(this.storage.local.preferences.alwaysOpenInDomain);
+      const alwaysOpenInDomains = Object.keys(preferences.alwaysOpenInDomain);
       if (alwaysOpenInDomains.length) {
         alwaysOpenInDomains.map(alwaysOpenInDomainPattern => {
-          this.storage.local.preferences.alwaysOpenInDomain[alwaysOpenInDomainPattern] = {
+          preferences.alwaysOpenInDomain[alwaysOpenInDomainPattern] = {
             allowedInPermanent: false
           };
         });
@@ -66,7 +67,6 @@ class Migration {
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.77')) {
       debug('updated from version <= 0.77, migrate preferences');
-      const preferences = this.storage.local.preferences;
       const newPreferences = Object.assign({}, this.storage.preferencesDefault, {
         automaticMode: {
           active: preferences.automaticMode,
@@ -161,7 +161,7 @@ class Migration {
         newPreferences.isolation.domain[pattern].mouseClick = _preferences;
       });
 
-      this.storage.local.preferences = newPreferences;
+      preferences = newPreferences;
       delete this.storage.local.tabContainerMap;
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.81')) {
@@ -189,35 +189,39 @@ class Migration {
       (this.previousVersionBeta && this.updatedFromVersionEqualToOrLessThan('1.0.1'))) {
       debug('updated from version <= 0.103, migrate deletesHistory.active and ignoreRequestsTo');
       if (this.background.permissions.history) {
-        this.storage.local.preferences.deletesHistory.active = true;
+        preferences.deletesHistory.active = true;
       }
 
-      if (this.storage.local.preferences.ignoreRequestsToAMO === false) {
-        this.storage.local.preferences.ignoreRequests =
-          this.storage.local.preferences.ignoreRequests.filter(ignoredPattern =>
+      if (preferences.ignoreRequestsToAMO === false) {
+        preferences.ignoreRequests =
+          preferences.ignoreRequests.filter(ignoredPattern =>
             ignoredPattern !== 'addons.mozilla.org'
           );
       }
-      if (this.storage.local.preferences.ignoreRequestsToPocket === false) {
-        this.storage.local.preferences.ignoreRequests =
-          this.storage.local.preferences.ignoreRequests.filter(ignoredPattern =>
+      if (preferences.ignoreRequestsToPocket === false) {
+        preferences.ignoreRequests =
+          preferences.ignoreRequests.filter(ignoredPattern =>
             ignoredPattern !== 'getpocket.com'
           );
       }
-      delete this.storage.local.preferences.ignoreRequestsToAMO;
-      delete this.storage.local.preferences.ignoreRequestsToPocket;
+      delete preferences.ignoreRequestsToAMO;
+      delete preferences.ignoreRequestsToPocket;
     }
     if ((this.updatedFromVersionEqualToOrLessThan('0.103') && !this.previousVersionBeta) ||
       (this.previousVersionBeta && this.updatedFromVersionEqualToOrLessThan('1.0.6'))) {
       debug('updated from version <= 0.103, migrate per domain isolation to array');
       const perDomainIsolation = [];
-      Object.keys(this.storage.local.preferences.isolation.domain).map(domainPattern => {
+      Object.keys(preferences.isolation.domain).map(domainPattern => {
         perDomainIsolation.push(Object.assign({
           pattern: domainPattern,
-        }, this.storage.local.preferences.isolation.domain[domainPattern]));
+        }, preferences.isolation.domain[domainPattern]));
       });
-      this.storage.local.preferences.isolation.domain = perDomainIsolation;
+      preferences.isolation.domain = perDomainIsolation;
     }
+
+    this.storage.local.version = this.background.version;
+    this.storage.local.preferences = preferences;
+    await this.storage.persist();
   }
 
   updatedFromVersionEqualToOrLessThan(compareVersion) {
