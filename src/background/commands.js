@@ -5,6 +5,7 @@ class Commands {
 
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.permissions = this.background.permissions;
@@ -17,16 +18,16 @@ class Commands {
   async onCommand(name) {
     switch(name) {
     case 'new_temporary_container_tab':
-      if (!this.storage.local.preferences.keyboardShortcuts.AltC) {
+      if (!this.pref.keyboardShortcuts.AltC) {
         return;
       }
       this.container.createTabInTempContainer({
-        deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
+        deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic'
       });
       break;
 
     case 'new_no_container_tab':
-      if (!this.storage.local.preferences.keyboardShortcuts.AltN) {
+      if (!this.pref.keyboardShortcuts.AltN) {
         return;
       }
       try {
@@ -41,7 +42,7 @@ class Commands {
       break;
 
     case 'new_no_container_window_tab':
-      if (!this.storage.local.preferences.keyboardShortcuts.AltShiftC) {
+      if (!this.pref.keyboardShortcuts.AltShiftC) {
         return;
       }
       try {
@@ -56,7 +57,7 @@ class Commands {
       break;
 
     case 'new_no_history_tab':
-      if (!this.storage.local.preferences.keyboardShortcuts.AltP) {
+      if (!this.pref.keyboardShortcuts.AltP) {
         return;
       }
       if (this.permissions.history) {
@@ -65,7 +66,7 @@ class Commands {
       break;
 
     case 'new_same_container_tab':
-      if (!this.storage.local.preferences.keyboardShortcuts.AltX) {
+      if (!this.pref.keyboardShortcuts.AltX) {
         return;
       }
       this.tabs.createInSameContainer();

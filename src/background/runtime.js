@@ -6,12 +6,15 @@ class Runtime {
 
 
   initialize() {
+    this.pref = this.background.pref;
+    this.preferences = this.background.preferences;
     this.container = this.background.container;
     this.mouseclick = this.background.mouseclick;
     this.browseraction = this.background.browseraction;
     this.migration = this.background.migration;
     this.contextmenu = this.background.contextmenu;
     this.preferences = this.background.preferences;
+    this.utils = this.background.utils;
   }
 
 
@@ -30,7 +33,7 @@ class Runtime {
     case 'savePreferences':
       debug('[onMessage] saving preferences');
       await this.preferences.handleChanges({
-        oldPreferences: this.storage.local.preferences,
+        oldPreferences: this.pref,
         newPreferences: message.payload.preferences
       });
       this.storage.local.preferences = message.payload.preferences;
@@ -47,27 +50,27 @@ class Runtime {
       break;
 
     case 'importPreferences': {
-      const oldPreferences = JSON.parse(JSON.stringify(this.storage.local.preferences));
+      const oldPreferences = this.utils.clone(this.pref);
       await this.migration.migrate({
         preferences: message.payload.preferences,
         previousVersion: message.payload.previousVersion
       });
       if (this.background.utils.addMissingKeys({
-        defaults: this.storage.preferencesDefault,
-        source: this.storage.local.preferences
+        defaults: this.preferences.defaults,
+        source: this.pref
       })) {
         await this.persist();
       }
       await this.preferences.handleChanges({
         oldPreferences,
-        newPreferences: this.storage.local.preferences
+        newPreferences: this.pref
       });
       break;
     }
 
     case 'resetStatistics':
       debug('[onMessage] resetting statistics');
-      this.storage.local.statistics = JSON.parse(JSON.stringify(this.storage.storageDefault.statistics));
+      this.storage.local.statistics = this.utils.clone(this.storage.defaults.statistics);
       this.storage.local.statistics.startTime = new Date;
       await this.storage.persist();
       break;
@@ -121,7 +124,7 @@ class Runtime {
       return this.container.createTabInTempContainer({
         url: message.url || null,
         active: message.active,
-        deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic' ? true : false
+        deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic' ? true : false
       });
     case 'isTempContainer':
       return this.storage.local.tempContainers[message.cookieStoreId] ? true : false;

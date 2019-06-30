@@ -3,90 +3,9 @@ class TmpStorage {
     this.background = background;
     this.installed = false;
     this.local = null;
-    this.preferencesDefault = {
-      automaticMode: {
-        active: false,
-        newTab: 'created'
-      },
-      notifications: false,
-      container: {
-        namePrefix: 'tmp',
-        color: 'toolbar',
-        colorRandom: false,
-        icon: 'circle',
-        iconRandom: false,
-        numberMode: 'keep',
-        removal: '15minutes'
-      },
-      iconColor: 'default',
-      isolation: {
-        active: true,
-        global: {
-          navigation: {
-            action: 'never'
-          },
-          mouseClick: {
-            middle: {
-              action: 'never',
-              container: 'default'
-            },
-            ctrlleft: {
-              action: 'never',
-              container: 'default'
-            },
-            left: {
-              action: 'never',
-              container: 'default'
-            }
-          },
-          excluded: {},
-          excludedContainers: {}
-        },
-        domain: [],
-        mac: {
-          action: 'disabled',
-        }
-      },
-      browserActionPopup: false,
-      pageAction: false,
-      contextMenu: true,
-      contextMenuBookmarks: false,
-      keyboardShortcuts: {
-        AltC: true,
-        AltP: true,
-        AltN: false,
-        AltShiftC: false,
-        AltX: false
-      },
-      replaceTabs: false,
-      closeRedirectorTabs: {
-        active: false,
-        delay: 2000,
-        domains: ['t.co', 'outgoing.prod.mozaws.net']
-      },
-      ignoreRequests: ['getpocket.com', 'addons.mozilla.org'],
-      cookies: {
-        domain: {}
-      },
-      deletesHistory: {
-        active: false,
-        automaticMode: 'never',
-        contextMenu: false,
-        contextMenuBookmarks: false,
-        containerAlwaysPerDomain: 'never',
-        containerIsolation: 'never',
-        containerRemoval: 'instant',
-        containerMouseClicks: 'never',
-        statistics: false
-      },
-      statistics: false,
-      ui: {
-        expandPreferences: false,
-        popupDefaultTab: 'isolation-per-domain'
-      },
-    };
 
-    this.storageDefault = {
+
+    this.defaults = {
       tempContainerCounter: 0,
       tempContainers: {},
       tempContainersNumbers: [],
@@ -101,7 +20,7 @@ class TmpStorage {
           urlsDeleted: 0
         }
       },
-      preferences: this.preferencesDefault,
+      preferences: background.preferences.defaults,
       version: false
     };
   }
@@ -116,7 +35,7 @@ class TmpStorage {
 
     debug('[initialize] storage initialized', this.local);
     if (this.background.utils.addMissingKeys({
-      defaults: this.storageDefault,
+      defaults: this.defaults,
       source: this.local
     })) {
       await this.persist();
@@ -150,7 +69,7 @@ class TmpStorage {
 
   async install() {
     debug('[install] initializing storage');
-    this.local = JSON.parse(JSON.stringify(this.storageDefault));
+    this.local = this.background.utils.clone(this.defaults);
     this.local.version = this.background.version;
 
     if (this.background.browserVersion < 67) {

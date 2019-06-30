@@ -45,6 +45,7 @@ class Container {
 
 
   async initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.request = this.background.request;
     this.mouseclick = this.background.mouseclick;
@@ -204,14 +205,14 @@ class Container {
 
   getContainerNameIconColor(url) {
     let tempContainerNumber;
-    if (this.storage.local.preferences.container.numberMode === 'keep') {
+    if (this.pref.container.numberMode === 'keep') {
       this.storage.local.tempContainerCounter++;
       tempContainerNumber = this.storage.local.tempContainerCounter;
     }
-    if (this.storage.local.preferences.container.numberMode === 'reuse') {
+    if (this.pref.container.numberMode === 'reuse') {
       tempContainerNumber = this.getReusedContainerNumber();
     }
-    let containerName = this.storage.local.preferences.container.namePrefix;
+    let containerName = this.pref.container.namePrefix;
     if (url) {
       const parsedUrl = new URL(url);
       if (containerName.includes('%fulldomain%')) {
@@ -229,13 +230,13 @@ class Container {
     }
     containerName = `${containerName}${tempContainerNumber}`;
 
-    let containerColor = this.storage.local.preferences.container.color;
-    if (this.storage.local.preferences.container.colorRandom) {
+    let containerColor = this.pref.container.color;
+    if (this.pref.container.colorRandom) {
       const containerColors = this.getAvailableContainerColors();
       containerColor = containerColors[Math.floor(Math.random() * containerColors.length)];
     }
-    let containerIcon = this.storage.local.preferences.container.icon;
-    if (this.storage.local.preferences.container.iconRandom) {
+    let containerIcon = this.pref.container.icon;
+    if (this.pref.container.iconRandom) {
       containerIcon = this.containerIcons[Math.floor(Math.random() * this.containerIcons.length)];
     }
     return {
@@ -260,8 +261,8 @@ class Container {
     }
     const containerType = this.storage.local.tempContainers[cookieStoreId].deletesHistory ? 'deletesHistory' : 'regular';
     const containerRemoval = containerType === 'deletesHistory' ?
-      this.storage.local.preferences.deletesHistory.containerRemoval :
-      this.storage.local.preferences.container.removal;
+      this.pref.deletesHistory.containerRemoval :
+      this.pref.container.removal;
     debug('[addToRemoveQueue] queuing container removal because of tab removal', cookieStoreId, tabId);
     this.removeContainerFetchMassRemoval[containerType].push(cookieStoreId);
     if (this.removeContainerFetchMassRemoval[containerType].length > 1) {
@@ -329,7 +330,7 @@ class Container {
 
 
   maybeShowNotification(message) {
-    if (this.storage.local.preferences.notifications &&
+    if (this.pref.notifications &&
         this.permissions.notifications) {
       debug('[maybeShowNotification] showing notification');
       browser.notifications.create({

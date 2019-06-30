@@ -2,9 +2,10 @@ class TemporaryContainers {
   constructor() {
     this.initialized = false;
 
-    this.storage = new window.TmpStorage(this);
-    this.preferences = new window.Preferences(this);
     this.utils = new window.Utils(this);
+    this.preferences = new window.Preferences(this);
+    this.storage = new window.TmpStorage(this);
+
     this.runtime = new window.Runtime(this);
     this.management = new window.Management(this);
     this.request = new window.TmpRequest(this);
@@ -33,9 +34,10 @@ class TemporaryContainers {
       notifications: permissions.includes('notifications'),
     };
 
-    await this.storage.initialize();
-
     this.preferences.initialize();
+    await this.storage.initialize();
+    this.pref = window.pref(this);
+
     this.request.initialize();
     this.runtime.initialize();
     await this.container.initialize();
@@ -59,7 +61,7 @@ class TemporaryContainers {
 
     if (this.storage.installed && !browser._mochaTest) {
       browser.tabs.create({
-        url: browser.runtime.getURL('options.html?installed')
+        url: browser.runtime.getURL('options.html#/installed')
       });
     }
   }

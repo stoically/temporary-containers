@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     getPreferences() {
-      const preferences = JSON.parse(JSON.stringify(this.preferences));
+      const preferences = this.clone(this.preferences);
       preferences.isolation.global.excludedContainers = [];
 
       const exportedPreferences = {

@@ -7,6 +7,7 @@ class Tabs {
 
 
   async initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.browseraction = this.background.browseraction;
@@ -80,15 +81,15 @@ class Tabs {
       debug('[onUpdated] url changed', changeInfo);
       await this.container.maybeAddHistory(tab, changeInfo.url);
     }
-    if (this.storage.local.preferences.closeRedirectorTabs.active &&
+    if (this.pref.closeRedirectorTabs.active &&
       changeInfo.status && changeInfo.status === 'complete') {
       const url = new URL(tab.url);
-      if (this.storage.local.preferences.closeRedirectorTabs.domains.includes(url.hostname)) {
-        delay(this.storage.local.preferences.closeRedirectorTabs.delay).then(async () => {
+      if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
+        delay(this.pref.closeRedirectorTabs.delay).then(async () => {
           try {
             const tab = await browser.tabs.get(tabId);
             const url = new URL(tab.url);
-            if (this.storage.local.preferences.closeRedirectorTabs.domains.includes(url.hostname)) {
+            if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
               debug('[onUpdated] removing redirector tab', changeInfo, tab);
               browser.tabs.remove(tabId);
             }
@@ -152,15 +153,15 @@ class Tabs {
       return;
     }
 
-    if (!this.storage.local.preferences.automaticMode.active) {
+    if (!this.pref.automaticMode.active) {
       debug('[maybeReloadInTempContainer] automatic mode not active and not a moz page, we ignore that', tab);
       return;
     }
 
-    const deletesHistoryContainer = this.storage.local.preferences.deletesHistory.automaticMode === 'automatic';
+    const deletesHistoryContainer = this.pref.deletesHistory.automaticMode === 'automatic';
 
     if (!deletesHistoryContainer &&
-        this.storage.local.preferences.automaticMode.newTab === 'navigation' &&
+        this.pref.automaticMode.newTab === 'navigation' &&
         tab.cookieStoreId === 'firefox-default' &&
         (tab.url === 'about:home' ||
          tab.url === 'about:newtab' ||
@@ -170,7 +171,7 @@ class Tabs {
       return;
     }
 
-    if ((this.storage.local.preferences.automaticMode.newTab === 'created' || deletesHistoryContainer) &&
+    if ((this.pref.automaticMode.newTab === 'created' || deletesHistoryContainer) &&
         tab.cookieStoreId === 'firefox-default' &&
         (tab.url === 'about:home' ||
          tab.url === 'about:newtab' ||

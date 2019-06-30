@@ -5,6 +5,7 @@ class PageAction {
 
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
   }
 
@@ -27,7 +28,7 @@ class PageAction {
       },
       tabId: activatedTab.id
     });
-    if (!this.storage.local.preferences.pageAction ||
+    if (!this.pref.pageAction ||
         !activatedTab.url.startsWith('http')) {
       browser.pageAction.hide(activatedTab.id);
     } else {

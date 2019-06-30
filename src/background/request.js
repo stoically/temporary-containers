@@ -9,6 +9,7 @@ class TmpRequest {
   }
 
   async initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.mouseclick = this.background.mouseclick;
@@ -151,8 +152,8 @@ class TmpRequest {
 
     this.container.maybeAddHistory(tab, request.url);
 
-    if (this.storage.local.preferences.ignoreRequests.length &&
-      this.storage.local.preferences.ignoreRequests.find(ignorePattern => {
+    if (this.pref.ignoreRequests.length &&
+      this.pref.ignoreRequests.find(ignorePattern => {
         return this.isolation.matchDomainPattern(request.url, ignorePattern);
       })) {
       debug('[_webRequestOnBeforeRequest] request url is on the ignoreRequests list', request);
@@ -165,7 +166,7 @@ class TmpRequest {
       return isolated;
     }
 
-    if (!this.storage.local.preferences.automaticMode.active || !tab) {
+    if (!this.pref.automaticMode.active || !tab) {
       return;
     }
 
@@ -195,7 +196,7 @@ class TmpRequest {
     await this.container.reloadTabInTempContainer({
       tab,
       url: request.url,
-      deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic',
+      deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic',
       request,
       dontPin: false
     });

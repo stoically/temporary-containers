@@ -8,6 +8,7 @@ class MouseClick {
 
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.utils = this.background.utils;
@@ -101,7 +102,7 @@ class MouseClick {
     const parsedClickedURL = new URL(message.href);
     debug('[checkClick] checking click', type, message, sender);
 
-    for (const domainPatternPreferences of this.storage.local.preferences.isolation.domain) {
+    for (const domainPatternPreferences of this.pref.isolation.domain) {
       const domainPattern = domainPatternPreferences.pattern;
       if (!this.isolation.matchDomainPattern(sender.tab.url, domainPattern)) {
         continue;
@@ -119,7 +120,7 @@ class MouseClick {
         parsedClickedURL, parsedSenderTabURL);
     }
     debug('[checkClick] no website pattern found, checking global preferences');
-    return this.checkClickPreferences(this.storage.local.preferences.isolation.global.mouseClick[type],
+    return this.checkClickPreferences(this.pref.isolation.global.mouseClick[type],
       parsedClickedURL, parsedSenderTabURL);
   }
 }

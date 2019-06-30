@@ -7,6 +7,7 @@ class Migration {
 
   async migrate({preferences, previousVersion}) {
     this.storage = this.background.storage;
+    this.preferences = this.background.preferences;
     this.previousVersion = previousVersion;
 
     if (!this.previousVersion) {
@@ -67,7 +68,7 @@ class Migration {
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.77')) {
       debug('updated from version <= 0.77, migrate preferences');
-      const newPreferences = Object.assign({}, this.storage.preferencesDefault, {
+      const newPreferences = Object.assign({}, this.preferences.defaults, {
         automaticMode: {
           active: preferences.automaticMode,
           newTab: preferences.automaticModeNewTab

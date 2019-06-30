@@ -8,6 +8,7 @@ class ContextMenu {
 
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
 
@@ -26,7 +27,7 @@ class ContextMenu {
         tab,
         url: info.linkUrl,
         active: false,
-        deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
+        deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic'
       });
       break;
 
@@ -46,7 +47,7 @@ class ContextMenu {
           tab,
           url: bookmarks[0].url,
           active: false,
-          deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
+          deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic'
         });
       }
       break;
@@ -91,13 +92,13 @@ class ContextMenu {
 
 
   async toggleBookmarks(visible) {
-    if (this.storage.local.preferences.contextMenuBookmarks &&
+    if (this.pref.contextMenuBookmarks &&
       this.background.permissions.bookmarks) {
       await browser.contextMenus.update('open-bookmark-in-new-temporary-container-tab', {
         visible
       });
     }
-    if (this.storage.local.preferences.deletesHistory.contextMenuBookmarks &&
+    if (this.pref.deletesHistory.contextMenuBookmarks &&
       this.background.permissions.history &&
       this.background.permissions.bookmarks) {
       await browser.contextMenus.update('open-bookmark-in-new-deletes-history-temporary-container-tab', {
@@ -108,7 +109,7 @@ class ContextMenu {
 
 
   async add() {
-    if (this.storage.local.preferences.contextMenu) {
+    if (this.pref.contextMenu) {
       browser.contextMenus.create({
         id: 'open-link-in-new-temporary-container-tab',
         title: 'Open Link in New Temporary Container Tab',
@@ -119,7 +120,7 @@ class ContextMenu {
         }
       });
     }
-    if (this.storage.local.preferences.deletesHistory.contextMenu &&
+    if (this.pref.deletesHistory.contextMenu &&
       this.background.permissions.history) {
       browser.contextMenus.create({
         id: 'open-link-in-new-deletes-history-temporary-container-tab',
@@ -131,7 +132,7 @@ class ContextMenu {
         }
       });
     }
-    if (this.storage.local.preferences.contextMenuBookmarks &&
+    if (this.pref.contextMenuBookmarks &&
       this.background.permissions.bookmarks) {
       browser.contextMenus.create({
         id: 'open-bookmark-in-new-temporary-container-tab',
@@ -143,7 +144,7 @@ class ContextMenu {
         }
       });
     }
-    if (this.storage.local.preferences.deletesHistory.contextMenuBookmarks &&
+    if (this.pref.deletesHistory.contextMenuBookmarks &&
       this.background.permissions.history &&
       this.background.permissions.bookmarks) {
       browser.contextMenus.create({

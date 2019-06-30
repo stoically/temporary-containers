@@ -5,18 +5,19 @@ class BrowserAction {
 
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
 
     browser.browserAction.onClicked.addListener(this.onClicked.bind(this));
 
-    if (this.storage.local.preferences.browserActionPopup) {
+    if (this.pref.browserActionPopup) {
       this.setPopup();
     }
-    if (this.storage.local.preferences.iconColor !== 'default') {
-      this.setIcon(this.storage.local.preferences.iconColor);
+    if (this.pref.iconColor !== 'default') {
+      this.setIcon(this.pref.iconColor);
     }
-    if (!this.storage.local.preferences.isolation.active) {
+    if (!this.pref.isolation.active) {
       this.addIsolationInactiveBadge();
     }
   }
@@ -24,7 +25,7 @@ class BrowserAction {
 
   onClicked() {
     return this.container.createTabInTempContainer({
-      deletesHistory: this.storage.local.preferences.deletesHistory.automaticMode === 'automatic'
+      deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic'
     });
   }
 
@@ -61,7 +62,7 @@ class BrowserAction {
 
 
   addBadge(tabId) {
-    if (!this.storage.local.preferences.isolation.active) {
+    if (!this.pref.isolation.active) {
       return;
     }
 
@@ -81,12 +82,12 @@ class BrowserAction {
 
 
   removeBadge(tabId) {
-    if (!this.storage.local.preferences.isolation.active) {
+    if (!this.pref.isolation.active) {
       return;
     }
 
     browser.browserAction.setTitle({
-      title: !this.storage.local.preferences.browserActionPopup ?
+      title: !this.pref.browserActionPopup ?
         'Open a new Tab in a new Temporary Container (Alt+C)' :
         'Temporary Containers',
       tabId

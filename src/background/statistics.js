@@ -11,6 +11,7 @@ class Statistics {
 
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
 
@@ -22,8 +23,8 @@ class Statistics {
 
 
   async collect(request) {
-    if (!this.storage.local.preferences.statistics &&
-        !this.storage.local.preferences.deletesHistory.statistics) {
+    if (!this.pref.statistics &&
+        !this.pref.deletesHistory.statistics) {
       debug('[statistics:collect] disabled');
       return;
     }
@@ -67,11 +68,11 @@ class Statistics {
     if (historyClearedCount) {
       this.removedContainerHistoryCount += historyClearedCount;
     }
-    if (this.storage.local.preferences.statistics) {
+    if (this.pref.statistics) {
       this.storage.local.statistics.containersDeleted++;
     }
 
-    if (this.storage.local.preferences.deletesHistory.statistics &&
+    if (this.pref.deletesHistory.statistics &&
         this.container.isTemporary(cookieStoreId, 'deletesHistory')) {
       this.storage.local.statistics.deletesHistory.containersDeleted++;
       if (historyClearedCount) {
@@ -82,7 +83,7 @@ class Statistics {
       }
     }
     if (cookieCount) {
-      if (this.storage.local.preferences.statistics) {
+      if (this.pref.statistics) {
         this.storage.local.statistics.cookiesDeleted += cookieCount;
       }
       this.removedContainerCookiesCount += cookieCount;
@@ -90,7 +91,7 @@ class Statistics {
 
     if (this.requests[cookieStoreId] &&
         this.requests[cookieStoreId].contentLength) {
-      if (this.storage.local.preferences.statistics) {
+      if (this.pref.statistics) {
         this.storage.local.statistics.cacheDeleted += this.requests[cookieStoreId].contentLength;
       }
       this.removedContentLength += this.requests[cookieStoreId].contentLength;

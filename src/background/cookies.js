@@ -5,6 +5,7 @@ class Cookies {
 
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.isolation = this.background.isolation;
 
@@ -20,7 +21,7 @@ class Cookies {
 
 
   async maybeSetAndAddToHeader(details) {
-    if (details.tabId < 0 || !Object.keys(this.storage.local.preferences.cookies.domain).length) {
+    if (details.tabId < 0 || !Object.keys(this.pref.cookies.domain).length) {
       return;
     }
 
@@ -29,7 +30,7 @@ class Cookies {
       let cookieHeader;
       let cookiesHeader = {};
       let cookieHeaderChanged = false;
-      for (const domainPattern in this.storage.local.preferences.cookies.domain) {
+      for (const domainPattern in this.pref.cookies.domain) {
         if (!this.isolation.matchDomainPattern(details.url, domainPattern)) {
           continue;
         }
@@ -53,7 +54,7 @@ class Cookies {
           debug('[maybeAddCookiesToHeader] found temp tab and header', details, cookieHeader, cookiesHeader);
         }
 
-        for (const cookie of this.storage.local.preferences.cookies.domain[domainPattern]) {
+        for (const cookie of this.pref.cookies.domain[domainPattern]) {
           if (!cookie) {
             continue;
           }

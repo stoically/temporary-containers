@@ -91,7 +91,7 @@ global.loadBareBackground = async (preferences = {}, build = {}) => {
   global.browser = webExtension.background.browser;
   global.background = global.webExtension.background.window.tmp;
   const background = global.background;
-  Object.assign(background.storage.preferencesDefault, preferences);
+  Object.assign(background.preferences.defaults, preferences);
   return background;
 };
 

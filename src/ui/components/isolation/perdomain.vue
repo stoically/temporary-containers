@@ -42,7 +42,7 @@ export default {
     return {
       preferences: this.app.preferences,
       popup: this.app.popup,
-      domain: JSON.parse(JSON.stringify(domainDefaults)),
+      domain: this.clone(domainDefaults),
       excludeDomainPattern: '',
       isolationDomainFilter: '',
       editing: false,
@@ -66,7 +66,7 @@ export default {
       handler(domain, oldDomain) {
         if (this.editing && !domain.pattern.trim()) {
           this.editing = false;
-          this.domain = JSON.parse(JSON.stringify(domain));
+          this.domain = this.clone(domain);
           const domainIndex = this.preferences.isolation.domain.findIndex(isolatedDomain =>
             !isolatedDomain.pattern.trim()
           );
@@ -129,7 +129,7 @@ export default {
           this.editing = false;
         } else {
           this.domain.pattern = this.domain.pattern.trim();
-          this.preferences.isolation.domain.push(JSON.parse(JSON.stringify(this.domain)));
+          this.preferences.isolation.domain.push(this.clone(this.domain));
           this.reset();
         }
       }
@@ -162,7 +162,7 @@ export default {
   },
   methods: {
     reset() {
-      this.domain = JSON.parse(JSON.stringify(domainDefaults));
+      this.domain = this.clone(domainDefaults);
       this.domain.pattern = '';
 
       if (!this.preferences.ui.expandPreferences) {

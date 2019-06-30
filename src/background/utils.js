@@ -21,6 +21,10 @@ class Utils {
 
     return addedMissing;
   }
+
+  clone(input) {
+    return JSON.parse(JSON.stringify(input));
+  }
 }
 
 window.Utils = Utils;

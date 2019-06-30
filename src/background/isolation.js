@@ -4,6 +4,7 @@ class Isolation {
   }
 
   initialize() {
+    this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.request = this.background.request;
@@ -13,7 +14,7 @@ class Isolation {
   }
 
   async maybeIsolate({tab, request, openerTab, macAssignment}) {
-    if (!this.storage.local.preferences.isolation.active) {
+    if (!this.pref.isolation.active) {
       debug('[maybeIsolate] isolation is disabled');
       return;
     }
@@ -35,7 +36,7 @@ class Isolation {
     }
     debug('[maybeIsolate] decided to isolate', tab, request);
 
-    const excludedDomainPatterns = Object.keys(this.storage.local.preferences.isolation.global.excluded);
+    const excludedDomainPatterns = Object.keys(this.pref.isolation.global.excluded);
     if (excludedDomainPatterns.length) {
       const excluded = excludedDomainPatterns.find(excludedDomainPattern => {
         return this.matchDomainPattern(request.url, excludedDomainPattern);
@@ -47,7 +48,7 @@ class Isolation {
     }
 
     if (tab && this.container.isPermanent(tab.cookieStoreId) &&
-      this.storage.local.preferences.isolation.global.excludedContainers[tab.cookieStoreId]) {
+      this.pref.isolation.global.excludedContainers[tab.cookieStoreId]) {
       debug('[maybeIsolate] container on global excluded containers list', tab);
       return false;
     }
@@ -74,13 +75,13 @@ class Isolation {
       tab,
       url: request.url,
       request,
-      deletesHistory: this.storage.local.preferences.deletesHistory.containerIsolation === 'automatic'
+      deletesHistory: this.pref.deletesHistory.containerIsolation === 'automatic'
     };
 
     let reload = false;
     if (this.mouseclick.isolated[request.url]) {
       const clickType = this.mouseclick.isolated[request.url].clickType;
-      if (this.storage.local.preferences.isolation.global.mouseClick[clickType].container === 'deleteshistory') {
+      if (this.pref.isolation.global.mouseClick[clickType].container === 'deleteshistory') {
         params.deletesHistory = true;
       }
 
@@ -91,7 +92,7 @@ class Isolation {
     }
 
     if (reload || tab.url === 'about:home' || tab.url === 'about:newtab' || tab.url === 'about:blank' ||
-      this.storage.local.preferences.replaceTabs) {
+      this.pref.replaceTabs) {
       await this.container.reloadTabInTempContainer(params);
     } else {
       await this.container.createTabInTempContainer(params);
@@ -151,7 +152,7 @@ class Isolation {
     const parsedURL = new URL(url);
     const parsedRequestURL = new URL(request.url);
 
-    for (const patternPreferences of this.storage.local.preferences.isolation.domain) {
+    for (const patternPreferences of this.pref.isolation.domain) {
       const domainPattern = patternPreferences.pattern;
 
       if (!this.matchDomainPattern(
@@ -185,7 +186,7 @@ class Isolation {
     }
 
     if (await this.checkIsolationPreferenceAgainstUrl(
-      this.storage.local.preferences.isolation.global.navigation.action,
+      this.pref.isolation.global.navigation.action,
       parsedURL.hostname,
       parsedRequestURL.hostname,
       tab
@@ -203,7 +204,7 @@ class Isolation {
       return false;
     }
 
-    for (const patternPreferences of this.storage.local.preferences.isolation.domain) {
+    for (const patternPreferences of this.pref.isolation.domain) {
       const domainPattern = patternPreferences.pattern;
 
       if (!this.matchDomainPattern(request.url, domainPattern)) {
@@ -244,7 +245,7 @@ class Isolation {
   }
 
   shouldIsolateMac({tab, macAssignment}) {
-    if (this.storage.local.preferences.isolation.mac.action === 'disabled') {
+    if (this.pref.isolation.mac.action === 'disabled') {
       debug('[shouldIsolateMac] mac isolation disabled');
       return false;
     }

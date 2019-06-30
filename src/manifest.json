@@ -121,6 +121,7 @@
       "background/migration.js",
       "background/mouseclick.js",
       "background/pageaction.js",
+      "background/pref.js",
       "background/preferences.js",
       "background/request.js",
       "background/runtime.js",
