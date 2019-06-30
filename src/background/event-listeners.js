@@ -1,7 +1,9 @@
 // to have a persistent listeners we need to register them early
 // and wait for tmp to fully initialize before handling them
-const conditionalCalls = [];
-const condition = () => window.tmp && window.tmp.initialized;
+const tmpInitializedPromise = new window.PCancelable(resolve => window.tmpInitialized = resolve);
+window.setTimeout(() => {
+  tmpInitializedPromise.cancel();
+}, 5000);
 
 [
   {
@@ -30,31 +32,16 @@ const condition = () => window.tmp && window.tmp.initialized;
     listener: function() {
       return tmp.runtime.onStartup.call(tmp.runtime, ...arguments);
     },
-  },
-  {
-    name: 'onInstalled',
-    func: browser.runtime.onInstalled,
-    listener: function() {
-      return tmp.runtime.onInstalled.call(tmp.runtime, ...arguments);
-    },
-    condition: () => window.tmp
   }
 ]
-  .map(event => {
-    const conditionalListener = new window.ConditionalCall({
-      condition: event.condition || condition,
-      func: event.listener,
-      name: event.name,
-      debug
-    });
-    conditionalCalls.push(conditionalListener.met);
-    event.func.addListener.apply(event.func, event.options ?
-      [conditionalListener.func].concat(event.options) :
-      [conditionalListener.func]
-    );
+  .map(async event => {
+    event.func.addListener.apply(this, [async function() {
+      try {
+        if ((tmp && tmp.initialized) || await tmpInitializedPromise) {
+          return event.listener.call(this, ...arguments);
+        }
+      } catch (error) {
+        debug('[event-listeners] canceled because of time out', event.name);
+      }
+    }].concat(event.options || []));
   });
-
-
-window.tmpInitialized = () => {
-  conditionalCalls.map(met => met());
-};

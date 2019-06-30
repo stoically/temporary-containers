@@ -39,6 +39,9 @@ export default (App, {popup = false}) => {
             // eslint-disable-next-line no-console
             console.error('error while saving preferences', error);
             this.$root.$emit('showError', `Error while saving preferences: ${error.toString()}`);
+            window.setTimeout(() => {
+              this.$root.$emit('initialize');
+            }, 5000);
           }
 
           this.maybeExpandPreferences(app);
@@ -63,6 +66,12 @@ export default (App, {popup = false}) => {
     },
     methods: {
       async initialize() {
+        const pong = await browser.runtime.sendMessage({method: 'ping'});
+        if (pong !== 'pong') {
+          this.$root.$emit('showError', 'Add-on not initialized yet, please try again');
+          return;
+        }
+
         const {permissions: allPermissions} = await browser.permissions.getAll();
         const permissions = {
           bookmarks: allPermissions.includes('bookmarks'),
@@ -76,11 +85,12 @@ export default (App, {popup = false}) => {
           // eslint-disable-next-line require-atomic-updates
           storage = await browser.storage.local.get(['preferences', 'statistics', 'tempContainers']);
           if (!storage.preferences || !Object.keys(storage.preferences).length) {
-            this.$root.$emit('showPreferencesError');
+            this.$root.$emit('showError', 'Loading preferences failed, please try again later');
             return;
           }
         } catch (error) {
-          this.$root.$emit('showPreferencesError', error);
+          this.$root.$emit('showError', `Loading preferences failed, please try again later. ${error.toString()}`);
+          return;
         }
 
         let activeTab;

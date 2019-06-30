@@ -12,7 +12,7 @@ class Migration {
       await window.migrationLegacy(this);
     }
 
-    debug('[migrate]', this.previousVersion);
+    debug('[migrate] previousVersion', this.previousVersion);
     this.previousVersionBeta = false;
     if (this.previousVersion.includes('beta')) {
       this.previousVersionBeta = true;

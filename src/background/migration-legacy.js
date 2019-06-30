@@ -1,16 +1,11 @@
-// this is only needed once for upgrades from <1.0 and should be removed one day
+// this is only needed once for upgrades from <1.0 and should be removed in the next major version
 // we now store the addon version in storage instead of waiting for onInstalled
 
-window.migrationLegacyReady = false;
-const conditionalMigrationOnInstalled = new window.ConditionalCall({
-  condition: () => window.migrationLegacyReady,
-  func: async function() {
-    return tmp.migration.onInstalled.call(tmp.migration, ...arguments);
-  },
-  timeout: 15000,
-  name: 'migration-legacy',
-  debug
-});
+let migrationReady;
+const migrationReadyPromise = new window.PCancelable(resolve => migrationReady = resolve);
+window.setTimeout(() => {
+  migrationReadyPromise.cancel();
+}, 15000);
 
 const migrationOnInstalledListener = async function() {
   browser.runtime.onInstalled.removeListener(migrationOnInstalledListener);
@@ -20,7 +15,12 @@ const migrationOnInstalledListener = async function() {
     return;
   }
 
-  conditionalMigrationOnInstalled.func.call(this, ...arguments);
+  try {
+    await migrationReadyPromise;
+    // return tmp.migration.onInstalled.call(tmp.migration, ...arguments);
+  } catch (error) {
+    debug('[migration-legacy] waiting for migration ready timed out');
+  }
 };
 browser.runtime.onInstalled.addListener(migrationOnInstalledListener);
 
@@ -32,9 +32,9 @@ window.migrationLegacy = async (migration) => {
       window.setTimeout(() => {
         // onInstalled didnt fire, again.
         reject();
-      }, 15000);
-      window.migrationLegacyReady = true;
-      conditionalMigrationOnInstalled.met();
+      }, 5000);
+      debug('[migration-legacy] ready');
+      migrationReady();
     });
     migration.previousVersion = updateDetails.previousVersion;
   } catch (error) {

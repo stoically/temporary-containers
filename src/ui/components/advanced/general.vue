@@ -37,12 +37,33 @@ export default {
     });
   },
   methods: {
-    resetStorage() {
-      if (window.confirm(`
+    async resetStorage() {
+      if (!window.confirm(`
         Wipe storage and reset it to default?\n
         This can't be undone.
       `)) {
-        this.$root.$emit('resetStorage');
+        return;
+      }
+
+      let resetError;
+      let reset = false;
+      try {
+        reset = await browser.runtime.sendMessage({
+          method: 'resetStorage'
+        });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('[resetStorage] failed', error);
+        resetError = error;
+      }
+
+      if (!reset) {
+        this.$root.$emit('showError', `Storage reset failed
+          ${resetError ? `: ${resetError}` : ''}
+        `);
+      } else {
+        this.$root.$emit('initialize');
+        this.$root.$emit('showMessage', 'Storage successfully reset');
       }
     },
     removeIgnoredDomain(ignoredPattern) {

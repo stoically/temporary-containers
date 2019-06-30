@@ -117,6 +117,9 @@ class Runtime {
         tabId: message.payload.tabId,
         url: message.payload.url
       });
+
+    case 'ping':
+      return 'pong';
     }
   }
 
@@ -136,16 +139,6 @@ class Runtime {
       throw new Error('Unknown message.method');
     }
   }
-
-
-  async onInstalled(details) {
-    if (details.temporary) {
-      log.DEBUG = true;
-      log.stringify = false;
-    }
-    debug('[onInstalled]', details);
-  }
-
 
   async onStartup() {
     // queue a container cleanup

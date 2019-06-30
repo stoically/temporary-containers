@@ -105,7 +105,7 @@
   "background": {
     "scripts": [
       "background/log.js",
-      "background/conditional-call.js",
+      "background/lib-p-cancelable.js",
       "background/event-listeners.js",
       "background/migration-legacy.js",
       "background/lib.js",

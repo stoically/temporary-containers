@@ -5,7 +5,6 @@ import Advanced from './components/advanced';
 import Statistics from './components/statistics';
 import ExportImport from './components/export_import';
 import Message from './components/message';
-import Error from './components/error';
 
 export default {
   components: {
@@ -14,8 +13,7 @@ export default {
     Advanced,
     Statistics,
     ExportImport,
-    Message,
-    Error
+    Message
   },
   props: {
     app: {
@@ -69,113 +67,113 @@ export default {
 
 <template>
   <div
-    v-show="app.initialized"
     id="container"
     class="ui container"
   >
-    <div class="ui menu">
-      <a
-        class="item"
+    <message />
+    <div v-show="app.initialized">
+      <div class="ui menu">
+        <a
+          class="item"
+          data-tab="general"
+        >
+          <i
+            class="icon-cog-alt"
+            style="margin-right: 5px"
+          />
+          {{ t('optionsNavGeneral') }}</a>
+        <a
+          class="item"
+          data-tab="isolation"
+        >
+          <i
+            class="icon-circle-empty"
+            style="margin-right: 2px"
+          />
+          {{ t('optionsNavIsolation') }}</a>
+        <a
+          class="item"
+          data-tab="advanced"
+        >
+          <i
+            class="graduation cap icon"
+            style="margin-right: 5px"
+          />
+          {{ t('optionsNavAdvanced') }}</a>
+        <a
+          class="item"
+          data-tab="statistics"
+        >
+          <i
+            class="icon-chart-bar"
+            style="margin-right: 5px"
+          />
+          {{ t('optionsNavStatistics') }}</a>
+        <a
+          class="item"
+          data-tab="export_import"
+        >
+          <i
+            class="save icon"
+            style="margin-right: 5px"
+          />
+          {{ t('optionsNavExportImport') }}
+        </a>
+        <a
+          class="item"
+          href="https://stoically.github.io/temporary-containers"
+          target="_blank"
+        >
+          <i
+            class="question icon"
+            style="margin-right: 5px"
+          />
+          Docs
+        </a>
+      </div>
+      <div
+        class="ui tab segment"
         data-tab="general"
       >
-        <i
-          class="icon-cog-alt"
-          style="margin-right: 5px"
+        <general
+          v-if="app.initialized"
+          :app="app"
         />
-        {{ t('optionsNavGeneral') }}</a>
-      <a
-        class="item"
+      </div>
+      <div
+        class="ui tab segment"
         data-tab="isolation"
       >
-        <i
-          class="icon-circle-empty"
-          style="margin-right: 2px"
+        <isolation
+          :app="app"
         />
-        {{ t('optionsNavIsolation') }}</a>
-      <a
-        class="item"
+      </div>
+      <div
+        class="ui tab segment"
         data-tab="advanced"
       >
-        <i
-          class="graduation cap icon"
-          style="margin-right: 5px"
+        <advanced
+          :app="app"
         />
-        {{ t('optionsNavAdvanced') }}</a>
-      <a
-        class="item"
+      </div>
+      <div
+        class="ui tab segment"
         data-tab="statistics"
       >
-        <i
-          class="icon-chart-bar"
-          style="margin-right: 5px"
+        <statistics
+          v-if="app.initialized"
+          :app="app"
         />
-        {{ t('optionsNavStatistics') }}</a>
-      <a
-        class="item"
+      </div>
+      <div
+        class="ui tab segment"
         data-tab="export_import"
       >
-        <i
-          class="save icon"
-          style="margin-right: 5px"
+        <export-import
+          v-if="app.initialized"
+          :app="app"
         />
-        {{ t('optionsNavExportImport') }}
-      </a>
-      <a
-        class="item"
-        href="https://stoically.github.io/temporary-containers"
-        target="_blank"
-      >
-        <i
-          class="question icon"
-          style="margin-right: 5px"
-        />
-        Docs
-      </a>
+      </div>
     </div>
-    <message />
-    <div
-      class="ui tab segment"
-      data-tab="general"
-    >
-      <general
-        v-if="app.initialized"
-        :app="app"
-      />
-    </div>
-    <div
-      class="ui tab segment"
-      data-tab="isolation"
-    >
-      <isolation
-        :app="app"
-      />
-    </div>
-    <div
-      class="ui tab segment"
-      data-tab="advanced"
-    >
-      <advanced
-        :app="app"
-      />
-    </div>
-    <div
-      class="ui tab segment"
-      data-tab="statistics"
-    >
-      <statistics
-        v-if="app.initialized"
-        :app="app"
-      />
-    </div>
-    <div
-      class="ui tab segment"
-      data-tab="export_import"
-    >
-      <export-import
-        v-if="app.initialized"
-        :app="app"
-      />
-    </div>
-    <error :app="app" />
   </div>
 </template>

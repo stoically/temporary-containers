@@ -60,6 +60,12 @@ class TemporaryContainers {
     debug('[tmp] initialized');
     this.initialized = true;
     window.tmpInitialized();
+
+    if (this.storage.installed && !browser._mochaTest) {
+      browser.tabs.create({
+        url: browser.runtime.getURL('options.html?installed')
+      });
+    }
   }
 }
 

@@ -1,6 +1,4 @@
 /* eslint-disable */
-window.lib = {};
-
 /* istanbul ignore next */
 window.lib.delay = () => {
   // https://github.com/sindresorhus/delay

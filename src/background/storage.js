@@ -2,6 +2,7 @@ class TmpStorage {
   constructor(background) {
     this.background = background;
     this.loaded = false;
+    this.installed = false;
     this.local = null;
     this.preferencesDefault = {
       automaticMode: {
@@ -150,13 +151,7 @@ class TmpStorage {
       return false;
     }
     debug('[install] storage initialized', this.local);
-
-    if (!browser._mochaTest) {
-      browser.tabs.create({
-        url: browser.runtime.getURL('options.html?installed')
-      });
-    }
-
+    this.installed = true;
     return true;
   }
 

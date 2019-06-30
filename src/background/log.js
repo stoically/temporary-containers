@@ -2,8 +2,8 @@
 
 class Log {
   constructor() {
-    this.DEBUG = false;
-    this.stringify = true;
+    this.DEBUG = true;
+    this.stringify = false;
 
     this.debug = this.debug.bind(this);
 
@@ -26,6 +26,16 @@ class Log {
     }
   }
 }
+
+const logOnInstalledListener = details => {
+  browser.runtime.onInstalled.removeListener(logOnInstalledListener);
+  if (details.temporary) {
+    log.DEBUG = true;
+    log.stringify = false;
+  }
+  debug('[log] onInstalled', details);
+};
+browser.runtime.onInstalled.addListener(logOnInstalledListener);
 
 window.log = new Log;
 // eslint-disable-next-line
