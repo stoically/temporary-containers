@@ -33,9 +33,11 @@ const logOnInstalledListener = details => {
     log.DEBUG = true;
     log.stringify = false;
 
-    browser.tabs.create({
-      url: browser.runtime.getURL('options.html')
-    });
+    if (details.reason === 'update') {
+      browser.tabs.create({
+        url: browser.runtime.getURL('options.html')
+      });
+    }
   }
   debug('[log] onInstalled', details);
 };

@@ -3,6 +3,7 @@ class TemporaryContainers {
     this.initialized = false;
 
     this.storage = new window.TmpStorage(this);
+    this.preferences = new window.Preferences(this);
     this.utils = new window.Utils(this);
     this.runtime = new window.Runtime(this);
     this.management = new window.Management(this);
@@ -34,6 +35,7 @@ class TemporaryContainers {
 
     await this.storage.initialize();
 
+    this.preferences.initialize();
     this.request.initialize();
     this.runtime.initialize();
     await this.container.initialize();

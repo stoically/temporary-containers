@@ -121,7 +121,7 @@ export default {
           return;
         }
         if (this.confirmedImportPreferences(importPreferences)) {
-          this.setImportedPreferences(importPreferences);
+          this.saveImportedPreferences(importPreferences);
         }
       } catch (error) {
         this.$root.$emit('showError', `Importing from Firefox Sync failed: ${error.toString()}`);
@@ -158,11 +158,11 @@ export default {
       });
 
       if (this.confirmedImportPreferences(importPreferences, file.name)) {
-        this.setImportedPreferences(importPreferences);
+        this.saveImportedPreferences(importPreferences);
       }
     },
 
-    async setImportedPreferences(importedPreferences) {
+    async saveImportedPreferences(importedPreferences) {
       // TODO file firefox bug, we're in a input handler, so requesting permissions should work
       if (!this.permissions.notifications) {
         importedPreferences.preferences.notifications = false;
@@ -176,16 +176,14 @@ export default {
       }
 
       await browser.runtime.sendMessage({
-        method: 'savePreferences',
+        method: 'importPreferences',
         payload: {
           preferences: importedPreferences.preferences,
-          migrate: true,
-          previousVersion: importedPreferences.version,
+          previousVersion: importedPreferences.version
         }
       });
 
       this.$root.$emit('initialize');
-
       this.$root.$emit('showMessage', 'Preferences imported.');
     },
 

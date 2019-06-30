@@ -115,7 +115,10 @@ class TmpStorage {
     }
 
     debug('[initialize] storage initialized', this.local);
-    if (this.addMissingStorageKeys()) {
+    if (this.background.utils.addMissingKeys({
+      defaults: this.storageDefault,
+      source: this.local
+    })) {
       await this.persist();
     }
 
@@ -161,24 +164,6 @@ class TmpStorage {
     debug('[install] storage initialized', this.local);
     this.installed = true;
     return true;
-  }
-
-  async addMissingStorageKeys() {
-    let storagePersistNeeded = false;
-    const checkStorage = (storageDefault, storage) => {
-      Object.keys(storageDefault).map(key => {
-        if (storage[key] === undefined) {
-          debug('[addMissingStorageKeys] storage key not found, setting default', key, storageDefault[key]);
-          storage[key] = storageDefault[key];
-          storagePersistNeeded = true;
-        } else if (typeof storage[key] === 'object') {
-          checkStorage(storageDefault[key], storage[key]);
-        }
-      });
-    };
-    checkStorage(this.storageDefault, this.local);
-
-    return storagePersistNeeded;
   }
 }
 

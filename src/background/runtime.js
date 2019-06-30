@@ -10,10 +10,8 @@ class Runtime {
     this.mouseclick = this.background.mouseclick;
     this.browseraction = this.background.browseraction;
     this.migration = this.background.migration;
-    this.permissions = this.background.permissions;
     this.contextmenu = this.background.contextmenu;
-
-    browser.runtime.onMessageExternal.addListener(this.onMessageExternal.bind(this));
+    this.preferences = this.background.preferences;
   }
 
 
@@ -31,53 +29,41 @@ class Runtime {
 
     case 'savePreferences':
       debug('[onMessage] saving preferences');
-      if (message.payload.migrate) {
-        await this.migration.migrate({
-          preferences: message.payload.preferences,
-          previousVersion: message.payload.previousVersion
-        });
-      }
-
-      if (this.storage.local.preferences.iconColor !== message.payload.preferences.iconColor) {
-        this.browseraction.setIcon(message.payload.preferences.iconColor);
-      }
-      if (this.storage.local.preferences.browserActionPopup !== message.payload.preferences.browserActionPopup) {
-        if (message.payload.preferences.browserActionPopup) {
-          this.browseraction.setPopup();
-        } else {
-          this.browseraction.unsetPopup();
-        }
-      }
-      if (this.storage.local.preferences.isolation.active !== message.payload.preferences.isolation.active) {
-        if (message.payload.preferences.isolation.active) {
-          this.browseraction.removeIsolationInactiveBadge();
-        } else {
-          this.browseraction.addIsolationInactiveBadge();
-        }
-      }
-      if (message.payload.preferences.notifications) {
-        this.permissions.notifications = true;
-      }
-      if (message.payload.preferences.deletesHistory.active) {
-        this.permissions.history = true;
-      }
+      await this.preferences.handleChanges({
+        oldPreferences: this.storage.local.preferences,
+        newPreferences: message.payload.preferences
+      });
       this.storage.local.preferences = message.payload.preferences;
       await this.storage.persist();
 
       if ((await browser.tabs.query({
         url: browser.runtime.getURL('options.html')
       })).length) {
-        browser.runtime.sendMessage({info: 'preferencesUpdated', fromTabId: sender && sender.tab && sender.tab.id});
-      }
-
-      if (this.storage.local.preferences.contextMenu !== message.payload.preferences.contextMenu ||
-        this.storage.local.preferences.contextMenuBookmarks !== message.payload.preferences.contextMenuBookmarks ||
-        this.storage.local.preferences.deletesHistory.contextMenu !== message.payload.preferences.deletesHistory.contextMenu ||
-        this.storage.local.preferences.deletesHistory.contextMenuBookmarks !== message.payload.preferences.deletesHistory.contextMenuBookmarks)  {
-        await this.contextmenu.remove();
-        this.contextmenu.add();
+        browser.runtime.sendMessage({
+          info: 'preferencesUpdated',
+          fromTabId: sender && sender.tab && sender.tab.id
+        });
       }
       break;
+
+    case 'importPreferences': {
+      const oldPreferences = JSON.parse(JSON.stringify(this.storage.local.preferences));
+      await this.migration.migrate({
+        preferences: message.payload.preferences,
+        previousVersion: message.payload.previousVersion
+      });
+      if (this.background.utils.addMissingKeys({
+        defaults: this.storage.preferencesDefault,
+        source: this.storage.local.preferences
+      })) {
+        await this.persist();
+      }
+      await this.preferences.handleChanges({
+        oldPreferences,
+        newPreferences: this.storage.local.preferences
+      });
+      break;
+    }
 
     case 'resetStatistics':
       debug('[onMessage] resetting statistics');

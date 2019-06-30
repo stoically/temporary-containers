@@ -70,7 +70,7 @@ export default {
     id="container"
     class="ui container"
   >
-    <message />
+    <message v-if="!app.initialized" />
     <div v-show="app.initialized">
       <div class="ui menu">
         <a
@@ -131,6 +131,9 @@ export default {
           Docs
         </a>
       </div>
+
+      <message />
+
       <div
         class="ui tab segment"
         data-tab="general"

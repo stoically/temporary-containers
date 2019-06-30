@@ -114,7 +114,7 @@ export default {
 
 <template>
   <div class="pusher">
-    <message />
+    <message v-if="!app.initialized" />
     <div
       v-if="initialized"
       v-show="show"
@@ -216,6 +216,9 @@ export default {
                 </a>
               </div>
             </div>
+
+            <message v-if="app.initialized" />
+
             <div
               class="ui tab"
               data-tab="isolation-global"

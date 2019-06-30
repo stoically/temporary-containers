@@ -559,9 +559,7 @@ export default {
             />
           </span>
           <span v-else>
-            <h4>
-              Isolated domains
-            </h4>
+            <strong>Isolated domains</strong>
           </span>
         </div>
         <div :class="{'content': popup}">

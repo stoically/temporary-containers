@@ -25,6 +25,12 @@ window.setTimeout(() => {
     },
   },
   {
+    func: browser.runtime.onMessageExternal,
+    listener: function() {
+      return tmp.runtime.onMessageExternal.call(tmp.runtime, ...arguments);
+    },
+  },
+  {
     func: browser.runtime.onStartup,
     listener: function() {
       return tmp.runtime.onStartup.call(tmp.runtime, ...arguments);
