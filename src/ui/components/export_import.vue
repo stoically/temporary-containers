@@ -30,7 +30,7 @@ export default {
     }
 
     browser.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName !== 'sync' || !changes.export) {
+      if (areaName !== 'sync' || !changes.export || !changes.export.newValue) {
         return;
       }
       this.lastSyncExport = {

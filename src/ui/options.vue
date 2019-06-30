@@ -40,7 +40,7 @@ export default {
     let stateChanged = false;
     $.address.change(() => stateChanged = true);
 
-    window.setTimeout(() => {
+    setTimeout(() => {
       if (!stateChanged) {
         // looks like jquery.address fired before tabs mounted, retrigger
         const hash = document.location.hash;

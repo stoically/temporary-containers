@@ -220,7 +220,7 @@ export default {
         return;
       }
 
-      window.setTimeout(() => {
+      setTimeout(() => {
         $('#isolationDomainsAccordion').accordion('open', 0);
       }, 200);
     },
@@ -231,6 +231,9 @@ export default {
           this.isolationDomains[event.moved.newIndex]._index,
         );
       }
+    },
+    focusIsolationDomainFilter() {
+      this.$refs.isolationDomainFilter.focus();
     }
   }
 };
@@ -532,30 +535,34 @@ export default {
         :class="{'content': popup}"
       >
         <div :class="{title: popup}">
-          <h4>
-            <i
-              v-if="popup"
-              class="dropdown icon"
-            />
-            <span
-              v-if="Object.keys(isolationDomains).length > 1 || isolationDomainFilter"
-              class="ui icon mini input"
-              style="margin-right: 10px"
+          <i
+            v-if="popup"
+            class="dropdown icon"
+          />
+          <span
+            v-if="Object.keys(isolationDomains).length > 1 || isolationDomainFilter"
+            class="ui icon mini input"
+            style="margin-right: 10px"
+          >
+            <input
+              ref="isolationDomainFilter"
+              v-model="isolationDomainFilter"
+              type="text"
+              size="15"
+              placeholder="Filter isolated domains"
+              @focus="expandIsolationDomainFilter"
+              @click="expandIsolationDomainFilter"
             >
-              <input
-                v-model="isolationDomainFilter"
-                type="text"
-                size="15"
-                placeholder="Filter isolated domains"
-                @focus="expandIsolationDomainFilter"
-                @click="expandIsolationDomainFilter"
-              >
-              <i class="circular search link icon" />
-            </span>
-            <span v-else>
+            <i
+              class="circular search link icon"
+              @click="focusIsolationDomainFilter"
+            />
+          </span>
+          <span v-else>
+            <h4>
               Isolated domains
-            </span>
-          </h4>
+            </h4>
+          </span>
         </div>
         <div :class="{'content': popup}">
           <div style="margin-top: 5px" />
