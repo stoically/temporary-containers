@@ -75,7 +75,6 @@ export default {
         this.$set(this.preferences.isolation.global.excludedContainers, addedContainer, {});
       },
       onRemove: (removedContainer) => {
-        console.log(removedContainer);
         this.$delete(this.preferences.isolation.global.excludedContainers, removedContainer, {});
       }
     });

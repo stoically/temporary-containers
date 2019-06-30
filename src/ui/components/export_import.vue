@@ -71,7 +71,6 @@ export default {
       const preferences = this.getPreferences();
       const exportedPreferences = JSON.stringify(preferences, null, 2);
 
-      console.log(preferences.date);
       const date = new Date(preferences.date);
       const dateString = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
       const timeString = [date.getHours(), date.getMinutes(), date.getSeconds()].join('.');

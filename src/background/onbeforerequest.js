@@ -25,7 +25,7 @@ const initializePromise = new Promise((resolve, reject) => {
     resolve();
   };
   initializeAbortController.signal.addEventListener('abort', () => {
-    console.error('[tmp] timed out while waiting for initializing');
+    debug('[tmp] timed out while waiting for initializing');
     initializeTimedOut = true;
     reject();
   });

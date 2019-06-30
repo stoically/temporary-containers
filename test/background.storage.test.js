@@ -1,7 +1,6 @@
 describe('storage', () => {
   it('should initialize storage and version', async () => {
     const background = await loadBackground(false);
-    console.log(background.storage.local.preferences);
     expect(background.storage.local.preferences).to.deep.equal(
       background.storage.preferencesDefault
     );
