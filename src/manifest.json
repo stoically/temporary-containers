@@ -109,6 +109,7 @@
       "background/event-listeners.js",
       "background/migration-legacy.js",
       "background/lib.js",
+
       "background/browseraction.js",
       "background/commands.js",
       "background/container.js",
@@ -120,6 +121,7 @@
       "background/migration.js",
       "background/mouseclick.js",
       "background/pageaction.js",
+      "background/preferences.js",
       "background/request.js",
       "background/runtime.js",
       "background/statistics.js",
