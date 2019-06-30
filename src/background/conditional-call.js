@@ -1,4 +1,4 @@
-class ConditionalDelay {
+class ConditionalCall {
   constructor({condition, func, timeout, debug = false, name = ''}) {
     this._condition = condition;
     this._func = func;
@@ -6,6 +6,7 @@ class ConditionalDelay {
     this._name = name;
 
     this._timedOut = false;
+    this._aborted = false;
     this._abortController = new AbortController();
     this._met = false;
     this._promise = new Promise((resolve, reject) => {
@@ -13,10 +14,17 @@ class ConditionalDelay {
         if (this._met) {
           return;
         }
-        this._debug('condition met, all calls will execute');
+        this._debug('condition met, executing all calls');
         this._met = true;
         resolve();
       };
+
+      this.abort = () => {
+        this._debug('aborting, canceling all calls');
+        this._aborted = true;
+        reject();
+      };
+
       this._abortController.signal.addEventListener('abort', () => {
         this._debug('timed out, canceling all calls with unmet condition');
         this._timedOut = true;
@@ -34,6 +42,10 @@ class ConditionalDelay {
   }
 
   async func() {
+    if (this._aborted) {
+      return;
+    }
+
     if (!this._met) {
       if (!this._condition()) {
         await this._waitForConditionMet();
@@ -64,4 +76,4 @@ class ConditionalDelay {
   }
 }
 
-window.ConditionalDelay = ConditionalDelay;
+window.ConditionalCall = ConditionalCall;

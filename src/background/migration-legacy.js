@@ -2,7 +2,7 @@
 // we now store the addon version in storage instead of waiting for onInstalled
 
 window.migrationLegacyReady = false;
-const conditionalMigrationOnInstalled = new window.ConditionalDelay({
+const conditionalMigrationOnInstalled = new window.ConditionalCall({
   condition: () => window.migrationLegacyReady,
   func: async function() {
     return tmp.migration.onInstalled.call(tmp.migration, ...arguments);

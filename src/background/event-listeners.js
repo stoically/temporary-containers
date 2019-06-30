@@ -1,6 +1,6 @@
-// to have a persistent webrequest listener we need to register it early
-// and wait for tmp to fully initialize before handling the request handling
-const conditions = [];
+// to have a persistent listeners we need to register them early
+// and wait for tmp to fully initialize before handling them
+const conditionalCalls = [];
 const condition = () => window.tmp && window.tmp.initialized;
 
 [
@@ -41,13 +41,13 @@ const condition = () => window.tmp && window.tmp.initialized;
   }
 ]
   .map(event => {
-    const conditionalListener = new window.ConditionalDelay({
+    const conditionalListener = new window.ConditionalCall({
       condition: event.condition || condition,
       func: event.listener,
       name: event.name,
       debug
     });
-    conditions.push(conditionalListener.met);
+    conditionalCalls.push(conditionalListener.met);
     event.func.addListener.apply(event.func, event.options ?
       [conditionalListener.func].concat(event.options) :
       [conditionalListener.func]
@@ -56,5 +56,5 @@ const condition = () => window.tmp && window.tmp.initialized;
 
 
 window.tmpInitialized = () => {
-  conditions.map(met => met());
+  conditionalCalls.map(met => met());
 };
