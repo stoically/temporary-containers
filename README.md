@@ -28,7 +28,7 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 ### Run the tests
 
 * Once: `npm test` - this also shows a coverage summary and generates a detailed report in the `coverage` directory
-* Watcher: `npm run test-watch`
+* Watcher: `npm run test:watch`
 
 
 ### Release

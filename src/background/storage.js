@@ -4,7 +4,6 @@ class TmpStorage {
     this.installed = false;
     this.local = null;
 
-
     this.defaults = {
       tempContainerCounter: 0,
       tempContainers: {},
