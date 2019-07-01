@@ -69,8 +69,12 @@ class TemporaryContainers {
         url: browser.runtime.getURL('options.html#/installed')
       });
     }
+
+    browser.browserAction.enable();
   }
 }
+
+browser.browserAction.disable();
 
 window.TemporaryContainers = TemporaryContainers;
 window.tmp = new TemporaryContainers();
