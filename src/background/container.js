@@ -237,9 +237,12 @@ class Container {
     }
     let containerIcon = this.pref.container.icon;
     if (this.pref.container.iconRandom) {
-      const containerIcons = this.containerIcons.filter(icon =>
+      let containerIcons = this.containerIcons.filter(icon =>
         !this.pref.container.iconRandomExcluded.includes(icon)
       );
+      if (!containerIcons.length) {
+        containerIcons = this.containerIcons;
+      }
       containerIcon = containerIcons[Math.floor(Math.random() * containerIcons.length)];
     }
     return {
@@ -608,7 +611,7 @@ class Container {
 
   getAvailableContainerColors() {
     // even out colors
-    const availableColors = [];
+    let availableColors = [];
     const containersOptions = Object.values(this.storage.local.tempContainers);
     const assignedColors = {};
     let maxColors = 0;
@@ -634,8 +637,16 @@ class Container {
       }
     }
 
-    return availableColors.length ? availableColors :
-      this.containerColors.filter(color => !this.pref.container.colorRandomExcluded.includes(color));
+    if (!availableColors.length) {
+      availableColors = this.containerColors.filter(color =>
+        !this.pref.container.colorRandomExcluded.includes(color)
+      );
+      if (!availableColors.length) {
+        availableColors = this.containerColors;
+      }
+    }
+
+    return availableColors;
   }
 }
 
