@@ -4,7 +4,7 @@
 const migrationReadyAbortController = new AbortController;
 let migrationReady;
 const migrationReadyPromise = new Promise((resolve, reject) => {
-  migrationReady = () => {}; //resolve;
+  migrationReady = resolve;
 
   migrationReadyAbortController.signal.addEventListener('abort', () => {
     reject();
