@@ -171,6 +171,17 @@ class Tabs {
       return;
     }
 
+    if (tab.url === 'about:home' && this.container.isTemporary(tab.cookieStoreId) &&
+      this.pref.automaticMode.newTab === 'navigation') {
+      debug('[maybeReloadInTempContainer] automatic mode on navigation but already in tmp container, open in default container', tab);
+      await browser.tabs.create({
+        cookieStoreId: 'firefox-default'
+      });
+      await this.remove(tab);
+      this.browseraction.addBadge(tab.id);
+      return;
+    }
+
     if ((this.pref.automaticMode.newTab === 'created' || deletesHistoryContainer) &&
         tab.cookieStoreId === 'firefox-default' &&
         (tab.url === 'about:home' ||
