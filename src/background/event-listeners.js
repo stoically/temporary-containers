@@ -39,8 +39,9 @@ window.setTimeout(() => {
 ]
   .map(async event => {
     event.func.addListener(async function() {
-      if ((tmp && tmp.initialized) || await tmpInitializedPromise) {
-        return event.listener(...arguments);
+      if (!tmp || !tmp.initialized) {
+        await tmpInitializedPromise;
       }
+      return event.listener(...arguments);
     }, ...event.options || []);
   });
