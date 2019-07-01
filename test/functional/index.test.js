@@ -25,7 +25,7 @@ describe('Temporary Containers', () => {
   it('should have a toolbar button', async () => {
     const button = await helper.toolbarButton();
     expect(await button.getAttribute('tooltiptext'))
-      .to.equal('Open a new Tab in a new Temporary Container');
+      .to.equal('Open a new tab in a new Temporary Container');
   });
 
   it('should open a new Temporary Container if toolbar button is clicked', async () => {
