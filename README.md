@@ -47,6 +47,8 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 #### Pre-Release on GitHub
 
 * Set API key/secret env vars
+  * $WEB_EXT_API_KEY (JWT issuer)
+  * $WEB_EXT_API_SECRET (JWT secret)
 * Bump manifest version as beta
 * Commit
 * `npm run build-sign` (Adds `update_url` to manifest and reverts with `git checkout -- manifest.json`)
