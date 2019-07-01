@@ -87,7 +87,7 @@ export default {
       :disabled="!isHttpTab"
       @click="openInTmp"
     >
-      Open Tab URL in new Temporary Container
+      Open tab URL in new Temporary Container
     </button>
     <br><br>
     <button
@@ -129,7 +129,7 @@ export default {
       :disabled="!isHttpTab"
       @click="openInDeletesHistoryTmp"
     >
-      Open Tab URL in new "Deletes History Temporary Container"
+      Open tab URL in new "Deletes History Temporary Container"
     </button>
   </div>
 </template>

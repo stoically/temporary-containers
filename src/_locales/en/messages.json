@@ -117,7 +117,7 @@
     "message": "Delete no longer needed Temporary Containers"
   },
   "optionsGeneralContainerRemovalTooltip": {
-    "message": "\"X minutes\" lets you \"undo close tabs\" in that timeframe"
+    "message": "\"X minutes\" lets you \"Undo Close Tab\" in that timeframe"
   },
   "optionsGeneralContainerRemoval15Minutes": {
     "message": "15 minutes after the last tab in it closes (default)"

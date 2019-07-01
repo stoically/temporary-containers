@@ -355,7 +355,7 @@ export default {
               </option>
               <option value="notsamedomain">
                 {{ !popup ?
-                  'If the Navigation Target domain does not match the active tabs domain - Subdomains won\'t get isolated' :
+                  'If the  target domain does not match the active tabs domain - Subdomains won\'t get isolated' :
                   'Not same domain'
                 }}
               </option>

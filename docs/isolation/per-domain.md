@@ -4,7 +4,7 @@
 
 ## Domain Pattern
 
-Domain Patterns match the active Tabs Domain. If you load the URL `https://example.com/moo` in a Tab, then the Domain is `example.com`.
+Domain Patterns match the active tabs domain. If you load the URL `https://example.com/moo` in a tab, then the Domain is `example.com`.
 
 Domain Patterns can have the following format:
 * *Exact match:* e.g. **`example.com`** or **`www.example.com`**
@@ -12,7 +12,7 @@ Domain Patterns can have the following format:
   Note: **`*.example.com`** would not match **`example.com`** so you might need two Per Domain configurations.
 
 #### Advanced
-If you configure a Domain Pattern in the format **/pattern/flags** it will be parsed as [Regular Expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) and match the Full URL instead of just the Domain.
+If you configure a Domain Pattern in the format **/pattern/flags** it will be parsed as [Regular Expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) and match the Full URL instead of just the domain.
 
 A RegExp Pattern to e.g. match *`http://example.com/foo`*, *`https://example.com/foo`* and *`https://example.com/foo/bar`* would be: **`/^https?://example\.com/foo/`**
 
@@ -20,13 +20,13 @@ A RegExp Pattern to e.g. match *`http://example.com/foo`*, *`https://example.com
 ## Always open in new Temporary Container
 
 #### Enabled
-Will reopen Tabs in a new Temporary Container if:
+Will reopen tabs in a new Temporary Container if:
 
-  * Navigating in a new Tab that isn't a Temporary Container to an URL matching the Domain Pattern
-  * The active Tab URL doesn't match the Domain Pattern and then tries to navigate to an URL that matches the Domain Pattern
+  * Navigating in a new tab that isn't a Temporary Container to an URL matching the Domain Pattern
+  * The active tab URL doesn't match the Domain Pattern and then tries to navigate to an URL that matches the Domain Pattern
 
 #### Allow to load in Permanent Containers
-Lets you open URLs matching the Domain Pattern in Permanent Container Tabs. In this case Tabs will only be reopened when navigating in the Default Container or in Temporary Containers.
+Lets you open URLs matching the Domain Pattern in Permanent Container tabs. In this case tabs will only be reopened when navigating in the Default Container or in Temporary Containers.
 
 
 ## Navigating in Tabs should open new Temporary Containers
@@ -35,13 +35,13 @@ Lets you open URLs matching the Domain Pattern in Permanent Container Tabs. In t
 Will use the `Global Isolation` configuration for `Navigating`.
 
 #### Always
-Every Navigation in the active Tab will reopen in new Temporary Containers.
+Every  in the active tab will reopen in new Temporary Containers.
 
-#### If the Navigation Target Domain does not exactly match the active Tabs Domain - Subdomains also get isolated
-Will reopen Tabs in new Temporary Containers if the active Tab tries to navigate to a URL whose Domain does not exactly match the active Tabs Domain. Subdomains do not match exactly and hence get also isolated.
+#### If the  target domain does not exactly match the active tabs domain - Subdomains also get isolated
+Will reopen tabs in new Temporary Containers if the active tab tries to navigate to a URL whose domain does not exactly match the active tabs domain. Subdomains do not match exactly and hence get also isolated.
 
-#### If the Navigation Target Domain does not match the active Tabs Domain - Subdomains won't get isolated
-Will reopen Tabs in new Temporary Containers if the active Tab tries to navigate to a URL whose Domain does not match the active Tabs Domain. All Subdomains also match and hence won't get isolated.
+#### If the  target domain does not match the active tabs domain - Subdomains won't get isolated
+Will reopen tabs in new Temporary Containers if the active tab tries to navigate to a URL whose domain does not match the active tabs domain. All Subdomains also match and hence won't get isolated.
 
 #### Never
 No isolation applies.
@@ -49,7 +49,7 @@ No isolation applies.
 ### Notes
 - [Not every website navigation is actually a browser navigation which can get isolated](Isolation-Notes#navigating-in-tabs-isolation-exceptions)
 
-## Mouse Clicks on Links should open new Temporary Containers
+## Mouse Clicks on links should open new Temporary Containers
 
 `Middle Mouse`, `Ctrl/Cmd+Left Mouse` and `Left Mouse`
 
@@ -57,13 +57,13 @@ No isolation applies.
 Will use the `Global Isolation` configuration for the respective `Mouse Click`.
 
 #### Always
-Every clicked Link in the active Tab will reopen in new Temporary Containers.
+Every clicked link in the active tab will reopen in new Temporary Containers.
 
-#### If the clicked Link Domain does not exactly match the active Tabs Domain - Subdomains also get isolated
-Will reopen clicked Links in new Temporary Containers if the clicked Link is a URL whose Domain does not exactly match the active Tabs Domain. Subdomains do not match exactly and hence get also isolated.
+#### If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated
+Will reopen clicked links in new Temporary Containers if the clicked link is a URL whose domain does not exactly match the active tabs domain. Subdomains do not match exactly and hence get also isolated.
 
-#### If the clicked Link Domain does not match the active Tabs Domain - Subdomains won't get isolated
-Will reopen clicked Links in new Temporary Containers if the clicked Link is a URL whose Domain does not match the active Tabs Domain. All Subdomains also match and hence won't get isolated.
+#### If the clicked link Domain does not match the active tabs domain - Subdomains won't get isolated
+Will reopen clicked links in new Temporary Containers if the clicked link is a URL whose domain does not match the active tabs domain. All Subdomains also match and hence won't get isolated.
 
 #### Never
 No isolation applies.
@@ -74,4 +74,4 @@ No isolation applies.
 
 ## Exclude target domains
 
-Domain Patterns added here will not get isolated if encountered in a Navigation or Mouse Click Isolation. It only applies if the navigation or mouse click originates from the configured Domain Pattern.
+Domain Patterns added here will not get isolated if encountered in a  or Mouse Click Isolation. It only applies if the navigation or mouse click originates from the configured Domain Pattern.

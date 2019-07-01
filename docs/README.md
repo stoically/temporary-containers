@@ -12,17 +12,17 @@ The Automatic Mode will overwrite your standard ways of opening new tabs - even 
 Every new Container [isolates local data that websites create](https://wiki.mozilla.org/Security/Contextual_Identity_Project/Containers#What_is_.28and_isn.27t.29_separated_between_Containers) (First- and Third-Party Cookies, localStorage, indexedDB, HTTP data cache, Image Cache and any other areas supported by originAttributes - except HSTS and OCSP) from each other - that makes it harder to track you and thus enhances your privacy. Also - when the last tab in an automatically created Temporary Container closes it gets deleted (after 15minutes by default, so you can Undo Close Tabs in that timeframe) - and with it all data that websites created inside that Container. As a bonus it'll strip referer information if you use configured Websites, Isolation or Mouse Clicks to open new Temporary Containers. Besides enhancing privacy containers also do something for security. They help preventing CSRF, clickjacking, or other attacks which rely on the presence of ambient credentials. For more details and comparisons with other privacy enhancing methods check the bottom of this description.
 
 
-**Open Tabs in new Temporary Containers**
+**Open tabs in new Temporary Containers**
 
 - Automatically in "Automatic Mode"
 - Isolation:
-  - Configuring per Domain
-  - MiddleMouse Click on a Link*
-  - Ctrl/Cmd+LeftMouse Click on a Link*
-  - LeftMouse Click on a Link*
-  - Configuring based on Navigation Target*
+  - Configuring Per Domain
+  - MiddleMouse click on a link*
+  - Ctrl/Cmd+LeftMouse click on a link*
+  - LeftMouse click on a link*
+  - Configuring based on  target*
 - Clicking the "Temporary Containers"-Icon
-- Clicking on "Open Link in New Temporary Container Tab" in the ContextMenu of a Link
+- Clicking on "Open link in new Temporary Container tab" in the ContextMenu of a link
 - Pressing the Alt+C Shortcut
 
 * Configurable in the Preferences Globally and Per Domain (disabled by default)
@@ -30,23 +30,23 @@ Every new Container [isolates local data that websites create](https://wiki.mozi
 *Notes: Isolation wont work on or to addons.mozilla.org. Firefox prevents content scripts on and canceling requests to that domain.*
 
 **Other Keyboard Shortcuts**
-*Open Tabs in the currently active Container by*
+*Open tabs in the currently active Container by*
 
 - Pressing Alt+X*
-- It's also possible to Middle Mouse or Ctrl/Cmd+Left Click on the default new tab icon
+- It's also possible to Middle Mouse or Ctrl/Cmd+Left click on the default new tab icon
 
 
-*Open Tabs in new "No Container" Tabs (might be useful in Automatic Mode)*
+*Open tabs in new "No Container" tabs (might be useful in Automatic Mode)*
 
-- Pressing Alt+N* (Tab) or Shift+Alt+C* (Window)
-- It's also possible to RightClick ContextMenu on a Link "Open Link in New Container Tab" > "No Container"
+- Pressing Alt+N* (tab) or Shift+Alt+C* (Window)
+- It's also possible to RightClick ContextMenu on a link "Open link in new Container tab" > "No Container"
 
 
 * Disabled by default. Need to be activated in the Advanced Add-on options.
 
 
 **Automatically Delete History**
-There's a feature that lets you open special Temporary Containers that automatically delete their History. It needs to be explicitly enabled in the options under "Advanced". It comes with a warning since Firefox doesn't support that feature fully [yet](https://bugzilla.mozilla.org/show_bug.cgi?id=1283320): Every Full Website URL that you visit (including path) will get completely removed from history, since it's not possible to get only the History for one Container yet. Make sure to read the warning and explanation carefully before using that feature.
+There's a feature that lets you open special Temporary Containers that automatically delete their History. It needs to be explicitly enabled in the options under "Advanced". It comes with a warning since Firefox doesn't support that feature fully [yet](https://bugzilla.mozilla.org/show_bug.cgi?id=1283320): Every Full website URL that you visit (including path) will get completely removed from history, since it's not possible to get only the History for one Container yet. Make sure to read the warning and explanation carefully before using that feature.
 
 
 **Set Cookies**
@@ -82,7 +82,7 @@ If you have any Suggestions, Feedback or Bugs please make sure to [file an Issue
 
 
 **Troubleshooting**
-If "Firefox will: Never remember history" in the Firefox Preferences/Options under "Privacy & Security > History" is selected or you're in a Private Window, then Temporary Containers will not work, since Containers aren't available in Private Windows. Also make sure that you can see a grayed out but ticked Checkbox with the description "Enable Container Tabs" in the Firefox Preferences/Options under "Tabs" after installing. You might need to reinstall Temporary Containers or refresh your Firefox profile if you can't see the ticked Checkbox there.
+If "Firefox will: Never remember history" in the Firefox Preferences/Options under "Privacy & Security > History" is selected or you're in a Private Window, then Temporary Containers will not work, since Containers aren't available in Private Windows. Also make sure that you can see a grayed out but ticked Checkbox with the description "Enable Container tabs" in the Firefox Preferences/Options under "tabs" after installing. You might need to reinstall Temporary Containers or refresh your Firefox profile if you can't see the ticked Checkbox there.
 
 
 **Compatibility with other Add-ons**
@@ -119,7 +119,7 @@ You might also want to check out **[github.com/ghacksuserjs/ghacks-user.js](http
 
 - **[Cookies AutoDelete](https://addons.mozilla.org/en-US/firefox/addon/cookie-autodelete/) to automatically remove cookies and localStorage:** The same as with "Private Windows" and “Disabled third-party cookies” applies as long as the cookie storage isn’t cleared — which depends on which settings you have in CAD and defaults to manually clicking "Clean". Also with localStorage support enabled you make fingerprinting easier, [because CAD needs to set a cookie for the domains you visit](https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/wiki/Documentation#enable-localstorage-support) and CAD can’t clear indexebDB storage or CacheStorage at all (because of Firefox API limitations). If you want to see it yourself try filling your indexedDB and localStorage with 5kb [on this site](https://demo.agektmr.com/storage/). Now close the tab (and click Clean depending on your settings), open the site again and you’ll see that the indexedDB storage is still there. It’s still pretty useful to use Cookies AutoDelete: it can keep your permanent container clean from unwanted Cookies. Make sure to activate the Container Support — and instead of activating localStorage support I’d recommend using Temporary Containers.
 
-- **Different profiles or even Virtual Machines:** The same as with "Private Windows" and “Disabled third-party cookies” applies. However, different profiles / VMs of course greatly increase security because storage-wise everything is totally separated and thus also stronger isolated. But that doesn't apply to per Tab or per Domain basis.
+- **Different profiles or even Virtual Machines:** The same as with "Private Windows" and “Disabled third-party cookies” applies. However, different profiles / VMs of course greatly increase security because storage-wise everything is totally separated and thus also stronger isolated. But that doesn't apply to per tab or per domain basis.
 
 
 So, whether you use First-Party Isolation, Cookie Cleaners, different Profiles or VMs - Containers can give you an easy to handle layer of isolation, privacy and security on top. That being said, please keep in mind that none of that makes you untrackable, because of [Browser fingerprinting](https://github.com/stoically/temporary-containers/wiki/Browser-fingerprinting).

@@ -11,7 +11,7 @@
   "browser_action": {
     "browser_style": false,
     "default_area": "tabstrip",
-    "default_title": "Open a new Tab in a new Temporary Container",
+    "default_title": "Open a new tab in a new Temporary Container",
     "default_icon": {
       "16": "icons/page-d-16.svg",
       "32": "icons/page-d-32.svg"
@@ -42,37 +42,37 @@
       "suggested_key": {
         "default": "Alt+C"
       },
-      "description": "Open a new Tab in a new Temporary Container"
+      "description": "Open a new tab in a new Temporary Container"
     },
     "new_same_container_tab": {
       "suggested_key": {
         "default": "Alt+X"
       },
-      "description": "Open a new Tab in the same Container as the active Tab. Enable in Advanced Preferences > Keyboard shortcuts"
+      "description": "Open a new tab in the same Container as the active tab. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_no_container_tab": {
       "suggested_key": {
         "default": "Alt+N"
       },
-      "description": "Open a new 'No Container' Tab. Enable in Advanced Preferences > Keyboard shortcuts"
+      "description": "Open a new 'No Container' tab. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_no_container_window_tab": {
       "suggested_key": {
         "default": "Alt+Shift+C"
       },
-      "description": "Open a new 'No Container' Tab in a new Window. Enable in Advanced Preferences > Keyboard shortcuts"
+      "description": "Open a new 'No Container' tab in a new Window. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_temporary_container_tab_current_url": {
       "suggested_key": {
         "default": "Alt+O"
       },
-      "description": "Open active Tabs URL in a new Temporary Container Tab. Enable in Advanced Preferences > Keyboard shortcuts"
+      "description": "Open active tabs URL in a new Temporary Container tab. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_no_history_tab": {
       "suggested_key": {
         "default": "Alt+P"
       },
-      "description": "Open a new Tab in a new 'Deletes History Temporary Container'. History permissions under Advanced Preferences > Delete History must be given"
+      "description": "Open a new tab in a new 'Deletes History Temporary Container'. History permissions under Advanced Preferences > Delete History must be given"
     }
   },
   "options_ui": {

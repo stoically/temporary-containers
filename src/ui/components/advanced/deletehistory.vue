@@ -28,7 +28,7 @@ export default {
       <div class="ui small negative message">
         <strong>Warning:</strong> Every website URL that you visit in a
         "Deletes History Temporary Container" will get deleted from your entire history.
-        This means if you visited the same Website URL in another Container, Temporary Container
+        This means if you visited the same website URL in another Container, Temporary Container
         or in the Default Container before or while visiting it in a "Deletes History Temporary Container"
         then those visits will get deleted from history too. This is true until Firefox supports a special history for container tabs.
         <a
@@ -58,11 +58,11 @@ export default {
       <div class="ui small notice message">
         You can open "Deletes History Temporary Containers" - also with the keyboard shortcut Alt+P - after you read the Warning and ticked the checkbox.<br>
         <br>
-        The deletion applies to the full Website URL, not only the domain. That means, if you e.g. open a news article on
+        The deletion applies to the full website URL, not only the domain. That means, if you e.g. open a news article on
         your favorite news site in a "Deletes History Temporary Container" it won't delete all your previous visits to other news articles
-        that you made outside of "Deletes History Temporary Containers" because the full Website URLs are different.<br>
+        that you made outside of "Deletes History Temporary Containers" because the full website URLs are different.<br>
         <br>
-        "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted after the last Tab in it closes.
+        "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted after the last tab in it closes.
       </div>
     </div>
     <div
@@ -76,7 +76,7 @@ export default {
         class="ui fluid dropdown"
       >
         <option value="never">
-          Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (Default)
+          Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (default)
         </option>
         <option value="automatic">
           Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers
@@ -109,7 +109,7 @@ export default {
     </div>
     <div
       class="field"
-      data-tooltip="&quot;15minutes&quot; lets you &quot;undo close tabs&quot; in that timeframe"
+      data-tooltip="&quot;15minutes&quot; lets you &quot;Undo Close Tab&quot; in that timeframe"
     >
       <label>Delete no longer needed "Deletes History Temporary Containers"</label>
       <select
@@ -142,7 +142,7 @@ export default {
       </select>
     </div>
     <div class="field">
-      <label>Isolation - Navigating in tabs</label>
+      <label>Isolation - Navigating in Tabs</label>
       <select
         id="deletesHistoryContainerIsolation"
         v-model="preferences.deletesHistory.containerIsolation"
@@ -152,7 +152,7 @@ export default {
           Default
         </option>
         <option value="automatic">
-          Open new "Deletes History Temporary Containers" when "Isolation on Navigation" takes place instead of normal
+          Open new "Deletes History Temporary Containers" when "Navigating in Tabs Isolation" takes place instead of normal
           Temporary Containers
         </option>
       </select>

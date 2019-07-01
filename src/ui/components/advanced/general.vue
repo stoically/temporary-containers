@@ -106,7 +106,7 @@ export default {
               Reopen new tabs in Temporary Containers. Flickers a bit, you might lose typed characters in the
               address bar and some Add-ons that intervene with initial tab opening might not work as expected, but
               it prevents new tabs from writing and reading cookies in the default container and doesn't clutter
-              recently closed tabs with "new tabs" (Default)
+              recently closed tabs with "new tabs" (default)
             </option>
             <option value="navigation">
               Don't reopen new tabs in Temporary Containers but instead on navigation. Prevents initial flickering,
@@ -261,7 +261,7 @@ export default {
               v-model="preferences.keyboardShortcuts.AltO"
               type="checkbox"
             >
-            <label>Alt+O - Open active tab URL in a new Temporary Container Tab</label>
+            <label>Alt+O - Open active tab URL in a new Temporary Container tab</label>
           </div>
         </div>
 

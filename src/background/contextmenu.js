@@ -112,7 +112,7 @@ class ContextMenu {
     if (this.pref.contextMenu) {
       browser.contextMenus.create({
         id: 'open-link-in-new-temporary-container-tab',
-        title: 'Open Link in New Temporary Container Tab',
+        title: 'Open link in new Temporary Container tab',
         contexts: ['link'],
         icons: {
           '16': 'icons/page-w-16.svg',
@@ -124,7 +124,7 @@ class ContextMenu {
       this.background.permissions.history) {
       browser.contextMenus.create({
         id: 'open-link-in-new-deletes-history-temporary-container-tab',
-        title: 'Open Link in New "Deletes History Temporary Container" Tab',
+        title: 'Open link in new "Deletes History Temporary Container" tab',
         contexts: ['link'],
         icons: {
           '16': 'icons/page-w-16.svg',
@@ -136,7 +136,7 @@ class ContextMenu {
       this.background.permissions.bookmarks) {
       browser.contextMenus.create({
         id: 'open-bookmark-in-new-temporary-container-tab',
-        title: 'Open Bookmark in New Temporary Container Tab',
+        title: 'Open Bookmark in new Temporary Container tab',
         contexts: ['bookmark'],
         icons: {
           '16': 'icons/page-w-16.svg',
@@ -149,7 +149,7 @@ class ContextMenu {
       this.background.permissions.bookmarks) {
       browser.contextMenus.create({
         id: 'open-bookmark-in-new-deletes-history-temporary-container-tab',
-        title: 'Open Bookmark in New "Deletes History Temporary Container" Tab',
+        title: 'Open Bookmark in new "Deletes History Temporary Container" tab',
         contexts: ['bookmark'],
         icons: {
           '16': 'icons/page-w-16.svg',

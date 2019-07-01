@@ -3,7 +3,7 @@
 You can use the [API](/stoically/firefox-add-on-temporary-containers/wiki/API) in [Foxy Gesture User Scripts](https://github.com/marklieberman/foxygestures/wiki/User-Scripts):
 
 
-Open New Temporary Container Tab
+Open new Temporary Container tab
 
 ```js
 browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', {
@@ -11,7 +11,7 @@ browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', {
 });
 ```
 
-Open Link in New Temporary Container Tab
+Open link in new Temporary Container tab
 
 ```js
 const url = data.element && data.element.linkHref;
@@ -24,7 +24,7 @@ if (url) {
 }
 ```
 
-Open Link in New Background Temporary Container Tab
+Open link in new Background Temporary Container tab
 
 ```js
 const url = data.element && data.element.linkHref;

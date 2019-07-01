@@ -154,7 +154,7 @@ export default {
         <li> Disable/Enable Isolation globally
         <li> Convert Temporary to Permanent Container
         <li> Convert Permanent to Temporary Container
-        <li> Open current Tab URL in new Temporary Container
+        <li> Open current tab URL in new Temporary Container
         <li> View Statistics
         ${this.permissions.history ? '<li> Open current tab URL in new "Deletes History Temporary Container"' : ''}
         ${this.permissions.history ? '<li> Open new "Deletes History Temporary Container"' : ''}

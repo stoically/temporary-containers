@@ -6,10 +6,10 @@ The Automatic Mode will overwrite your standard ways of opening new tabs - even 
 Isolation > Global > Mouse Clicks
 - Middle Mouse: Always
 
-Automatically reopen Tabs in new Temporary Containers when
-* Opening a new Tab
-* A Tab tries to load a Link in the Default Container
-* An external Program opens a Link in the Browser
+Automatically reopen tabs in new Temporary Containers when
+* Opening a new tab
+* A tab tries to load a link in the Default Container
+* An external Program opens a link in the Browser
 
 In combination with [Multi-Account Containers](https://addons.mozilla.org/firefox/addon/multi-account-containers/)
 * Reopens Confirm Page if in Default Container so you can choose between Temporary Container and Permanent Container

@@ -11,7 +11,7 @@ browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', message);
 
 Supported messages are:
 
-### Open new Temporary Container Tab
+### Open new Temporary Container tab
 
 `method`: string, createTabInTempContainer
 
