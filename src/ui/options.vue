@@ -130,8 +130,8 @@ export default {
           target="_blank"
         >
           <i
-            class="question icon"
-            style="margin-right: 5px"
+            class="icon-info-circled"
+            style="margin-right: 5px;"
           />
           Docs
         </a>

@@ -19,6 +19,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    exclusion: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -28,7 +32,7 @@ export default {
   },
   mounted() {
     if (!this.tooltip.hidden) {
-      $(`#${this.id}Div`).popup({
+      $(this.$refs.div).popup({
         html: `
           <div style="width:750px;">
           Exact match: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>
@@ -51,9 +55,15 @@ export default {
 <template>
   <div
     :id="`${id}Div`"
+    ref="div"
     class="field"
   >
-    <label>Domain Pattern</label>
+    <label>
+      {{ !exclusion ?
+        'Domain Pattern' :
+        'Exclusion Pattern'
+      }}
+    </label>
     <input
       :id="id"
       v-model="domainPattern"

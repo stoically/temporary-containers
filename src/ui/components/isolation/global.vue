@@ -64,8 +64,8 @@ export default {
     });
     $('#isolationGlobalExcludeContainers').dropdown({
       placeholder: !this.popup ?
-        'Select permanent containers to exclude from Isolation' :
-        'Permanent containers to exclude'
+        'Select Permanent Containers to Exclude from Isolation' :
+        'Permanent Containers to Exclude'
       ,
       values: excludeContainers,
       onAdd: (addedContainer) => {
@@ -104,39 +104,17 @@ export default {
     v-show="show"
     id="isolationGlobal"
   >
-    <a
-      class="ui blue ribbon label"
-      href="https://github.com/stoically/temporary-containers/wiki/Global-Isolation"
-      target="_blank"
-    >
-      <i class="icon-info-circled" /> Global Isolation?
-    </a>
-    <div
-      v-if="popup"
-      style="margin-top: 10px"
-    />
-    <div
-      v-if="!popup"
-      class="ui small message"
-    >
-      Isolation lets you configure that navigating in tabs ("web browsing") should
-      open new Temporary Containers instead of navigating to the target <a
-        href="https://simple.wikipedia.org/wiki/Domain_name"
-        target="_blank"
-      >domain</a>, hence isolating the origin domain.
-    </div>
     <div class="ui form">
       <div
         id="isolationGlobalAccordion"
         class="ui accordion"
       >
-        <div class="title">
+        <div
+          class="title"
+        >
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Navigating in Tabs should open new Temporary Containers' :
-              'Navigating'
-            }}
+            Navigation
           </h4>
         </div>
         <div
@@ -152,16 +130,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'If the navigation target domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
+                Not Same Domain
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the navigation target domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
+                Not Exact Same Domain
               </option>
               <option value="always">
                 Always
@@ -172,10 +144,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Mouse Clicks on links should open new Temporary Containers' :
-              'Mouse Clicks'
-            }}
+            Mouse Clicks
           </h4>
         </div>
         <div
@@ -186,9 +155,9 @@ export default {
             v-if="!popup"
             class="ui small message"
           >
-            The Navigating in Tabs configuration also covers mouse clicks (since they result in a navigation), so you might not need to additionally
-            configure mouse clicks, unless you want a more strict configuration for specific mouse clicks. Navigating in Tabs is also more reliable,
-            so you should prefer that if possible.
+            Navigation also covers mouse clicks (since they result in a navigation), so you might not need to additionally
+            configure mouse clicks, unless you want a more strict configuration for specific mouse clicks.
+            Navigation is also more reliable, so you should prefer that if possible.
           </div>
           <div class="field">
             <label>Middle Mouse</label>
@@ -200,16 +169,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
+                Not Same Domain
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
+                Not Exact Same Domain
               </option>
               <option value="always">
                 Always
@@ -226,16 +189,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
+                Not Same Domain
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
+                Not Exact Same Domain
               </option>
               <option value="always">
                 Always
@@ -252,16 +209,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
+                Not Same Domain
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
+                Not Exact Same Domain
               </option>
               <option value="always">
                 Always
@@ -272,10 +223,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Exclude permanent containers from Isolation' :
-              'Exclude permanent containers'
-            }}
+            Exclude Permanent Containers
           </h4>
         </div>
         <div
@@ -296,10 +244,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Exclude target domains from Isolation' :
-              'Exclude target domains'
-            }}
+            Exclude Target Domains
           </h4>
         </div>
         <div
@@ -315,6 +260,7 @@ export default {
                 id="isolationGlobalExcludeDomainPattern"
                 :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
                 :domain-pattern.sync="excludeDomainPattern"
+                :exclusion="true"
               />
               <div class="field">
                 <button class="ui button primary">

@@ -53,6 +53,10 @@ export default {
         </div>
       </div>
       <div class="field">
+        <label v-if="!popup">
+          Open new Temporary Containers if a permanent container tab tries to load
+          a domain that isn't assigned to "Always open in" that container
+        </label>
         <select
           id="isolationMac"
           v-model="preferences.isolation.mac.action"
@@ -62,11 +66,7 @@ export default {
             Disabled
           </option>
           <option value="enabled">
-            {{ !popup ?
-              `Open new Temporary Containers if a permanent container tab tries to load
-              a domain that isn't assigned to "Always open in" that container` :
-              'Enabled'
-            }}
+            Enabled
           </option>
         </select>
       </div>

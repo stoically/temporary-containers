@@ -1,10 +1,12 @@
 <script>
+import Glossary from './glossary';
 import Global from './global';
 import PerDomain from './perdomain';
 import Mac from './mac';
 
 export default {
   components: {
+    Glossary,
     Global,
     PerDomain,
     Mac
@@ -20,6 +22,7 @@ export default {
 
 <template>
   <div v-show="app.initialized">
+    <glossary />
     <div class="ui top attached tabular menu">
       <a
         class="active item"

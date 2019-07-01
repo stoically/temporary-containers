@@ -48,7 +48,7 @@
       "suggested_key": {
         "default": "Alt+X"
       },
-      "description": "Open a new tab in the same Container as the active tab. Enable in Advanced Preferences > Keyboard shortcuts"
+      "description": "Open a new tab in the same Container as the current tab. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_no_container_tab": {
       "suggested_key": {
@@ -66,7 +66,7 @@
       "suggested_key": {
         "default": "Alt+O"
       },
-      "description": "Open active tabs URL in a new Temporary Container tab. Enable in Advanced Preferences > Keyboard shortcuts"
+      "description": "Open current tab URL in a new Temporary Container tab. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_no_history_tab": {
       "suggested_key": {

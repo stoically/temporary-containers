@@ -139,17 +139,17 @@ export default {
             v-model="preferences.ui.popupDefaultTab"
             class="ui fluid dropdown"
           >
-            <option value="isolation-per-domain">
-              Isolation Per Domain
+            <option value="actions">
+              Actions
             </option>
             <option value="isolation-global">
               Isolation Global
             </option>
+            <option value="isolation-per-domain">
+              Isolation Per Domain
+            </option>
             <option value="isolation-mac">
               Isolation Multi-Account Containers
-            </option>
-            <option value="actions">
-              Actions
             </option>
             <option value="statistics">
               Statistics
@@ -249,7 +249,7 @@ export default {
               v-model="preferences.keyboardShortcuts.AltX"
               type="checkbox"
             >
-            <label>Alt+X - Open a new tab in the same container as the active tab</label>
+            <label>Alt+X - Open a new tab in the same container as the current tab</label>
           </div>
         </div>
         <div class="field">
@@ -258,7 +258,7 @@ export default {
               v-model="preferences.keyboardShortcuts.AltO"
               type="checkbox"
             >
-            <label>Alt+O - Open active tab URL in a new Temporary Container tab</label>
+            <label>Alt+O - Open current tab URL in a new Temporary Container tab</label>
           </div>
         </div>
 
@@ -319,10 +319,7 @@ export default {
           class="ui form"
           style="margin-left: 20px; margin-top: 20px;"
         >
-          <domain-pattern
-            id="advancedIgnoreRequestsPattern"
-            :domain-pattern.sync="excludeDomainPattern"
-          />
+          <domain-pattern :domain-pattern.sync="excludeDomainPattern" />
           <div class="field">
             <button class="ui button primary">
               Ignore
@@ -343,7 +340,7 @@ export default {
             v-model="preferences.replaceTabs"
             type="checkbox"
           >
-          <label>Instead of creating a new tab replace the currently active tab</label>
+          <label>Instead of creating a new tab replace the currently current tab</label>
         </div>
         <div class="m-b" />
       </div>

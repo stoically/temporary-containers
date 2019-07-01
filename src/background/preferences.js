@@ -84,7 +84,7 @@ class Preferences {
       statistics: false,
       ui: {
         expandPreferences: false,
-        popupDefaultTab: 'isolation-per-domain'
+        popupDefaultTab: 'isolation-global'
       },
     };
   }

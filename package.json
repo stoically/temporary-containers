@@ -18,7 +18,7 @@
     "test:watch:verbose": "mocha ./test/setup.js test/*.test.js -b --reporter=spec --tmp-debug --watch --inspect",
     "test:functional": "npm run build:parcel && mocha ./test/functional/*.test.js --timeout 10000",
     "check:dependencies": "ncu",
-    "watch": "rm -rf dist && parcel src/ui/options.html src/ui/popup.html --no-hmr",
+    "watch": "rm -rf dist && parcel src/ui/options.html src/ui/popup.html --hmr-hostname=localhost",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"
   },

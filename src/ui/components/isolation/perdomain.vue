@@ -272,36 +272,25 @@ export default {
     v-show="show"
     id="isolationDomain"
   >
-    <a
-      class="ui blue ribbon label"
-      href="https://github.com/stoically/temporary-containers/wiki/Per-domain-Isolation"
-      target="_blank"
-      style="margin-bottom: 15px"
-    >
-      <i class="icon-info-circled" /> Per Domain Isolation?
-    </a>
     <div class="ui form">
       <form
         id="isolationDomainForm"
       >
         <domain-pattern
-          id="isolationDomainPattern"
           :tooltip="!popup ? undefined : {hidden: true}"
           :domain-pattern.sync="domain.pattern"
         />
       </form>
       <div
         id="isolationPerDomainAccordion"
+        style="margin-top: 15px"
         :style="empty ? 'opacity: 0.3; pointer-events: none': ''"
         class="ui accordion"
       >
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Always open in new Temporary Containers' :
-              'Always'
-            }}
+            Always
           </h4>
         </div>
         <div
@@ -321,32 +310,31 @@ export default {
                 Enabled
               </option>
             </select>
-          </div>
-          <div class="field">
             <div
               v-show="domain.always.action === 'enabled'"
               class="ui checkbox"
+              style="margin-top: 14px"
             >
               <input
                 v-model="domain.always.allowedInPermanent"
                 type="checkbox"
               >
               <label>
-                Disable for Permanent Containers
+                Not if navigating in Permanent Container
               </label>
             </div>
-          </div>
-          <div class="field">
+            <div />
             <div
               v-show="domain.always.action === 'enabled'"
               class="ui checkbox"
+              style="margin-top: 14px"
             >
               <input
                 v-model="domain.always.allowedInTemporary"
                 type="checkbox"
               >
               <label>
-                Disable for Temporary Containers
+                Not if navigating in Temporary Container
               </label>
             </div>
           </div>
@@ -354,10 +342,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Navigating in Tabs should open new Temporary Containers' :
-              'Navigating'
-            }}
+            Navigation
           </h4>
         </div>
         <div
@@ -372,23 +357,17 @@ export default {
               <option value="global">
                 Use Global
               </option>
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the navigation target domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
-              <option value="notsamedomain">
-                {{ !popup ?
-                  'If the  target domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomain">
+                Not Same Domain
+              </option>
+              <option value="notsamedomainexact">
+                Not Exact Same Domain
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -396,16 +375,21 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Mouse Clicks on links should open new Temporary Containers' :
-              'Mouse Clicks'
-            }}
+            Mouse Clicks
           </h4>
         </div>
         <div
           class="content"
           :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
+          <div
+            v-if="!popup"
+            class="ui small message"
+          >
+            Navigation also covers mouse clicks (since they result in a navigation), so you might not need to additionally
+            configure mouse clicks, unless you want a more strict configuration for specific mouse clicks.
+            Navigation is also more reliable, so you should prefer that if possible.
+          </div>
           <div class="field">
             <label>Middle Mouse</label>
             <select
@@ -415,23 +399,17 @@ export default {
               <option value="global">
                 Use Global
               </option>
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
-              <option value="notsamedomain">
-                {{ !popup ?
-                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomain">
+                Not Same Domain
+              </option>
+              <option value="notsamedomainexact">
+                Not Exact Same Domain
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -444,23 +422,17 @@ export default {
               <option value="global">
                 Use Global
               </option>
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
-              <option value="notsamedomain">
-                {{ !popup ?
-                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomain">
+                Not Same Domain
+              </option>
+              <option value="notsamedomainexact">
+                Not Exact Same Domain
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -473,23 +445,17 @@ export default {
               <option value="global">
                 Use Global
               </option>
-              <option value="always">
-                Always
-              </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
-              <option value="notsamedomain">
-                {{ !popup ?
-                  'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
-                  'Not same domain'
-                }}
-              </option>
               <option value="never">
                 Never
+              </option>
+              <option value="notsamedomain">
+                Not Same Domain
+              </option>
+              <option value="notsamedomainexact">
+                Not Exact Same Domain
+              </option>
+              <option value="always">
+                Always
               </option>
             </select>
           </div>
@@ -497,10 +463,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            {{ !popup ?
-              'Exclude target domains' :
-              'Exclude domains'
-            }}
+            Exclude Target Domains
           </h4>
         </div>
         <div
@@ -514,9 +477,9 @@ export default {
                 class="ui form"
               >
                 <domain-pattern
-                  id="isolationDomainExcludeDomainPattern"
                   :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
                   :domain-pattern.sync="excludeDomainPattern"
+                  :exclusion="true"
                 />
                 <div class="field">
                   <button class="ui button primary">

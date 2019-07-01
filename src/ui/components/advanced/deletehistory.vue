@@ -143,7 +143,7 @@ export default {
         </select>
       </div>
       <div class="field">
-        <label>Isolation - Navigating in Tabs</label>
+        <label>Isolation - Navigating in tabs</label>
         <select
           id="deletesHistoryContainerIsolation"
           v-model="preferences.deletesHistory.containerIsolation"
@@ -153,7 +153,7 @@ export default {
             Default
           </option>
           <option value="automatic">
-            Open new "Deletes History Temporary Containers" when "Navigating in Tabs Isolation" takes place instead of normal
+            Open new "Deletes History Temporary Containers" when "Navigating in tabs Isolation" takes place instead of normal
             Temporary Containers
           </option>
         </select>

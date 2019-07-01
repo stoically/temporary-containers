@@ -1,4 +1,5 @@
 <script>
+import IsolationGlossary from './components/isolation/glossary';
 import IsolationGlobal from './components/isolation/global';
 import IsolationPerDomain from './components/isolation/perdomain';
 import IsolationMac from './components/isolation/mac';
@@ -8,6 +9,7 @@ import Message from './components/message';
 
 export default {
   components: {
+    IsolationGlossary,
     IsolationGlobal,
     IsolationPerDomain,
     IsolationMac,
@@ -24,7 +26,8 @@ export default {
   data() {
     return {
       initialized: false,
-      show: false
+      show: false,
+      minWidth: false
     };
   },
   watch: {
@@ -48,6 +51,11 @@ export default {
         $.tab('change tab', this.app.preferences.ui.popupDefaultTab);
       });
     }
+  },
+  mounted() {
+    this.$root.$on('min-width', minWidth => {
+      this.minWidth = minWidth;
+    });
   },
   methods: {
     changeTab(tab) {
@@ -113,7 +121,10 @@ export default {
 </style>
 
 <template>
-  <div class="pusher">
+  <div
+    class="pusher"
+    :style="minWidth ? `min-width: ${minWidth}px; margin-right: 10px;` : ''"
+  >
     <message v-if="!app.initialized" />
     <div
       v-if="initialized"
@@ -122,15 +133,15 @@ export default {
       <div class="ui sidebar vertical menu">
         <a
           class="item"
-          @click="changeTab('isolation-per-domain')"
-        >
-          <i class="icon-circle-empty" /> Isolation Per Domain
-        </a>
-        <a
-          class="item"
           @click="changeTab('isolation-global')"
         >
           <i class="icon-circle-empty" /> Isolation Global
+        </a>
+        <a
+          class="item"
+          @click="changeTab('isolation-per-domain')"
+        >
+          <i class="icon-circle-empty" /> Isolation Per Domain
         </a>
         <a
           class="item"
@@ -149,6 +160,13 @@ export default {
           @click="changeTab('statistics')"
         >
           <i class="icon-chart-bar" /> Statistics
+        </a>
+        <a
+          class="item"
+          href="https://stoically.github.io/temporary-containers"
+          target="_blank"
+        >
+          <i class="icon-info-circled" /> Docs
         </a>
       </div>
       <div>
@@ -223,18 +241,21 @@ export default {
               class="ui tab"
               data-tab="isolation-global"
             >
+              <isolation-glossary />
               <isolation-global :app="app" />
             </div>
             <div
               class="ui tab"
               data-tab="isolation-per-domain"
             >
+              <isolation-glossary />
               <isolation-per-domain :app="app" />
             </div>
             <div
               class="ui tab"
               data-tab="isolation-mac"
             >
+              <isolation-glossary />
               <isolation-mac :app="app" />
             </div>
             <div
