@@ -5,7 +5,7 @@
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "clean": "rm -rf web-ext-artifacts .web-ext-artifacts .cache dist",
-    "build": "npm run lint && npm test && npm run build:parcel && npm run cp && npm run build:webext && npm run lint:addon && ncu",
+    "build": "npm run lint && npm test && npm run build:parcel && npm run build:cp && npm run build:webext && npm run lint:addon && ncu",
     "build:parcel": "npm run clean && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps",
     "build:sign": "node build-sign.js && npm run lint && npm test && npm run build:parcel && npm run build:cp && npm run build:webext:sign && git checkout -- src/manifest.json && ncu",
     "build:webext": "web-ext build -s dist",
