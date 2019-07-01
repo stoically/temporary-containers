@@ -105,11 +105,10 @@
   "background": {
     "scripts": [
       "background/log.js",
-      "background/lib-p-cancelable.js",
       "background/event-listeners.js",
       "background/migration-legacy.js",
-      "background/lib.js",
 
+      "background/lib.js",
       "background/browseraction.js",
       "background/commands.js",
       "background/container.js",

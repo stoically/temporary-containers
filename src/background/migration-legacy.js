@@ -1,10 +1,17 @@
 // this is only needed once for upgrades from <1.0 and should be removed in the next major version
 // we now store the addon version in storage instead of waiting for onInstalled
 
+const migrationReadyAbortController = new AbortController;
 let migrationReady;
-const migrationReadyPromise = new window.PCancelable(resolve => migrationReady = resolve);
+const migrationReadyPromise = new Promise((resolve, reject) => {
+  migrationReady = () => {}; //resolve;
+
+  migrationReadyAbortController.signal.addEventListener('abort', () => {
+    reject();
+  });
+});
 const migrationReadyTimeout = window.setTimeout(() => {
-  migrationReadyPromise.cancel();
+  migrationReadyAbortController.abort();
 }, 10000);
 
 const migrationOnInstalledListener = async function() {

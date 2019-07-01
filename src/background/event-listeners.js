@@ -1,8 +1,17 @@
 // to have persistent listeners we need to register them early
 // and wait for tmp to fully initialize before handling events
-const tmpInitializedPromise = new window.PCancelable(resolve => window.tmpInitialized = resolve);
+
+const tmpInitializedAbortController = new AbortController;
+const tmpInitializedPromise = new Promise((resolve, reject) => {
+  window.tmpInitialized = resolve;
+
+  tmpInitializedAbortController.signal.addEventListener('abort', () => {
+    reject();
+  });
+});
 window.setTimeout(() => {
-  tmpInitializedPromise.cancel('[event-listeners] tmpInitialized timed out');
+  tmpInitializedAbortController.abort();
+  debug('[event-listeners] tmpInitialized timed out');
 }, 5000);
 
 [
