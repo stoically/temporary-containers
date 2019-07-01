@@ -7,11 +7,11 @@ export default {
     };
   },
   mounted() {
-    this.$root.$on('showMessage', (message, options = {}) => {
+    this.$root.$on('showMessage', (message, options = {close: true}) => {
       this.error = false;
       this.message = message;
 
-      if (!options.hide) {
+      if (options.close) {
         setTimeout(() => {
           this.message = false;
         }, 3000);
@@ -20,7 +20,7 @@ export default {
     this.$root.$on('hideMessage', () => {
       this.message = false;
     });
-    this.$root.$on('showError', (message, options = {}) => {
+    this.$root.$on('showError', (message, options = {close: false}) => {
       this.error = true;
       this.message = message;
 

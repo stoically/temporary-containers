@@ -67,23 +67,24 @@ export default (App, {popup = false}) => {
     },
     methods: {
       async initialize() {
+        let pongFailed = false;
+
         setTimeout(() => {
-          if (!this.app.initialized) {
+          if (!this.app.initialized && !pongFailed) {
             this.$root.$emit('showMessage', 'Loading', {hide: true});
           }
         }, 500);
 
-        let bgInitialized = true;
         try {
           const pong = await browser.runtime.sendMessage({method: 'ping'});
           if (pong !== 'pong') {
-            bgInitialized = false;
+            pongFailed = true;
           }
         } catch (error) {
-          bgInitialized = false;
+          pongFailed = true;
         }
 
-        if (!bgInitialized) {
+        if (pongFailed) {
           this.$root.$emit('showError', 'Add-on not initialized yet, please try again');
           return;
         }
