@@ -42,8 +42,7 @@ export default {
         method: 'resetStatistics'
       });
 
-      this.$root.$emit('initialize');
-      this.$root.$emit('showMessage', 'Statistics have been reset.');
+      this.$root.$emit('initialize', {showMessage: 'Statistics have been reset.'});
     },
     formatBytes(bytes, decimals) {
     // https://stackoverflow.com/a/18650828

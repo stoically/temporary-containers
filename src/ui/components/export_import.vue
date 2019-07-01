@@ -183,8 +183,7 @@ export default {
         }
       });
 
-      this.$root.$emit('initialize');
-      this.$root.$emit('showMessage', 'Preferences imported.');
+      this.$root.$emit('initialize', {showMessage: 'Preferences imported.'});
     },
 
     async wipePreferencesSync() {
@@ -272,7 +271,10 @@ export default {
             Export to Firefox Sync
           </button>
         </div>
-        <div class="field">
+        <div
+          v-if="lastSyncExport"
+          class="field"
+        >
           <button
             class="ui button negative primary"
             @click="wipePreferencesSync"

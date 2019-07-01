@@ -53,7 +53,7 @@ export default (App, {popup = false}) => {
     mounted() {
       this.initialize();
 
-      this.$root.$on('initialize', () => {
+      this.$root.$on('initialize', options => {
         this.app = {
           initialized: false,
           preferences: false,
@@ -61,17 +61,17 @@ export default (App, {popup = false}) => {
         };
         this.expandedPreferences = false;
         this.$nextTick(() => {
-          this.initialize();
+          this.initialize(options);
         });
       });
     },
     methods: {
-      async initialize() {
+      async initialize(options = {}) {
         let pongFailed = false;
 
         setTimeout(() => {
           if (!this.app.initialized && !pongFailed) {
-            this.$root.$emit('showMessage', 'Loading', {hide: true});
+            this.$root.$emit('showMessage', 'Loading', {close: false});
           }
         }, 500);
 
@@ -88,8 +88,6 @@ export default (App, {popup = false}) => {
           this.$root.$emit('showError', 'Add-on not initialized yet, please try again');
           return;
         }
-
-        this.$root.$emit('hideMessage');
 
         const {permissions: allPermissions} = await browser.permissions.getAll();
         const permissions = {
@@ -130,6 +128,18 @@ export default (App, {popup = false}) => {
           preferences: storage.preferences,
           permissions
         };
+
+        if (options.showMessage) {
+          this.$nextTick(() => {
+            this.$root.$emit('showMessage', options.showMessage);
+          });
+        } else if (options.showError) {
+          this.$nextTick(() => {
+            this.$root.$emit('showError', options.showError);
+          });
+        } else {
+          this.$root.$emit('hideMessage');
+        }
       },
       async checkPermissions(app) {
         if (app.preferences.notifications && !app.permissions.notifications) {

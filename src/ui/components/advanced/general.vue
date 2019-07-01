@@ -62,8 +62,7 @@ export default {
           ${resetError ? `: ${resetError}` : ''}
         `);
       } else {
-        this.$root.$emit('initialize');
-        this.$root.$emit('showMessage', 'Storage successfully reset');
+        this.$root.$emit('initialize', {showMessage: 'Storage successfully reset'});
       }
     },
     removeIgnoredDomain(ignoredPattern) {
@@ -103,27 +102,25 @@ export default {
             class="ui fluid dropdown"
           >
             <option value="created">
-              Reopen new tabs in Temporary Containers. Flickers a bit, you might lose typed characters in the
-              address bar and some Add-ons that intervene with initial tab opening might not work as expected, but
-              it prevents new tabs from writing and reading cookies in the default container and doesn't clutter
-              recently closed tabs with "new tabs" (default)
+              Instantly reopen new tabs in Temporary Containers. You might lose the first few already typed characters in the
+              address bar when reopening takes too long, but it prevents new tabs from writing and reading cookies
+              in the default container (default)
             </option>
             <option value="navigation">
-              Don't reopen new tabs in Temporary Containers but instead on navigation. Prevents initial flickering,
-              losing of typed charaters in the address bar and increases compatibility with other Add-ons that
-              intervene with initial tab opening but new tabs can set and read cookies in the default container
+              Don't instantly reopen new tabs in Temporary Containers but instead when new tabs start to navigate to a website.
+              Already typed characters in the address bar are never lost, but new tabs can set and read cookies in the default container
             </option>
           </select>
         </div>
         <div class="ui small negative message">
           <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
-          use the address bar for search engines. If you select "Don't reopen new tabs in Temporary Containers"
+          use the address bar for search engines. If you select "Don't instantly reopen new tabs in Temporary Containers"
           here, cookies can get written into and read from the permanent default container as long as the new
           tab didn't get reopened in a Temporary Container.<br>
           <br>
           If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
           and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo then it should be no problem
-          to use the "Don't reopen new tabs" preference.
+          to use the "Don't instantly reopen new tabs" preference.
         </div>
         <div class="m-b" />
       </div>
@@ -205,7 +202,7 @@ export default {
       </div>
       <div class="content">
         <div class="ui small message">
-          Starting with Firefox 66 it's possible to reassign keyboard shortcuts on the Add-ons overview page.
+          Since Firefox 66 it's possible to reassign keyboard shortcuts on the Firefox Add-ons overview page (Ctrl+Shift+A) with the top-right cog icon.
         </div>
         <div class="field">
           <div class="ui checkbox">

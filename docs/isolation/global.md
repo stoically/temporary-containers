@@ -18,7 +18,7 @@ No isolation applies.
 
 ### Notes
 - [Not every website navigation is actually a browser navigation which can get isolated](Isolation-Notes#navigating-in-tabs-isolation-exceptions)
-- Navigating in tabs also covers mouse clicks (since it's a navigation), so you might not need to configure mouse clicks, unless you want a more strict configuration for a specific mouse click. Navigating in tabs is also more reliable, so you should prefer that if possible.
+- Navigating in Tabs also covers mouse clicks (since it's a navigation), so you might not need to configure mouse clicks, unless you want a more strict configuration for a specific mouse click. Navigating in Tabs is also more reliable, so you should prefer that if possible.
 
 ## Mouse Clicks on links should open new Temporary Containers
 
