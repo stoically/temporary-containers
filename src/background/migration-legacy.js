@@ -7,9 +7,9 @@ const migrationReadyPromise = new Promise((resolve, reject) => {
   migrationReady = resolve;
 
   migrationReadyAbortController.signal.addEventListener('abort', () => {
-    reject();
+    reject('[migration-legacy] waiting for migration ready timed out');
   });
-});
+}).catch(debug);
 const migrationReadyTimeout = window.setTimeout(() => {
   migrationReadyAbortController.abort();
 }, 10000);
@@ -23,12 +23,8 @@ const migrationOnInstalledListener = async function() {
     return;
   }
 
-  try {
-    await migrationReadyPromise;
-    return tmp.migration.onInstalled.call(tmp.migration, ...arguments);
-  } catch (error) {
-    debug('[migration-legacy] waiting for migration ready timed out');
-  }
+  await migrationReadyPromise;
+  return tmp.migration.onInstalled.call(tmp.migration, ...arguments);
 };
 browser.runtime.onInstalled.addListener(migrationOnInstalledListener);
 

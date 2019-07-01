@@ -27,7 +27,9 @@ global.preferencesTestSet = [
 
 if (!process.listenerCount('unhandledRejection')) {
   // eslint-disable-next-line no-console
-  process.on('unhandledRejection', r => console.log(r));
+  process.on('unhandledRejection', r => {
+    console.log('unhandledRejection', r);
+  });
 }
 const path = require('path');
 const webExtensionsJSDOM = require('webextensions-jsdom');

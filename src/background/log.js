@@ -20,7 +20,7 @@ class Log {
       return;
     }
     if (this.stringify && !browser._mochaTest) {
-      console.log(...args.map(JSON.stringify));
+      console.log(new Date().toUTCString(), ...args.map(JSON.stringify));
       console.trace();
       console.log('------------------------------------------');
     } else {
