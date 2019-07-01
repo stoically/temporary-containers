@@ -65,7 +65,7 @@ class TmpRequest {
     }
 
     if (this.mouseclick.isolated[request.url]) {
-      delay(1500).then(() => {
+      delay(1500, {signal: this.mouseclick.isolated[request.url].abortController.signal}).then(() => {
         debug('[webRequestOnBeforeRequest] cleaning up isolated', request.url);
         delete this.mouseclick.isolated[request.url];
       });
