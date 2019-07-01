@@ -49,25 +49,6 @@ export default {
       ]
     };
   },
-  watch: {
-    preferences: {
-      async handler(newPreferences) {
-        // old preferences are not available when deep watching
-        // https://github.com/vuejs/vue/issues/2164#issuecomment-432872718
-        if (newPreferences.container.colorRandom) {
-          $('#containerColor .dropdown').addClass('disabled');
-        } else {
-          $('#containerColor .dropdown').removeClass('disabled');
-        }
-        if (newPreferences.container.iconRandom) {
-          $('#containerIcon .dropdown').addClass('disabled');
-        } else {
-          $('#containerIcon .dropdown').removeClass('disabled');
-        }
-      },
-      deep: true
-    }
-  },
   async mounted() {
     if (parseInt((await browser.runtime.getBrowserInfo()).version) >= 67) {
       this.containerColors.push('toolbar');
@@ -95,6 +76,59 @@ export default {
       $('#general .ui.dropdown').dropdown();
       $('#general .ui.checkbox').checkbox();
 
+
+      $('#containerColorRandomExcluded').dropdown({
+        placeholder: 'Select colors to exclude from random selection',
+        values: this.containerColors.map(color => {
+          return {
+            name: color.text,
+            value: color.id,
+            selected: !!this.preferences.container.colorRandomExcluded.includes(color.id)
+          };
+        }),
+        maxSelections: this.containerColors.length - 1,
+        onAdd: (addedColor) => {
+          if (this.preferences.container.colorRandomExcluded.includes(addedColor)) {
+            return;
+          }
+          this.preferences.container.colorRandomExcluded.push(addedColor);
+        },
+        onRemove: (removedColor) => {
+          this.$delete(this.preferences.container.colorRandomExcluded,
+            this.preferences.container.colorRandomExcluded.findIndex(excludedColor =>
+              excludedColor === removedColor
+            )
+          );
+        }
+      });
+
+
+      $('#containerIconRandomExcluded').dropdown({
+        placeholder: 'Select icons to exclude from random selection',
+        values: this.containerIcons.map(icon => {
+          return {
+            name: icon.text,
+            value: icon.id,
+            selected: !!this.preferences.container.iconRandomExcluded.includes(icon.id)
+          };
+        }),
+        maxSelections: this.containerIcons.length - 1,
+        onAdd: (addedIcon) => {
+          if (this.preferences.container.iconRandomExcluded.includes(addedIcon)) {
+            return;
+          }
+          this.preferences.container.iconRandomExcluded.push(addedIcon);
+        },
+        onRemove: (removedIcon) => {
+          this.$delete(this.preferences.container.iconRandomExcluded,
+            this.preferences.container.iconRandomExcluded.findIndex(excludedIcon =>
+              excludedIcon === removedIcon
+            )
+          );
+        }
+      });
+
+
       $('#automaticModeField').popup({
         html: `
           <div style="width:500px;">
@@ -111,16 +145,16 @@ export default {
         html: `
         <div style="width:500px;">
         The popup lets you<ul>
+        <li> Open new Temporary Container
+        <li> Open Preferences/Options
         <li> Configure Isolation
         <li> Disable/Enable Isolation globally
         <li> Convert Temporary to Permanent Container
         <li> Convert Permanent to Temporary Container
-        <li> Open current tab URL in new Temporary Container
-        ${this.permissions.history ? '<li> Open current tab URL in new "Deletes History Temporary Container"' : ''}
-        <li> Open Preferences/Options
-        <li> Open new Temporary Container
-        ${this.permissions.history ? '<li> Open new "Deletes History Temporary Container"' : ''}
+        <li> Open current Tab URL in new Temporary Container
         <li> View Statistics
+        ${this.permissions.history ? '<li> Open current tab URL in new "Deletes History Temporary Container"' : ''}
+        ${this.permissions.history ? '<li> Open new "Deletes History Temporary Container"' : ''}
         </ul></div>
       `,
         inline: true,
@@ -203,19 +237,28 @@ export default {
         class="field"
       >
         <label>{{ t('optionsGeneralContainerColor') }}</label>
-        <select
-          v-model="preferences.container.color"
-          :disabled="preferences.container.colorRandom"
-          class="ui fluid dropdown"
-        >
-          <option
-            v-for="containerColor in containerColors"
-            :key="containerColor.id"
-            :value="containerColor.id"
+        <div v-show="!preferences.container.colorRandom">
+          <select
+            v-model="preferences.container.color"
+            class="ui fluid dropdown"
           >
-            {{ containerColor.text }}
-          </option>
-        </select>
+            <option
+              v-for="containerColor in containerColors"
+              :key="containerColor.id"
+              :value="containerColor.id"
+            >
+              {{ containerColor.text }}
+            </option>
+          </select>
+        </div>
+        <div
+          v-show="preferences.container.colorRandom"
+          id="containerColorRandomExcluded"
+          class="ui dropdown fluid selection multiple"
+        >
+          <div class="text" />
+          <i class="dropdown icon" />
+        </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
@@ -232,19 +275,28 @@ export default {
         class="field"
       >
         <label>{{ t('optionsGeneralContainerIcon') }}</label>
-        <select
-          v-model="preferences.container.icon"
-          :disabled="preferences.container.iconRandom"
-          class="ui fluid dropdown"
-        >
-          <option
-            v-for="containerIcon in containerIcons"
-            :key="containerIcon.id"
-            :value="containerIcon.id"
+        <div v-show="!preferences.container.iconRandom">
+          <select
+            v-model="preferences.container.icon"
+            class="ui fluid dropdown"
           >
-            {{ containerIcon.text }}
-          </option>
-        </select>
+            <option
+              v-for="containerIcon in containerIcons"
+              :key="containerIcon.id"
+              :value="containerIcon.id"
+            >
+              {{ containerIcon.text }}
+            </option>
+          </select>
+        </div>
+        <div
+          v-show="preferences.container.iconRandom"
+          id="containerIconRandomExcluded"
+          class="ui dropdown fluid selection multiple"
+        >
+          <div class="text" />
+          <i class="dropdown icon" />
+        </div>
       </div>
       <div class="field">
         <div class="ui checkbox">

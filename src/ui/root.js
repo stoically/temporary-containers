@@ -2,7 +2,7 @@ export default (App, {popup = false}) => {
   Vue.mixin({
     methods: {
       t: browser.i18n.getMessage,
-      clone: (input) => JSON.parse(JSON.stringify(input))
+      clone: input => JSON.parse(JSON.stringify(input))
     }
   });
 

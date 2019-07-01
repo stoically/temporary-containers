@@ -13,7 +13,6 @@ class Runtime {
     this.browseraction = this.background.browseraction;
     this.migration = this.background.migration;
     this.contextmenu = this.background.contextmenu;
-    this.preferences = this.background.preferences;
     this.utils = this.background.utils;
   }
 
@@ -50,7 +49,7 @@ class Runtime {
       break;
 
     case 'importPreferences': {
-      const oldPreferences = this.utils.clone(this.pref);
+      const oldPreferences = this.utils.clone(this.storage.local.preferences);
       await this.migration.migrate({
         preferences: message.payload.preferences,
         previousVersion: message.payload.previousVersion

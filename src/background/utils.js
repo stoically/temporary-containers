@@ -16,7 +16,6 @@ class Utils {
         }
       });
     };
-    console.log(defaults, source);
     addKeys(defaults, source);
 
     return addedMissing;

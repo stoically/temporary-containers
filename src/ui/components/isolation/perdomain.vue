@@ -183,7 +183,6 @@ export default {
     edit(index) {
       this.editing = true;
       this.domain = this.preferences.isolation.domain[index];
-      console.log(this.preferences.isolation.domain);
       this.resetDropdowns();
 
       if (!this.preferences.ui.expandPreferences) {

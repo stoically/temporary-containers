@@ -12,8 +12,10 @@ class Preferences {
         namePrefix: 'tmp',
         color: 'toolbar',
         colorRandom: false,
+        colorRandomExcluded: [],
         icon: 'circle',
         iconRandom: false,
+        iconRandomExcluded: [],
         numberMode: 'keep',
         removal: '15minutes'
       },

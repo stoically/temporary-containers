@@ -237,7 +237,10 @@ class Container {
     }
     let containerIcon = this.pref.container.icon;
     if (this.pref.container.iconRandom) {
-      containerIcon = this.containerIcons[Math.floor(Math.random() * this.containerIcons.length)];
+      const containerIcons = this.containerIcons.filter(icon =>
+        !this.pref.container.iconRandomExcluded.includes(icon)
+      );
+      containerIcon = containerIcons[Math.floor(Math.random() * containerIcons.length)];
     }
     return {
       name: containerName,
@@ -623,12 +626,16 @@ class Container {
     }
 
     for (const color of this.containerColors) {
+      if (this.pref.container.colorRandomExcluded.includes(color)) {
+        continue;
+      }
       if (!assignedColors[color] || assignedColors[color] < maxColors) {
         availableColors.push(color);
       }
     }
 
-    return availableColors.length ? availableColors : this.containerColors;
+    return availableColors.length ? availableColors :
+      this.containerColors.filter(color => !this.pref.container.colorRandomExcluded.includes(color));
   }
 }
 
