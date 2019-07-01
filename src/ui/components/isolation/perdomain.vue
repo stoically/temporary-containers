@@ -327,7 +327,7 @@ export default {
           <h4>
             <i class="dropdown icon" />
             {{ !popup ?
-              'Navigating in tabs should open new Temporary Containers' :
+              'Navigating in Tabs should open new Temporary Containers' :
               'Navigating'
             }}
           </h4>

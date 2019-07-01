@@ -31,21 +31,7 @@ export default {
       this.installed = true;
     }
 
-    $('.menu .item').tab({
-      history: true,
-      historyType: 'hash'
-    });
-    let stateChanged = false;
-    $.address.change(() => stateChanged = true);
-
-    setTimeout(() => {
-      if (!stateChanged) {
-        // looks like jquery.address fired before tabs mounted, retrigger
-        const hash = document.location.hash;
-        $.address.value('_');
-        $.address.value(hash.replace('#/', ''));
-      }
-    }, 100);
+    this.initTabs();
 
     browser.runtime.onMessage.addListener(message => {
       if (typeof message !== 'object') {
@@ -56,6 +42,25 @@ export default {
         this.$root.$emit('initialize');
       }
     });
+  },
+  methods: {
+    initTabs() {
+      $('.menu .item').tab({
+        history: true,
+        historyType: 'hash'
+      });
+      let stateChanged = false;
+      $.address.change(() => stateChanged = true);
+
+      setTimeout(() => {
+        if (!stateChanged) {
+        // looks like jquery.address fired before tabs mounted, retrigger
+          const hash = document.location.hash;
+          $.address.value('_');
+          $.address.value(hash.replace('#/', ''));
+        }
+      }, 100);
+    }
   }
 };
 </script>

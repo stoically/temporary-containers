@@ -134,10 +134,14 @@ export default {
           <div style="width:500px;">
           Automatically reopen tabs in new Temporary Containers when<ul>
           <li> Opening a new tab
-          <li> A tab tries to load a link in the default container
           <li> An external program opens a link in the browser</ul>
-          <i>Note: If you experience long delays when reopening,
-          you can change how Automatic Mode works in the Advanced Preferences</i>
+          <br>
+          <span style="font-size:13px">
+            Note: Some users experience delays when new tabs are reopened,
+            sometimes even losing the first few characters already typed into
+            the address bar. You can change how Automatic Mode works in the
+            Advanced preferences to fix that
+          </span>
           </div>
         `,
         inline: true,
@@ -159,7 +163,9 @@ export default {
         ${this.permissions.history ? '<li> Open current tab URL in new "Deletes History Temporary Container"' : ''}
         ${this.permissions.history ? '<li> Open new "Deletes History Temporary Container"' : ''}
         </ul>
-        <i>Note: You can change the default popup tab in the Advanced preferences</i>
+        <span style="font-size:13px">
+          Note: You can change the default popup tab in the Advanced preferences
+        </span>
         </div>
       `,
         inline: true,
