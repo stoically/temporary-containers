@@ -151,16 +151,16 @@ export default {
               <option value="never">
                 Never
               </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the navigation target domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
               <option value="notsamedomain">
                 {{ !popup ?
                   'If the navigation target domain does not match the active tabs domain - Subdomains won\'t get isolated' :
                   'Not same domain'
+                }}
+              </option>
+              <option value="notsamedomainexact">
+                {{ !popup ?
+                  'If the navigation target domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
                 }}
               </option>
               <option value="always">
@@ -199,16 +199,16 @@ export default {
               <option value="never">
                 Never
               </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
               <option value="notsamedomain">
                 {{ !popup ?
                   'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
                   'Not same domain'
+                }}
+              </option>
+              <option value="notsamedomainexact">
+                {{ !popup ?
+                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
                 }}
               </option>
               <option value="always">
@@ -225,16 +225,16 @@ export default {
               <option value="never">
                 Never
               </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
               <option value="notsamedomain">
                 {{ !popup ?
                   'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
                   'Not same domain'
+                }}
+              </option>
+              <option value="notsamedomainexact">
+                {{ !popup ?
+                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
                 }}
               </option>
               <option value="always">
@@ -251,16 +251,16 @@ export default {
               <option value="never">
                 Never
               </option>
-              <option value="notsamedomainexact">
-                {{ !popup ?
-                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
-                  'Not exact same domain'
-                }}
-              </option>
               <option value="notsamedomain">
                 {{ !popup ?
                   'If the clicked link domain does not match the active tabs domain - Subdomains won\'t get isolated' :
                   'Not same domain'
+                }}
+              </option>
+              <option value="notsamedomainexact">
+                {{ !popup ?
+                  'If the clicked link domain does not exactly match the active tabs domain - Subdomains also get isolated' :
+                  'Not exact same domain'
                 }}
               </option>
               <option value="always">

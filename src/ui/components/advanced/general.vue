@@ -131,15 +131,6 @@ export default {
         </h4>
       </div>
       <div class="content">
-        <div class="field">
-          <div class="ui checkbox">
-            <input
-              v-model="preferences.pageAction"
-              type="checkbox"
-            >
-            <label>Show icon in the address bar that reveals the popup</label>
-          </div>
-        </div>
         <div class="item field">
           <label>
             Default Tab
@@ -164,6 +155,15 @@ export default {
               Statistics
             </option>
           </select>
+        </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input
+              v-model="preferences.pageAction"
+              type="checkbox"
+            >
+            <label>Show icon in the address bar that reveals the popup</label>
+          </div>
         </div>
         <div class="m-b" />
       </div>
@@ -267,22 +267,6 @@ export default {
       <div class="title">
         <h4>
           <i class="dropdown icon" />
-          Replace tabs in case of Isolation
-        </h4>
-      </div>
-      <div class="content">
-        <div class="ui checkbox">
-          <input
-            v-model="preferences.replaceTabs"
-            type="checkbox"
-          >
-          <label>Instead of creating a new tab replace the currently active tab</label>
-        </div>
-        <div class="m-b" />
-      </div>
-      <div class="title">
-        <h4>
-          <i class="dropdown icon" />
           Redirector tabs
         </h4>
       </div>
@@ -345,6 +329,22 @@ export default {
             </button>
           </div>
         </form>
+        <div class="m-b" />
+      </div>
+      <div class="title">
+        <h4>
+          <i class="dropdown icon" />
+          Isolation
+        </h4>
+      </div>
+      <div class="content">
+        <div class="ui checkbox">
+          <input
+            v-model="preferences.replaceTabs"
+            type="checkbox"
+          >
+          <label>Instead of creating a new tab replace the currently active tab</label>
+        </div>
         <div class="m-b" />
       </div>
       <div class="title">

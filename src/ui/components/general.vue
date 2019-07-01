@@ -247,7 +247,12 @@ export default {
         id="containerColor"
         class="field"
       >
-        <label>{{ t('optionsGeneralContainerColor') }}</label>
+        <label v-if="!preferences.container.colorRandom">
+          {{ t('optionsGeneralContainerColor') }}
+        </label>
+        <label v-else>
+          Container Colors excluded from random selection
+        </label>
         <div v-show="!preferences.container.colorRandom">
           <select
             v-model="preferences.container.color"
@@ -285,7 +290,12 @@ export default {
         id="containerIcon"
         class="field"
       >
-        <label>{{ t('optionsGeneralContainerIcon') }}</label>
+        <label v-if="!preferences.container.iconRandom">
+          {{ t('optionsGeneralContainerIcon') }}
+        </label>
+        <label v-else>
+          Container Icons excluded from random selection
+        </label>
         <div v-show="!preferences.container.iconRandom">
           <select
             v-model="preferences.container.icon"

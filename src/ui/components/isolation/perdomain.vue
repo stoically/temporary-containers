@@ -47,7 +47,9 @@ export default {
       excludeDomainPattern: '',
       isolationDomainFilter: '',
       editing: false,
-      show: false
+      show: false,
+      saved: false,
+      empty: true
     };
   },
   computed: {
@@ -75,7 +77,17 @@ export default {
         } else if (!this.editing &&
           this.preferences.isolation.domain.find(_domain => _domain.pattern === domain.pattern)) {
           $('#isolationDomainForm').form('validate form');
+        } else if (this.editing) {
+          if (this.editClicked) {
+            this.editClicked = false;
+          } else {
+            this.saved = true;
+            setTimeout(() => {
+              this.saved = false;
+            }, 1500);
+          }
         }
+        this.empty = false;
       },
       deep: true
     }
@@ -165,6 +177,10 @@ export default {
     reset() {
       this.domain = this.clone(domainDefaults);
       this.domain.pattern = '';
+      this.$nextTick(() => {
+
+        this.empty = true;
+      });
 
       if (!this.preferences.ui.expandPreferences) {
         $('#isolationPerDomainAccordion').accordion('close', 0);
@@ -181,6 +197,7 @@ export default {
       });
     },
     edit(index) {
+      this.editClicked = true;
       this.editing = true;
       this.domain = this.preferences.isolation.domain[index];
       this.resetDropdowns();
@@ -240,6 +257,16 @@ export default {
 };
 </script>
 
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+</style>
+
+
 <template>
   <div
     v-show="show"
@@ -265,6 +292,7 @@ export default {
       </form>
       <div
         id="isolationPerDomainAccordion"
+        :style="empty ? 'opacity: 0.3; pointer-events: none': ''"
         class="ui accordion"
       >
         <div class="title">
@@ -529,8 +557,20 @@ export default {
         class="ui button primary"
         :disabled="!domain.pattern.trim()"
       >
-        {{ editing ? 'Done editing' : 'Add' }}
-        {{ domain.pattern }}
+        <span v-if="editing">
+          <transition name="fade">
+            <span v-if="saved">
+              <i class="check circle icon" />
+              Saved
+            </span>
+            <span v-if="!saved">
+              Done editing {{ domain.pattern }}
+            </span>
+          </transition>
+        </span>
+        <span v-else>
+          Add {{ domain.pattern }}
+        </span>
       </button>
     </div>
     <br>
@@ -594,7 +634,10 @@ export default {
                 data-position="right center"
                 @click="edit(isolatedDomain._index)"
               >
-                <i class="icon-pencil" />
+                <i
+                  class="icon-pencil"
+                  style="color: #2185d0"
+                />
               </span>
               <span
                 :data-tooltip="`Remove ${isolatedDomain.pattern}`"
@@ -612,8 +655,8 @@ export default {
               >
                 <i
                   v-if="isolationDomains.length > 1"
-                  class="hand paper icon"
-                  style="color: #2185d0"
+                  class="hand rock icon"
+                  style="color: #2185d0; margin-left: 3px; opacity: 0.8"
                 />
                 {{ isolatedDomain.pattern }}
               </span>

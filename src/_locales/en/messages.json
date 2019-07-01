@@ -21,7 +21,7 @@
     "message": "Export/Import"
   },
   "optionsGeneralNotifications": {
-    "message": "Notifications when Temporary Containers are deleted"
+    "message": "Notifications when deleting Temporary Containers"
   },
   "optionsGeneralContainerNamePrefix": {
     "message": "Container Name Prefix"

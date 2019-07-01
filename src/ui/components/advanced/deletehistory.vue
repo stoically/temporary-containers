@@ -65,158 +65,160 @@ export default {
         "Deletes History Temporary Containers" will delete history when the "Deletes History Temporary Container" itself gets deleted after the last tab in it closes.
       </div>
     </div>
-    <div
-      class="field"
-      data-tooltip="This affects Automatic Mode, Toolbar Icon and the right-click context menu entry"
-    >
-      <label>Automatically create "Deletes History Temporary Containers"</label>
-      <select
-        id="deletesHistoryContainer"
-        v-model="preferences.deletesHistory.automaticMode"
-        class="ui fluid dropdown"
-      >
-        <option value="never">
-          Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (default)
-        </option>
-        <option value="automatic">
-          Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers
-        </option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Context Menu</label>
-      <div class="ui checkbox">
-        <input
-          id="deletesHistoryContextMenu"
-          v-model="preferences.deletesHistory.contextMenu"
-          type="checkbox"
-        >
-        <label>Show additional "Deletes History Temporary Containers" entry in the right click on links context menu</label>
-      </div>
-    </div>
-    <div class="field">
+    <div :style="!preferences.deletesHistory.active ? 'opacity: 0.3; pointer-events: none': ''">
       <div
-        id="deletesHistoryContextMenuBookmarks"
-        class="ui checkbox"
+        class="field"
+        data-tooltip="This affects Automatic Mode, Toolbar Icon and the right-click context menu entry"
       >
-        <input
-          id="deletesHistoryContextMenuBookmarksCheckbox"
-          v-model="preferences.deletesHistory.contextMenuBookmarks"
-          type="checkbox"
+        <label>Automatically create "Deletes History Temporary Containers"</label>
+        <select
+          id="deletesHistoryContainer"
+          v-model="preferences.deletesHistory.automaticMode"
+          class="ui fluid dropdown"
         >
-        <label>Show additional "Deletes History Temporary Containers" entry in the right click on bookmarks context menu</label>
+          <option value="never">
+            Don't automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers (default)
+          </option>
+          <option value="automatic">
+            Automatically create "Deletes History Temporary Containers" instead of normal Temporary Containers
+          </option>
+        </select>
       </div>
-    </div>
-    <div
-      class="field"
-      data-tooltip="&quot;15minutes&quot; lets you &quot;Undo Close Tab&quot; in that timeframe"
-    >
-      <label>Delete no longer needed "Deletes History Temporary Containers"</label>
-      <select
-        id="deletesHistoryContainerRemoval"
-        v-model="preferences.deletesHistory.containerRemoval"
-        class="ui fluid dropdown"
+      <div class="field">
+        <label>Context Menu</label>
+        <div class="ui checkbox">
+          <input
+            id="deletesHistoryContextMenu"
+            v-model="preferences.deletesHistory.contextMenu"
+            type="checkbox"
+          >
+          <label>Show additional "Deletes History Temporary Containers" entry in the right click on links context menu</label>
+        </div>
+      </div>
+      <div class="field">
+        <div
+          id="deletesHistoryContextMenuBookmarks"
+          class="ui checkbox"
+        >
+          <input
+            id="deletesHistoryContextMenuBookmarksCheckbox"
+            v-model="preferences.deletesHistory.contextMenuBookmarks"
+            type="checkbox"
+          >
+          <label>Show additional "Deletes History Temporary Containers" entry in the right click on bookmarks context menu</label>
+        </div>
+      </div>
+      <div
+        class="field"
+        data-tooltip="&quot;15minutes&quot; lets you &quot;Undo Close Tab&quot; in that timeframe"
       >
-        <option value="15minutes">
-          15 minutes after the last tab in it closes
-        </option>
-        <option value="instant">
-          After the last tab in it closes (default)
-        </option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Isolation - Always per domain</label>
-      <select
-        id="deletesHistorycontainerAlwaysPerDomain"
-        v-model="preferences.deletesHistory.containerAlwaysPerDomain"
-        class="ui fluid dropdown"
-      >
-        <option value="never">
-          Default
-        </option>
-        <option value="automatic">
-          Open new "Deletes History Temporary Containers" for Domains configured "Isolation Always" instead of normal
-          Temporary Containers
-        </option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Isolation - Navigating in Tabs</label>
-      <select
-        id="deletesHistoryContainerIsolation"
-        v-model="preferences.deletesHistory.containerIsolation"
-        class="ui fluid dropdown"
-      >
-        <option value="never">
-          Default
-        </option>
-        <option value="automatic">
-          Open new "Deletes History Temporary Containers" when "Navigating in Tabs Isolation" takes place instead of normal
-          Temporary Containers
-        </option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Isolation - Mouse clicks in "Deletes History Temporary Containers"</label>
-      <select
-        id="deletesHistoryContainerMouseClicks"
-        v-model="preferences.deletesHistory.containerMouseClicks"
-        class="ui fluid dropdown"
-      >
-        <option value="never">
-          Default
-        </option>
-        <option value="automatic">
-          Open new "Deletes History Temporary Containers" with Mouse clicks on links in "Deletes History Temporary Containers" instead of normal
-          Temporary Containers
-        </option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Isolation - Middle Mouse Click in Temporary Containers</label>
-      <select
-        id="linkClickGlobalMiddleCreatesContainer"
-        v-model="preferences.isolation.global.mouseClick.middle.container"
-        class="ui fluid dropdown"
-      >
-        <option value="default">
-          Default
-        </option>
-        <option value="deleteshistory">
-          Open new "Deletes History Temporary Containers" with Middle Mouse clicks instead of Temporary Containers
-        </option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Isolation - Ctrl/Cmd+Left Mouse Click in Temporary Containers</label>
-      <select
-        id="linkClickGlobalCtrlLeftCreatesContainer"
-        v-model="preferences.isolation.global.mouseClick.ctrlleft.container"
-        class="ui fluid dropdown"
-      >
-        <option value="default">
-          Default
-        </option>
-        <option value="deleteshistory">
-          Open new "Deletes History Temporary Containers" with Ctrl/Cmd+Left Mouse clicks instead of Temporary Containers
-        </option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Isolation - Left Mouse Click in Temporary Containers</label>
-      <select
-        id="linkClickGlobalLeftCreatesContainer"
-        v-model="preferences.isolation.global.mouseClick.left.container"
-        class="ui fluid dropdown"
-      >
-        <option value="default">
-          Default
-        </option>
-        <option value="deleteshistory">
-          Open new "Deletes History Temporary Containers" with Left Mouse clicks instead of Temporary Containers
-        </option>
-      </select>
+        <label>Delete no longer needed "Deletes History Temporary Containers"</label>
+        <select
+          id="deletesHistoryContainerRemoval"
+          v-model="preferences.deletesHistory.containerRemoval"
+          class="ui fluid dropdown"
+        >
+          <option value="15minutes">
+            15 minutes after the last tab in it closes
+          </option>
+          <option value="instant">
+            After the last tab in it closes (default)
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Isolation - Always per domain</label>
+        <select
+          id="deletesHistorycontainerAlwaysPerDomain"
+          v-model="preferences.deletesHistory.containerAlwaysPerDomain"
+          class="ui fluid dropdown"
+        >
+          <option value="never">
+            Default
+          </option>
+          <option value="automatic">
+            Open new "Deletes History Temporary Containers" for Domains configured "Isolation Always" instead of normal
+            Temporary Containers
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Isolation - Navigating in Tabs</label>
+        <select
+          id="deletesHistoryContainerIsolation"
+          v-model="preferences.deletesHistory.containerIsolation"
+          class="ui fluid dropdown"
+        >
+          <option value="never">
+            Default
+          </option>
+          <option value="automatic">
+            Open new "Deletes History Temporary Containers" when "Navigating in Tabs Isolation" takes place instead of normal
+            Temporary Containers
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Isolation - Mouse clicks in "Deletes History Temporary Containers"</label>
+        <select
+          id="deletesHistoryContainerMouseClicks"
+          v-model="preferences.deletesHistory.containerMouseClicks"
+          class="ui fluid dropdown"
+        >
+          <option value="never">
+            Default
+          </option>
+          <option value="automatic">
+            Open new "Deletes History Temporary Containers" with Mouse clicks on links in "Deletes History Temporary Containers" instead of normal
+            Temporary Containers
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Isolation - Middle Mouse Click in Temporary Containers</label>
+        <select
+          id="linkClickGlobalMiddleCreatesContainer"
+          v-model="preferences.isolation.global.mouseClick.middle.container"
+          class="ui fluid dropdown"
+        >
+          <option value="default">
+            Default
+          </option>
+          <option value="deleteshistory">
+            Open new "Deletes History Temporary Containers" with Middle Mouse clicks instead of Temporary Containers
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Isolation - Ctrl/Cmd+Left Mouse Click in Temporary Containers</label>
+        <select
+          id="linkClickGlobalCtrlLeftCreatesContainer"
+          v-model="preferences.isolation.global.mouseClick.ctrlleft.container"
+          class="ui fluid dropdown"
+        >
+          <option value="default">
+            Default
+          </option>
+          <option value="deleteshistory">
+            Open new "Deletes History Temporary Containers" with Ctrl/Cmd+Left Mouse clicks instead of Temporary Containers
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Isolation - Left Mouse Click in Temporary Containers</label>
+        <select
+          id="linkClickGlobalLeftCreatesContainer"
+          v-model="preferences.isolation.global.mouseClick.left.container"
+          class="ui fluid dropdown"
+        >
+          <option value="default">
+            Default
+          </option>
+          <option value="deleteshistory">
+            Open new "Deletes History Temporary Containers" with Left Mouse clicks instead of Temporary Containers
+          </option>
+        </select>
+      </div>
     </div>
   </div>
 </template>
