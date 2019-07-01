@@ -9,7 +9,8 @@ const domainDefaults = {
   pattern: '',
   always: {
     action: 'disabled',
-    allowedInPermanent: false
+    allowedInPermanent: false,
+    allowedInTemporary: false
   },
   navigation: {
     action: 'global'
@@ -182,6 +183,7 @@ export default {
     edit(index) {
       this.editing = true;
       this.domain = this.preferences.isolation.domain[index];
+      console.log(this.preferences.isolation.domain);
       this.resetDropdowns();
 
       if (!this.preferences.ui.expandPreferences) {
@@ -285,25 +287,39 @@ export default {
               v-model="domain.always.action"
               class="ui fluid dropdown"
             >
-              <option value="enabled">
-                Enabled
-              </option>
               <option value="disabled">
                 Disabled
+              </option>
+              <option value="enabled">
+                Enabled
               </option>
             </select>
           </div>
           <div class="field">
-            <div class="ui checkbox">
+            <div
+              v-show="domain.always.action === 'enabled'"
+              class="ui checkbox"
+            >
               <input
                 v-model="domain.always.allowedInPermanent"
                 type="checkbox"
               >
               <label>
-                {{ !popup ?
-                  'Allow to load in permanent containers' :
-                  'Allow in permanent containers'
-                }}
+                Disable in Permanent Containers
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <div
+              v-show="domain.always.action === 'enabled'"
+              class="ui checkbox"
+            >
+              <input
+                v-model="domain.always.allowedInTemporary"
+                type="checkbox"
+              >
+              <label>
+                Disable in Temporary Containers
               </label>
             </div>
           </div>
@@ -607,5 +623,6 @@ export default {
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>

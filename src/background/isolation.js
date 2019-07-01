@@ -206,39 +206,46 @@ class Isolation {
 
     for (const patternPreferences of this.pref.isolation.domain) {
       const domainPattern = patternPreferences.pattern;
-
       if (!this.matchDomainPattern(request.url, domainPattern)) {
         continue;
       }
-      if (patternPreferences.always) {
-        const preferences = patternPreferences.always;
-        debug('[shouldIsolateAlways] found pattern for incoming request url', domainPattern, preferences);
-        if (preferences.action === 'disabled') {
-          debug('[shouldIsolateAlways] not reopening because "always" disabled');
-          continue;
-        }
+      if (!patternPreferences.always) {
+        continue;
+      }
 
-        if (preferences.allowedInPermanent && this.container.isPermanent(tab.cookieStoreId)) {
-          debug('[shouldIsolateAlways] not reopening because allowed to load in permanent container');
-          continue;
-        }
+      const preferences = patternPreferences.always;
+      debug('[shouldIsolateAlways] found pattern for incoming request url', domainPattern, preferences);
+      if (preferences.action === 'disabled') {
+        debug('[shouldIsolateAlways] not reopening because "always" disabled');
+        continue;
+      }
 
-        if (!this.container.isTemporary(tab.cookieStoreId)) {
-          debug('[shouldIsolateAlways] reopening because not in a tmp container');
+      if (preferences.allowedInPermanent && this.container.isPermanent(tab.cookieStoreId)) {
+        debug('[shouldIsolateAlways] not reopening because disabled in permanent container');
+        continue;
+      }
+
+      const isTemporary = this.container.isTemporary(tab.cookieStoreId);
+      if (!isTemporary) {
+        debug('[shouldIsolateAlways] reopening because not in a tmp container');
+        return true;
+      }
+
+      if (preferences.allowedInTemporary && isTemporary) {
+        debug('[shouldIsolateAlways] not reopening because disabled in tmp container');
+        return false;
+      }
+
+      if (!this.matchDomainPattern(tab.url, domainPattern)) {
+        let openerMatches = false;
+        if (openerTab && !openerTab.url.startsWith('about:') &&
+            this.matchDomainPattern(openerTab.url, domainPattern)) {
+          openerMatches = true;
+          debug('[shouldIsolateAlways] opener tab url matched the pattern', openerTab.url, domainPattern);
+        }
+        if (!openerMatches) {
+          debug('[shouldIsolateAlways] reopening because the tab/opener url doesnt match the pattern', tab.url, openerTab, domainPattern);
           return true;
-        }
-
-        if (!this.matchDomainPattern(tab.url, domainPattern)) {
-          let openerMatches = false;
-          if (openerTab && !openerTab.url.startsWith('about:') &&
-              this.matchDomainPattern(openerTab.url, domainPattern)) {
-            openerMatches = true;
-            debug('[shouldIsolateAlways] opener tab url matched the pattern', openerTab.url, domainPattern);
-          }
-          if (!openerMatches) {
-            debug('[shouldIsolateAlways] reopening because the tab/opener url doesnt match the pattern', tab.url, openerTab, domainPattern);
-            return true;
-          }
         }
       }
     }
