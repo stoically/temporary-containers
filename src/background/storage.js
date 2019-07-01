@@ -76,8 +76,7 @@ class TmpStorage {
     }
 
     if (!await this.persist()) {
-      debug('[install] something went wrong while initializing storage');
-      return false;
+      throw(new Error('[install] something went wrong while installing'));
     }
     debug('[install] storage initialized', this.local);
     this.installed = true;
