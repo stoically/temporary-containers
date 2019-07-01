@@ -36,7 +36,12 @@ class TemporaryContainers {
 
     this.preferences.initialize();
     await this.storage.initialize();
-    this.pref = window.pref(this);
+
+    this.pref = new Proxy(this.storage, {
+      get(target, key) {
+        return target.local.preferences[key];
+      },
+    });
 
     this.request.initialize();
     this.runtime.initialize();
