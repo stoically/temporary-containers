@@ -7,7 +7,9 @@ class Log {
 
     this.debug = this.debug.bind(this);
 
-    if (!browser._mochaTest && window.localStorage.getItem('debug')) {
+    if (window.localStorage.getItem('debug')) {
+      this.DEBUG = true;
+    } else if (window.localStorage.getItem('debug-dev')) {
       this.DEBUG = true;
       this.stringify = false;
     }

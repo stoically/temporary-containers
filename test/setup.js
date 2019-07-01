@@ -54,6 +54,7 @@ const buildWebExtension = async (build = {}) => {
     apiFake: build.apiFake || undefined,
     background: {
       jsdom: {
+        url: 'https://localhost',
         beforeParse(window) {
           window.browser._mochaTest = true;
         }
