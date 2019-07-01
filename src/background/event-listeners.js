@@ -37,7 +37,7 @@ window.setTimeout(() => {
     },
   }
 ]
-  .map(async event => {
+  .map(event => {
     event.func.addListener(async function() {
       if (!tmp || !tmp.initialized) {
         await tmpInitializedPromise;
