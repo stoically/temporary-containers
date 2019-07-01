@@ -119,6 +119,9 @@ class Preferences {
     if (newPreferences.deletesHistory.active) {
       this.permissions.history = true;
     }
+    if (newPreferences.contextMenuBookmarks || newPreferences.deletesHistory.contextMenuBookmarks) {
+      this.permissions.bookmarks = true;
+    }
 
     if (oldPreferences.contextMenu !== newPreferences.contextMenu ||
       oldPreferences.contextMenuBookmarks !== newPreferences.contextMenuBookmarks ||

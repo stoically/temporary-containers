@@ -304,7 +304,7 @@ export default {
                 type="checkbox"
               >
               <label>
-                Disable in Permanent Containers
+                Disable for Permanent Containers
               </label>
             </div>
           </div>
@@ -318,7 +318,7 @@ export default {
                 type="checkbox"
               >
               <label>
-                Disable in Temporary Containers
+                Disable for Temporary Containers
               </label>
             </div>
           </div>
@@ -622,6 +622,5 @@ export default {
         </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
