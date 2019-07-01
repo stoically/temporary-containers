@@ -67,11 +67,28 @@ export default (App, {popup = false}) => {
     },
     methods: {
       async initialize() {
-        const pong = await browser.runtime.sendMessage({method: 'ping'});
-        if (pong !== 'pong') {
+        setTimeout(() => {
+          if (!this.app.initialized) {
+            this.$root.$emit('showMessage', 'Loading', {hide: true});
+          }
+        }, 500);
+
+        let bgInitialized = true;
+        try {
+          const pong = await browser.runtime.sendMessage({method: 'ping'});
+          if (pong !== 'pong') {
+            bgInitialized = false;
+          }
+        } catch (error) {
+          bgInitialized = false;
+        }
+
+        if (!bgInitialized) {
           this.$root.$emit('showError', 'Add-on not initialized yet, please try again');
           return;
         }
+
+        this.$root.$emit('hideMessage');
 
         const {permissions: allPermissions} = await browser.permissions.getAll();
         const permissions = {

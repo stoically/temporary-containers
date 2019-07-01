@@ -7,13 +7,18 @@ export default {
     };
   },
   mounted() {
-    this.$root.$on('showMessage', message => {
+    this.$root.$on('showMessage', (message, options = {}) => {
       this.error = false;
       this.message = message;
 
-      setTimeout(() => {
-        this.message = false;
-      }, 3000);
+      if (!options.hide) {
+        setTimeout(() => {
+          this.message = false;
+        }, 3000);
+      }
+    });
+    this.$root.$on('hideMessage', () => {
+      this.message = false;
     });
     this.$root.$on('showError', (message, options = {}) => {
       this.error = true;
