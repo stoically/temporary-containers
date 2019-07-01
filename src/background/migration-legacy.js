@@ -5,7 +5,7 @@ let migrationReady;
 const migrationReadyPromise = new window.PCancelable(resolve => migrationReady = resolve);
 const migrationReadyTimeout = window.setTimeout(() => {
   migrationReadyPromise.cancel();
-}, 15000);
+}, 10000);
 
 const migrationOnInstalledListener = async function() {
   browser.runtime.onInstalled.removeListener(migrationOnInstalledListener);
@@ -33,7 +33,7 @@ window.migrationLegacy = async (migration) => {
       window.setTimeout(() => {
         // onInstalled didnt fire, again.
         reject();
-      }, 15000);
+      }, 10000);
       debug('[migration-legacy] ready');
       migrationReady();
     });
