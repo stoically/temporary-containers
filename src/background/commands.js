@@ -71,7 +71,21 @@ class Commands {
       }
       this.tabs.createInSameContainer();
       break;
-    }
+
+    case 'new_temporary_container_tab_current_url': {
+      if (!this.pref.keyboardShortcuts.AltO) {
+        return;
+      }
+      const [activeTab] = await browser.tabs.query({currentWindow: true, active: true});
+      if (!activeTab || !activeTab.url.startsWith('http')) {
+        return;
+      }
+      this.container.createTabInTempContainer({
+        url: activeTab.url,
+        deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic'
+      });
+      break;
+    }}
   }
 }
 

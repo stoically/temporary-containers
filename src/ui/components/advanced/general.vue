@@ -23,9 +23,9 @@ export default {
     $('#advancedGeneral .ui.checkbox').checkbox();
     $('#advancedGeneral .ui.accordion').accordion({exclusive: false});
 
-    $('#advancedIgnoreRequetsForm').form({
+    $('#advancedIgnoreRequestsForm').form({
       fields: {
-        advancedIgnoreRequetsPattern: 'empty'
+        advancedIgnoreRequestsPattern: 'empty'
       },
       onSuccess: (event) => {
         event.preventDefault();
@@ -99,7 +99,6 @@ export default {
             '&quot;Deletes History Temporary Containers&quot; always reopen new tabs to avoid leaving traces in recently closed tabs' : false"
         >
           <select
-            id="automaticModeNewTab"
             v-model="preferences.automaticMode.newTab"
             class="ui fluid dropdown"
           >
@@ -138,7 +137,6 @@ export default {
         <div class="field">
           <div class="ui checkbox">
             <input
-              id="pageAction"
               v-model="preferences.pageAction"
               type="checkbox"
             >
@@ -182,7 +180,6 @@ export default {
         <div class="field">
           <div class="ui checkbox">
             <input
-              id="contextMenu"
               v-model="preferences.contextMenu"
               type="checkbox"
             >
@@ -190,12 +187,8 @@ export default {
           </div>
         </div>
         <div class="field">
-          <div
-            id="contextMenuBookmarks"
-            class="ui checkbox"
-          >
+          <div class="ui checkbox">
             <input
-              id="contextMenuBookmarksCheckbox"
               v-model="preferences.contextMenuBookmarks"
               type="checkbox"
             >
@@ -214,13 +207,9 @@ export default {
         <div class="ui small message">
           Starting with Firefox 66 it's possible to reassign keyboard shortcuts on the Add-ons overview page.
         </div>
-        <div
-          id="keyboardShortcutsAltCField"
-          class="field"
-        >
+        <div class="field">
           <div class="ui checkbox">
             <input
-              id="keyboardShortcutsAltC"
               v-model="preferences.keyboardShortcuts.AltC"
               type="checkbox"
             >
@@ -228,58 +217,54 @@ export default {
           </div>
         </div>
         <div
-          id="keyboardShortcutsAltPField"
           class="field"
           :class="{hidden: !permissions.history}"
         >
           <div class="ui checkbox">
             <input
-              id="keyboardShortcutsAltP"
               v-model="preferences.keyboardShortcuts.AltP"
               type="checkbox"
             >
             <label>Alt+P - Open a new tab in a new 'Deletes History Temporary Container'</label>
           </div>
         </div>
-        <div
-          id="keyboardShortcutsAltNField"
-          class="field"
-        >
+        <div class="field">
           <div class="ui checkbox">
             <input
-              id="keyboardShortcutsAltN"
               v-model="preferences.keyboardShortcuts.AltN"
               type="checkbox"
             >
             <label>Alt+N - Open a new 'No Container' tab</label>
           </div>
         </div>
-        <div
-          id="keyboardShortcutsAltShiftCField"
-          class="field"
-        >
+        <div class="field">
           <div class="ui checkbox">
             <input
-              id="keyboardShortcutsAltShiftC"
               v-model="preferences.keyboardShortcuts.AltShiftC"
               type="checkbox"
             >
             <label>Alt+Shift+C - Open a new 'No Container' tab in a new window</label>
           </div>
         </div>
-        <div
-          id="keyboardShortcutsAltXField"
-          class="field"
-        >
+        <div class="field">
           <div class="ui checkbox">
             <input
-              id="keyboardShortcutsAltX"
               v-model="preferences.keyboardShortcuts.AltX"
               type="checkbox"
             >
-            <label>Alt+X - Open a new tab in the same container as the currently active tab</label>
+            <label>Alt+X - Open a new tab in the same container as the active tab</label>
           </div>
         </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input
+              v-model="preferences.keyboardShortcuts.AltO"
+              type="checkbox"
+            >
+            <label>Alt+O - Open active tab URL in a new Temporary Container Tab</label>
+          </div>
+        </div>
+
         <div class="m-b" />
       </div>
       <div class="title">
@@ -291,7 +276,6 @@ export default {
       <div class="content">
         <div class="ui checkbox">
           <input
-            id="replaceTabs"
             v-model="preferences.replaceTabs"
             type="checkbox"
           >
@@ -308,7 +292,6 @@ export default {
       <div class="content">
         <div class="ui checkbox">
           <input
-            id="closeRedirectorTabs"
             v-model="preferences.closeRedirectorTabs.active"
             type="checkbox"
           >
@@ -351,12 +334,12 @@ export default {
           </div>
         </div>
         <form
-          id="advancedIgnoreRequetsForm"
+          id="advancedIgnoreRequestsForm"
           class="ui form"
           style="margin-left: 20px; margin-top: 20px;"
         >
           <domain-pattern
-            id="advancedIgnoreRequetsPattern"
+            id="advancedIgnoreRequestsPattern"
             :domain-pattern.sync="excludeDomainPattern"
           />
           <div class="field">

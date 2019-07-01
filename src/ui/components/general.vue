@@ -135,7 +135,10 @@ export default {
           Automatically reopen tabs in new Temporary Containers when<ul>
           <li> Opening a new tab
           <li> A tab tries to load a link in the default container
-          <li> An external program opens a link in the browser</ul></div>
+          <li> An external program opens a link in the browser</ul>
+          <i>Note: If you experience long delays when reopening,
+          you can change how Automatic Mode works in the Advanced Preferences</i>
+          </div>
         `,
         inline: true,
         position: 'bottom left'
@@ -155,7 +158,9 @@ export default {
         <li> View Statistics
         ${this.permissions.history ? '<li> Open current tab URL in new "Deletes History Temporary Container"' : ''}
         ${this.permissions.history ? '<li> Open new "Deletes History Temporary Container"' : ''}
-        </ul></div>
+        </ul>
+        <i>Note: You can change the default popup tab in the Advanced preferences</i>
+        </div>
       `,
         inline: true,
         position: 'bottom left'

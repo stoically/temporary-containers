@@ -44,29 +44,35 @@
       },
       "description": "Open a new Tab in a new Temporary Container"
     },
-    "new_no_history_tab": {
+    "new_same_container_tab": {
       "suggested_key": {
-        "default": "Alt+P"
+        "default": "Alt+X"
       },
-      "description": "Open a new Tab in a new 'Deletes History Temporary Container'"
+      "description": "Open a new Tab in the same Container as the active Tab. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_no_container_tab": {
       "suggested_key": {
         "default": "Alt+N"
       },
-      "description": "Open a new 'No Container' Tab"
+      "description": "Open a new 'No Container' Tab. Enable in Advanced Preferences > Keyboard shortcuts"
     },
     "new_no_container_window_tab": {
       "suggested_key": {
         "default": "Alt+Shift+C"
       },
-      "description": "Open a new 'No Container' Tab in a new Window"
+      "description": "Open a new 'No Container' Tab in a new Window. Enable in Advanced Preferences > Keyboard shortcuts"
     },
-    "new_same_container_tab": {
+    "new_temporary_container_tab_current_url": {
       "suggested_key": {
-        "default": "Alt+X"
+        "default": "Alt+O"
       },
-      "description": "Open a new Tab in the same Container as the currently active Tab"
+      "description": "Open active Tabs URL in a new Temporary Container Tab. Enable in Advanced Preferences > Keyboard shortcuts"
+    },
+    "new_no_history_tab": {
+      "suggested_key": {
+        "default": "Alt+P"
+      },
+      "description": "Open a new Tab in a new 'Deletes History Temporary Container'. History permissions under Advanced Preferences > Delete History must be given"
     }
   },
   "options_ui": {

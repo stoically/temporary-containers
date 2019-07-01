@@ -57,7 +57,8 @@ class Preferences {
         AltP: true,
         AltN: false,
         AltShiftC: false,
-        AltX: false
+        AltX: false,
+        AltO: false
       },
       replaceTabs: false,
       closeRedirectorTabs: {
