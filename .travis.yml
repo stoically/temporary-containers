@@ -10,8 +10,13 @@ before_install:
   - sleep 3
 
 script:
-  - npm run build
-  - npm run test:functional
+  - if [ -z $TRAVIS_TAG ]; then
+      unset WEB_EXT_API_KEY;
+      unset WEB_EXT_API_SECRET;
+      npm run build;
+    else
+      npm run build:sign;
+    fi
   - npm run docs:build
 
 after_success: npm run coverage
@@ -20,6 +25,30 @@ deploy:
   provider: pages
   local_dir: docs/.vuepress/dist
   skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  github_token: $GITHUB_TOKEN
   on:
     branch: master
+
+deploy:
+  provider: releases
+  prerelease: true
+  api_key: $GITHUB_TOKEN
+  file_glob: true
+  file: web-ext-artifacts/*
+  skip_cleanup: true
+  draft: true
+  name: $TRAVIS_TAG
+  condition: $TRAVIS_TAG = *"beta"*
+  on:
+    tags: true
+
+after_script:
+  - if [ -n $TRAVIS_TAG ]; then
+      git clone https://github.com/stoically/temporary-containers.git;
+      cd temporary-containers;
+      git checkout beta-updates;
+      BETA_VERSION=$(echo $TRAVIS_TAG | sed "s/^v//");
+      sed -i -e "s/[0-9]\+\.[0-9]\+beta[0-9]\+/$BETA_VERSION/g" updates.json;
+      git commit -am "$TRAVIS_TAG";
+      git push https://$GITHUB_TOKEN:x-oauth-basic@github.com/stoically/temporary-containers.git/ beta-updates;
+    fi

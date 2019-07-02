@@ -47,16 +47,12 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 
 #### Pre-Release on GitHub
 
-* Set API key/secret env vars
-  * $WEB_EXT_API_KEY (JWT issuer)
-  * $WEB_EXT_API_SECRET (JWT secret)
-* Bump manifest version as beta
-* Commit
-* `npm run build-sign` (Adds `update_url` to manifest and reverts with `git checkout -- manifest.json`)
-* Create and publish GitHub pre-release with generated xpi web-ext-artifact
-* Add new version with link to GitHub xpi to `updates.json`
+* Bump manifest version
 * Commit and push
-
+* git tag v1.0beta1
+* git push origin v1.0beta1
+* git log $(git tag --sort=-version:refname | sed -n 2p)..HEAD --pretty=format:%s
+* Add release notes and publish
 
 
 ## Libraries
