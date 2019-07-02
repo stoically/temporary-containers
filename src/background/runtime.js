@@ -58,7 +58,7 @@ class Runtime {
         defaults: this.preferences.defaults,
         source: this.pref
       })) {
-        await this.persist();
+        await this.storage.persist();
       }
       await this.preferences.handleChanges({
         oldPreferences,
