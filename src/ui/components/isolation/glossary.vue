@@ -52,13 +52,16 @@ export default {
             <strong>Mouse Clicks:</strong> clicking links on websites in the <i>Current Tab</i>
           </li>
           <li>
-            <strong>Current Tab:</strong> active/selected tab
-          </li>
-          <li>
             <strong>Target Domain:</strong> the <i>Domain</i> which the <i>Current Tab</i> <i>Navigates</i> to
           </li>
           <li>
             <strong>Domain:</strong> "web address", e.g. "example.com"
+          </li>
+          <li>
+            <strong>Current Tab:</strong> active/selected tab
+          </li>
+          <li>
+            <strong>Current Tab Domain:</strong> the <i>Domain</i> loaded or trying to load in <i>Current Tab</i>
           </li>
           <div class="ui divider" />
           <li>
