@@ -150,8 +150,7 @@ class Isolation {
       this.request.lastSeenRequestUrl[request.requestId] !== tab.url ?
       this.request.lastSeenRequestUrl[request.requestId] :
       tab.url === 'about:blank' && openerTab && openerTab.url.startsWith('http') && openerTab.url || tab.url;
-    debug('!!!!!!!', url);
-    const parsedURL = new URL(url);
+    const parsedURL = url.startsWith('about:') || url.startsWith('moz-extension:') ? url : new URL(url);
     const parsedRequestURL = new URL(request.url);
 
     for (const patternPreferences of this.pref.isolation.domain) {
@@ -302,7 +301,7 @@ class Isolation {
         return false;
       }
     } else {
-      const parsedUrl = new URL(url);
+      const parsedUrl = url.startsWith('about:') || url.startsWith('moz-extension:') ? url : new URL(url);
       return parsedUrl.hostname === domainPattern ||
              globToRegexp(domainPattern).test(parsedUrl.hostname);
     }
