@@ -1,7 +1,10 @@
 class TemporaryContainers {
   constructor() {
     this.initialized = false;
+    debug('initializing');
 
+    // TODO use import via script module instead of window vars when jsdom supports it
+    // See: https://github.com/stoically/temporary-containers/issues/275
     this.utils = new window.Utils(this);
     this.preferences = new window.Preferences(this);
     this.storage = new window.TmpStorage(this);
@@ -66,7 +69,7 @@ class TemporaryContainers {
 
     if (this.storage.installed && !browser._mochaTest) {
       browser.tabs.create({
-        url: browser.runtime.getURL('options.html#/installed')
+        url: browser.runtime.getURL('options.html?installed')
       });
     }
 
