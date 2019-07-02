@@ -20,7 +20,7 @@ No isolation applies.
 - [Not every website navigation is actually a browser navigation which can get isolated](Isolation-Notes#navigating-in-tabs-isolation-exceptions)
 - Navigating in tabs also covers mouse clicks (since it's a navigation), so you might not need to configure mouse clicks, unless you want a more strict configuration for a specific mouse click. Navigating in tabs is also more reliable, so you should prefer that if possible.
 
-## Mouse Clicks on links should open new Temporary Containers
+## Mouse Click on links should open new Temporary Containers
 
 `Middle Mouse`, `Ctrl/Cmd+Left Mouse` and `Left Mouse`
 
@@ -37,7 +37,7 @@ Will reopen clicked links in new Temporary Containers if the clicked link is a U
 No isolation applies.
 
 ### Notes
-- [Not all Mouse Clicks can get catched](Isolation-Notes#mouse-clicks-exception).
+- [Not all Mouse Click can get catched](Isolation-Notes#mouse-clicks-exception).
 
 ## Exclude permanent containers from Isolation
 
@@ -50,4 +50,4 @@ Permanent containers added here are excluded from Isolation.
 ---
 
 ### General Notes
-- `Navigating in tabs` and `Mouse Clicks` in `Global Isolation` apply to all tabs unless overwritten by a specific [`Per Domain Isolation`](Per-Domain-Isolation) configuration. `Exclude permanent containers` and `Exclude domains` can't get overwritten.
+- `Navigating in tabs` and `Mouse Click` in `Global Isolation` apply to all tabs unless overwritten by a specific [`Per Domain Isolation`](Per-Domain-Isolation) configuration. `Exclude permanent containers` and `Exclude domains` can't get overwritten.

@@ -1,6 +1,6 @@
 # Per Domain
 
-`Per Domain Isolation` is basically the same as [`Global Isolation`](Global-Isolation), but the configuration only applies per configured `Domain Pattern`, not for all tabs. It overwrites `Navigating in tabs` and `Mouse Clicks` from `Global Isolation` if you set the configuration to something else than `Use Global`.
+`Per Domain Isolation` is basically the same as [`Global Isolation`](Global-Isolation), but the configuration only applies per configured `Domain Pattern`, not for all tabs. It overwrites `Navigating in tabs` and `Mouse Click` from `Global Isolation` if you set the configuration to something else than `Use Global`.
 
 ## Domain Pattern
 
@@ -49,7 +49,7 @@ No isolation applies.
 ### Notes
 - [Not every website navigation is actually a browser navigation which can get isolated](Isolation-Notes#navigating-in-tabs-isolation-exceptions)
 
-## Mouse Clicks on links should open new Temporary Containers
+## Mouse Click on links should open new Temporary Containers
 
 `Middle Mouse`, `Ctrl/Cmd+Left Mouse` and `Left Mouse`
 
@@ -69,7 +69,7 @@ Will reopen clicked links in new Temporary Containers if the clicked link is a U
 No isolation applies.
 
 ### Notes
-- [Not all Mouse Clicks can get catched](Isolation-Notes#mouse-clicks-exception).
+- [Not all Mouse Click can get catched](Isolation-Notes#mouse-clicks-exception).
 - Navigating in tabs also covers mouse clicks (since it's a navigation), so you might not need to configure mouse clicks, unless you want a more strict configuration for a specific mouse click. Navigating in tabs is also more reliable, so you should prefer that if possible.
 
 ## Exclude target domains

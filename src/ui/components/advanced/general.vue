@@ -340,7 +340,7 @@ export default {
             v-model="preferences.replaceTabs"
             type="checkbox"
           >
-          <label>Instead of creating a new tab replace the currently current tab</label>
+          <label>Instead of creating a new tab replace the Current Tab</label>
         </div>
         <div class="m-b" />
       </div>

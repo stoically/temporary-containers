@@ -189,11 +189,12 @@ class TmpRequest {
       return this.mac.maybeReopenConfirmPage(macAssignment, request, tab);
     }
 
+    debug('[_webRequestOnBeforeRequest] decided to reload in temp tab', tab, request);
     if (this.cancelRequest(request)) {
       return { cancel: true };
     }
 
-    debug('[_webRequestOnBeforeRequest] onBeforeRequest reload in temp tab', tab, request);
+    debug('[_webRequestOnBeforeRequest] reload in temp tab', tab, request);
     await this.container.reloadTabInTempContainer({
       tab,
       url: request.url,
@@ -245,6 +246,7 @@ class TmpRequest {
       if (this.shouldCancelRequest(request)) {
         // same requestId or url from the same tab, this is a redirect that we have to cancel to prevent opening two tabs
         cancel = true;
+        debug('[cancelRequest] probably redirect, aborting', request);
       }
       // we decided to cancel the request at this point, register canceled request
       this.canceledTabs[request.tabId].requestIds[request.requestId] = true;

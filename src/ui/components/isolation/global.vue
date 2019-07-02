@@ -107,7 +107,7 @@ export default {
     <div class="ui form">
       <div style="padding: 5px 0 15px 5px">
         <span style="font-size: 13px">
-          <i>Navigations</i> or <i>Mouse Clicks</i> matching<br v-if="popup">
+          A <i>Navigation</i> or <i>Mouse Click</i> matching<br v-if="popup">
           <i>Configurations</i> result in <i>Isolation</i>
         </span>
       </div>
@@ -120,7 +120,7 @@ export default {
         >
           <h4>
             <i class="dropdown icon" />
-            Navigations
+            Navigation
           </h4>
         </div>
         <div
@@ -128,6 +128,7 @@ export default {
           :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
           <div class="field">
+            <label>Target Domain</label>
             <select
               v-model="preferences.isolation.global.navigation.action"
               class="ui fluid dropdown"
@@ -136,10 +137,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                Not Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain & Subdomains' :
+                  'Different Tab Domain & Subdomains'
+                }}
               </option>
               <option value="notsamedomainexact">
-                Not Exact Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain' :
+                  'Different Tab Domain'
+                }}
               </option>
               <option value="always">
                 Always
@@ -150,7 +157,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Mouse Clicks
+            Mouse Click
           </h4>
         </div>
         <div
@@ -161,8 +168,8 @@ export default {
             v-if="!popup"
             class="ui small message"
           >
-            Navigation Configuration also covers Mouse Clicks, since they result in a Navigation, so you might not need to additionally
-            configure Mouse Clicks, unless you want a more strict Configuration for specific Mouse Clicks.
+            Navigation Configuration also includes the Mouse Click, as it leads to navigation, so you might not need to additionally
+            configure Mouse Click, unless you want a stricter Configuration for a particular Mouse Click.
             Navigation Configuration is also more reliable, so you should prefer that if possible.
           </div>
           <div class="field">
@@ -175,10 +182,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                Not Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain & Subdomains' :
+                  'Different Tab Domain & Subdomains'
+                }}
               </option>
               <option value="notsamedomainexact">
-                Not Exact Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain' :
+                  'Different Tab Domain'
+                }}
               </option>
               <option value="always">
                 Always
@@ -195,10 +208,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                Not Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain & Subdomains' :
+                  'Different Tab Domain & Subdomains'
+                }}
               </option>
               <option value="notsamedomainexact">
-                Not Exact Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain' :
+                  'Different Tab Domain'
+                }}
               </option>
               <option value="always">
                 Always
@@ -215,10 +234,16 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                Not Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain & Subdomains' :
+                  'Different Tab Domain & Subdomains'
+                }}
               </option>
               <option value="notsamedomainexact">
-                Not Exact Same Domain
+                {{ !popup ?
+                  'Different from Tab Domain' :
+                  'Different Tab Domain'
+                }}
               </option>
               <option value="always">
                 Always

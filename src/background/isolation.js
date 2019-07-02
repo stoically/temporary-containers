@@ -150,6 +150,7 @@ class Isolation {
       this.request.lastSeenRequestUrl[request.requestId] !== tab.url ?
       this.request.lastSeenRequestUrl[request.requestId] :
       tab.url === 'about:blank' && openerTab && openerTab.url.startsWith('http') && openerTab.url || tab.url;
+    debug('!!!!!!!', url);
     const parsedURL = new URL(url);
     const parsedRequestURL = new URL(request.url);
 

@@ -43,27 +43,8 @@ export default {
           :style="!popup ? 'margin-left: 7px' : ''"
         >
           <li>
-            <strong>Isolation:</strong> cancel <i>Navigations</i> and open <i>Target Domain</i> in new Temporay Container tab
+            <strong>Isolation:</strong> cancel <i>Navigation</i> and open <i>Target Domain</i> in new Temporay Container tab
           </li>
-          <li>
-            <strong>Navigations:</strong> "web browsing" in tabs, including <i>Mouse Clicks</i> or using the address bar
-          </li>
-          <li>
-            <strong>Mouse Clicks:</strong> clicking links on websites in the <i>Current Tab</i>
-          </li>
-          <li>
-            <strong>Target Domain:</strong> the <i>Domain</i> which the <i>Current Tab</i> <i>Navigates</i> to
-          </li>
-          <li>
-            <strong>Domain:</strong> "web address", e.g. "example.com"
-          </li>
-          <li>
-            <strong>Current Tab:</strong> active/selected tab
-          </li>
-          <li>
-            <strong>Current Tab Domain:</strong> the <i>Domain</i> loaded or trying to load in <i>Current Tab</i>
-          </li>
-          <div class="ui divider" />
           <li>
             <strong>Configurations:</strong> configured options/preferences
           </li>
@@ -77,25 +58,7 @@ export default {
             </a>
           </li>
           <li>
-            <strong>Never:</strong> no <i>Isolation</i>
-          </li>
-          <li>
-            <strong>Not Same Domain:</strong> <i>Current Tab Domain</i>, including <i>Subdomains</i>, does not match <i>Target Domain</i>
-          </li>
-          <li>
-            <strong>Subdomain:</strong> e.g. "sub.example.com" or "foo.bar.example.com"
-          </li>
-          <li>
-            <strong>Not Exact Same Domain:</strong> <i>Current Tab Domain</i> does not exactly match <i>Target Domain</i>
-          </li>
-          <li>
-            <strong>Always:</strong> matches all <i>Navigations</i>
-          </li>
-
-
-          <div class="ui divider" />
-          <li>
-            <strong>Per Domain:</strong> <i>Configurations</i> apply if the <i>Current Tab Domain</i> matches the <i>Domain Pattern</i>
+            <strong>Per Domain:</strong> <i>Configurations</i> apply if the <i>Tab Domain</i> matches the <i>Domain Pattern</i>
             <a
               href="https://github.com/stoically/temporary-containers/wiki/Per-Domain-Isolation"
               target="_blank"
@@ -103,6 +66,45 @@ export default {
               <i class="icon-info-circled" />
             </a>
           </li>
+          <div class="ui divider" />
+          <li>
+            <strong>Navigation:</strong> "web browsing" in tabs, including <i>Mouse Click</i> or using the address bar
+          </li>
+          <li>
+            <strong>Target Domain:</strong> <i>Domain</i> which a tab <i>Navigates</i> to
+          </li>
+          <li>
+            <strong>Mouse Click:</strong> clicking links on websites in <i>Current Tab</i> resulting in <i>Navigation</i> to <i>Target Domain</i>
+          </li>
+          <li>
+            <strong>Domain:</strong> "web address", e.g. "example.com" - in case of new tabs the domain is "about:newtab"
+          </li>
+          <li>
+            <strong>Current Tab:</strong> active/selected tab
+          </li>
+          <li>
+            <strong>Tab Domain:</strong> <i>Domain</i> loaded in a tab
+          </li>
+          <li>
+            <strong>Loading Tab Domain:</strong> <i>Domain</i> trying to load in a tab
+          </li>
+          <div class="ui divider" />
+          <li>
+            <strong>Never:</strong> no <i>Isolation</i>
+          </li>
+          <li>
+            <strong>Different from Tab Domain & Subdomains:</strong> <i>Tab Domain</i> & <i>Subdomains</i> do not match <i>Target Domain</i>
+          </li>
+          <li>
+            <strong>Subdomain:</strong> e.g. "sub.example.com" or "foo.bar.example.com"
+          </li>
+          <li>
+            <strong>Different from Tab Domain:</strong> <i>Tab Domain</i> does not exactly match <i>Target Domain</i>
+          </li>
+          <li>
+            <strong>Always:</strong> matches every <i>Navigation</i>
+          </li>
+          <div class="ui divider" />
           <li>
             <strong>Domain Pattern:</strong> <i>Domain</i> or <i>Subdomain</i>
             <a
@@ -112,12 +114,11 @@ export default {
               <i class="icon-info-circled" />
             </a>
           </li>
-
           <li>
-            <strong>Navigation Origin:</strong> the <i>Domain</i> from which a <i>Navigation</i> originated
+            <strong>Originating Domain:</strong> <i>Domain</i> from which a <i>Navigation</i> originated
           </li>
           <li>
-            <strong>Not Same Origin:</strong> the <i>Navigation Origin</i> does not match the <i>Current Tab Domain</i>
+            <strong>Different from Loading Tab Domain:</strong> <i>Originating Domain</i> does not match the <i>Tab Domain</i>
           </li>
           <li>
             <strong>Permanent Containers:</strong> all containers that are neither Temporary nor the <i>Default Container</i>
@@ -133,7 +134,7 @@ export default {
           </li>
           <div class="ui divider" />
           <li>
-            <strong>Exclude:</strong> matching <i>Configurations</i> <i>Never</i> result in <i>Isolation</i>
+            <strong>Exclude:</strong> matching <i>Configurations</i> will <i>Never</i> result in <i>Isolation</i>
           </li>
           <li>
             <strong>Exclusion Pattern:</strong> same as <i>Domain Pattern</i>
