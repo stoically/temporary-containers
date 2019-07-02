@@ -290,7 +290,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Always
+            Navigation Origin
           </h4>
         </div>
         <div
@@ -304,10 +304,10 @@ export default {
               class="ui fluid dropdown"
             >
               <option value="disabled">
-                Disabled
+                Never
               </option>
               <option value="enabled">
-                Enabled
+                Not Same Origin
               </option>
             </select>
             <div
@@ -320,7 +320,10 @@ export default {
                 type="checkbox"
               >
               <label>
-                Not if navigating in Permanent Container
+                {{ !popup ?
+                  'Never if Navigating in Permanent Container' :
+                  'Never in Permanent Container'
+                }}
               </label>
             </div>
             <div />
@@ -334,7 +337,10 @@ export default {
                 type="checkbox"
               >
               <label>
-                Not if navigating in Temporary Container
+                {{ !popup ?
+                  'Never if Navigating in Temporary Container' :
+                  'Never in Temporary Container'
+                }}
               </label>
             </div>
           </div>
@@ -342,7 +348,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Navigation
+            Navigations
           </h4>
         </div>
         <div
@@ -386,9 +392,9 @@ export default {
             v-if="!popup"
             class="ui small message"
           >
-            Navigation also covers mouse clicks (since they result in a navigation), so you might not need to additionally
-            configure mouse clicks, unless you want a more strict configuration for specific mouse clicks.
-            Navigation is also more reliable, so you should prefer that if possible.
+            Navigation Configuration also covers Mouse Clicks, since they result in a Navigation, so you might not need to additionally
+            configure Mouse Clicks, unless you want a more strict Configuration for specific Mouse Clicks.
+            Navigation Configuration is also more reliable, so you should prefer that if possible.
           </div>
           <div class="field">
             <label>Middle Mouse</label>
@@ -489,7 +495,7 @@ export default {
               </form>
               <div style="margin-top: 20px;">
                 <div v-if="!Object.keys(domain.excluded).length">
-                  No domains excluded
+                  No Domains Excluded
                 </div>
                 <div v-else>
                   <div
@@ -546,7 +552,7 @@ export default {
         style="margin-top: 10px"
         :class="{'content': popup}"
       >
-        No isolated domains added yet
+        No Isolated Domains added yet
       </div>
       <div
         v-else
@@ -567,7 +573,7 @@ export default {
               v-model="isolationDomainFilter"
               type="text"
               size="15"
-              placeholder="Filter isolated domains"
+              placeholder="Filter Isolated Domains"
               @focus="expandIsolationDomainFilter"
               @click="expandIsolationDomainFilter"
             >
@@ -577,7 +583,7 @@ export default {
             />
           </span>
           <span v-else>
-            <strong>Isolated domains</strong>
+            <strong>Isolated Domains</strong>
           </span>
         </div>
         <div :class="{'content': popup}">

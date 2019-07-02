@@ -241,22 +241,58 @@ export default {
               class="ui tab"
               data-tab="isolation-global"
             >
-              <isolation-glossary />
+              <div
+                class="ui breadcrumb"
+              >
+                <div class="section">
+                  Isolation
+                </div>
+                <i class="right angle icon divider" />
+                <div class="active section">
+                  Global
+                </div>
+              </div>
+              <div class="ui divider" />
               <isolation-global :app="app" />
+              <isolation-glossary />
             </div>
             <div
               class="ui tab"
               data-tab="isolation-per-domain"
             >
-              <isolation-glossary />
+              <div
+                class="ui breadcrumb"
+              >
+                <div class="section">
+                  Isolation
+                </div>
+                <i class="right angle icon divider" />
+                <div class="active section">
+                  Per Domain
+                </div>
+              </div>
+              <div class="ui divider" />
               <isolation-per-domain :app="app" />
+              <isolation-glossary />
             </div>
             <div
               class="ui tab"
               data-tab="isolation-mac"
             >
-              <isolation-glossary />
+              <div
+                class="ui breadcrumb"
+              >
+                <div class="section">
+                  Isolation
+                </div>
+                <i class="right angle icon divider" />
+                <div class="active section">
+                  Multi-Account Containers
+                </div>
+              </div>
+              <div class="ui divider" />
               <isolation-mac :app="app" />
+              <isolation-glossary />
             </div>
             <div
               class="ui tab"
