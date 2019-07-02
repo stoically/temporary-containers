@@ -53,7 +53,7 @@ class MouseClick {
     delay(1500, {signal: abortController.signal}).then(() => {
       debug('[linkClicked] cleaning up isolated', url);
       delete this.isolated[url];
-    }).catch(() => {});
+    }).catch(debug);
   }
 
 
