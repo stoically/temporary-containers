@@ -2,17 +2,21 @@
 // and wait for tmp to fully initialize before handling events
 
 const tmpInitializedAbortController = new AbortController;
+const tmpInitializedTimeout = window.setTimeout(() => {
+  tmpInitializedAbortController.abort();
+  debug('[event-listeners] tmpInitialized timed out');
+}, 5000);
+
 const tmpInitializedPromise = new Promise((resolve, reject) => {
-  window.tmpInitialized = resolve;
+  window.tmpInitialized = () => {
+    clearTimeout(tmpInitializedTimeout);
+    resolve();
+  };
 
   tmpInitializedAbortController.signal.addEventListener('abort', () => {
     reject();
   });
 });
-window.setTimeout(() => {
-  tmpInitializedAbortController.abort();
-  debug('[event-listeners] tmpInitialized timed out');
-}, 5000);
 
 [
   {
