@@ -25,12 +25,10 @@ class Statistics {
   async collect(request) {
     if (!this.pref.statistics &&
         !this.pref.deletesHistory.statistics) {
-      debug('[statistics:collect] disabled');
       return;
     }
 
     if (request.tabId === -1) {
-      debug('[statistics:collect] doesnt belong to a tab', request);
       return;
     }
 
@@ -38,16 +36,13 @@ class Statistics {
     try {
       tab = await browser.tabs.get(request.tabId);
     } catch (error) {
-      debug('[statistics:collect] couldnt get tab information', error);
       return;
     }
 
     if (!this.container.isTemporary(tab.cookieStoreId)) {
-      debug('[statistics:collect] not a temporary container');
       return;
     }
 
-    debug('[statistics:collect]', request);
     if (!this.requests[tab.cookieStoreId]) {
       this.requests[tab.cookieStoreId] = {
         contentLength: 0
@@ -103,7 +98,6 @@ class Statistics {
 
   finish() {
     if (this.removedContainerCount) {
-      debug('[tryToRemoveQueue] queue cleared');
       let notificationMessage = `Deleted Temporary Containers: ${this.removedContainerCount}`;
       if (this.removedContainerCookiesCount) {
         notificationMessage += `\nand ${this.removedContainerCookiesCount} Cookies`;
