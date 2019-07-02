@@ -13,18 +13,30 @@ class Log {
       this.DEBUG = true;
       this.stringify = false;
     }
+
+    this.debug('starting');
   }
 
   debug(...args) {
     if (!this.DEBUG) {
       return;
     }
+
+    args = args.map(arg => {
+      if (typeof arg === 'object' && arg.favIconUrl) {
+        arg = JSON.parse(JSON.stringify(arg));
+        delete arg.favIconUrl;
+        return arg;
+      }
+      return arg;
+    });
+
     if (this.stringify && !browser._mochaTest) {
       console.log(new Date().toUTCString(), ...args.map(JSON.stringify));
       console.trace();
       console.log('------------------------------------------');
     } else {
-      console.log(...args.slice(0));
+      console.log(new Date().toUTCString(), ...args.slice(0));
     }
   }
 }
