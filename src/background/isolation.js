@@ -148,7 +148,8 @@ class Isolation {
 
     const url = this.request.lastSeenRequestUrl[request.requestId] &&
       this.request.lastSeenRequestUrl[request.requestId] !== tab.url ?
-      this.request.lastSeenRequestUrl[request.requestId] : tab.url === 'about:blank' && openerTab && openerTab.url || tab.url;
+      this.request.lastSeenRequestUrl[request.requestId] :
+      tab.url === 'about:blank' && openerTab && openerTab.url.startsWith('http') && openerTab.url || tab.url;
     const parsedURL = new URL(url);
     const parsedRequestURL = new URL(request.url);
 
@@ -156,7 +157,7 @@ class Isolation {
       const domainPattern = patternPreferences.pattern;
 
       if (!this.matchDomainPattern(
-        tab.url === 'about:blank' && openerTab && openerTab.url || tab.url, domainPattern
+        tab.url === 'about:blank' && openerTab && openerTab.url.startsWith('http') && openerTab.url || tab.url, domainPattern
       )) {
         continue;
       }
@@ -238,7 +239,7 @@ class Isolation {
 
       if (!this.matchDomainPattern(tab.url, domainPattern)) {
         let openerMatches = false;
-        if (openerTab && !openerTab.url.startsWith('about:') &&
+        if (openerTab && openerTab.url.startsWith('http') &&
             this.matchDomainPattern(openerTab.url, domainPattern)) {
           openerMatches = true;
           debug('[shouldIsolateAlways] opener tab url matched the pattern', openerTab.url, domainPattern);
