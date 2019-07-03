@@ -134,7 +134,8 @@ export default {
           <div style="width:500px;">
           Automatically reopen tabs in new Temporary Containers when<ul>
           <li> Opening a new tab
-          <li> An external program opens a link in the browser</ul>
+          <li> Tab tries to load a website in no container
+          <li> External program opens a link in the browser</ul>
           <br>
           <span style="font-size:13px">
             Note: Some users experience delays when new tabs are reopened,

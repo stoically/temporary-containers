@@ -1,5 +1,5 @@
 <script>
-import Glossary from './glossary';
+import Glossary from './helper/glossary';
 import Global from './global';
 import PerDomain from './perdomain';
 import Mac from './mac';
@@ -22,7 +22,6 @@ export default {
 
 <template>
   <div v-show="app.initialized">
-    <glossary />
     <div class="ui top attached tabular menu">
       <a
         class="active item"
@@ -70,5 +69,6 @@ export default {
         :app="app"
       />
     </div>
+    <glossary />
   </div>
 </template>

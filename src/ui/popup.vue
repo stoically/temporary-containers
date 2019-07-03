@@ -1,11 +1,12 @@
 <script>
-import IsolationGlossary from './components/isolation/glossary';
+import IsolationGlossary from './components/isolation/helper/glossary';
 import IsolationGlobal from './components/isolation/global';
 import IsolationPerDomain from './components/isolation/perdomain';
 import IsolationMac from './components/isolation/mac';
 import Actions from './components/actions';
 import Statistics from './components/statistics';
 import Message from './components/message';
+import Breadcrumb from './components/breadcrumb';
 
 export default {
   components: {
@@ -15,7 +16,8 @@ export default {
     IsolationMac,
     Actions,
     Statistics,
-    Message
+    Message,
+    Breadcrumb
   },
   props: {
     app: {
@@ -109,6 +111,7 @@ export default {
 #container {
   padding: 10px;
   padding-top: 5px;
+  min-width: 370px;
   min-height: 280px;
 }
 .hidden { display: none; }
@@ -241,18 +244,7 @@ export default {
               class="ui tab"
               data-tab="isolation-global"
             >
-              <div
-                class="ui breadcrumb"
-              >
-                <div class="section">
-                  Isolation
-                </div>
-                <i class="right angle icon divider" />
-                <div class="active section">
-                  Global
-                </div>
-              </div>
-              <div class="ui divider" />
+              <breadcrumb tab="Global" />
               <isolation-global :app="app" />
               <isolation-glossary />
             </div>
@@ -260,18 +252,7 @@ export default {
               class="ui tab"
               data-tab="isolation-per-domain"
             >
-              <div
-                class="ui breadcrumb"
-              >
-                <div class="section">
-                  Isolation
-                </div>
-                <i class="right angle icon divider" />
-                <div class="active section">
-                  Per Domain
-                </div>
-              </div>
-              <div class="ui divider" />
+              <breadcrumb tab="Per Domain" />
               <isolation-per-domain :app="app" />
               <isolation-glossary />
             </div>
@@ -279,18 +260,7 @@ export default {
               class="ui tab"
               data-tab="isolation-mac"
             >
-              <div
-                class="ui breadcrumb"
-              >
-                <div class="section">
-                  Isolation
-                </div>
-                <i class="right angle icon divider" />
-                <div class="active section">
-                  Multi-Account Containers
-                </div>
-              </div>
-              <div class="ui divider" />
+              <breadcrumb tab="Multi-Account Containers" />
               <isolation-mac :app="app" />
               <isolation-glossary />
             </div>

@@ -1,9 +1,13 @@
 <script>
 import DomainPattern from '../domainpattern';
+import IntroHint from './helper/intro-hint';
+import MouseclickHint from './helper/mouseclick-hint';
 
 export default {
   components: {
-    DomainPattern
+    DomainPattern,
+    IntroHint,
+    MouseclickHint
   },
   props: {
     app: {
@@ -105,12 +109,7 @@ export default {
     id="isolationGlobal"
   >
     <div class="ui form">
-      <div style="padding: 5px 0 15px 5px">
-        <span style="font-size: 13px">
-          A <i>Navigation</i> or <i>Mouse Click</i> matching<br v-if="popup">
-          <i>Configurations</i> result in <i>Isolation</i>
-        </span>
-      </div>
+      <intro-hint :app="app" />
       <div
         id="isolationGlobalAccordion"
         class="ui accordion"
@@ -137,16 +136,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'Different from Tab Domain & Subdomains' :
-                  'Different Tab Domain & Subdomains'
-                }}
+                Different from Tab Domain & Subdomains
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'Different from Tab Domain' :
-                  'Different Tab Domain'
-                }}
+                Different from Tab Domain
               </option>
               <option value="always">
                 Always
@@ -164,14 +157,7 @@ export default {
           class="content"
           :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
-          <div
-            v-if="!popup"
-            class="ui small message"
-          >
-            Navigation Configuration also includes the Mouse Click, as it leads to navigation, so you might not need to additionally
-            configure Mouse Click, unless you want a stricter Configuration for a particular Mouse Click.
-            Navigation Configuration is also more reliable, so you should prefer that if possible.
-          </div>
+          <mouseclick-hint :app="app" />
           <div class="field">
             <label>Middle Mouse</label>
             <select
@@ -182,16 +168,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'Different from Tab Domain & Subdomains' :
-                  'Different Tab Domain & Subdomains'
-                }}
+                Different from Tab Domain & Subdomains
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'Different from Tab Domain' :
-                  'Different Tab Domain'
-                }}
+                Different from Tab Domain
               </option>
               <option value="always">
                 Always
@@ -208,16 +188,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'Different from Tab Domain & Subdomains' :
-                  'Different Tab Domain & Subdomains'
-                }}
+                Different from Tab Domain & Subdomains
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'Different from Tab Domain' :
-                  'Different Tab Domain'
-                }}
+                Different from Tab Domain
               </option>
               <option value="always">
                 Always
@@ -234,16 +208,10 @@ export default {
                 Never
               </option>
               <option value="notsamedomain">
-                {{ !popup ?
-                  'Different from Tab Domain & Subdomains' :
-                  'Different Tab Domain & Subdomains'
-                }}
+                Different from Tab Domain & Subdomains
               </option>
               <option value="notsamedomainexact">
-                {{ !popup ?
-                  'Different from Tab Domain' :
-                  'Different Tab Domain'
-                }}
+                Different from Tab Domain
               </option>
               <option value="always">
                 Always

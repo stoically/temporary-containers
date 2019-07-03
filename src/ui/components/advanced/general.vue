@@ -112,14 +112,15 @@ export default {
             </option>
           </select>
         </div>
-        <div class="ui small negative message">
+        <div
+          v-if="preferences.automaticMode.newTab === 'navigation'"
+          class="ui small negative message"
+        >
           <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
-          use the address bar for search engines. If you select "Don't instantly reopen new tabs in Temporary Containers"
-          here, cookies can get written into and read from the permanent default container as long as the new
-          tab didn't get reopened in a Temporary Container.<br>
+          use the address bar for search engines.
           <br>
           If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
-          and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo then it should be no problem
+          and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo, then it should be no problem
           to use the "Don't instantly reopen new tabs" preference.
         </div>
         <div class="m-b" />

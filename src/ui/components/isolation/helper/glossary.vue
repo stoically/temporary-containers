@@ -58,7 +58,7 @@ export default {
             </a>
           </li>
           <li>
-            <strong>Per Domain:</strong> <i>Configurations</i> apply if the <i>Tab Domain</i> matches the <i>Domain Pattern</i>
+            <strong>Per Domain:</strong> <i>Configurations</i> apply if the <i>Tab Domain</i> or <i>Loading Domain</i> match the <i>Domain Pattern</i>
             <a
               href="https://github.com/stoically/temporary-containers/wiki/Per-Domain-Isolation"
               target="_blank"
@@ -77,16 +77,19 @@ export default {
             <strong>Mouse Click:</strong> clicking links on websites in <i>Current Tab</i> resulting in <i>Navigation</i> to <i>Target Domain</i>
           </li>
           <li>
-            <strong>Domain:</strong> "web address", e.g. "example.com" - in case of new tabs the domain is "about:newtab"
+            <strong>Domain:</strong> "web address", e.g. "example.com" (in case of new tabs the domain is "about:newtab")
+          </li>
+          <li>
+            <strong>Subdomain:</strong> "deeper levels" of a <i>Domain</i>, e.g. "sub.example.com" or "foo.bar.example.com"
           </li>
           <li>
             <strong>Current Tab:</strong> active/selected tab
           </li>
           <li>
-            <strong>Tab Domain:</strong> <i>Domain</i> loaded in a tab
+            <strong>Tab Domain:</strong> <i>Domain</i> currently loaded in a tab
           </li>
           <li>
-            <strong>Loading Tab Domain:</strong> <i>Domain</i> trying to load in a tab
+            <strong>Loading Domain:</strong> <i>Domain</i> trying to load in a tab
           </li>
           <div class="ui divider" />
           <li>
@@ -94,9 +97,6 @@ export default {
           </li>
           <li>
             <strong>Different from Tab Domain & Subdomains:</strong> <i>Tab Domain</i> & <i>Subdomains</i> do not match <i>Target Domain</i>
-          </li>
-          <li>
-            <strong>Subdomain:</strong> e.g. "sub.example.com" or "foo.bar.example.com"
           </li>
           <li>
             <strong>Different from Tab Domain:</strong> <i>Tab Domain</i> does not exactly match <i>Target Domain</i>
@@ -118,7 +118,7 @@ export default {
             <strong>Originating Domain:</strong> <i>Domain</i> from which a <i>Navigation</i> originated
           </li>
           <li>
-            <strong>Different from Loading Tab Domain:</strong> <i>Originating Domain</i> does not match the <i>Tab Domain</i>
+            <strong>Different from Loading Domain:</strong> <i>Originating Domain</i> does not match the <i>Tab Domain</i>
           </li>
           <li>
             <strong>Permanent Containers:</strong> all containers that are neither Temporary nor the <i>Default Container</i>

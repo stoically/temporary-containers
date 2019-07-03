@@ -41,7 +41,6 @@ export default {
             href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"
             target="_blank"
           >Multi-Account Containers</a> Add-on, which needs to be installed and configured properly for this to work.
-          <strong>It's not related to the Per Domain Isolation "Always open in" configuration.</strong>
           To add new sites to permanent containers with MAC you need to disable this configuration temporarly,
           or use the toolbar icon popup to disable Isolation globally (circle icon), which makes assigning new sites easier.
           You can enable the popup in the general preferences.

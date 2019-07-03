@@ -84,7 +84,11 @@ class Preferences {
       statistics: false,
       ui: {
         expandPreferences: false,
-        popupDefaultTab: 'isolation-global'
+        popupDefaultTab: 'isolation-global',
+        isolation: {
+          introHintClosed: false,
+          mouseclickHintClosed: false
+        }
       },
     };
   }
