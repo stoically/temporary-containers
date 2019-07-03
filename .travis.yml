@@ -50,5 +50,6 @@ after_script:
       BETA_VERSION=$(echo $TRAVIS_TAG | sed "s/^v//");
       sed -i -e "s/[0-9]\+\.[0-9]\+beta[0-9]\+/$BETA_VERSION/g" updates.json;
       git commit -am "$TRAVIS_TAG";
+      sleep 600;
       git push https://$GITHUB_TOKEN:x-oauth-basic@github.com/stoically/temporary-containers.git/ beta-updates;
     fi
