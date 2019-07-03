@@ -62,17 +62,9 @@ class TemporaryContainers {
     await this.management.initialize();
     await this.tabs.initialize();
 
-
     debug('[tmp] initialized');
     this.initialized = true;
-    window.tmpInitialized(true);
-
-    if (this.storage.installed && !browser._mochaTest) {
-      browser.tabs.create({
-        url: browser.runtime.getURL('options.html?installed')
-      });
-    }
-
+    window.eventListeners.tmpInitialized(true);
     browser.browserAction.enable();
   }
 }
@@ -82,7 +74,24 @@ browser.browserAction.disable();
 window.TemporaryContainers = TemporaryContainers;
 window.tmp = new TemporaryContainers();
 
-/* istanbul ignore next */
-if (!browser._mochaTest) {
-  tmp.initialize();
-}
+(async () => {
+  if (browser._mochaTest) {
+    return;
+  }
+
+  try {
+    await tmp.initialize();
+
+    if (tmp.storage.installed) {
+      browser.tabs.create({
+        url: browser.runtime.getURL('options.html?installed')
+      });
+    }
+  } catch (error) {
+    browser.tabs.create({
+      url: browser.runtime.getURL(`
+        options.html?error=${encodeURIComponent(error.toString())}
+      `)
+    });
+  }
+})();

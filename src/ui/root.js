@@ -67,25 +67,36 @@ export default (App, {popup = false}) => {
     },
     methods: {
       async initialize(options = {}) {
-        let pongFailed = false;
+        let pongError = false;
+        let pongErrorMessage = false;
+        let initializeLoader = false;
+
+        if (window.location.search.startsWith('?error')) {
+          this.$root.$emit('showInitializeError', pongErrorMessage);
+          return;
+        }
 
         setTimeout(() => {
-          if (!this.app.initialized && !pongFailed) {
-            this.$root.$emit('showMessage', 'Loading', {close: false});
+          if (!this.app.initialized && !pongError) {
+            initializeLoader = true;
+            this.$root.$emit('showInitializeLoader');
           }
         }, 500);
 
         try {
           const pong = await browser.runtime.sendMessage({method: 'ping'});
           if (pong !== 'pong') {
-            pongFailed = true;
+            pongError = true;
           }
         } catch (error) {
-          pongFailed = true;
+          pongError = true;
+          pongErrorMessage = error;
         }
-
-        if (pongFailed) {
-          this.$root.$emit('showError', 'Add-on not initialized yet, please try again');
+        if (pongError) {
+          if (initializeLoader) {
+            this.$root.$emit('hideInitializeLoader');
+          }
+          this.$root.$emit('showInitializeError', pongErrorMessage);
           return;
         }
 
@@ -139,6 +150,9 @@ export default (App, {popup = false}) => {
           });
         } else {
           this.$root.$emit('hideMessage');
+        }
+        if (initializeLoader) {
+          this.$root.$emit('hideInitializeLoader');
         }
       },
       async checkPermissions(app) {
