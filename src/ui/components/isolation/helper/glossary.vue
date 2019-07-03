@@ -24,6 +24,7 @@ export default {
     style="padding: 5px"
   >
     <div
+      id="glossaryAccordion"
       ref="accordion"
       class="ui accordion"
     >

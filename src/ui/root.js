@@ -192,7 +192,7 @@ export default (App, {popup = false}) => {
         this.$nextTick(() => {
           if (app.preferences.ui.expandPreferences && !this.expandedPreferences) {
             Array.from(Array(15)).map((_, idx) => {
-              $('.ui.accordion').accordion('open', idx);
+              $('.ui.accordion:not(#glossaryAccordion)').accordion('open', idx);
             });
             this.expandedPreferences = true;
           } else if (!app.preferences.ui.expandPreferences && this.expandedPreferences) {

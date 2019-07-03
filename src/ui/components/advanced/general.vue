@@ -85,7 +85,10 @@ export default {
     id="advancedGeneral"
     class="ui form"
   >
-    <div class="ui accordion">
+    <div
+      id="advancedGeneralAccordion"
+      class="ui accordion"
+    >
       <div class="title">
         <h4>
           <i class="dropdown icon" />
