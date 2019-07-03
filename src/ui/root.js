@@ -72,7 +72,7 @@ export default (App, {popup = false}) => {
         let initializeLoader = false;
 
         if (window.location.search.startsWith('?error')) {
-          this.$root.$emit('showInitializeError', pongErrorMessage);
+          this.$root.$emit('showInitializeError');
           return;
         }
 
