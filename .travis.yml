@@ -43,7 +43,7 @@ deploy:
     tags: true
 
 after_script:
-  - if [ -n $TRAVIS_TAG ]; then
+  - if [[ $TRAVIS_TAG == *"beta"* ]]; then
       git clone https://github.com/stoically/temporary-containers.git;
       cd temporary-containers;
       git checkout beta-updates;
