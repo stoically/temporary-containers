@@ -4,22 +4,25 @@ class Log {
   constructor() {
     this.DEBUG = false;
     this.stringify = true;
+    this.checkedLocalStorage = false;
+    this.checkLocalStoragePromise = this.checkLocalStorage();
 
     this.debug = this.debug.bind(this);
-
-    if (window.localStorage.getItem('debug')) {
-      this.DEBUG = true;
-    } else if (window.localStorage.getItem('debug-dev')) {
-      this.DEBUG = true;
-      this.stringify = false;
-    }
-
-    this.debug('starting');
   }
 
-  debug(...args) {
+  async debug(...args) {
+    let date;
+    if (!this.checkedLocalStorage) {
+      date = new Date().toUTCString();
+      await this.checkLocalStoragePromise;
+    }
+
     if (!this.DEBUG) {
       return;
+    }
+
+    if (!date) {
+      date = new Date().toUTCString();
     }
 
     args = args.map(arg => {
@@ -32,31 +35,58 @@ class Log {
     });
 
     if (this.stringify && !browser._mochaTest) {
-      console.log(new Date().toUTCString(), ...args.map(JSON.stringify));
+      console.log(date, ...args.map(JSON.stringify));
       console.trace();
       console.log('------------------------------------------');
     } else {
-      console.log(new Date().toUTCString(), ...args.slice(0));
+      console.log(date, ...args.slice(0));
+    }
+  }
+
+  checkLocalStorage() {
+    if (this.DEBUG) {
+      return;
+    }
+
+    // let's put this in the js event queue, just to make sure
+    // that localstorage doesn't block registering event-listeners at all
+    return new Promise(resolve => setTimeout(() => {
+      if (window.localStorage.getItem('debug')) {
+        this.DEBUG = true;
+        this.stringify = true;
+        this.checkedLocalStorage = true;
+        this.debug('[log] enabled debug because of localstorage item');
+      } else if (window.localStorage.getItem('debug-dev')) {
+        this.DEBUG = true;
+        this.stringify = false;
+        this.checkedLocalStorage = true;
+        this.debug('[log] enabled debug-dev because of localstorage item');
+      }
+
+      resolve();
+    }));
+  }
+
+  onInstalledListener(details) {
+    browser.runtime.onInstalled.removeListener(this.onInstalledListener);
+
+    if (!this.DEBUG && details.temporary) {
+      this.DEBUG = true;
+      this.stringify = false;
+
+      if (details.reason === 'update') {
+        browser.tabs.create({
+          url: browser.runtime.getURL('options.html')
+        });
+      }
+
+      this.debug('[log] enabled debug-dev because of temporary install', details);
     }
   }
 }
 
-const logOnInstalledListener = details => {
-  browser.runtime.onInstalled.removeListener(logOnInstalledListener);
-  if (details.temporary) {
-    log.DEBUG = true;
-    log.stringify = false;
-
-    if (details.reason === 'update') {
-      browser.tabs.create({
-        url: browser.runtime.getURL('options.html')
-      });
-    }
-  }
-  debug('[log] onInstalled', details);
-};
-browser.runtime.onInstalled.addListener(logOnInstalledListener);
-
 window.log = new Log;
 // eslint-disable-next-line
 window.debug = log.debug;
+
+browser.runtime.onInstalled.addListener(log.onInstalledListener.bind(log));

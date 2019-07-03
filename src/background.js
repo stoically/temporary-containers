@@ -1,7 +1,7 @@
 class TemporaryContainers {
   constructor() {
     this.initialized = false;
-    debug('initializing');
+    debug('[tmp] initializing');
 
     // TODO use import via script module instead of window vars when jsdom supports it
     // See: https://github.com/stoically/temporary-containers/issues/275
