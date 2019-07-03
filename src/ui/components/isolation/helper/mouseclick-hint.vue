@@ -25,7 +25,7 @@ export default {
       @click="preferences.ui.isolation.mouseclickHintClosed = true"
     />
     <div style="max-width: 98%">
-      Navigation Configuration also includes Mouse Click, as they results in Navigation, so you might not need to additionally
+      Navigation Configuration also includes Mouse Click, as they result in Navigation, so you might not need to additionally
       configure Mouse Click, unless you want a stricter Configuration for a particular Mouse Click.
       Navigation Configuration is also more reliable, so you should prefer that if possible.
     </div>

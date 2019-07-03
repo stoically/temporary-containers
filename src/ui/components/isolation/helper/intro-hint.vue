@@ -36,11 +36,13 @@ export default {
           Configurations other than Never result in Isolation,
           which cancels the Navigation and opens the Target Domain
           in a new Temporary Container.
+        </div>
+        <div style="margin-top: 15px">
           Exclude Configurations prevent Isolation if they match.
         </div>
         <div style="margin-top: 15px">
           You can click on "Isolation Glossary" (at the bottom of the page)
-          to check for short word explanations.
+          to check for word explanations.
         </div>
       </div>
     </div>
