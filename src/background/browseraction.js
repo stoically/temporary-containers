@@ -9,8 +9,6 @@ class BrowserAction {
     this.storage = this.background.storage;
     this.container = this.background.container;
 
-    browser.browserAction.onClicked.addListener(this.onClicked.bind(this));
-
     if (this.pref.browserActionPopup) {
       this.setPopup();
     }

@@ -10,8 +10,6 @@ class Commands {
     this.container = this.background.container;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
-
-    browser.commands.onCommand.addListener(this.onCommand.bind(this));
   }
 
 

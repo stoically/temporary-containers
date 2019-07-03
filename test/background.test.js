@@ -95,7 +95,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
   });
 
 
-  describe('runtime.onStartup should sometimes reload already open Tab in Temporary Container', () => {
+  describe('initialize should sometimes reload already open Tab in Temporary Container', () => {
     if (!preferences.automaticMode.active || preferences.automaticMode.newTab === 'navigation') {
       return;
     }
@@ -115,10 +115,9 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       browser.contextualIdentities.create.resolves(fakeContainer);
       browser.tabs.create.resolves({id: 1});
       await background.initialize();
+      await nextTick();
       // eslint-disable-next-line require-atomic-updates
       background.storage.local.preferences.automaticMode.newTab = 'created';
-      await background.runtime.onStartup();
-      await nextTick();
       browser.contextualIdentities.create.should.have.been.calledOnce;
       browser.tabs.create.should.have.been.calledOnce;
 
@@ -137,7 +136,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       };
       browser.tabs.query.resolves([fakeNotDefaultTab]);
       await background.initialize();
-      await background.runtime.onStartup();
+      await nextTick();
 
       browser.contextualIdentities.create.should.not.have.been.called;
     });
@@ -146,7 +145,7 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
       const background = await loadBareBackground(preferences);
       browser.tabs.query.resolves([1,2]);
       await background.initialize();
-      await background.runtime.onStartup();
+      await nextTick();
 
       browser.contextualIdentities.create.should.not.have.been.called;
     });

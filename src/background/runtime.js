@@ -134,9 +134,8 @@ class Runtime {
 
   async onStartup() {
     // queue a container cleanup
-    delay(15000).then(() => {
-      this.container.cleanup(true);
-    });
+    await delay(15000);
+    this.container.cleanup(true);
   }
 }
 

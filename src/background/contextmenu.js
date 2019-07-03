@@ -12,10 +12,6 @@ class ContextMenu {
     this.storage = this.background.storage;
     this.container = this.background.container;
 
-    browser.contextMenus.onClicked.addListener(this.onClicked.bind(this));
-    browser.contextMenus.onShown.addListener(this.onShown.bind(this));
-    browser.windows.onFocusChanged.addListener(this.windowsOnFocusChanged.bind(this));
-
     this.add();
   }
 

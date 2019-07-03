@@ -6,55 +6,102 @@ class EventListeners {
     debug('[event-listeners] initializing');
     this.tmpInitializedPromiseResolvers = [];
     this.tmpInitialized = this.tmpInitialized.bind(this);
+    this._listeners = [];
 
-    browser.webRequest.onBeforeRequest.addListener(this.wrap(
-      'webRequest.onBeforeRequest', function() {
-        return tmp.request.webRequestOnBeforeRequest.call(tmp.request, ...arguments);
-      }, {
-        timeout: 5 * 1000
-      }
-    ), {
-      urls: ['<all_urls>'],
-      types: ['main_frame']
-    }, [
-      'blocking'
-    ]);
+    [
+      {
+        api: ['webRequest', 'onBeforeRequest'],
+        options: [
+          {urls: ['<all_urls>'], types: ['main_frame']},
+          ['blocking']
+        ],
+        target: ['request', 'webRequestOnBeforeRequest'],
+        timeout: 5,
+      },
+      {
+        api: ['webRequest', 'onCompleted'],
+        options: [{urls: ['<all_urls>'], types: ['main_frame']}],
+        target: ['request', 'cleanupCanceled']
+      },
+      {
+        api: ['webRequest', 'onErrorOccurred'],
+        options: [{urls: ['<all_urls>'], types: ['main_frame']}],
+        target: ['request', 'cleanupCanceled']
+      },
+      {
+        api: ['browserAction', 'onClicked'],
+        target: ['browseraction', 'onClicked']
+      },
+      ['commands', 'onCommand'],
+      {
+        api: ['contextMenus', 'onClicked'],
+        target: ['contextmenu', 'onClicked']
+      },
+      {
+        api: ['contextMenus', 'onShown'],
+        target: ['contextmenu', 'onShown']
+      },
+      {
+        api: ['windows', 'onFocusChanged'],
+        target: ['contextmenu', 'windowsOnFocusChanged']
+      },
+      {
+        api: ['webRequest', 'onBeforeSendHeaders'],
+        options: [
+          {urls: ['<all_urls>'], types: ['main_frame']},
+          ['blocking', 'requestHeaders']
+        ],
+        target: ['cookies', 'maybeSetAndAddToHeader'],
+      },
+      {
+        api: ['management', 'onDisabled'],
+        target: ['management', 'disable']
+      },
+      {
+        api: ['management', 'onUninstalled'],
+        target: ['management', 'disable']
+      },
+      {
+        api: ['management', 'onEnabled'],
+        target: ['management', 'enable']
+      },
+      {
+        api: ['management', 'onInstalled'],
+        target: ['management', 'enable']
+      },
+      ['runtime', 'onMessage'],
+      ['runtime', 'onMessageExternal'],
+      ['runtime', 'onStartup'],
+      ['runtime', 'onUpdateAvailable']
+    ]
+      .map(conf => {
+        const confIsObj = typeof conf === 'object';
+        const api = confIsObj && conf.api || conf;
+        const target = confIsObj && conf.target || api;
+        const timeout = confIsObj && conf.timeout || 30;
 
-    browser.runtime.onMessage.addListener(this.wrap(
-      'runtime.onMessage', function() {
-        return tmp.runtime.onMessage.call(tmp.runtime, ...arguments);
-      }, {
-        timeout: 20 * 1000
-      })
-    );
+        const listener = this.wrap(api.join('.'), function() {
+          return window.tmp[target[0]][target[1]].call(
+            window.tmp[target[0]], ...arguments
+          );
+        }, {timeout});
 
-    browser.runtime.onMessageExternal.addListener(this.wrap(
-      'runtime.onMessageExternal', function() {
-        return tmp.runtime.onMessageExternal.call(tmp.runtime, ...arguments);
-      }, {
-        timeout: 30 * 1000
-      })
-    );
-
-    browser.runtime.onStartup.addListener(this.wrap(
-      'runtime.onStartup', function() {
-        return tmp.runtime.onStartup.call(tmp.runtime, ...arguments);
-      }, {
-        timeout: 30 * 1000
-      })
-    );
+        browser[api[0]][api[1]].addListener(listener,
+          ...confIsObj && conf.options || []
+        );
+      });
   }
 
-  wrap(eventName, listener, options) {
+  wrap(apiName, listener, options) {
     const tmpInitializedPromise = this.createTmpInitializedPromise(options);
 
     return async function() {
-      if (!window.tmp || !window.tmp.initialized) {
+      if (!window.tmp || !window.window.tmp.initialized) {
         try {
           await tmpInitializedPromise;
         } catch (error) {
-          debug(`[event-listeners] wrapper for ${eventName} timed out after ${options.timeout}ms`);
-          throw new Error('Timed out while waiting for Add-on to initialize');
+          debug(`[event-listeners] call to ${apiName} timed out after ${options.timeout}ms`);
+          throw error;
         }
       }
       return listener(...arguments);
@@ -65,13 +112,13 @@ class EventListeners {
     const abortController = new AbortController;
     const timeout = window.setTimeout(() => {
       abortController.abort();
-    }, options.timeout);
+    }, options.timeout * 1000);
 
     return new Promise((resolve, reject) => {
       this.tmpInitializedPromiseResolvers.push({resolve, timeout});
 
       abortController.signal.addEventListener('abort', () => {
-        reject();
+        reject('Timed out while waiting for Add-on to initialize');
       });
     });
   }

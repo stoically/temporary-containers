@@ -24,7 +24,7 @@ const migrationOnInstalledListener = async function() {
   }
 
   await migrationReadyPromise;
-  return tmp.migration.onInstalled.call(tmp.migration, ...arguments);
+  return window.tmp.migration.onInstalled.call(window.tmp.migration, ...arguments);
 };
 browser.runtime.onInstalled.addListener(migrationOnInstalledListener);
 

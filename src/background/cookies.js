@@ -8,17 +8,7 @@ class Cookies {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.isolation = this.background.isolation;
-
-    browser.webRequest.onBeforeSendHeaders.addListener(async details => {
-      return this.maybeSetAndAddToHeader(details);
-    }, {
-      urls: ['<all_urls>'],
-      types: ['main_frame']
-    }, [
-      'blocking', 'requestHeaders'
-    ]);
   }
-
 
   async maybeSetAndAddToHeader(details) {
     if (details.tabId < 0 || !Object.keys(this.pref.cookies.domain).length) {

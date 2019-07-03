@@ -48,7 +48,7 @@ class TemporaryContainers {
 
     this.request.initialize();
     this.runtime.initialize();
-    await this.container.initialize();
+    this.container.initialize();
     this.mouseclick.initialize();
     this.commands.initialize();
     this.browseraction.initialize();

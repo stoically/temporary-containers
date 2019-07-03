@@ -96,7 +96,7 @@ export default {
           <p>
             You should never see this - and if you do,
             it'll probably result in an error, but maybe you're lucky.
-            Let's just wait about 20 seconds to find out.
+            Let's just wait about 30 seconds to find out.
           </p>
         </div>
       </div>
@@ -141,7 +141,7 @@ export default {
           style="margin-top: 30px"
         >
           <div class="ui divider" />
-          The following error message was observed.
+          The following error message was observed:
           <div style="margin-top: 15px">
             {{ initializeErrorMessage }}
           </div>

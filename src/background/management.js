@@ -114,12 +114,8 @@ class Management {
       });
     } catch (error) {
       debug('[management:initialize] couldnt getAll extensions', error);
+      return;
     }
-
-    browser.management.onDisabled.addListener(this.disable.bind(this));
-    browser.management.onUninstalled.addListener(this.disable.bind(this));
-    browser.management.onEnabled.addListener(this.enable.bind(this));
-    browser.management.onInstalled.addListener(this.enable.bind(this));
   }
 
 

@@ -58,15 +58,18 @@ const buildWebExtension = async (build = {}) => {
       jsdom: {
         url: 'https://localhost',
         beforeParse(window) {
+          window.browser.contextMenus.onShown = {
+            addListener: sinon.stub(),
+            removeListener: sinon.stub(),
+          };
+
           window.browser._mochaTest = true;
         }
       }
     }
   });
   webExtension.background.browser.runtime.getManifest.returns({version: '0.1'});
-  webExtension.background.browser.contextMenus.onShown = {
-    addListener: sinon.stub()
-  };
+
   webExtension.background.browser.permissions.getAll.resolves({permissions: []});
   if (!build.apiFake) {
     webExtension.background.browser.tabs.query.resolves([{},{}]);

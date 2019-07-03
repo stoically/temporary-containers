@@ -19,26 +19,13 @@ class TmpRequest {
     this.tabs = this.background.tabs;
     this.isolation = this.background.isolation;
     this.management = this.background.management;
-
-    // Clean up canceled requests
-    browser.webRequest.onCompleted.addListener((request) => {
-      if (this.canceledTabs[request.tabId]) {
-        delete this.canceledTabs[request.tabId];
-      }
-    }, {
-      urls: ['<all_urls>'],
-      types: ['main_frame']
-    });
-    browser.webRequest.onErrorOccurred.addListener((request) => {
-      if (this.canceledTabs[request.tabId]) {
-        delete this.canceledTabs[request.tabId];
-      }
-    }, {
-      urls: ['<all_urls>'],
-      types: ['main_frame']
-    });
   }
 
+  cleanupCanceled(request) {
+    if (this.canceledTabs[request.tabId]) {
+      delete this.canceledTabs[request.tabId];
+    }
+  }
 
   async webRequestOnBeforeRequest(request) {
     debug('[webRequestOnBeforeRequest] incoming request', request);
