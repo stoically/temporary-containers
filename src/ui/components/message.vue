@@ -151,7 +151,7 @@ export default {
               :href="`https://github.com/stoically/temporary-containers/issues/new?title=Initializing+failed&body=${encodeURIComponent(initializeErrorMessage)}`"
               target="_blank"
             >
-              Report Error as GitHub Issue
+              Report Error Message as GitHub Issue
             </a>
           </div>
         </div>

@@ -8,6 +8,7 @@ class Log {
     this.checkLocalStoragePromise = this.checkLocalStorage();
 
     this.debug = this.debug.bind(this);
+    browser.runtime.onInstalled.addListener(this.onInstalledListener.bind(this));
   }
 
   async debug(...args) {
@@ -62,7 +63,6 @@ class Log {
         this.checkedLocalStorage = true;
         this.debug('[log] enabled debug-dev because of localstorage item');
       }
-
       resolve();
     }));
   }
@@ -88,5 +88,3 @@ class Log {
 window.log = new Log;
 // eslint-disable-next-line
 window.debug = log.debug;
-
-browser.runtime.onInstalled.addListener(log.onInstalledListener.bind(log));

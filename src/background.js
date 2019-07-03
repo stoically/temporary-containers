@@ -88,10 +88,23 @@ window.tmp = new TemporaryContainers();
       });
     }
   } catch (error) {
-    browser.tabs.create({
-      url: browser.runtime.getURL(`
-        options.html?error=${encodeURIComponent(error.toString())}
-      `)
+    browser.browserAction.onClicked.addListener(() => {
+      browser.tabs.create({
+        url: browser.runtime.getURL(`
+          options.html?error=${encodeURIComponent(error.toString())}
+        `)
+      });
     });
+    browser.browserAction.setPopup({
+      popup: null
+    });
+    browser.browserAction.setTitle({title: 'Temporary Containers Error'});
+    browser.browserAction.setBadgeBackgroundColor({
+      color: 'red'
+    });
+    browser.browserAction.setBadgeText({
+      text: 'E'
+    });
+    browser.browserAction.enable();
   }
 })();
