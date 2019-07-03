@@ -1,60 +1,87 @@
-// to have persistent listeners we need to register them early
+// to have persistent listeners we need to register them early+sync
 // and wait for tmp to fully initialize before handling events
 
-const tmpInitializedAbortController = new AbortController;
-const tmpInitializedTimeout = window.setTimeout(() => {
-  tmpInitializedAbortController.abort();
-  debug('[event-listeners] tmpInitialized timed out');
-}, 5000);
+class EventListeners {
+  constructor() {
+    debug('[event-listeners] initializing');
+    this.tmpInitializedPromiseResolvers = [];
+    this.tmpInitialized = this.tmpInitialized.bind(this);
 
-const tmpInitializedPromise = new Promise((resolve, reject) => {
-  window.tmpInitialized = () => {
-    clearTimeout(tmpInitializedTimeout);
-    resolve();
-  };
-
-  tmpInitializedAbortController.signal.addEventListener('abort', () => {
-    reject();
-  });
-});
-
-[
-  {
-    func: browser.webRequest.onBeforeRequest,
-    options: [{
+    browser.webRequest.onBeforeRequest.addListener(this.wrap(
+      'webRequest.onBeforeRequest', function() {
+        return tmp.request.webRequestOnBeforeRequest.call(tmp.request, ...arguments);
+      }, {
+        timeout: 5 * 1000
+      }
+    ), {
       urls: ['<all_urls>'],
       types: ['main_frame']
     }, [
       'blocking'
-    ]],
-    listener: function() {
-      return tmp.request.webRequestOnBeforeRequest.call(tmp.request, ...arguments);
-    },
-  },
-  {
-    func: browser.runtime.onMessage,
-    listener: function() {
-      return tmp.runtime.onMessage.call(tmp.runtime, ...arguments);
-    },
-  },
-  {
-    func: browser.runtime.onMessageExternal,
-    listener: function() {
-      return tmp.runtime.onMessageExternal.call(tmp.runtime, ...arguments);
-    },
-  },
-  {
-    func: browser.runtime.onStartup,
-    listener: function() {
-      return tmp.runtime.onStartup.call(tmp.runtime, ...arguments);
-    },
+    ]);
+
+    browser.runtime.onMessage.addListener(this.wrap(
+      'runtime.onMessage', function() {
+        return tmp.runtime.onMessage.call(tmp.runtime, ...arguments);
+      }, {
+        timeout: 20 * 1000
+      })
+    );
+
+    browser.runtime.onMessageExternal.addListener(this.wrap(
+      'runtime.onMessageExternal', function() {
+        return tmp.runtime.onMessageExternal.call(tmp.runtime, ...arguments);
+      }, {
+        timeout: 30 * 1000
+      })
+    );
+
+    browser.runtime.onStartup.addListener(this.wrap(
+      'runtime.onStartup', function() {
+        return tmp.runtime.onStartup.call(tmp.runtime, ...arguments);
+      }, {
+        timeout: 30 * 1000
+      })
+    );
   }
-]
-  .map(event => {
-    event.func.addListener(async function() {
-      if (!tmp || !tmp.initialized) {
-        await tmpInitializedPromise;
+
+  wrap(eventName, listener, options) {
+    const tmpInitializedPromise = this.createTmpInitializedPromise(options);
+
+    return async function() {
+      if (!window.tmp || !window.tmp.initialized) {
+        try {
+          await tmpInitializedPromise;
+        } catch (error) {
+          debug(`[event-listeners] wrapper for ${eventName} timed out after ${options.timeout}ms`);
+          throw new Error('Timed out while waiting for Add-on to initialize');
+        }
       }
-      return event.listener(...arguments);
-    }, ...event.options || []);
-  });
+      return listener(...arguments);
+    };
+  }
+
+  createTmpInitializedPromise(options) {
+    const abortController = new AbortController;
+    const timeout = window.setTimeout(() => {
+      abortController.abort();
+    }, options.timeout);
+
+    return new Promise((resolve, reject) => {
+      this.tmpInitializedPromiseResolvers.push({resolve, timeout});
+
+      abortController.signal.addEventListener('abort', () => {
+        reject();
+      });
+    });
+  }
+
+  tmpInitialized() {
+    this.tmpInitializedPromiseResolvers.map(resolver => {
+      clearTimeout(resolver.timeout);
+      resolver.resolve();
+    });
+  }
+}
+
+window.eventListeners = new EventListeners;
