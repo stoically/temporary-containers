@@ -106,5 +106,7 @@ window.tmp = new TemporaryContainers();
       text: 'E'
     });
     browser.browserAction.enable();
+
+    window.eventListeners.remove();
   }
 })();

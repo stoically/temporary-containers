@@ -6,6 +6,7 @@ class EventListeners {
     debug('[event-listeners] initializing');
     this.tmpInitializedPromiseResolvers = [];
     this.tmpInitialized = this.tmpInitialized.bind(this);
+    this.defaultTimeout = 30; // seconds
     this._listeners = [];
 
     [
@@ -32,7 +33,6 @@ class EventListeners {
         api: ['browserAction', 'onClicked'],
         target: ['browseraction', 'onClicked']
       },
-      ['commands', 'onCommand'],
       {
         api: ['contextMenus', 'onClicked'],
         target: ['contextmenu', 'onClicked']
@@ -69,6 +69,7 @@ class EventListeners {
         api: ['management', 'onInstalled'],
         target: ['management', 'enable']
       },
+      ['commands', 'onCommand'],
       ['runtime', 'onMessage'],
       ['runtime', 'onMessageExternal'],
       ['runtime', 'onStartup'],
@@ -78,7 +79,7 @@ class EventListeners {
         const confIsObj = typeof conf === 'object';
         const api = confIsObj && conf.api || conf;
         const target = confIsObj && conf.target || api;
-        const timeout = confIsObj && conf.timeout || 30;
+        const timeout = confIsObj && conf.timeout || this.defaultTimeout;
 
         const listener = this.wrap(api.join('.'), function() {
           return window.tmp[target[0]][target[1]].call(
@@ -89,6 +90,8 @@ class EventListeners {
         browser[api[0]][api[1]].addListener(listener,
           ...confIsObj && conf.options || []
         );
+
+        this._listeners.push({listener, api});
       });
   }
 
@@ -96,7 +99,7 @@ class EventListeners {
     const tmpInitializedPromise = this.createTmpInitializedPromise(options);
 
     return async function() {
-      if (!window.tmp || !window.window.tmp.initialized) {
+      if (!window.tmp || !window.tmp.initialized) {
         try {
           await tmpInitializedPromise;
         } catch (error) {
@@ -127,6 +130,12 @@ class EventListeners {
     this.tmpInitializedPromiseResolvers.map(resolver => {
       clearTimeout(resolver.timeout);
       resolver.resolve();
+    });
+  }
+
+  remove() {
+    this._listeners.map(listener => {
+      browser[listener.api[0]][listener.api[1]].removeListener(listener.listener);
     });
   }
 }
