@@ -46,6 +46,8 @@
     "vuedraggable": "^2.23.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.0.0",
+    "@commitlint/config-conventional": "^8.0.0",
     "@vue/component-compiler-utils": "^3.0.0",
     "addons-linter": "^1.10.0",
     "babel-eslint": "^10.0.2",
@@ -53,6 +55,7 @@
     "coveralls": "^3.0.4",
     "eslint": "^6.0.1",
     "eslint-plugin-vue": "^5.2.3",
+    "husky": "^3.0.0",
     "mocha": "^6.1.4",
     "npm-check-updates": "^3.1.12",
     "nyc": "^14.1.1",
@@ -85,6 +88,13 @@
   },
   "posthtml": {
     "recognizeSelfClosing": true
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "npm run lint",
+      "pre-push": "npm test"
+    }
   },
   "private": true,
   "nyc": {
