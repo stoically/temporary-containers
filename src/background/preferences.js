@@ -98,6 +98,7 @@ class Preferences {
     this.permissions = this.background.permissions;
     this.contextmenu = this.background.contextmenu;
     this.browseraction = this.background.browseraction;
+    this.pageaction = this.background.pageaction;
   }
 
   async handleChanges({oldPreferences, newPreferences}) {
@@ -110,6 +111,9 @@ class Preferences {
       } else {
         this.browseraction.unsetPopup();
       }
+    }
+    if (oldPreferences.pageAction !== newPreferences.pageAction) {
+      this.pageaction.showOrHide();
     }
     if (oldPreferences.isolation.active !== newPreferences.isolation.active) {
       if (newPreferences.isolation.active) {

@@ -11,6 +11,11 @@ class PageAction {
 
 
   async showOrHide(activatedTab) {
+    if (!activatedTab) {
+      const [activeTab] = await browser.tabs.query({currentWindow: true, active: true});
+      activatedTab = activeTab;
+    }
+
     let color;
     if (activatedTab.cookieStoreId === 'firefox-default') {
       color = 'gray';
@@ -28,8 +33,7 @@ class PageAction {
       },
       tabId: activatedTab.id
     });
-    if (!this.pref.pageAction ||
-        !activatedTab.url.startsWith('http')) {
+    if (!this.pref.pageAction) {
       browser.pageAction.hide(activatedTab.id);
     } else {
       browser.pageAction.show(activatedTab.id);
