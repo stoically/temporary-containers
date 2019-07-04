@@ -1,5 +1,4 @@
 <script>
-import IsolationGlossary from './components/isolation/helper/glossary';
 import IsolationGlobal from './components/isolation/global';
 import IsolationPerDomain from './components/isolation/perdomain';
 import IsolationMac from './components/isolation/mac';
@@ -7,17 +6,18 @@ import Actions from './components/actions';
 import Statistics from './components/statistics';
 import Message from './components/message';
 import Breadcrumb from './components/breadcrumb';
+import Glossary from './components/glossary';
 
 export default {
   components: {
-    IsolationGlossary,
     IsolationGlobal,
     IsolationPerDomain,
     IsolationMac,
     Actions,
     Statistics,
     Message,
-    Breadcrumb
+    Breadcrumb,
+    Glossary
   },
   props: {
     app: {
@@ -112,11 +112,12 @@ export default {
   padding: 10px;
   padding-top: 5px;
   min-width: 370px;
-  min-height: 280px;
+  max-width: 370px;
+  min-height: 600px;
 }
 .hidden { display: none; }
 .popup-margin {
-  margin: 0 15px 10px 0;
+  margin: 0 20px 10px 0;
 }
 .popup-exclude-margin {
   margin: 0 15px 10px 25px;
@@ -238,7 +239,7 @@ export default {
               </div>
             </div>
 
-            <message v-if="app.initialized" />
+            <message />
 
             <div
               class="ui tab"
@@ -246,7 +247,6 @@ export default {
             >
               <breadcrumb tab="Global" />
               <isolation-global :app="app" />
-              <isolation-glossary />
             </div>
             <div
               class="ui tab"
@@ -254,7 +254,6 @@ export default {
             >
               <breadcrumb tab="Per Domain" />
               <isolation-per-domain :app="app" />
-              <isolation-glossary />
             </div>
             <div
               class="ui tab"
@@ -262,7 +261,6 @@ export default {
             >
               <breadcrumb tab="Multi-Account Containers" />
               <isolation-mac :app="app" />
-              <isolation-glossary />
             </div>
             <div
               class="ui tab"
@@ -280,5 +278,6 @@ export default {
         </div>
       </div>
     </div>
+    <glossary :app="app" />
   </div>
 </template>

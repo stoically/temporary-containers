@@ -1,12 +1,12 @@
 <script>
 import DomainPattern from '../domainpattern';
-import IntroHint from './helper/intro-hint';
+import Intro from './global-intro';
 import MouseclickHint from './helper/mouseclick-hint';
 
 export default {
   components: {
     DomainPattern,
-    IntroHint,
+    Intro,
     MouseclickHint
   },
   props: {
@@ -34,6 +34,7 @@ export default {
         exclusive: false
       });
       $('#isolationGlobal .ui.dropdown').dropdown();
+      $('#isolationGlobal .ui.checkbox').checkbox();
 
       $('#isolationGlobalAccordion').accordion('open', 0);
 
@@ -109,7 +110,7 @@ export default {
     id="isolationGlobal"
   >
     <div class="ui form">
-      <intro-hint :app="app" />
+      <intro :app="app" />
       <div
         id="isolationGlobalAccordion"
         class="ui accordion"
@@ -119,38 +120,64 @@ export default {
         >
           <h4>
             <i class="dropdown icon" />
-            Navigation
+            <span data-glossary="Navigation" />
           </h4>
         </div>
         <div
           class="content"
           :class="{'ui segment': !popup, 'popup-margin': popup}"
+          style="margin-bottom: 25px"
         >
           <div class="field">
-            <label>Target Domain</label>
-            <select
-              v-model="preferences.isolation.global.navigation.action"
-              class="ui fluid dropdown"
-            >
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
+            <div class="grouped fields">
+              <label>Target Domain</label>
+              <div class="field">
+                <div class="ui radio checkbox">
+                  <input
+                    v-model="preferences.isolation.global.navigation.action"
+                    type="radio"
+                    value="never"
+                  >
+                  <label><span data-glossary="Never" /></label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui radio checkbox">
+                  <input
+                    v-model="preferences.isolation.global.navigation.action"
+                    type="radio"
+                    value="notsamedomainexact"
+                  >
+                  <label><span data-glossary="Different from Tab Domain & Subdomains" /></label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui radio checkbox">
+                  <input
+                    v-model="preferences.isolation.global.navigation.action"
+                    type="radio"
+                    value="notsamedomain"
+                  >
+                  <label><span data-glossary="Different from Tab Domain" /></label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui radio checkbox">
+                  <input
+                    v-model="preferences.isolation.global.navigation.action"
+                    type="radio"
+                    value="always"
+                  >
+                  <label><span data-glossary="Always" /></label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Mouse Click
+            <span data-glossary="Mouse Click" />
           </h4>
         </div>
         <div

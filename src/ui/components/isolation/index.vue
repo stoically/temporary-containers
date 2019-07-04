@@ -1,12 +1,10 @@
 <script>
-import Glossary from './helper/glossary';
 import Global from './global';
 import PerDomain from './perdomain';
 import Mac from './mac';
 
 export default {
   components: {
-    Glossary,
     Global,
     PerDomain,
     Mac
@@ -27,13 +25,13 @@ export default {
         class="active item"
         data-tab="isolation/global"
       >
-        Global
+        <span data-glossary="Global" />
       </a>
       <a
         class="item"
         data-tab="isolation/perdomain"
       >
-        Per Domain
+        <span data-glossary="Per Domain" />
       </a>
       <a
         class="item"
@@ -69,6 +67,5 @@ export default {
         :app="app"
       />
     </div>
-    <glossary />
   </div>
 </template>

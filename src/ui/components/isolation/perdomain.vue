@@ -1,6 +1,6 @@
 <script>
 import DomainPattern from '../domainpattern';
-import IntroHint from './helper/intro-hint';
+import Intro from './perdomain-intro';
 import MouseclickHint from './helper/mouseclick-hint';
 
 Array.prototype.move = function(from, to) {
@@ -34,7 +34,7 @@ const domainDefaults = {
 export default {
   components: {
     DomainPattern,
-    IntroHint,
+    Intro,
     MouseclickHint
   },
   props: {
@@ -277,7 +277,7 @@ export default {
     id="isolationDomain"
   >
     <div class="ui form">
-      <intro-hint :app="app" />
+      <intro :app="app" />
       <form
         id="isolationDomainForm"
       >

@@ -10,3 +10,4 @@
 /.web-ext-artifacts
 /.cache
 /dist
+/*.todo

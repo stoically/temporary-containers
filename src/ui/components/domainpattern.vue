@@ -29,25 +29,6 @@ export default {
     domainPattern(newDomainPattern) {
       this.$emit('update:domainPattern', newDomainPattern);
     }
-  },
-  mounted() {
-    if (!this.tooltip.hidden) {
-      $(this.$refs.div).popup({
-        html: `
-          <div style="width:750px;">
-          Exact match: e.g. <strong>example.com</strong> or <strong>www.example.com</strong><br>
-          Glob/Wildcard match: e.g. <strong>*.example.com</strong> (all example.com subdomains)<br>
-          <br>
-          Note: <strong>*.example.com</strong> would not match <strong>example.com</strong>,
-          so you might need two patterns.</div>
-          <br>
-          Advanced: Parsed as RegExp when <strong>/pattern/flags</strong> is given
-          and matches the full URL instead of just domain
-        `,
-        inline: true,
-        position: this.tooltip.position
-      });
-    }
   }
 };
 </script>
@@ -59,10 +40,14 @@ export default {
     class="field"
   >
     <label>
-      {{ !exclusion ?
-        'Domain Pattern' :
-        'Exclusion Pattern'
-      }}
+      <span
+        v-if="!exclusion"
+        data-glossary="Domain Pattern"
+      />
+      <span
+        v-else
+        data-glossary="Exclusion Pattern"
+      />
     </label>
     <input
       :id="id"

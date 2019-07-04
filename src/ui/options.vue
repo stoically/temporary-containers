@@ -5,6 +5,7 @@ import Advanced from './components/advanced';
 import Statistics from './components/statistics';
 import ExportImport from './components/export_import';
 import Message from './components/message';
+import Glossary from './components/glossary';
 
 export default {
   components: {
@@ -13,7 +14,8 @@ export default {
     Advanced,
     Statistics,
     ExportImport,
-    Message
+    Message,
+    Glossary
   },
   props: {
     app: {
@@ -183,5 +185,6 @@ export default {
         />
       </div>
     </div>
+    <glossary :app="app" />
   </div>
 </template>
