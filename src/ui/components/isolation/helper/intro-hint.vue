@@ -33,7 +33,7 @@ export default {
       <div style="max-width: 98%">
         <div>
           A Navigation or Mouse Click matching
-          Configurations other than Never result in Isolation,
+          Configurations other than Never results in Isolation,
           which cancels the Navigation and opens the Target Domain
           in a new Temporary Container. Exclude Configurations prevent
           Isolation if they match.

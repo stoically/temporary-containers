@@ -143,9 +143,6 @@ export default {
             v-model="preferences.ui.popupDefaultTab"
             class="ui fluid dropdown"
           >
-            <option value="actions">
-              Actions
-            </option>
             <option value="isolation-global">
               Isolation Global
             </option>
@@ -154,6 +151,9 @@ export default {
             </option>
             <option value="isolation-mac">
               Isolation Multi-Account Containers
+            </option>
+            <option value="actions">
+              Actions
             </option>
             <option value="statistics">
               Statistics

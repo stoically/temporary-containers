@@ -387,7 +387,7 @@ export default {
           class="content"
           :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
-          <mouseclick-hint :app="app" />>
+          <mouseclick-hint :app="app" />
           <div class="field">
             <label>Middle Mouse</label>
             <select
