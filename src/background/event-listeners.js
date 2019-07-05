@@ -30,6 +30,16 @@ class EventListeners {
         target: ['request', 'cleanupCanceled']
       },
       {
+        api: ['webRequest', 'onCompleted'],
+        options: [
+          {urls: ['<all_urls>'],
+            types: ['script', 'font', 'image', 'imageset', 'stylesheet']
+          },
+          ['responseHeaders']
+        ],
+        target: ['statistics', 'collect']
+      },
+      {
         api: ['browserAction', 'onClicked'],
         target: ['browseraction', 'onClicked']
       },
@@ -103,7 +113,7 @@ class EventListeners {
         try {
           await tmpInitializedPromise;
         } catch (error) {
-          debug(`[event-listeners] call to ${apiName} timed out after ${options.timeout}ms`);
+          debug(`[event-listeners] call to ${apiName} timed out after ${options.timeout}s`);
           throw error;
         }
       }

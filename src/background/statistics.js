@@ -14,11 +14,6 @@ class Statistics {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
-
-    browser.webRequest.onCompleted.addListener(this.collect.bind(this), {
-      urls: ['<all_urls>'],
-      types: ['script', 'font', 'image', 'imageset', 'stylesheet']
-    }, ['responseHeaders']);
   }
 
 
