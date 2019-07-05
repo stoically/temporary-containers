@@ -40,7 +40,9 @@ class TmpRequest {
     }
 
     if (this.mouseclick.isolated[request.url]) {
-      debug('[webRequestOnBeforeRequest] aborting isolated cleanup', request.url);
+      debug('[webRequestOnBeforeRequest] decreasing isolated mouseclick count', this.mouseclick.isolated[request.url]);
+      this.mouseclick.isolated[request.url].count--;
+      debug('[webRequestOnBeforeRequest] aborting isolated mouseclick cleanup', request.url);
       this.mouseclick.isolated[request.url].abortController.abort();
     }
 

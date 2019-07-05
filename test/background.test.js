@@ -286,7 +286,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     });
 
     it('should open in a new temporary container', async () => {
-      expect(background.mouseclick.isolated[fakeMessage.payload.href]).to.exist;
       browser.contextualIdentities.create.should.have.been.calledOnce;
       browser.tabs.create.should.have.been.calledOnce;
       browser.tabs.remove.should.not.have.been.calledOnce;

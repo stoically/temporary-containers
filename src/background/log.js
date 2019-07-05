@@ -13,7 +13,7 @@ class Log {
 
   async debug(...args) {
     let date;
-    if (!this.checkedLocalStorage) {
+    if (!this.checkedLocalStorage && !browser._mochaTest) {
       date = new Date().toUTCString();
       await this.checkLocalStoragePromise;
     }

@@ -44,11 +44,15 @@ class MouseClick {
     }
 
     const abortController = new AbortController;
-    this.isolated[url] = {
-      clickType,
-      tab: sender.tab,
-      abortController
-    };
+    if (!this.isolated[url]) {
+      this.isolated[url] = {
+        clickType,
+        tab: sender.tab,
+        abortController,
+        count: 0
+      };
+    }
+    this.isolated[url].count++;
 
     delay(1500, {signal: abortController.signal}).then(() => {
       debug('[linkClicked] cleaning up isolated', url);

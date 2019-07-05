@@ -123,10 +123,39 @@ class Isolation {
       return false;
     }
 
-    return this.mouseclick.isolated[request.url] ||
+    return this.shouldIsolateMouseClick({request, tab, openerTab}) ||
       this.shouldIsolateMac({tab, macAssignment}) ||
       await this.shouldIsolateNavigation({request, tab, openerTab}) ||
       await this.shouldIsolateAlways({request, tab, openerTab});
+  }
+
+  shouldIsolateMouseClick({request, tab, openerTab}) {
+    if (!this.mouseclick.isolated[request.url]) {
+      return false;
+    }
+
+    if (tab && (![tab.id, tab.openerTabId].includes(this.mouseclick.isolated[request.url].tab.id))) {
+      debug('[shouldIsolateMouseClick] not isolating mouse click because tab/openerTab id is different',
+        request, tab, openerTab, this.mouseclick.isolated[request.url].tab);
+      return false;
+    }
+
+    if (!this.mouseclick.isolated[request.url].count < 0) {
+      debug('[shouldIsolateMouseClick] not isolating and removing isolated mouseclick because its count is < 0',
+        this.mouseclick.isolated[request.url]);
+      this.mouseclick.isolated[request.url].abortController.abort();
+      delete this.mouseclick.isolated[request.url];
+      return false;
+    }
+
+    if (!this.mouseclick.isolated[request.url].count) {
+      debug('[shouldIsolateMouseClick] removing isolated mouseclick because its count is <= 0',
+        this.mouseclick.isolated[request.url]);
+      this.mouseclick.isolated[request.url].abortController.abort();
+      delete this.mouseclick.isolated[request.url];
+    }
+
+    return true;
   }
 
   async shouldIsolateNavigation({request, tab, openerTab}) {
