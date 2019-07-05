@@ -271,22 +271,6 @@ export default {
       <div class="title">
         <h4>
           <i class="dropdown icon" />
-          Redirector tabs
-        </h4>
-      </div>
-      <div class="content">
-        <div class="ui checkbox">
-          <input
-            v-model="preferences.closeRedirectorTabs.active"
-            type="checkbox"
-          >
-          <label>Automatically close left-over redirector tabs after 2 seconds: <strong>t.co</strong> (Twitter), <strong>outgoing.prod.mozaws.net</strong> (AMO)</label>
-        </div>
-        <div class="m-b" />
-      </div>
-      <div class="title">
-        <h4>
-          <i class="dropdown icon" />
           Ignoring requests to
         </h4>
       </div>
@@ -339,12 +323,23 @@ export default {
         </h4>
       </div>
       <div class="content">
-        <div class="ui checkbox">
-          <input
-            v-model="preferences.replaceTabs"
-            type="checkbox"
-          >
-          <label>Instead of creating a new tab replace the Current Tab</label>
+        <div class="field">
+          <div class="ui checkbox">
+            <input
+              v-model="preferences.replaceTabs"
+              type="checkbox"
+            >
+            <label>Instead of creating a new tab replace the Current Tab</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input
+              v-model="preferences.closeRedirectorTabs.active"
+              type="checkbox"
+            >
+            <label>Automatically close left-over redirector tabs after 2 seconds: <strong>t.co</strong> (Twitter), <strong>outgoing.prod.mozaws.net</strong> (AMO)</label>
+          </div>
         </div>
         <div class="m-b" />
       </div>
