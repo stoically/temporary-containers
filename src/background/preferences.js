@@ -86,8 +86,6 @@ class Preferences {
         expandPreferences: false,
         popupDefaultTab: 'isolation-global',
         isolation: {
-          globalIntroClosed: false,
-          perDomainIntroClosed: false,
           mouseclickHintClosed: false
         }
       },

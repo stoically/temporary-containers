@@ -67,7 +67,7 @@ class TmpStorage {
   }
 
   async install() {
-    debug('[install] initializing storage');
+    debug('[install] installing storage');
     this.local = this.background.utils.clone(this.defaults);
     this.local.version = this.background.version;
 
@@ -78,7 +78,7 @@ class TmpStorage {
     if (!await this.persist()) {
       throw(new Error('[install] something went wrong while installing'));
     }
-    debug('[install] storage initialized', this.local);
+    debug('[install] storage installed', this.local);
     this.installed = true;
     return true;
   }

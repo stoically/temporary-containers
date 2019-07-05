@@ -1,7 +1,6 @@
 <script>
 import DomainPattern from '../domainpattern';
-import Intro from './perdomain-intro';
-import MouseclickHint from './helper/mouseclick-hint';
+import Settings from './settings';
 
 Array.prototype.move = function(from, to) {
   this.splice(to, 0, this.splice(from, 1)[0]);
@@ -34,8 +33,7 @@ const domainDefaults = {
 export default {
   components: {
     DomainPattern,
-    Intro,
-    MouseclickHint
+    Settings
   },
   props: {
     app: {
@@ -207,6 +205,7 @@ export default {
       this.resetDropdowns();
 
       if (!this.preferences.ui.expandPreferences) {
+
         $('#isolationPerDomainAccordion').accordion(
           this.domain.always.action === domainDefaults.always.action ? 'close' : 'open', 0
         );
@@ -277,7 +276,6 @@ export default {
     id="isolationDomain"
   >
     <div class="ui form">
-      <intro :app="app" />
       <form
         id="isolationDomainForm"
       >
@@ -295,173 +293,119 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Navigation
+            <span
+              data-glossary="Always open in"
+              data-glossary-section="Per Domain"
+            />
           </h4>
         </div>
         <div
           class="content"
           :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
-          <div class="field">
-            <label>Originating Domain</label>
+          <div>
             <select
               id="isolationDomainAlways"
               v-model="domain.always.action"
               class="ui fluid dropdown"
             >
               <option value="disabled">
-                Never
+                Disabled
               </option>
               <option value="enabled">
-                {{ !popup ?
-                  'Different from Loading Domain' :
-                  'Different Loading Domain'
-                }}
+                Enabled
               </option>
             </select>
-            <div
-              v-show="domain.always.action === 'enabled'"
-              class="ui checkbox"
-              style="margin-top: 14px"
-            >
-              <input
-                v-model="domain.always.allowedInPermanent"
-                type="checkbox"
+            <div v-show="domain.always.action === 'enabled'">
+              <div
+                class="ui checkbox"
+                style="margin-top: 14px"
               >
-              <label>
-                {{ !popup ?
-                  'Never if Navigation in Permanent Container' :
-                  'Never in Permanent Container'
-                }}
-              </label>
-            </div>
-            <div />
-            <div
-              v-show="domain.always.action === 'enabled'"
-              class="ui checkbox"
-              style="margin-top: 14px"
-            >
-              <input
-                v-model="domain.always.allowedInTemporary"
-                type="checkbox"
+                <input
+                  v-model="domain.always.allowedInPermanent"
+                  type="checkbox"
+                >
+                <label>
+                  {{ !popup ?
+                    'Disable if Navigation in Permanent Containers' :
+                    'Disable in Permanent Containers'
+                  }}
+                </label>
+              </div>
+              <div />
+              <div
+                class="ui checkbox"
+                style="margin-top: 14px"
               >
-              <label>
-                {{ !popup ?
-                  'Never if Navigation in Temporary Container' :
-                  'Never in Temporary Container'
-                }}
-              </label>
+                <input
+                  v-model="domain.always.allowedInTemporary"
+                  type="checkbox"
+                >
+                <label>
+                  {{ !popup ?
+                    'Disable if Navigation in Temporary Containers' :
+                    'Disable in Temporary Containers'
+                  }}
+                </label>
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label>Target Domain</label>
-            <select
-              v-model="domain.navigation.action"
-              class="ui fluid dropdown"
-            >
-              <option value="global">
-                Use Global
-              </option>
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
           </div>
         </div>
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Mouse Click
+            <span
+              data-glossary="Navigation"
+              data-glossary-section="Per Domain"
+            />
           </h4>
         </div>
         <div
           class="content"
           :class="{'ui segment': !popup, 'popup-margin': popup}"
         >
-          <mouseclick-hint :app="app" />
-          <div class="field">
-            <label>Middle Mouse</label>
-            <select
-              v-model="domain.mouseClick.middle.action"
-              class="ui fluid dropdown"
-            >
-              <option value="global">
-                Use Global
-              </option>
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Ctrl/Cmd+Left Mouse</label>
-            <select
-              v-model="domain.mouseClick.ctrlleft.action"
-              class="ui fluid dropdown"
-            >
-              <option value="global">
-                Use Global
-              </option>
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Left Mouse</label>
-            <select
-              v-model="domain.mouseClick.left.action"
-              class="ui fluid dropdown"
-            >
-              <option value="global">
-                Use Global
-              </option>
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
-          </div>
+          <settings
+            label="Target Domain"
+            :perdomain="true"
+            :action.sync="domain.navigation.action"
+          />
         </div>
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Exclude Target Domains
+            <span
+              data-glossary="Mouse Click"
+              data-glossary-section="Per Domain"
+            />
+          </h4>
+        </div>
+        <div
+          class="content"
+          :class="{'ui segment': !popup, 'popup-margin': popup}"
+        >
+          <settings
+            label="Middle Mouse"
+            :perdomain="true"
+            :action.sync="domain.mouseClick.middle.action"
+          />
+          <settings
+            label="Ctrl/Cmd+Left Mouse"
+            :perdomain="true"
+            :action.sync="domain.mouseClick.ctrlleft.action"
+          />
+          <settings
+            label="Left Mouse"
+            :perdomain="true"
+            :action.sync="domain.mouseClick.left.action"
+          />
+        </div>
+        <div class="title">
+          <h4>
+            <i class="dropdown icon" />
+            <span
+              data-glossary="Exclude Target Domains"
+              data-glossary-section="Per Domain"
+            />
           </h4>
         </div>
         <div

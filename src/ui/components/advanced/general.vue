@@ -365,12 +365,14 @@ export default {
       </div>
     </div>
     <div class="m-b" />
-    <div class="ui checkbox">
-      <input
-        v-model="preferences.ui.expandPreferences"
-        type="checkbox"
-      >
-      <label>Expand all preferences by default</label>
+    <div class="field">
+      <div class="ui checkbox">
+        <input
+          v-model="preferences.ui.expandPreferences"
+          type="checkbox"
+        >
+        <label>Expand all preferences by default</label>
+      </div>
     </div>
   </div>
 </template>

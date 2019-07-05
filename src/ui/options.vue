@@ -126,17 +126,6 @@ export default {
           />
           {{ t('optionsNavExportImport') }}
         </a>
-        <a
-          class="item"
-          href="https://stoically.github.io/temporary-containers"
-          target="_blank"
-        >
-          <i
-            class="icon-info-circled"
-            style="margin-right: 5px;"
-          />
-          Docs
-        </a>
       </div>
 
       <message />

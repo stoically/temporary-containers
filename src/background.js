@@ -83,6 +83,7 @@ window.tmp = new TemporaryContainers();
     await tmp.initialize();
 
     if (tmp.storage.installed) {
+      debug('[bg] fresh install, showing options');
       browser.tabs.create({
         url: browser.runtime.getURL('options.html?installed')
       });

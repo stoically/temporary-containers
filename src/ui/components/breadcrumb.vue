@@ -21,7 +21,7 @@ export default {
       </div>
       <i class="right angle icon divider" />
       <div class="active section">
-        {{ tab }}
+        <span :data-glossary="tab" />
       </div>
     </div>
     <div

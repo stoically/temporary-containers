@@ -44,10 +44,9 @@ export default {
         v-if="!exclusion"
         data-glossary="Domain Pattern"
       />
-      <span
-        v-else
-        data-glossary="Exclusion Pattern"
-      />
+      <span v-else>
+        Exclusion Pattern
+      </span>
     </label>
     <input
       :id="id"

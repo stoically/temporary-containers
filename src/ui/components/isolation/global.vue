@@ -1,13 +1,11 @@
 <script>
 import DomainPattern from '../domainpattern';
-import Intro from './global-intro';
-import MouseclickHint from './helper/mouseclick-hint';
+import Settings from './settings';
 
 export default {
   components: {
     DomainPattern,
-    Intro,
-    MouseclickHint
+    Settings
   },
   props: {
     app: {
@@ -39,8 +37,8 @@ export default {
       $('#isolationGlobalAccordion').accordion('open', 0);
 
       if (this.preferences.isolation.global.mouseClick.middle.action !== 'never' ||
-      this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
-      this.preferences.isolation.global.mouseClick.left.action !== 'never') {
+        this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
+        this.preferences.isolation.global.mouseClick.left.action !== 'never') {
         $('#isolationGlobalAccordion').accordion('open', 1);
       }
 
@@ -110,209 +108,137 @@ export default {
     id="isolationGlobal"
   >
     <div class="ui form">
-      <intro :app="app" />
       <div
         id="isolationGlobalAccordion"
         class="ui accordion"
       >
-        <div
-          class="title"
-        >
-          <h4>
-            <i class="dropdown icon" />
-            <span data-glossary="Navigation" />
-          </h4>
-        </div>
-        <div
-          class="content"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
-          style="margin-bottom: 25px"
-        >
-          <div class="field">
-            <div class="grouped fields">
-              <label>Target Domain</label>
-              <div class="field">
-                <div class="ui radio checkbox">
-                  <input
-                    v-model="preferences.isolation.global.navigation.action"
-                    type="radio"
-                    value="never"
-                  >
-                  <label><span data-glossary="Never" /></label>
-                </div>
-              </div>
-              <div class="field">
-                <div class="ui radio checkbox">
-                  <input
-                    v-model="preferences.isolation.global.navigation.action"
-                    type="radio"
-                    value="notsamedomainexact"
-                  >
-                  <label><span data-glossary="Different from Tab Domain & Subdomains" /></label>
-                </div>
-              </div>
-              <div class="field">
-                <div class="ui radio checkbox">
-                  <input
-                    v-model="preferences.isolation.global.navigation.action"
-                    type="radio"
-                    value="notsamedomain"
-                  >
-                  <label><span data-glossary="Different from Tab Domain" /></label>
-                </div>
-              </div>
-              <div class="field">
-                <div class="ui radio checkbox">
-                  <input
-                    v-model="preferences.isolation.global.navigation.action"
-                    type="radio"
-                    value="always"
-                  >
-                  <label><span data-glossary="Always" /></label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="title">
-          <h4>
-            <i class="dropdown icon" />
-            <span data-glossary="Mouse Click" />
-          </h4>
-        </div>
-        <div
-          class="content"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
-        >
-          <mouseclick-hint :app="app" />
-          <div class="field">
-            <label>Middle Mouse</label>
-            <select
-              v-model="preferences.isolation.global.mouseClick.middle.action"
-              class="ui fluid dropdown"
-            >
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Ctrl/Cmd+Left Mouse</label>
-            <select
-              v-model="preferences.isolation.global.mouseClick.ctrlleft.action"
-              class="ui fluid dropdown"
-            >
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Left Mouse</label>
-            <select
-              v-model="preferences.isolation.global.mouseClick.left.action"
-              class="ui fluid dropdown"
-            >
-              <option value="never">
-                Never
-              </option>
-              <option value="notsamedomain">
-                Different from Tab Domain & Subdomains
-              </option>
-              <option value="notsamedomainexact">
-                Different from Tab Domain
-              </option>
-              <option value="always">
-                Always
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="title">
-          <h4>
-            <i class="dropdown icon" />
-            Exclude Permanent Containers
-          </h4>
-        </div>
-        <div
-          class="content"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
-        >
-          <div class="field">
-            <div
-              id="isolationGlobalExcludeContainers"
-              class="ui dropdown fluid selection multiple"
-              :style="popup ? 'max-width: 280px' : ''"
-            >
-              <div class="text" />
+        <div class="field">
+          <div
+            class="title"
+          >
+            <h4>
               <i class="dropdown icon" />
+              <span
+                data-glossary="Navigation"
+                data-glossary-section="Global"
+              />
+            </h4>
+          </div>
+          <div
+            class="content"
+            :class="{'ui segment': !popup, 'popup-margin': popup}"
+          >
+            <settings
+              label="Target Domain"
+              :action.sync="preferences.isolation.global.navigation.action"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <div class="title">
+            <h4>
+              <i class="dropdown icon" />
+              <span
+                data-glossary="Mouse Click"
+                data-glossary-section="Global"
+              />
+            </h4>
+          </div>
+          <div
+            class="content"
+            :class="{'ui segment': !popup, 'popup-margin': popup}"
+          >
+            <settings
+              label="Middle Mouse"
+              :action.sync="preferences.isolation.global.mouseClick.middle.action"
+            />
+            <settings
+              label="Ctrl/Cmd+Left Mouse"
+              :action.sync="preferences.isolation.global.mouseClick.ctrlleft.action"
+            />
+            <settings
+              label="Left Mouse"
+              :action.sync="preferences.isolation.global.mouseClick.left.action"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <div class="title">
+            <h4>
+              <i class="dropdown icon" />
+              <span
+                data-glossary="Exclude Permanent Containers"
+                data-glossary-section="Global"
+              />
+            </h4>
+          </div>
+          <div
+            class="content"
+            :class="{'ui segment': !popup, 'popup-margin': popup}"
+          >
+            <div class="field">
+              <div
+                id="isolationGlobalExcludeContainers"
+                class="ui dropdown fluid selection multiple"
+                :style="popup ? 'max-width: 280px' : ''"
+              >
+                <div class="text" />
+                <i class="dropdown icon" />
+              </div>
             </div>
           </div>
         </div>
-        <div class="title">
-          <h4>
-            <i class="dropdown icon" />
-            Exclude Target Domains
-          </h4>
-        </div>
-        <div
-          class="content"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
-        >
-          <div class="field">
-            <form
-              id="isolationGlobalExcludeDomainsForm"
-              class="ui form"
-            >
-              <domain-pattern
-                id="isolationGlobalExcludeDomainPattern"
-                :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
-                :domain-pattern.sync="excludeDomainPattern"
-                :exclusion="true"
+        <div class="field">
+          <div class="title">
+            <h4>
+              <i class="dropdown icon" />
+              <span
+                data-glossary="Exclude Target Domains"
+                data-glossary-section="Global"
               />
-              <div class="field">
-                <button class="ui button primary">
-                  Exclude
-                </button>
-              </div>
-            </form>
-            <div style="margin-top: 20px;">
-              <div v-if="!Object.keys(preferences.isolation.global.excluded).length">
-                No domains excluded
-              </div>
-              <div v-else>
-                <div
-                  v-for="(_, excludedDomainPattern) in preferences.isolation.global.excluded"
-                  :key="excludedDomainPattern"
-                >
-                  <div style="margin-top: 5px" />
-                  <span
-                    :data-tooltip="`Remove ${excludedDomainPattern}`"
-                    data-position="right center"
-                    style="color: red; cursor: pointer;"
-                    @click="removeExcludedDomain(excludedDomainPattern)"
+            </h4>
+          </div>
+          <div
+            class="content"
+            :class="{'ui segment': !popup, 'popup-margin': popup}"
+          >
+            <div class="field">
+              <form
+                id="isolationGlobalExcludeDomainsForm"
+                class="ui form"
+              >
+                <domain-pattern
+                  id="isolationGlobalExcludeDomainPattern"
+                  :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
+                  :domain-pattern.sync="excludeDomainPattern"
+                  :exclusion="true"
+                />
+                <div class="field">
+                  <button class="ui button primary">
+                    Exclude
+                  </button>
+                </div>
+              </form>
+              <div style="margin-top: 20px;">
+                <div v-if="!Object.keys(preferences.isolation.global.excluded).length">
+                  No domains excluded
+                </div>
+                <div v-else>
+                  <div
+                    v-for="(_, excludedDomainPattern) in preferences.isolation.global.excluded"
+                    :key="excludedDomainPattern"
                   >
-                    <i class="icon-trash-empty" />
-                  </span>
-                  {{ excludedDomainPattern }}
+                    <div style="margin-top: 5px" />
+                    <span
+                      :data-tooltip="`Remove ${excludedDomainPattern}`"
+                      data-position="right center"
+                      style="color: red; cursor: pointer;"
+                      @click="removeExcludedDomain(excludedDomainPattern)"
+                    >
+                      <i class="icon-trash-empty" />
+                    </span>
+                    {{ excludedDomainPattern }}
+                  </div>
                 </div>
               </div>
             </div>

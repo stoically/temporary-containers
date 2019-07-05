@@ -165,13 +165,6 @@ export default {
         >
           <i class="icon-chart-bar" /> Statistics
         </a>
-        <a
-          class="item"
-          href="https://stoically.github.io/temporary-containers"
-          target="_blank"
-        >
-          <i class="icon-info-circled" /> Docs
-        </a>
       </div>
       <div>
         <div class="ui pushable">
