@@ -210,8 +210,8 @@ ul {
             <li><glossary-link to="Mouse Click" /></li>
           </ul>
           Navigations happen from the <glossary-link to="Originating Domain" /> to the
-          <glossary-link to="Target Domain" />, and while the navigation is in progress,
-          it's the <glossary-link to="Loading Domain" />
+          <glossary-link to="Target Domain" />. When finished it's the
+          <glossary-link to="Tab Domain" />
         </div>
 
         <div v-show="active === 'Mouse Click'">
@@ -264,13 +264,8 @@ ul {
         </div>
 
         <div v-show="active === 'Per Domain'">
-          Configurations apply if the <glossary-link to="Tab Domain" /> or <glossary-link to="Loading Domain" /> match the <glossary-link to="Domain Pattern" />
-          <ul>
-            <li><glossary-link to="Always open in" /></li>
-            <li><glossary-link to="Navigation" /></li>
-            <li><glossary-link to="Mouse Click" /></li>
-            <li><glossary-link to="Exclude Target Domains" /></li>
-          </ul>
+          Configurations apply if the <glossary-link to="Tab Domain" /> matches the <glossary-link to="Domain Pattern" /><br>
+          <br>
           <a
             href="#"
             @click="external('https://github.com/stoically/temporary-containers/wiki/Per-Domain-Isolation')"
@@ -341,10 +336,6 @@ ul {
           also known as referer or source
         </div>
 
-        <div v-show="active === 'Different from Loading Domain'">
-          <glossary-link to="Originating Domain" /> does not match the <glossary-link to="Tab Domain" />
-        </div>
-
         <div v-show="active === 'Permanent Containers'">
           All containers that are neither Temporary nor the <glossary-link to="Default Container" />
         </div>
@@ -394,7 +385,10 @@ ul {
           <glossary-link
             to="Navigation"
             text="Navigations"
-          /> where any of these matches
+          /> where any of the following matches will get <glossary-link
+            to="Isolation"
+            text="isolated"
+          />
           <ul>
             <li>Originates from a new tab</li>
             <li>Current container is the <glossary-link to="Default Container" /></li>
@@ -403,10 +397,6 @@ ul {
               from the <glossary-link to="Loading Domain" />
             </li>
           </ul>
-          will get <glossary-link
-            to="Isolation"
-            text="isolated"
-          />
         </div>
       </div>
 

@@ -25,13 +25,19 @@ export default {
         class="active item"
         data-tab="isolation/global"
       >
-        <span data-glossary="Global" />
+        <span
+          data-glossary="Global"
+          data-glossary-section="Global"
+        />
       </a>
       <a
         class="item"
         data-tab="isolation/perdomain"
       >
-        <span data-glossary="Per Domain" />
+        <span
+          data-glossary="Per Domain"
+          data-glossary-section="Per Domain"
+        />
       </a>
       <a
         class="item"
