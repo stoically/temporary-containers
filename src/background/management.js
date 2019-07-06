@@ -74,6 +74,11 @@ class Management {
         enabled: false,
         version: false,
       },
+      'treestyletab@piro.sakura.ne.jp': {
+        name: 'Tree Style Tab',
+        enabled: false,
+        version: false
+      },
       '@contain-facebook': {
         name: 'Facebook Container',
         enabled: false,

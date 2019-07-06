@@ -10,6 +10,7 @@ class Isolation {
     this.request = this.background.request;
     this.mouseclick = this.background.mouseclick;
     this.mac = this.background.mac;
+    this.management = this.background.management;
     this.utils = this.background.utils;
   }
 
@@ -108,7 +109,7 @@ class Isolation {
       // TODO removing this clean check can result in endless loops,
       // which is a sign that the clean container logic might be flawed;
       // needs some investigation
-      debug('[shouldIsolate] not reopening because the tmp container is still clean');
+      debug('[shouldIsolate] not isolating because the tmp container is still clean');
       if (!this.request.cleanRequests[request.requestId]) {
         this.request.cleanRequests[request.requestId] = true;
         delay(300000).then(() => {
@@ -119,8 +120,25 @@ class Isolation {
     }
 
     if (this.request.cleanRequests[request.requestId]) {
-      debug('[shouldIsolate] not reopening because of clean requests, redirect', request);
+      debug('[shouldIsolate] not isolating because of clean requests, redirect', request);
       return false;
+    }
+
+    // special-case TST group tabs #264
+    if (openerTab && this.management.addons['treestyletab@piro.sakura.ne.jp'].enabled) {
+      try {
+        const treeItem = await browser.runtime.sendMessage('treestyletab@piro.sakura.ne.jp', {
+          tab: openerTab.id,
+          type: 'get-tree'
+        });
+        if (treeItem && treeItem.states.includes('group-tab')) {
+          debug('[shouldIsolate] not isolating because originated from TST group tag', openerTab, tab, request);
+          return false;
+        }
+      }
+      catch (error) {
+        debug('[shouldIsolate] failed contacting TST', error.toString());
+      }
     }
 
     return this.shouldIsolateMouseClick({request, tab, openerTab}) ||
@@ -246,23 +264,23 @@ class Isolation {
       const preferences = patternPreferences.always;
       debug('[shouldIsolateAlways] found pattern for incoming request url', domainPattern, preferences);
       if (preferences.action === 'disabled') {
-        debug('[shouldIsolateAlways] not reopening because "always" disabled');
+        debug('[shouldIsolateAlways] not isolating because "always" disabled');
         continue;
       }
 
       if (preferences.allowedInPermanent && this.container.isPermanent(tab.cookieStoreId)) {
-        debug('[shouldIsolateAlways] not reopening because disabled in permanent container');
+        debug('[shouldIsolateAlways] not isolating because disabled in permanent container');
         continue;
       }
 
       const isTemporary = this.container.isTemporary(tab.cookieStoreId);
       if (!isTemporary) {
-        debug('[shouldIsolateAlways] reopening because not in a tmp container');
+        debug('[shouldIsolateAlways] isolating because not in a tmp container');
         return true;
       }
 
       if (preferences.allowedInTemporary && isTemporary) {
-        debug('[shouldIsolateAlways] not reopening because disabled in tmp container');
+        debug('[shouldIsolateAlways] not isolating because disabled in tmp container');
         return false;
       }
 
@@ -274,7 +292,7 @@ class Isolation {
           debug('[shouldIsolateAlways] opener tab url matched the pattern', openerTab.url, domainPattern);
         }
         if (!openerMatches) {
-          debug('[shouldIsolateAlways] reopening because the tab/opener url doesnt match the pattern', tab.url, openerTab, domainPattern);
+          debug('[shouldIsolateAlways] isolating because the tab/opener url doesnt match the pattern', tab.url, openerTab, domainPattern);
           return true;
         }
       }

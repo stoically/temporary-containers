@@ -52,16 +52,16 @@ class Log {
     // let's put this in the js event queue, just to make sure
     // that localstorage doesn't block registering event-listeners at all
     return new Promise(resolve => setTimeout(() => {
-      if (window.localStorage.getItem('debug')) {
-        this.DEBUG = true;
-        this.stringify = true;
-        this.checkedLocalStorage = true;
-        this.debug('[log] enabled debug because of localstorage item');
-      } else if (window.localStorage.getItem('debug-dev')) {
+      if (window.localStorage.getItem('debug-dev') === 'true') {
         this.DEBUG = true;
         this.stringify = false;
         this.checkedLocalStorage = true;
         this.debug('[log] enabled debug-dev because of localstorage item');
+      } else if (window.localStorage.getItem('debug') === 'true') {
+        this.DEBUG = true;
+        this.stringify = true;
+        this.checkedLocalStorage = true;
+        this.debug('[log] enabled debug because of localstorage item');
       }
       resolve();
     }));

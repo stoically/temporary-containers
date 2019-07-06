@@ -50,7 +50,7 @@ class TmpRequest {
     try {
       returnVal = await this._webRequestOnBeforeRequest(request);
     } catch (error) {
-      debug('[webRequestOnBeforeRequest] handling request failed', error);
+      debug('[webRequestOnBeforeRequest] handling request failed', error.toString());
     }
 
     if (this.mouseclick.isolated[request.url]) {
