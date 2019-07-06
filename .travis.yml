@@ -22,14 +22,6 @@ script:
 after_success: npm run coverage
 
 deploy:
-  provider: pages
-  local_dir: docs/.vuepress/dist
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  on:
-    branch: master
-
-deploy:
   provider: releases
   prerelease: true
   api_key: $GITHUB_TOKEN
