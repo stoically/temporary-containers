@@ -37,7 +37,6 @@ class Log {
 
     if (this.stringify && !browser._mochaTest) {
       console.log(date, ...args.map(JSON.stringify));
-      console.trace();
       console.log('------------------------------------------');
     } else {
       console.log(date, ...args.slice(0));

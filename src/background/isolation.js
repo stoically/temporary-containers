@@ -56,7 +56,7 @@ class Isolation {
 
     if (macAssignment && tab && this.mac.containerConfirmed[tab.id] &&
       tab.cookieStoreId === this.mac.containerConfirmed[tab.id]) {
-      debug('[maybeIsolate] confirmed container, not isolating', this.mac.containerConfirmed, macAssignment);
+      debug('[maybeIsolate] mac confirmed container, not isolating', this.mac.containerConfirmed, macAssignment);
       return;
     }
 
@@ -104,25 +104,6 @@ class Isolation {
 
   async shouldIsolate({tab, request, openerTab, macAssignment}) {
     debug('[shouldIsolate]', tab, request);
-
-    if (tab && this.container.isClean(tab.cookieStoreId)) {
-      // TODO removing this clean check can result in endless loops,
-      // which is a sign that the clean container logic might be flawed;
-      // needs some investigation
-      debug('[shouldIsolate] not isolating because the tmp container is still clean');
-      if (!this.request.cleanRequests[request.requestId]) {
-        this.request.cleanRequests[request.requestId] = true;
-        delay(300000).then(() => {
-          delete this.request.cleanRequests[request.requestId];
-        });
-      }
-      return false;
-    }
-
-    if (this.request.cleanRequests[request.requestId]) {
-      debug('[shouldIsolate] not isolating because of clean requests, redirect', request);
-      return false;
-    }
 
     // special-case TST group tabs #264
     if (openerTab && this.management.addons['treestyletab@piro.sakura.ne.jp'].enabled) {

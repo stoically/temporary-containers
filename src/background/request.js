@@ -150,6 +150,23 @@ class TmpRequest {
       return;
     }
 
+    if (tab && this.container.isClean(tab.cookieStoreId)) {
+      // removing this clean check can result in endless loops
+      debug('[_webRequestOnBeforeRequest] not isolating because the tmp container is still clean');
+      if (!this.cleanRequests[request.requestId]) {
+        this.cleanRequests[request.requestId] = true;
+        delay(300000).then(() => {
+          delete this.cleanRequests[request.requestId];
+        });
+      }
+      return false;
+    }
+
+    if (this.cleanRequests[request.requestId]) {
+      debug('[_webRequestOnBeforeRequest] not isolating because of clean redirect requests', request);
+      return false;
+    }
+
     const isolated = await this.isolation.maybeIsolate({tab, request, openerTab, macAssignment});
     if (isolated) {
       debug('[_webRequestOnBeforeRequest] we decided to isolate and open new tmpcontainer', request);
