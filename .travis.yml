@@ -17,7 +17,6 @@ script:
     else
       npm run build:sign;
     fi
-  - npm run docs:build
 
 after_success: npm run coverage
 
