@@ -551,14 +551,6 @@ ul {
           >
             Learn more in the Wiki <i class="linkify icon" />
           </a>
-          <br>
-          <br>
-          <span style="font-size:13px">
-            Note: Some users experience delays when new tabs are reopened,
-            sometimes even losing the first character already typed into
-            the address bar. You can change how Automatic Mode works in the
-            Advanced preferences to fix that
-          </span>
         </div>
       </div>
     </div>
