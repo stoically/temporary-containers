@@ -5,8 +5,6 @@ class Migration {
     this.background = background;
   }
 
-  // hint: don't use preferences/storage-defaults here,
-  // always hardcode, because the defaults change over time
   async migrate({preferences, previousVersion}) {
     this.storage = this.background.storage;
     this.previousVersion = previousVersion;
@@ -67,6 +65,14 @@ class Migration {
       });
       preferences.isolation.domain = perDomainIsolation;
     }
+    if (this.updatedFromVersionEqualToOrLessThan('0.103')) {
+      debug('[migrate] updated from version <= 0.103, migrate popup default tab to isolation-per-domain');
+      preferences.ui.popupDefaultTab = 'isolation-per-domain';
+    }
+
+    // hint: don't use preferences/storage-defaults here, ^
+    // always hardcode, because the defaults change over time.
+    // also keep in mind that missing keys get added before migration
 
     this.storage.local.version = this.background.version;
     this.storage.local.preferences = preferences;
