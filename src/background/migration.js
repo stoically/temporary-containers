@@ -5,6 +5,8 @@ class Migration {
     this.background = background;
   }
 
+  // hint: don't use preferences/storage-defaults here,
+  // always hardcode, because the defaults change over time
   async migrate({preferences, previousVersion}) {
     this.storage = this.background.storage;
     this.previousVersion = previousVersion;
@@ -18,6 +20,12 @@ class Migration {
     if (this.previousVersion.includes('beta')) {
       this.previousVersionBeta = true;
       this.previousVersion = this.previousVersion.replace('beta', '.');
+    }
+
+    if (this.updatedFromVersionEqualToOrLessThan('0.87')) {
+      debug('updated from version <= 0.87, reset storage, too old to migrate');
+      await this.storage.install({clear: true});
+      return;
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('0.91')) {

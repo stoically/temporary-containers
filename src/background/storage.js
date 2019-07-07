@@ -42,10 +42,15 @@ class TmpStorage {
 
     // migrate if currently running version is different from version in storage
     if (this.background.version !== this.local.version) {
-      await this.background.migration.migrate({
-        preferences: this.local.preferences,
-        previousVersion: this.local.version
-      });
+      try {
+        await this.background.migration.migrate({
+          preferences: this.local.preferences,
+          previousVersion: this.local.version
+        });
+      } catch (error) {
+        debug('[initialize] migration failed, reset and install storage :C', error.toString());
+        await this.install({clear: true});
+      }
     }
 
     return true;
@@ -66,8 +71,14 @@ class TmpStorage {
     }
   }
 
-  async install() {
+  async install(options = {}) {
     debug('[install] installing storage');
+
+    if (options.clear) {
+      debug('[install] clearing storage');
+      await browser.storage.local.clear();
+    }
+
     this.local = this.background.utils.clone(this.defaults);
     this.local.version = this.background.version;
 
