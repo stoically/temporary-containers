@@ -48,8 +48,7 @@ class TmpStorage {
           previousVersion: this.local.version
         });
       } catch (error) {
-        debug('[initialize] migration failed, reset and install storage :C', error.toString());
-        await this.install({clear: true});
+        debug('[initialize] migration failed', error.toString());
       }
     }
 
