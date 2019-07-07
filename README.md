@@ -29,7 +29,7 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 
 * Once: `npm test` - this also shows a coverage summary and generates a detailed report in the `coverage` directory
 * Watcher: `npm run test:watch`
-  * Set `security.csp.enable` to `true` in `about:config` if you want working parcel hmr for UI dev and change back to `false` when you're done
+  * Set `security.csp.enable` to `false` in `about:config` if you want working parcel hmr for UI dev and change back to `true` when you're done
 
 
 ### Release
