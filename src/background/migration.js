@@ -20,12 +20,6 @@ class Migration {
       this.previousVersion = this.previousVersion.replace('beta', '.');
     }
 
-    if (this.updatedFromVersionEqualToOrLessThan('0.87')) {
-      debug('updated from version <= 0.87, reset storage, too old to migrate');
-      await this.storage.install({clear: true});
-      return;
-    }
-
     if (this.updatedFromVersionEqualToOrLessThan('0.91')) {
       debug('updated from version <= 0.91, migrate container numbers into dedicated array');
       Object.values(this.storage.local.tempContainers).map(container => {

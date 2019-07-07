@@ -70,13 +70,8 @@ class TmpStorage {
     }
   }
 
-  async install(options = {}) {
+  async install() {
     debug('[install] installing storage');
-
-    if (options.clear) {
-      debug('[install] clearing storage');
-      await browser.storage.local.clear();
-    }
 
     this.local = this.background.utils.clone(this.defaults);
     this.local.version = this.background.version;
