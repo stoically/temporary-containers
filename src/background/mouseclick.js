@@ -127,6 +127,27 @@ class MouseClick {
     return this.checkClickPreferences(this.pref.isolation.global.mouseClick[type],
       parsedClickedURL, parsedSenderTabURL);
   }
+
+  beforeHandleRequest(request) {
+    if (!this.isolated[request.url]) {
+      return;
+    }
+    debug('[beforeHandleRequest] decreasing isolated mouseclick count', this.isolated[request.url]);
+    this.isolated[request.url].count--;
+    debug('[beforeHandleRequest] aborting isolated mouseclick cleanup', request.url);
+    this.isolated[request.url].abortController.abort();
+  }
+
+  afterHandleRequest(request) {
+    if (!this.isolated[request.url]) {
+      return;
+    }
+    this.isolated[request.url].abortController = new AbortController;
+    delay(1500, {signal: this.isolated[request.url].abortController.signal}).then(() => {
+      debug('[beforeHandleRequest] cleaning up isolated', request.url);
+      delete this.isolated[request.url];
+    }).catch(debug);
+  }
 }
 
 window.MouseClick = MouseClick;
