@@ -280,6 +280,7 @@ export default {
         id="isolationDomainForm"
       >
         <domain-pattern
+          id="isolationDomainPattern"
           :tooltip="!popup ? undefined : {hidden: true}"
           :domain-pattern.sync="domain.pattern"
         />
@@ -407,6 +408,7 @@ export default {
                 class="ui form"
               >
                 <domain-pattern
+                  id="isolationDomainExcludeDomainPattern"
                   :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
                   :domain-pattern.sync="excludeDomainPattern"
                   :exclusion="true"

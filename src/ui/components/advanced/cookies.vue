@@ -96,6 +96,7 @@ export default {
         encoded, or you might break the header being sent.
       </div>
       <domain-pattern
+        id="cookieDomainPattern"
         :glossary="true"
         :domain-pattern.sync="domainPattern"
       />

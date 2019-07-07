@@ -307,7 +307,10 @@ export default {
           class="ui form"
           style="margin-left: 20px; margin-top: 20px;"
         >
-          <domain-pattern :domain-pattern.sync="excludeDomainPattern" />
+          <domain-pattern
+            id="advancedIgnoreRequestsPattern"
+            :domain-pattern.sync="excludeDomainPattern"
+          />
           <div class="field">
             <button class="ui button primary">
               Ignore
