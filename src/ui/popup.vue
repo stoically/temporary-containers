@@ -88,13 +88,13 @@ export default {
       });
       if (tabs.length) {
         const tab = tabs[0];
+        await browser.tabs.update(tab.id, {active: true});
+        await browser.tabs.reload(tab.id);
         if (tab.windowId !== browser.windows.WINDOW_ID_CURRENT) {
           await browser.windows.update(tab.windowId, {focused: true});
         }
-        browser.tabs.update(tab.id, {active: true});
-        browser.tabs.reload(tab.id);
       } else {
-        browser.tabs.create({
+        await browser.tabs.create({
           url: browser.runtime.getURL('options.html')
         });
       }
@@ -111,9 +111,9 @@ export default {
 #container {
   padding: 10px;
   padding-top: 5px;
-  min-width: 370px;
-  max-width: 370px;
-  min-height: 600px;
+  min-width: 320px;
+  max-width: 320px;
+  min-height: 470px;
 }
 .hidden { display: none; }
 .popup-margin {

@@ -32,7 +32,9 @@ export default {
       }
 
       this.$nextTick(() => {
-        this.initialize();
+        window.setTimeout(() => {
+          this.initialize();
+        }, 100);
       });
     }
   },
@@ -44,16 +46,20 @@ export default {
   methods: {
     initialize() {
       $('[data-glossary]').each((idx, element) => {
-        const infoText = document.createElement('span');
-        infoText.textContent = element.dataset.glossaryLabel || element.dataset.glossary;
-        infoText.id = 'glossaryText';
-        element.appendChild(infoText);
+        if (element.dataset.glossaryLabel !== '' && element.dataset.glossary) {
+          const infoText = document.createElement('span');
+          infoText.textContent = element.dataset.glossaryLabel || element.dataset.glossary;
+          if (infoText.textContent) {
+            infoText.id = 'glossaryText';
+            element.appendChild(infoText);
+          }
+          this.createdElements.push(infoText);
+        }
 
         const infoIcon = document.createElement('i');
         infoIcon.className = 'icon-info-circled opaque-info-circle glossary-help';
         element.appendChild(infoIcon);
-
-        this.createdElements.push({infoText, infoIcon});
+        this.createdElements.push(infoIcon);
 
         let iconHovered = false;
         $(infoIcon).hover(() => {
@@ -72,16 +78,34 @@ export default {
         $(element).popup({
           popup: '.glossary.ui.popup',
           hoverable: true,
+          position: 'bottom left',
 
-          onShow: (element) => {
-            return iconHovered;
+          onShow: (popupElement) => {
+            if (!iconHovered) {
+              return false;
+            }
+            this.origin = this.active = popupElement.dataset.glossary;
+
+            if (['Automatic Mode', 'Toolbar Popup'].includes(this.origin)) {
+              this.$refs.glossary.style.minHeight = 'unset';
+              this.$refs.glossary.style.maxHeight = 'unset';
+              this.$refs.glossaryContainer.style.minWidth = '450px';
+              this.$refs.glossaryContainer.style.maxWidth = '450px';
+            } else {
+              this.$refs.glossary.style.minHeight = '';
+              this.$refs.glossary.style.maxHeight = '';
+              this.$refs.glossaryContainer.style.minWidth = '';
+              this.$refs.glossaryContainer.style.maxWidth = '';
+            }
           },
 
           onVisible: (popupElement) => {
-            this.origin = this.active = popupElement.dataset.glossary;
-            if (element.dataset.glossarySection) {
+            if (['Global', 'Per Domain'].includes(this.origin)) {
+              this.section = this.origin;
+            } else if (element.dataset.glossarySection) {
               this.section = element.dataset.glossarySection;
             }
+
             this.history.push(this.origin);
 
             this.$nextTick(() => {
@@ -91,18 +115,6 @@ export default {
 
           onHidden: () => {
             Object.assign(this.$data, glossaryDefaults());
-          },
-
-          onUnplaceable: () => {
-            const text = this.app.popup ?
-              'please reopen the popup or check options page instead' :
-              'please reload page and it should work';
-            $(element).popup({
-              html: `Error: Unable to show correct tooltip,
-                something went wrong while calculating its size, ${text}. Sorry about that.
-              `,
-            });
-            $(element).popup('show');
           }
         });
       });
@@ -135,8 +147,7 @@ export default {
     },
     cleanup() {
       this.createdElements.map(created => {
-        created.infoText.remove();
-        created.infoIcon.remove();
+        created.remove();
       });
     }
   }
@@ -146,12 +157,14 @@ export default {
 
 <style>
 .glossary {
-  min-height: 300px;
+  min-height: 360px;
+  max-height: 360px;
   cursor: auto;
   user-select: text;
 }
 .glossary-container {
-  min-width: 260px;
+  min-width: 300px;
+  max-width: 300px;
 }
 .glossary-help {
   cursor: help;
@@ -162,15 +175,21 @@ export default {
 }
 .glossary-history-btn {
   cursor: pointer;
+  opacity: 1 !important;
+}
+.glossary-history-btn-inactive {
+  opacity: 0.2 !important;
 }
 .glossary-header {
+  display: flex;
   font-size: 12px;
   padding: 10px 10px 5px 10px;
 }
-.glossary-content {
-  padding: 10px;
+.glossary-header-title {
+  font-weight: bold;
+  flex-grow: 1;
 }
-.glossary-footer {
+.glossary-content {
   padding: 10px;
 }
 ul {
@@ -178,10 +197,11 @@ ul {
   padding-left: 10px;
 }
 .opaque-info-circle {
-  opacity: 0.25;
+  color: #2185d0;
+  opacity: 0.6;
 }
 .opaque-info-circle:hover {
-  opacity: 0.6;
+  opacity: 1;
 }
 </style>
 
@@ -194,9 +214,32 @@ ul {
     style="padding: 0"
     @click="stop"
   >
-    <div class="glossary-container">
+    <div
+      ref="glossaryContainer"
+      class="glossary-container"
+    >
       <div class="glossary-header">
-        <strong>{{ active || origin }}</strong>
+        <span class="glossary-header-title">{{ active || origin }}</span>
+        <span v-if="!['Automatic Mode', 'Toolbar Popup'].includes(origin)">
+          <i
+            v-if="historyPosition"
+            class="angle left icon glossary-history-btn"
+            @click="historyBack"
+          />
+          <i
+            v-else
+            class="angle left icon glossary-history-btn-inactive"
+          />
+          <i
+            v-if="history.length > 1 && historyPosition < history.length - 1"
+            class="angle right icon glossary-history-btn"
+            @click="historyForward"
+          />
+          <i
+            v-else
+            class="angle right icon glossary-history-btn-inactive"
+          />
+        </span>
       </div>
       <div
         class="ui divider"
@@ -204,11 +247,8 @@ ul {
       />
       <div class="glossary-content">
         <div v-show="active === 'Navigation'">
-          Opening websites in tabs, or new tabs, through e.g.
-          <ul>
-            <li>Address bar</li>
-            <li><glossary-link to="Mouse Click" /></li>
-          </ul>
+          Opening websites in tabs, or new tabs, through e.g. address bar or <glossary-link to="Mouse Click" /><br>
+          <br>
           Navigations happen from the <glossary-link to="Originating Domain" /> to the
           <glossary-link to="Target Domain" />. When finished it's the
           <glossary-link to="Tab Domain" />
@@ -218,8 +258,18 @@ ul {
           Clicking links on websites in <glossary-link to="Current Tab" /> resulting in
           <glossary-link to="Navigation" /> to <glossary-link to="Target Domain" /><br>
           <br>
+          Isolation configurations:
+          <ul>
+            <li v-if="section === 'Per Domain'">
+              <glossary-link to="Use Global" />
+            </li>
+            <li><glossary-link to="Never" /></li>
+            <li><glossary-link to="Different Tab Domain & Subdomains" /></li>
+            <li><glossary-link to="Different Tab Domain" /></li>
+            <li><glossary-link to="Always" /></li>
+          </ul>
           <div style="font-size: 12px">
-            Note: With Navigation configured, you don't need to configure Mouse Click
+            Note: With Navigation Isolation configured, you don't need to configure Mouse Click
             additionally. Also, not every Mouse Click can get catched, since some
             websites execute arbitrary logic (JavaScript) on Mouse Click
           </div>
@@ -234,14 +284,15 @@ ul {
             to="Navigation"
             text="navigates"
           /> to<br>
-          <br>Available configurations
+          <br>
+          Isolation configurations:
           <ul>
             <li v-if="section === 'Per Domain'">
               <glossary-link to="Use Global" />
             </li>
             <li><glossary-link to="Never" /></li>
-            <li><glossary-link to="Different from Tab Domain & Subdomains" /></li>
-            <li><glossary-link to="Different from Tab Domain" /></li>
+            <li><glossary-link to="Different Tab Domain & Subdomains" /></li>
+            <li><glossary-link to="Different Tab Domain" /></li>
             <li><glossary-link to="Always" /></li>
           </ul>
         </div>
@@ -251,31 +302,51 @@ ul {
         </div>
 
         <div v-show="active === 'Global'">
-          Configurations apply to all tabs<br>
+          Configurations apply to all tabs and result in <glossary-link to="Isolation" /> if they match
+          <ul>
+            <li>
+              <glossary-link to="Navigation" />
+              <ul>
+                <li><glossary-link to="Target Domain" /></li>
+              </ul>
+            </li>
+            <li><glossary-link to="Mouse Click" /></li>
+            <li><glossary-link to="Exclude Permanent Containers" /></li>
+            <li><glossary-link to="Exclude Target Domains" /></li>
+          </ul>
           <br>
-          Matching Configurations, other than <glossary-link to="Never" />, result in <glossary-link to="Isolation" />
-          <br><br>
           <a
             href="#"
             @click="external('https://github.com/stoically/temporary-containers/wiki/Global-Isolation')"
           >
-            Learn more <i class="linkify icon" />
+            Learn more in the Wiki <i class="linkify icon" />
           </a>
         </div>
 
         <div v-show="active === 'Per Domain'">
-          Configurations apply if the <glossary-link to="Tab Domain" /> matches the <glossary-link to="Domain Pattern" /><br>
+          Configurations apply if the <glossary-link to="Tab Domain" /> matches the <glossary-link to="Domain Pattern" />
+          <ul>
+            <li><glossary-link to="Always open in" /></li>
+            <li>
+              <glossary-link to="Navigation" />
+              <ul>
+                <li><glossary-link to="Target Domain" /></li>
+              </ul>
+            </li>
+            <li><glossary-link to="Mouse Click" /></li>
+            <li><glossary-link to="Exclude Target Domains" /></li>
+          </ul>
           <br>
           <a
             href="#"
             @click="external('https://github.com/stoically/temporary-containers/wiki/Per-Domain-Isolation')"
           >
-            Learn more <i class="linkify icon" />
+            Learn more in the Wiki <i class="linkify icon" />
           </a>
         </div>
 
         <div v-show="active === 'Domain'">
-          "Web address", e.g. "example.com"
+          "Web address", e.g. "example.com" or "www.example.com"
         </div>
 
         <div v-show="active === 'Subdomain'">
@@ -305,14 +376,14 @@ ul {
           Never matches and hence never results in <glossary-link to="Isolation" />
         </div>
 
-        <div v-show="active === 'Different from Tab Domain & Subdomains'">
+        <div v-show="active === 'Different Tab Domain & Subdomains'">
           <glossary-link to="Tab Domain" /> & <glossary-link
             to="Subdomain"
             text="Subdomains"
           /> do not match <glossary-link to="Target Domain" />
         </div>
 
-        <div v-show="active === 'Different from Tab Domain'">
+        <div v-show="active === 'Different Tab Domain'">
           <glossary-link to="Tab Domain" /> does not exactly match <glossary-link to="Target Domain" />
         </div>
 
@@ -349,12 +420,18 @@ ul {
         </div>
 
         <div v-show="active === 'Exclude Permanent Containers'">
-          <glossary-link to="Navigations" /> in <glossary-link to="Permanent Containers" /> added
+          <glossary-link
+            to="Navigation"
+            text="Navigations"
+          /> in <glossary-link to="Permanent Containers" /> added
           here will <glossary-link to="Never" /> result in <glossary-link to="Isolation" />
         </div>
 
         <div v-show="active === 'Exclude Target Domains'">
-          <glossary-link to="Navigations" /> to <glossary-link
+          <glossary-link
+            to="Navigation"
+            text="Navigations"
+          /> to <glossary-link
             to="Target Domain"
             text="Target Domains"
           /> matching the
@@ -382,7 +459,7 @@ ul {
         </div>
 
         <div v-show="active === 'Always open in'">
-          <glossary-link
+          <strong>Enabled:</strong> <glossary-link
             to="Navigation"
             text="Navigations"
           /> where any of the following matches will get <glossary-link
@@ -397,28 +474,91 @@ ul {
               from the <glossary-link to="Loading Domain" />
             </li>
           </ul>
+          <br>
+          <strong>Disabled:</strong> No effect
         </div>
-      </div>
 
-      <div class="glossary-footer">
-        <div style="margin-top: 10px" />
-        <div v-show="history.length > 1">
-          <div
-            class="ui divider"
-            style="margin: 0 0 2px 0"
+        <div v-show="active === 'Multi-Account Containers'">
+          This applies to the
+          <a
+            href="#"
+            @click="external('https://addons.mozilla.org/firefox/addon/multi-account-containers/')"
+          >
+            MAC Add-on <i class="linkify icon" />
+          </a>, which needs to be installed and configured properly for this to work.
+          It's not related to Per Domain Always open in.
+          <br>
+          <br>
+          <strong>Enabled:</strong> <glossary-link
+            to="Navigation"
+            text="Navigations"
+          /> in
+          <glossary-link to="Permanent Containers" /> whose <glossary-link to="Loading Domain" /> isn't MAC-"Always open in"
+          assigned to that container get <glossary-link
+            to="Isolation"
+            text="isolated"
           />
-          <div style="margin-bottom: 2px">
-            <i
-              v-show="historyPosition"
-              class="angle left icon glossary-history-btn"
-              @click="historyBack"
-            />
-            <i
-              v-show="history.length > 1 && historyPosition < history.length - 1"
-              class="angle right icon glossary-history-btn"
-              @click="historyForward"
-            />
-          </div>
+          <br>
+          <br>
+          <strong>Disabled:</strong> No effect
+          <br>
+          <br>
+          <a
+            href="#"
+            @click="external('https://github.com/stoically/temporary-containers/wiki/Multi-Account-Containers-Isolation')"
+          >
+            Learn more in the Wiki <i class="linkify icon" />
+          </a>
+        </div>
+
+        <div v-show="active === 'Toolbar Popup'">
+          The popup lets you
+          <ul>
+            <li> Open new Temporary Container</li>
+            <li> Open Preferences/Options</li>
+            <li> Configure Isolation</li>
+            <li> Disable/Enable Isolation globally</li>
+            <li> Open current tab URL in new Temporary Container</li>
+            <li> Convert Temporary to Permanent Container</li>
+            <li> Convert Permanent to Temporary Container</li>
+            <li> View Statistics</li>
+            <li
+              v-show="
+                app.permissions.history"
+            >
+              Open current tab URL in new "Deletes History Temporary Container"
+            </li>
+            <li v-show="app.permissions.history">
+              Open new "Deletes History Temporary Container
+            </li>
+          </ul>
+          <span style="font-size:13px">
+            Note: You can change the default popup tab in the Advanced preferences
+          </span>
+        </div>
+
+        <div v-show="active === 'Automatic Mode'">
+          Automatically reopen tabs in new Temporary Containers when
+          <ul>
+            <li>Opening a new tab</li>
+            <li>Tab tries to load a website in no container</li>
+            <li>External program opens a link in the browser</li>
+          </ul>
+          <br>
+          <a
+            href="#"
+            @click="external('https://github.com/stoically/temporary-containers/wiki/Automatic-Mode')"
+          >
+            Learn more in the Wiki <i class="linkify icon" />
+          </a>
+          <br>
+          <br>
+          <span style="font-size:13px">
+            Note: Some users experience delays when new tabs are reopened,
+            sometimes even losing the first character already typed into
+            the address bar. You can change how Automatic Mode works in the
+            Advanced preferences to fix that
+          </span>
         </div>
       </div>
     </div>

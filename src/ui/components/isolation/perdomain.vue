@@ -293,10 +293,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            <span
-              data-glossary="Always open in"
-              data-glossary-section="Per Domain"
-            />
+            Always open in
           </h4>
         </div>
         <div
@@ -354,10 +351,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            <span
-              data-glossary="Navigation"
-              data-glossary-section="Per Domain"
-            />
+            Navigation
           </h4>
         </div>
         <div
@@ -373,10 +367,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            <span
-              data-glossary="Mouse Click"
-              data-glossary-section="Per Domain"
-            />
+            Mouse Click
           </h4>
         </div>
         <div
@@ -402,10 +393,7 @@ export default {
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            <span
-              data-glossary="Exclude Target Domains"
-              data-glossary-section="Per Domain"
-            />
+            Exclude Target Domains
           </h4>
         </div>
         <div

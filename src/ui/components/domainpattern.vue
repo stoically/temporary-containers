@@ -23,6 +23,10 @@ export default {
     exclusion: {
       type: Boolean,
       default: false
+    },
+    glossary: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -40,10 +44,13 @@ export default {
     class="field"
   >
     <label>
-      <span
-        v-if="!exclusion"
-        data-glossary="Domain Pattern"
-      />
+      <span v-if="!exclusion">
+        <span v-if="!glossary">Domain Pattern</span>
+        <span
+          v-else
+          data-glossary="Domain Pattern"
+        />
+      </span>
       <span v-else>
         Exclusion Pattern
       </span>

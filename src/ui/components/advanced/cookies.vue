@@ -95,7 +95,10 @@ export default {
         If the request belongs to a Temporary Container and the domain matches the given pattern. Make sure that the cookie name and value are correctly
         encoded, or you might break the header being sent.
       </div>
-      <domain-pattern :domain-pattern.sync="domainPattern" />
+      <domain-pattern
+        :glossary="true"
+        :domain-pattern.sync="domainPattern"
+      />
       <div class="field">
         <label>domain</label>
         <input

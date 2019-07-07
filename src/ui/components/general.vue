@@ -128,51 +128,6 @@ export default {
         }
       });
 
-
-      $('#automaticModeField').popup({
-        html: `
-          <div style="width:500px;">
-          Automatically reopen tabs in new Temporary Containers when<ul>
-          <li> Opening a new tab
-          <li> Tab tries to load a website in no container
-          <li> External program opens a link in the browser</ul>
-          <br>
-          <span style="font-size:13px">
-            Note: Some users experience delays when new tabs are reopened,
-            sometimes even losing the first few characters already typed into
-            the address bar. You can change how Automatic Mode works in the
-            Advanced preferences to fix that
-          </span>
-          </div>
-        `,
-        inline: true,
-        position: 'bottom left'
-      });
-
-      $('#popupField').popup({
-        html: `
-        <div style="width:500px;">
-        The popup lets you<ul>
-        <li> Open new Temporary Container
-        <li> Open Preferences/Options
-        <li> Configure Isolation
-        <li> Disable/Enable Isolation globally
-        <li> Open current tab URL in new Temporary Container
-        <li> Convert Temporary to Permanent Container
-        <li> Convert Permanent to Temporary Container
-        <li> View Statistics
-        ${this.permissions.history ? '<li> Open current tab URL in new "Deletes History Temporary Container"' : ''}
-        ${this.permissions.history ? '<li> Open new "Deletes History Temporary Container"' : ''}
-        </ul>
-        <span style="font-size:13px">
-          Note: You can change the default popup tab in the Advanced preferences
-        </span>
-        </div>
-      `,
-        inline: true,
-        position: 'bottom left'
-      });
-
       this.show = true;
     });
   }
@@ -196,16 +151,11 @@ export default {
             v-model="preferences.automaticMode.active"
             type="checkbox"
           >
-          <label>{{ t('automaticMode') }}</label>
+          <label><span
+            data-glossary="Automatic Mode"
+            :data-glossary-label="t('automaticMode')"
+          /></label>
         </div>
-        <span class="float right">
-          <a
-            id="automaticModeInfo"
-            class="icon-info-circled"
-            href="https://github.com/stoically/temporary-containers/wiki/Automatic-Mode"
-            target="_blank"
-          />
-        </span>
       </div>
       <div
         id="popupField"
@@ -217,11 +167,12 @@ export default {
             v-model="preferences.browserActionPopup"
             type="checkbox"
           >
-          <label>Show popup when pressing the toolbar icon</label>
+          <label><span
+            id="popupbug"
+            data-glossary="Toolbar Popup"
+            data-glossary-label="Show popup when pressing the toolbar icon"
+          /></label>
         </div>
-        <span
-          class="float right icon-info-circled"
-        />
       </div>
       <div class="field">
         <div

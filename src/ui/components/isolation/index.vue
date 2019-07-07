@@ -25,25 +25,19 @@ export default {
         class="active item"
         data-tab="isolation/global"
       >
-        <span
-          data-glossary="Global"
-          data-glossary-section="Global"
-        />
+        <span data-glossary="Global" />
       </a>
       <a
         class="item"
         data-tab="isolation/perdomain"
       >
-        <span
-          data-glossary="Per Domain"
-          data-glossary-section="Per Domain"
-        />
+        <span data-glossary="Per Domain" />
       </a>
       <a
         class="item"
         data-tab="isolation/mac"
       >
-        Multi-Account Containers
+        <span data-glossary="Multi-Account Containers" />
       </a>
     </div>
     <div

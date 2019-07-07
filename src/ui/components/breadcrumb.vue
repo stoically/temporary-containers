@@ -15,13 +15,15 @@ export default {
     <div
       class="ui breadcrumb"
       style="font-size: 13px"
+      :data-glossary="tab"
+      data-glossary-label=""
     >
       <div class="section">
         Isolation
       </div>
       <i class="right angle icon divider" />
       <div class="active section">
-        <span :data-glossary="tab" />
+        {{ tab }}
       </div>
     </div>
     <div

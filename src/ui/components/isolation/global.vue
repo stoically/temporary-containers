@@ -118,10 +118,7 @@ export default {
           >
             <h4>
               <i class="dropdown icon" />
-              <span
-                data-glossary="Navigation"
-                data-glossary-section="Global"
-              />
+              Navigation
             </h4>
           </div>
           <div
@@ -138,10 +135,7 @@ export default {
           <div class="title">
             <h4>
               <i class="dropdown icon" />
-              <span
-                data-glossary="Mouse Click"
-                data-glossary-section="Global"
-              />
+              Mouse Click
             </h4>
           </div>
           <div
@@ -166,10 +160,7 @@ export default {
           <div class="title">
             <h4>
               <i class="dropdown icon" />
-              <span
-                data-glossary="Exclude Permanent Containers"
-                data-glossary-section="Global"
-              />
+              Exclude Permanent Containers
             </h4>
           </div>
           <div
@@ -192,10 +183,7 @@ export default {
           <div class="title">
             <h4>
               <i class="dropdown icon" />
-              <span
-                data-glossary="Exclude Target Domains"
-                data-glossary-section="Global"
-              />
+              Exclude Target Domains
             </h4>
           </div>
           <div
