@@ -11,6 +11,8 @@ class Utils {
           debug('[addMissingKeys] key not found, setting default', key, _default[key]);
           _source[key] = _default[key];
           addedMissing = true;
+        } else if (Array.isArray(_source[key])) {
+          return;
         } else if (typeof _source[key] === 'object') {
           addKeys(_default[key], _source[key]);
         }
