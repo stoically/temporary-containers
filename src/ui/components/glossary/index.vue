@@ -163,8 +163,8 @@ export default {
   user-select: text;
 }
 .glossary-container {
-  min-width: 300px;
-  max-width: 300px;
+  min-width: 285px;
+  max-width: 285px;
 }
 .glossary-help {
   cursor: help;
