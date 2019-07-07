@@ -139,7 +139,10 @@ class Isolation {
       return false;
     }
 
-    if (!this.mouseclick.isolated[request.url].count < 0) {
+    debug('[beforeHandleRequest] decreasing isolated mouseclick count', this.mouseclick.isolated[request.url]);
+    this.mouseclick.isolated[request.url].count--;
+
+    if (this.mouseclick.isolated[request.url].count < 0) {
       debug('[shouldIsolateMouseClick] not isolating and removing isolated mouseclick because its count is < 0',
         this.mouseclick.isolated[request.url]);
       this.mouseclick.isolated[request.url].abortController.abort();
@@ -148,12 +151,13 @@ class Isolation {
     }
 
     if (!this.mouseclick.isolated[request.url].count) {
-      debug('[shouldIsolateMouseClick] removing isolated mouseclick because its count is <= 0',
+      debug('[shouldIsolateMouseClick] removing isolated mouseclick because its count is 0',
         this.mouseclick.isolated[request.url]);
       this.mouseclick.isolated[request.url].abortController.abort();
       delete this.mouseclick.isolated[request.url];
     }
 
+    debug('[shouldIsolateMouseClick] decided to isolate mouseclick', this.mouseclick.isolated[request.url]);
     return true;
   }
 

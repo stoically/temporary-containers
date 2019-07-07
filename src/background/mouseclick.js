@@ -132,8 +132,6 @@ class MouseClick {
     if (!this.isolated[request.url]) {
       return;
     }
-    debug('[beforeHandleRequest] decreasing isolated mouseclick count', this.isolated[request.url]);
-    this.isolated[request.url].count--;
     debug('[beforeHandleRequest] aborting isolated mouseclick cleanup', request.url);
     this.isolated[request.url].abortController.abort();
   }
