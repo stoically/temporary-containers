@@ -111,8 +111,8 @@ export default {
 #container {
   padding: 10px;
   padding-top: 5px;
-  min-width: 320px;
-  max-width: 320px;
+  min-width: 370px;
+  max-width: 370px;
   min-height: 470px;
 }
 .hidden { display: none; }

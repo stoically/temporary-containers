@@ -163,8 +163,8 @@ export default {
   user-select: text;
 }
 .glossary-container {
-  min-width: 285px;
-  max-width: 285px;
+  min-width: 320px;
+  max-width: 320px;
 }
 .glossary-help {
   cursor: help;
@@ -247,25 +247,32 @@ ul {
       />
       <div class="glossary-content">
         <div v-show="active === 'Navigation'">
-          Opening websites in tabs, or new tabs, through e.g. address bar or <glossary-link to="Mouse Click" /><br>
-          <br>
-          Navigations happen from the <glossary-link to="Originating Domain" /> to the
-          <glossary-link to="Target Domain" />. When finished it's the
-          <glossary-link to="Tab Domain" />
-        </div>
-
-        <div v-show="active === 'Mouse Click'">
-          Clicking links on websites in <glossary-link to="Current Tab" /> resulting in
-          <glossary-link to="Navigation" /> to <glossary-link to="Target Domain" /><br>
-          <br>
-          Isolation configurations:
+          Opening <glossary-link
+            to="Target Domain"
+            text="Target Domains"
+          /> in tabs, or new tabs,
+          through e.g. address bar or <glossary-link to="Mouse Click" />
           <ul>
             <li v-if="section === 'Per Domain'">
               <glossary-link to="Use Global" />
             </li>
             <li><glossary-link to="Never" /></li>
-            <li><glossary-link to="Different Tab Domain & Subdomains" /></li>
-            <li><glossary-link to="Different Tab Domain" /></li>
+            <li><glossary-link to="Different from Tab Domain & Subdomains" /></li>
+            <li><glossary-link to="Different from Tab Domain" /></li>
+            <li><glossary-link to="Always" /></li>
+          </ul>
+        </div>
+
+        <div v-show="active === 'Mouse Click'">
+          Clicking links on websites in <glossary-link to="Current Tab" /> which result in
+          <glossary-link to="Navigation" /> to <glossary-link to="Target Domain" /><br>
+          <ul>
+            <li v-if="section === 'Per Domain'">
+              <glossary-link to="Use Global" />
+            </li>
+            <li><glossary-link to="Never" /></li>
+            <li><glossary-link to="Different from Tab Domain & Subdomains" /></li>
+            <li><glossary-link to="Different from Tab Domain" /></li>
             <li><glossary-link to="Always" /></li>
           </ul>
           <div style="font-size: 12px">
@@ -283,33 +290,16 @@ ul {
           <glossary-link to="Domain" /> which a tab <glossary-link
             to="Navigation"
             text="navigates"
-          /> to<br>
-          <br>
-          Isolation configurations:
-          <ul>
-            <li v-if="section === 'Per Domain'">
-              <glossary-link to="Use Global" />
-            </li>
-            <li><glossary-link to="Never" /></li>
-            <li><glossary-link to="Different Tab Domain & Subdomains" /></li>
-            <li><glossary-link to="Different Tab Domain" /></li>
-            <li><glossary-link to="Always" /></li>
-          </ul>
+          /> to
         </div>
         <div v-show="active === 'Isolation'">
-          Cancel <glossary-link to="Navigation" /> and open <glossary-link to="Target Domain" /> in new Temporay Container tab,
-          hence isolating the <glossary-link to="Originating Domain" />
+          Cancel <glossary-link to="Navigation" /> and open <glossary-link to="Target Domain" /> in new Temporay Container tab
         </div>
 
         <div v-show="active === 'Global'">
           Configurations apply to all tabs and result in <glossary-link to="Isolation" /> if they match
           <ul>
-            <li>
-              <glossary-link to="Navigation" />
-              <ul>
-                <li><glossary-link to="Target Domain" /></li>
-              </ul>
-            </li>
+            <li><glossary-link to="Navigation" /></li>
             <li><glossary-link to="Mouse Click" /></li>
             <li><glossary-link to="Exclude Permanent Containers" /></li>
             <li><glossary-link to="Exclude Target Domains" /></li>
@@ -324,15 +314,14 @@ ul {
         </div>
 
         <div v-show="active === 'Per Domain'">
-          Configurations apply if the <glossary-link to="Tab Domain" /> matches the <glossary-link to="Domain Pattern" />
+          Configurations that apply if the <glossary-link to="Target Domain" /> matches the <glossary-link to="Domain Pattern" />
           <ul>
             <li><glossary-link to="Always open in" /></li>
-            <li>
-              <glossary-link to="Navigation" />
-              <ul>
-                <li><glossary-link to="Target Domain" /></li>
-              </ul>
-            </li>
+          </ul>
+          <br>
+          Configurations that apply if the <glossary-link to="Tab Domain" /> matches the <glossary-link to="Domain Pattern" />
+          <ul>
+            <li><glossary-link to="Navigation" /></li>
             <li><glossary-link to="Mouse Click" /></li>
             <li><glossary-link to="Exclude Target Domains" /></li>
           </ul>
@@ -354,37 +343,23 @@ ul {
         </div>
 
         <div v-show="active === 'Tab Domain'">
-          <glossary-link to="Domain" /> currently loaded in a tab<br>
-          <br>
-          If a tab has an <glossary-link to="Opener Tab" />, then its currently loaded Domain will be
-          the Tab Domain
-        </div>
-
-        <div v-show="active === 'Opener Tab'">
-          Tab from which a tab got opened. This happens if e.g.
-          <ul>
-            <li>Using middle <glossary-link to="Mouse Click" /> to open a background tab</li>
-            <li>A website opens a new tab if you left mouse click a link</li>
-          </ul>
-        </div>
-
-        <div v-show="active === 'Loading Domain'">
-          <glossary-link to="Domain" /> trying to load in a tab
+          <glossary-link to="Domain" /> currently loaded in a tab
         </div>
 
         <div v-show="active === 'Never'">
           Never matches and hence never results in <glossary-link to="Isolation" />
         </div>
 
-        <div v-show="active === 'Different Tab Domain & Subdomains'">
-          <glossary-link to="Tab Domain" /> & <glossary-link
+        <div v-show="active === 'Different from Tab Domain & Subdomains'">
+          <glossary-link to="Target Domain" /> is different from the
+          <glossary-link to="Tab Domain" /> and its <glossary-link
             to="Subdomain"
             text="Subdomains"
-          /> do not match <glossary-link to="Target Domain" />
+          />
         </div>
 
-        <div v-show="active === 'Different Tab Domain'">
-          <glossary-link to="Tab Domain" /> does not exactly match <glossary-link to="Target Domain" />
+        <div v-show="active === 'Different from Tab Domain'">
+          <glossary-link to="Target Domain" /> is different from the <glossary-link to="Tab Domain" />
         </div>
 
         <div v-show="active === 'Always'">
@@ -400,11 +375,6 @@ ul {
         <div v-show="['Domain Pattern', 'Exclusion Pattern'].includes(active)">
           Can be one of <glossary-link to="Domain" />, <glossary-link to="Subdomain" />, <glossary-link to="Glob/Wildcard" />
           or (advanced) <glossary-link to="RegExp" />
-        </div>
-
-        <div v-show="active === 'Originating Domain'">
-          <glossary-link to="Domain" /> from which a <glossary-link to="Navigation" /> originated,
-          also known as referer or source
         </div>
 
         <div v-show="active === 'Permanent Containers'">
@@ -468,11 +438,8 @@ ul {
           />
           <ul>
             <li>Originates from a new tab</li>
-            <li>Current container is the <glossary-link to="Default Container" /></li>
-            <li>
-              <glossary-link to="Originating Domain" /> is different
-              from the <glossary-link to="Loading Domain" />
-            </li>
+            <li><glossary-link to="Target Domain" /> is different from the <glossary-link to="Tab Domain" /></li>
+            <li>Current container is <glossary-link to="Default Container" /></li>
           </ul>
           <br>
           <strong>Disabled:</strong> No effect
@@ -485,7 +452,7 @@ ul {
             @click="external('https://addons.mozilla.org/firefox/addon/multi-account-containers/')"
           >
             MAC Add-on <i class="linkify icon" />
-          </a>, which needs to be installed and configured properly for this to work.
+          </a>, which needs to be installed and configured for this to work.
           It's not related to Per Domain Always open in.
           <br>
           <br>
@@ -493,7 +460,7 @@ ul {
             to="Navigation"
             text="Navigations"
           /> in
-          <glossary-link to="Permanent Containers" /> whose <glossary-link to="Loading Domain" /> isn't MAC-"Always open in"
+          <glossary-link to="Permanent Containers" /> whose <glossary-link to="Target Domain" /> isn't MAC-"Always open in"
           assigned to that container get <glossary-link
             to="Isolation"
             text="isolated"

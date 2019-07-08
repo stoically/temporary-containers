@@ -58,10 +58,10 @@ export default {
         Never
       </option>
       <option value="notsamedomain">
-        Different Tab Domain & Subdomains
+        Different from Tab Domain & Subdomains
       </option>
       <option value="notsamedomainexact">
-        Different Tab Domain
+        Different from Tab Domain
       </option>
       <option value="always">
         Always
