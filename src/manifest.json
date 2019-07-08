@@ -2,7 +2,7 @@
   "description": "Open tabs, websites, and links in automatically managed disposable containers. Containers isolate the data websites store (cookies, cache, and more) from each other, further enhancing your privacy while you browse.",
   "manifest_version": 2,
   "name": "Temporary Containers",
-  "version": "1.0beta21",
+  "version": "1.0",
   "homepage_url": "https://github.com/stoically/temporary-containers",
   "icons": {
     "48": "icons/tmpcontainer-48.png"
