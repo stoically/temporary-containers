@@ -46,6 +46,14 @@ const CONTAIN_URLS = {
       'youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be'
     ],
     REs: []
+  },
+  amazon: {
+    // https://github.com/Jackymancs4/contain-amazon/blob/master/background.js
+    urls: [
+      'amazon.it', 'amazon.de', 'amazon.com', 'amazon.com.br', 'amazon.in', 'amazon.com.au', 'amazon.es', 'amazon.com.mx', 'amazon.co.jp', 'amazon.in', 'amazon.co.uk', 'amazon.ca', 'amazon.fr', 'amazon.com.sg',
+      'awscloud.com', 'amazon.company', 'amazon.express', 'amazon.gd', 'amazon.international', 'amazon.ltda', 'amazon.press', 'amazon.shopping', 'amazon.tickets', 'amazon.tv', 'amazon.cruises', 'amazon.dog', 'amazon.express', 'amazon.game', 'amazon.gent', 'amazon.salon', 'amazon.shopping', 'amazon.tours', 'amazon.wiki', 'amazon.clothing', 'amazon.energy', 'amazon.fund', 'amazon.hockey', 'amazon.kiwi', 'amazon.re', 'amazon.soccer', 'amazon.tienda', 'amazon.training', 'amazon.jobs', 'primevideo.com', 'mturk.com', 'lab126.com', 'amazonpay.in', 'amazonteam.org', 'awsevents.com', 'seattlespheres.com',
+    ],
+    REs: []
   }
 };
 
@@ -102,6 +110,12 @@ class Management {
         enabled: false,
         version: false,
         REs: CONTAIN_URLS.youtube.REs
+      },
+      '@contain-amazon': {
+        name: 'Amazon Container',
+        enabled: false,
+        version: false,
+        REs: CONTAIN_URLS.amazon.REs
       }
     };
   }

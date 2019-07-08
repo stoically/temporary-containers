@@ -308,7 +308,7 @@ class TmpRequest {
 
     const parsedTabUrl = tab && /^https?:/.test(tab.url) && new URL(tab.url);
     const parsedOpenerTabUrl = openerTab && /^https?:/.test(openerTab.url) && new URL(openerTab.url);
-    for (const containWhat of ['@contain-facebook', '@contain-google', '@contain-twitter', '@contain-youtube']) {
+    for (const containWhat of ['@contain-facebook', '@contain-google', '@contain-twitter', '@contain-youtube', '@contain-amazon']) {
       if (!this.management.addons[containWhat].enabled) {
         continue;
       }
