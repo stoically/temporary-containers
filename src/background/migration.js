@@ -61,7 +61,9 @@ class Migration {
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.103')) {
       debug('[migrate] updated from version <= 0.103, migrate popup default tab to isolation-per-domain');
-      preferences.ui.popupDefaultTab = 'isolation-per-domain';
+      if (preferences.browserActionPopup || preferences.pageAction) {
+        preferences.ui.popupDefaultTab = 'isolation-per-domain';
+      }
     }
 
     // hint: don't use preferences/storage-defaults here, ^
