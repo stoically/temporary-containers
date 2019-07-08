@@ -10,12 +10,12 @@ before_install:
   - sleep 3
 
 script:
-  - if [ -z $TRAVIS_TAG ]; then
+  - if [[ $TRAVIS_TAG == *"beta"* ]]; then
+      npm run build:sign;
+    else
       unset WEB_EXT_API_KEY;
       unset WEB_EXT_API_SECRET;
       npm run build;
-    else
-      npm run build:sign;
     fi
 
 after_success: npm run coverage
