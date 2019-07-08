@@ -50,16 +50,16 @@ class Runtime {
 
     case 'importPreferences': {
       const oldPreferences = this.utils.clone(this.storage.local.preferences);
-      await this.migration.migrate({
-        preferences: message.payload.preferences,
-        previousVersion: message.payload.previousVersion
-      });
       if (this.background.utils.addMissingKeys({
         defaults: this.preferences.defaults,
         source: this.pref
       })) {
         await this.storage.persist();
       }
+      await this.migration.migrate({
+        preferences: message.payload.preferences,
+        previousVersion: message.payload.previousVersion
+      });
       await this.preferences.handleChanges({
         oldPreferences,
         newPreferences: this.pref
