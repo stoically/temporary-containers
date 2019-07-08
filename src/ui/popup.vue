@@ -28,8 +28,7 @@ export default {
   data() {
     return {
       initialized: false,
-      show: false,
-      minWidth: false
+      show: false
     };
   },
   watch: {
@@ -53,11 +52,6 @@ export default {
         $.tab('change tab', this.app.preferences.ui.popupDefaultTab);
       });
     }
-  },
-  mounted() {
-    this.$root.$on('min-width', minWidth => {
-      this.minWidth = minWidth;
-    });
   },
   methods: {
     changeTab(tab) {
@@ -125,10 +119,7 @@ export default {
 </style>
 
 <template>
-  <div
-    class="pusher"
-    :style="minWidth ? `min-width: ${minWidth}px; margin-right: 10px;` : ''"
-  >
+  <div class="pusher">
     <message v-if="!app.initialized" />
     <div
       v-if="initialized"
