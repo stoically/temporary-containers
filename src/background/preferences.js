@@ -64,7 +64,7 @@ class Preferences {
       closeRedirectorTabs: {
         active: false,
         delay: 2000,
-        domains: ['t.co', 'outgoing.prod.mozaws.net']
+        domains: ['t.co', 'outgoing.prod.mozaws.net', 'slack-redir.net']
       },
       ignoreRequests: ['getpocket.com', 'addons.mozilla.org'],
       cookies: {
