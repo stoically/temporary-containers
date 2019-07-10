@@ -1,3 +1,5 @@
-import init from './init';
 import App from './popup.vue';
-init(App, {popup: true});
+
+import('./root').then(root => {
+  root.default(App, {popup: true});
+});
