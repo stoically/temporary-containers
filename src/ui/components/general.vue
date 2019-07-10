@@ -86,7 +86,7 @@ export default {
             selected: !!this.preferences.container.colorRandomExcluded.includes(color.id)
           };
         }),
-        maxSelections: this.containerColors.length - 1,
+        maxSelections: this.containerColors.length - 2,
         onAdd: (addedColor) => {
           if (this.preferences.container.colorRandomExcluded.includes(addedColor)) {
             return;
@@ -112,7 +112,7 @@ export default {
             selected: !!this.preferences.container.iconRandomExcluded.includes(icon.id)
           };
         }),
-        maxSelections: this.containerIcons.length - 1,
+        maxSelections: this.containerIcons.length - 2,
         onAdd: (addedIcon) => {
           if (this.preferences.container.iconRandomExcluded.includes(addedIcon)) {
             return;
@@ -170,7 +170,7 @@ export default {
           <label><span
             id="popupbug"
             data-glossary="Toolbar Popup"
-            data-glossary-label="Show popup when pressing the toolbar icon"
+            data-glossary-label="Show popup when clicking the toolbar icon"
           /></label>
         </div>
       </div>
