@@ -1,3 +1,5 @@
-import init from './init';
 import App from './options.vue';
-init(App);
+
+import('./root').then(root => {
+  root.default(App, {});
+});
