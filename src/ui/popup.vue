@@ -106,7 +106,6 @@ export default {
   padding: 10px;
   padding-top: 5px;
   min-width: 370px;
-  max-width: 370px;
   min-height: 470px;
 }
 .hidden { display: none; }
