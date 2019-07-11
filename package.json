@@ -58,8 +58,8 @@
     "npm-check-updates": "^3.1.12",
     "nyc": "^14.1.1",
     "parcel-bundler": "^1.12.3",
-    "parcel-plugin-html-externals": "^0.1.0",
-    "parcel-plugin-static-files-copy": "stoically/parcel-plugin-static-files-copy#excludeGlob",
+    "parcel-plugin-html-externals": "^0.1.2",
+    "parcel-plugin-static-files-copy": "stoically/parcel-plugin-static-files-copy",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "vue-template-compiler": "^2.6.10",
@@ -73,7 +73,10 @@
   "staticFiles": {
     "staticPath": [
       "src",
-      "src/ui/static"
+      {
+        "staticPath": "src/ui/vendor",
+        "staticOutDir": "vendor"
+      }
     ],
     "watcherGlob": "**",
     "excludeGlob": [
