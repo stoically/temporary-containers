@@ -214,9 +214,13 @@ export default {
             date: this.download.date,
             version: this.download.version
           };
-          await browser.storage.local.set({lastFileExport});
           this.lastFileExport = lastFileExport;
           this.download = false;
+
+          browser.runtime.sendMessage({
+            method: 'lastFileExport',
+            payload: {lastFileExport}
+          });
         }
       });
     }
