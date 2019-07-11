@@ -20,6 +20,7 @@ class TmpStorage {
         }
       },
       preferences: background.preferences.defaults,
+      lastFileExport: false,
       version: false
     };
   }

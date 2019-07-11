@@ -110,6 +110,10 @@ class Runtime {
         url: message.payload.url
       });
 
+    case 'lastFileExport':
+      this.storage.local.lastFileExport = message.payload.lastFileExport;
+      return this.storage.persist();
+
     case 'ping':
       return 'pong';
     }
