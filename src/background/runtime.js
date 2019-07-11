@@ -52,7 +52,7 @@ class Runtime {
       const oldPreferences = this.utils.clone(this.storage.local.preferences);
       if (this.background.utils.addMissingKeys({
         defaults: this.preferences.defaults,
-        source: this.pref
+        source: message.payload.preferences
       })) {
         await this.storage.persist();
       }
