@@ -65,6 +65,10 @@ class Migration {
         preferences.ui.popupDefaultTab = 'isolation-per-domain';
       }
     }
+    if (this.updatedFromVersionEqualToOrLessThan('1.0')) {
+      debug('[migrate] updated from version <= 1.0, migrate redirectorCloseTabs');
+      preferences.closeRedirectorTabs.domains.push('slack-redir.net');
+    }
 
     // hint: don't use preferences/storage-defaults here, ^
     // always hardcode, because the defaults change over time.
