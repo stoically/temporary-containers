@@ -341,7 +341,7 @@ export default {
               v-model="preferences.closeRedirectorTabs.active"
               type="checkbox"
             >
-            <label>Automatically close left-over redirector tabs after 2 seconds: <strong>t.co</strong> (Twitter), <strong>outgoing.prod.mozaws.net</strong> (AMO), <strong>slack-redir.net</strong>(Slack)</label>
+            <label>Automatically close leftover redirector tabs after 2 seconds: <strong>t.co</strong> (Twitter), <strong>outgoing.prod.mozaws.net</strong> (AMO), <strong>slack-redir.net</strong>(Slack)</label>
           </div>
         </div>
         <div class="m-b" />
