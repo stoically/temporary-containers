@@ -119,8 +119,8 @@ export default {
           v-if="preferences.automaticMode.newTab === 'navigation'"
           class="ui small negative message"
         >
-          <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies, especially when you
-          use the address bar for search engines.
+          <strong>Warning:</strong> New tabs (about:newtab and about:blank) can make network requests and set cookies,
+          as long as they're not reopened in a Temporary Container, especially when you use the address bar for search engines.
           <br>
           If you have a Cookie-Deletion-Add-on that automatically keeps your default/permanent containers clean
           and you use privacy-oriented search-engines like Startpage.com or DuckDuckGo, then it should be no problem
@@ -332,7 +332,7 @@ export default {
               v-model="preferences.replaceTabs"
               type="checkbox"
             >
-            <label>Instead of creating a new tab replace the Current Tab</label>
+            <label>Instead of creating a new tab replace the current tab in case of Isolation</label>
           </div>
         </div>
         <div class="field">
