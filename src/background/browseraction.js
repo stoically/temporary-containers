@@ -69,7 +69,7 @@ class BrowserAction {
       tabId: tabId
     });
     browser.browserAction.setBadgeBackgroundColor({
-      color: '#FF613D',
+      color: '#f9f9fa',
       tabId: tabId
     });
     browser.browserAction.setBadgeText({
