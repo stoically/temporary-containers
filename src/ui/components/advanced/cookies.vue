@@ -234,7 +234,10 @@ export default {
                 @mouseenter="cookieMouseEnter"
                 @mouseleave="cookieMouseLeave"
               >
-                <div class="ui divided list">
+                <div
+                  v-if="domainCookie"
+                  class="ui divided list"
+                >
                   <div
                     v-for="cookieKey in cookieKeys(domainCookie)"
                     :key="cookieKey"
