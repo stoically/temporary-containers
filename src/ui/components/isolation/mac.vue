@@ -31,7 +31,8 @@ export default {
           Disabled
         </option>
         <option value="enabled">
-          Enabled
+          Isolate Navigations in Permanent Containers whose Target Domain isn't MAC-"Always open in"
+          assigned to that container
         </option>
       </select>
     </div>
