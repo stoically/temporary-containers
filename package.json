@@ -59,7 +59,7 @@
     "nyc": "^14.1.1",
     "parcel-bundler": "^1.12.3",
     "parcel-plugin-html-externals": "^0.1.2",
-    "parcel-plugin-static-files-copy": "stoically/parcel-plugin-static-files-copy",
+    "parcel-plugin-static-files-copy": "^2.2.0",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "vue-hot-reload-api": "^2.3.3",
