@@ -276,10 +276,10 @@ export default {
       </div>
       <div class="content">
         <div class="ui small message">
-          Note: To unignore Mozilla domains its needed to remove them from the <i>about:config</i>
-          key <strong>extensions.webextensions.restrictedDomains</strong> list, if they're listed there.
-          To fully unignore requests to addons.mozilla.org you need to configure <strong>privacy.resistFingerprinting.block_mozAddonManager</strong>
-          in <i>about:config</i> to Boolean <i>true</i> as well.
+          Note: Domains on the <i>about:config</i> <strong>extensions.webextensions.restrictedDomains</strong> list
+          can't be unignored. You should <strong>never</strong> change that list, nor configure
+          <strong>privacy.resistFingerprinting.block_mozAddonManager</strong> to Boolean <strong>true</strong> to unignore
+          <i>addons.mozilla.org</i>, since it's deemed a serious security risk by Mozilla.
         </div>
         <div style="margin-left: 20px">
           <div v-if="!preferences.ignoreRequests.length">
