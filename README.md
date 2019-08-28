@@ -37,7 +37,7 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 #### AMO and GitHub
 
 * Bump manifest version
-* Commit and push
+* Commit, tag and push
 * Upload zip web-ext-artifact to AMO
 * Download published AMO xpi
 * Create and publish GitHub release with AMO xpi
