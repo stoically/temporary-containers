@@ -53,6 +53,7 @@ class Preferences {
       contextMenu: true,
       contextMenuBookmarks: false,
       keyboardShortcuts: {
+        AltI: false,
         AltC: true,
         AltP: true,
         AltN: false,

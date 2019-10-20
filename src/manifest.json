@@ -38,6 +38,12 @@
     }
   },
   "commands": {
+    "toggle_isolation": {
+      "suggested_key": {
+        "default": "Alt+I"
+      },
+      "description": "Toggle isolation ON and OFF"
+    },
     "new_temporary_container_tab": {
       "suggested_key": {
         "default": "Alt+C"

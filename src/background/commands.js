@@ -15,6 +15,18 @@ class Commands {
 
   async onCommand(name) {
     switch(name) {
+    case 'toggle_isolation':
+      if (!this.pref.keyboardShortcuts.AltI) {
+        return;
+      }
+      var active = this.storage.local.preferences.isolation.active = !this.storage.local.preferences.isolation.active;
+      if (active) {
+        this.background.browseraction.removeIsolationInactiveBadge();
+      } else {
+        this.background.browseraction.addIsolationInactiveBadge();
+      }
+      break;
+
     case 'new_temporary_container_tab':
       if (!this.pref.keyboardShortcuts.AltC) {
         return;
