@@ -53,13 +53,13 @@ class Preferences {
       contextMenu: true,
       contextMenuBookmarks: false,
       keyboardShortcuts: {
-        AltI: false,
         AltC: true,
         AltP: true,
         AltN: false,
         AltShiftC: false,
         AltX: false,
-        AltO: false
+        AltO: false,
+        AltI: false,
       },
       replaceTabs: false,
       closeRedirectorTabs: {

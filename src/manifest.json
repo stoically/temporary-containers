@@ -38,12 +38,6 @@
     }
   },
   "commands": {
-    "toggle_isolation": {
-      "suggested_key": {
-        "default": "Alt+I"
-      },
-      "description": "Toggle isolation ON and OFF"
-    },
     "new_temporary_container_tab": {
       "suggested_key": {
         "default": "Alt+C"
@@ -79,6 +73,12 @@
         "default": "Alt+P"
       },
       "description": "Open a new tab in a new 'Deletes History Temporary Container'. History permissions under Advanced Preferences > Delete History must be given"
+    },
+    "toggle_isolation": {
+      "suggested_key": {
+        "default": "Alt+I"
+      },
+      "description": "Toggle Isolation ON and OFF. Enable in Advanced Preferences > Keyboard shortcuts"
     }
   },
   "options_ui": {

@@ -211,15 +211,6 @@ export default {
         <div class="field">
           <div class="ui checkbox">
             <input
-              v-model="preferences.keyboardShortcuts.AltI"
-              type="checkbox"
-            >
-            <label>Alt+I - Toggle ON and OFF the isolation state</label>
-          </div>
-        </div>
-        <div class="field">
-          <div class="ui checkbox">
-            <input
               v-model="preferences.keyboardShortcuts.AltC"
               type="checkbox"
             >
@@ -272,6 +263,15 @@ export default {
               type="checkbox"
             >
             <label>Alt+O - Open current tab URL in a new Temporary Container tab</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input
+              v-model="preferences.keyboardShortcuts.AltI"
+              type="checkbox"
+            >
+            <label>Alt+I - Toggle isolation ON and OFF</label>
           </div>
         </div>
 
