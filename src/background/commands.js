@@ -90,6 +90,7 @@ class Commands {
         return;
       }
       this.storage.local.preferences.isolation.active = !this.pref.isolation.active;
+      this.storage.persist();
       if (this.pref.isolation.active) {
         this.background.browseraction.removeIsolationInactiveBadge();
       } else {
