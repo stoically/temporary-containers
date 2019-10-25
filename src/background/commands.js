@@ -83,7 +83,22 @@ class Commands {
         deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic'
       });
       break;
-    }}
+    }
+
+    case 'toggle_isolation':
+      if (!this.pref.keyboardShortcuts.AltI) {
+        return;
+      }
+      this.storage.local.preferences.isolation.active = !this.pref.isolation.active;
+      this.storage.persist();
+      if (this.pref.isolation.active) {
+        this.background.browseraction.removeIsolationInactiveBadge();
+      } else {
+        this.background.browseraction.addIsolationInactiveBadge();
+      }
+      break;
+
+    }
   }
 }
 

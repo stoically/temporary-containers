@@ -265,6 +265,15 @@ export default {
             <label>Alt+O - Open current tab URL in a new Temporary Container tab</label>
           </div>
         </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input
+              v-model="preferences.keyboardShortcuts.AltI"
+              type="checkbox"
+            >
+            <label>Alt+I - Toggle isolation ON and OFF</label>
+          </div>
+        </div>
 
         <div class="m-b" />
       </div>
