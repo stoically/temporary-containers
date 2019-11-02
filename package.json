@@ -37,7 +37,6 @@
     "jquery-address": "^1.6.0",
     "p-queue": "^3.0.0",
     "psl": "^1.2.0",
-    "semantic-ui": "^2.4.2",
     "semver-compare": "^1.0.0",
     "sortablejs": "^1.10.0-rc3",
     "vue": "^2.6.10",
@@ -67,6 +66,9 @@
     "web-ext": "^3.1.0",
     "webextensions-geckodriver": "^0.6.0",
     "webextensions-jsdom": "^0.17.0"
+  },
+  "peerDependencies": {
+    "semantic-ui": "^2.4.2"
   },
   "browserslist": [
     "Firefox >= 60"
