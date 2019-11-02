@@ -62,7 +62,7 @@
     "jquery": "^3.4.1",
     "jquery-address": "^1.6.0",
     "p-queue": "^3.0.0",
-    "psl": "^1.2.0",
+    "psl": "^1.4.0",
     "semantic-ui": "^2.4.2",
     "semver-compare": "^1.0.0",
     "sortablejs": "^1.10.0-rc3",
@@ -107,5 +107,8 @@
     "exclude": [
       "test/**/*.js"
     ]
+  },
+  "dependencies": {
+    "psl": "^1.4.0"
   }
 }
