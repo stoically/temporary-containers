@@ -107,10 +107,5 @@
     "exclude": [
       "test/**/*.js"
     ]
-  },
-  "dependencies": {
-    "psl": "^1.4.0",
-    "sortablejs": "^1.10.1",
-    "vuedraggable": "^2.23.2"
   }
 }
