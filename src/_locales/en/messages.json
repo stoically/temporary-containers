@@ -116,6 +116,9 @@
   "optionsGeneralContainerNumberReuseNumbers": {
     "message": "Reuse available numbers"
   },
+  "optionsGeneralContainerNumberHide": {
+    "message": "Hide number"
+  },
   "optionsGeneralContainerRemoval": {
     "message": "Delete no longer needed Temporary Containers"
   },

@@ -312,6 +312,9 @@ export default {
           <option value="reuse">
             {{ t('optionsGeneralContainerNumberReuseNumbers') }}
           </option>
+          <option value="hide">
+            {{ t('optionsGeneralContainerNumberHide') }}
+          </option>
         </select>
       </div>
       <div class="field">
