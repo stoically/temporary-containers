@@ -30,18 +30,6 @@
     "url": "https://github.com/stoically/temporary-containers/issues"
   },
   "homepage": "https://github.com/stoically/temporary-containers#readme",
-  "dependencies": {
-    "delay": "^4.3.0",
-    "glob-to-regexp": "^0.4.1",
-    "jquery": "^3.4.1",
-    "jquery-address": "^1.6.0",
-    "p-queue": "^3.0.0",
-    "psl": "^1.2.0",
-    "semver-compare": "^1.0.0",
-    "sortablejs": "^1.10.0-rc3",
-    "vue": "^2.6.10",
-    "vuedraggable": "^2.23.0"
-  },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
@@ -68,7 +56,17 @@
     "webextensions-jsdom": "^0.17.0"
   },
   "peerDependencies": {
-    "semantic-ui": "^2.4.2"
+    "delay": "^4.3.0",
+    "glob-to-regexp": "^0.4.1",
+    "jquery": "^3.4.1",
+    "jquery-address": "^1.6.0",
+    "p-queue": "^3.0.0",
+    "psl": "^1.2.0",
+    "semantic-ui": "^2.4.2",
+    "semver-compare": "^1.0.0",
+    "sortablejs": "^1.10.0-rc3",
+    "vue": "^2.6.10",
+    "vuedraggable": "^2.23.0"
   },
   "browserslist": [
     "Firefox >= 60"
