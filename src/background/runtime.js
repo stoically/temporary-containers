@@ -82,6 +82,12 @@ class Runtime {
       await browser.storage.local.clear();
       return this.storage.install();
 
+    case 'resetContainerNumber':
+      debug('[onMessage] resetting container number', message, sender);
+      this.storage.local.tempContainerCounter = 0;
+      await this.storage.persist();
+      break;
+
     case 'createTabInTempContainer':
       return this.container.createTabInTempContainer({
         url: message.payload ? message.payload.url : undefined,

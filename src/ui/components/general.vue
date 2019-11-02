@@ -130,6 +130,21 @@ export default {
 
       this.show = true;
     });
+  },
+  methods: {
+    resetContainerNumber() {
+      if (!window.confirm(`
+        Reset current number ${this.app.storage.tempContainerCounter} to 0?
+      `)) {
+        return;
+      }
+
+      browser.runtime.sendMessage({
+        method: 'resetContainerNumber'
+      });
+
+      this.app.storage.tempContainerCounter = 0;
+    }
   }
 };
 </script>
@@ -295,6 +310,17 @@ export default {
             {{ t('optionsGeneralContainerNumberReuseNumbers') }}
           </option>
         </select>
+      </div>
+      <div class="field">
+        {{ app.tempContainerCounter }}
+        <div v-if="preferences.container.numberMode === 'keep' && app.storage.tempContainerCounter > 0">
+          <button
+            class="ui tiny button"
+            @click="resetContainerNumber()"
+          >
+            Reset current number {{ app.storage.tempContainerCounter }} to 0
+          </button>
+        </div>
       </div>
       <div
         class="field"

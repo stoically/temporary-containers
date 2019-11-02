@@ -111,7 +111,12 @@ export default (App, {popup = false}) => {
         let storage;
         try {
           // eslint-disable-next-line require-atomic-updates
-          storage = await browser.storage.local.get(['preferences', 'statistics', 'tempContainers']);
+          storage = await browser.storage.local.get([
+            'preferences',
+            'statistics',
+            'tempContainers',
+            'tempContainerCounter'
+          ]);
           if (!storage.preferences || !Object.keys(storage.preferences).length) {
             this.$root.$emit('showError', 'Loading preferences failed, please try again');
             return;
