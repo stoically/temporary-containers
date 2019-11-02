@@ -34,6 +34,18 @@ class TmpStorage {
       return this.install();
     }
 
+    // check for managed preferences
+    try {
+      const managed = await browser.storage.managed.get();
+      if (managed && Object.keys(managed).length) {
+        this.local.version = managed.version;
+        this.local.preferences = managed.preferences;
+        await this.persist();
+      }
+    } catch (error) {
+      debug('[initialize] accessing managed storage failed:', error.toString());
+    }
+
     debug('[initialize] storage initialized', this.local);
     if (this.background.utils.addMissingKeys({
       defaults: this.defaults,
