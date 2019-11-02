@@ -306,6 +306,9 @@ export default {
           <option value="keep">
             {{ t('optionsGeneralContainerNumberKeepCounting') }}
           </option>
+          <option value="keepuntilrestart">
+            {{ t('optionsGeneralContainerNumberKeepCountingUntilRestart') }}
+          </option>
           <option value="reuse">
             {{ t('optionsGeneralContainerNumberReuseNumbers') }}
           </option>

@@ -144,8 +144,14 @@ class Runtime {
 
   async onStartup() {
     // queue a container cleanup
-    await delay(15000);
-    this.container.cleanup(true);
+    delay(15000).then(() => 
+      this.container.cleanup(true)
+    );
+
+    if (this.pref.container.numberMode === 'keepuntilrestart') {
+      this.storage.local.tempContainerCounter = 0;
+      this.storage.persist();
+    }
   }
 }
 

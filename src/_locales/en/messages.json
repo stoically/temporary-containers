@@ -110,6 +110,9 @@
   "optionsGeneralContainerNumberKeepCounting": {
     "message": "Keep counting (default)"
   },
+  "optionsGeneralContainerNumberKeepCountingUntilRestart": {
+    "message": "Keep counting until browser restart"
+  },
   "optionsGeneralContainerNumberReuseNumbers": {
     "message": "Reuse available numbers"
   },

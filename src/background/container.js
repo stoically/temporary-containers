@@ -205,7 +205,7 @@ class Container {
 
   getContainerNameIconColor(url) {
     let tempContainerNumber;
-    if (this.pref.container.numberMode === 'keep') {
+    if (this.pref.container.numberMode.startsWith('keep')) {
       this.storage.local.tempContainerCounter++;
       tempContainerNumber = this.storage.local.tempContainerCounter;
     }
