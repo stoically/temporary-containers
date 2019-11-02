@@ -45,4 +45,4 @@ Build result is located in the `dist` directory.
 
   * Vue.Draggable
     * dist/vendor/vue/vuedraggable.umd.min.js
-    * https://github.com/SortableJS/Vue.Draggable/blob/v2.23.0/dist/vuedraggable.umd.min.js
+    * https://github.com/SortableJS/Vue.Draggable/blob/v2.23.2/dist/vuedraggable.umd.min.js
