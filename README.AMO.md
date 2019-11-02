@@ -37,7 +37,7 @@ Build result is located in the `dist` directory.
 
   * SortableJS
     * dist/vendor/sortable/Sortable.min.js
-    * https://github.com/SortableJS/Sortable/blob/1.10.0-rc3/Sortable.min.js
+    * https://github.com/SortableJS/Sortable/blob/1.10.1/Sortable.min.js
 
   * VueJS
     * dist/vendor/vue/vue.runtime.min.js
