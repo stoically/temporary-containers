@@ -477,7 +477,7 @@ class Container {
     if (!tab || url === 'about:blank' || url === 'about:newtab') {
       return;
     }
-    if (tab.cookieStoreId !== 'firefox-default' &&
+    if (tab.cookieStoreId !== `${this.background.containerPrefix}-default` &&
         this.storage.local.tempContainers[tab.cookieStoreId] &&
         this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory) {
       if (!this.storage.local.tempContainers[tab.cookieStoreId].history) {
@@ -511,7 +511,8 @@ class Container {
 
 
   isPermanent(cookieStoreId) {
-    if (cookieStoreId !== 'firefox-default' && !this.storage.local.tempContainers[cookieStoreId]) {
+    if (cookieStoreId !== `${this.background.containerPrefix}-default` &&
+        !this.storage.local.tempContainers[cookieStoreId]) {
       return true;
     }
     return false;

@@ -24,6 +24,8 @@ class TemporaryContainers {
     this.statistics = new window.Statistics(this);
     this.mac = new window.MultiAccountContainers(this);
     this.migration = new window.Migration(this);
+
+    this.containerPrefix = 'firefox';
   }
 
 
@@ -45,6 +47,13 @@ class TemporaryContainers {
         return target.local.preferences[key];
       },
     });
+
+    if (!this.storage.local.containerPrefix) {
+      const browserInfo = await browser.runtime.getBrowserInfo();
+      this.storage.local.containerPrefix = browserInfo.name.toLowerCase();
+      await this.storage.persist();
+    }
+    this.containerPrefix = this.storage.local.containerPrefix;
 
     this.request.initialize();
     this.runtime.initialize();

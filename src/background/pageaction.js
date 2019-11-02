@@ -17,7 +17,7 @@ class PageAction {
     }
 
     let color;
-    if (activatedTab.cookieStoreId === 'firefox-default') {
+    if (activatedTab.cookieStoreId === `${this.background.containerPrefix}-default`) {
       color = 'gray';
     } else if (this.storage.local.tempContainers[activatedTab.cookieStoreId] &&
                this.storage.local.tempContainers[activatedTab.cookieStoreId].color) {

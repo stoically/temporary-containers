@@ -206,7 +206,6 @@ preferencesTestSet.map(preferences => { describe(`preferences: ${JSON.stringify(
     it('should reopen the Tab in temporary container', async () => {
       browser.contextualIdentities.create.should.have.been.calledOnce;
       browser.tabs.create.should.have.been.calledOnce;
-      browser.storage.local.set.should.have.been.calledThrice;
     });
   });
 

@@ -55,7 +55,7 @@ class MultiAccountContainers {
       debug('[maybeReopenConfirmPage] we reopened a confirmpage in that tab / for that request.tabId already', tab, request);
       return;
     }
-    const targetContainer = `firefox-container-${macAssignment.userContextId}`;
+    const targetContainer = `${this.background.containerPrefix}-container-${macAssignment.userContextId}`;
     if (this.confirmPage[targetContainer]) {
       debug('[maybeReopenConfirmPage] we saw a mac confirm page for the target container already', targetContainer, this.confirmPage[targetContainer]);
       if (tab && tab.cookieStoreId && tab.cookieStoreId === targetContainer) {
@@ -125,7 +125,7 @@ class MultiAccountContainers {
 
     return {
       userContextId: assignment.userContextId,
-      cookieStoreId: `firefox-container-${assignment.userContextId}`,
+      cookieStoreId: `${this.background.containerPrefix}-container-${assignment.userContextId}`,
       neverAsk: assignment.neverAsk
     };
   }

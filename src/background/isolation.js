@@ -25,7 +25,8 @@ class Isolation {
       return;
     }
 
-    if (this.mouseclick.isolated[request.url] && tab && tab.cookieStoreId !== 'firefox-default' &&
+    if (this.mouseclick.isolated[request.url] && tab &&
+      tab.cookieStoreId !== `${this.background.containerPrefix}-default` &&
       this.container.urlCreatedContainer[request.url] === tab.cookieStoreId) {
       debug('[maybeIsolate] link click already created this container, we can stop here', request, tab);
       return;

@@ -5,6 +5,7 @@ class TmpStorage {
     this.local = null;
 
     this.defaults = {
+      containerPrefix: false,
       tempContainerCounter: 0,
       tempContainers: {},
       tempContainersNumbers: [],

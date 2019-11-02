@@ -166,7 +166,7 @@ class TmpRequest {
       return;
     }
 
-    if (tab && tab.cookieStoreId === 'firefox-default' && openerTab) {
+    if (tab && tab.cookieStoreId === `${this.background.containerPrefix}-default` && openerTab) {
       debug('[handleRequest] default container and openerTab', openerTab);
       if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
         debug('[handleRequest] request didnt came from about/moz-extension page', openerTab);
@@ -174,7 +174,7 @@ class TmpRequest {
       }
     }
 
-    if (tab && tab.cookieStoreId !== 'firefox-default') {
+    if (tab && tab.cookieStoreId !== `${this.background.containerPrefix}-default`) {
       debug('[handleRequest] onBeforeRequest tab belongs to a non-default container', tab, request);
       return;
     }
