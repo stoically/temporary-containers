@@ -1,6 +1,7 @@
-import './background/lib';
 import './background/log';
 import eventListeners from './background/event-listeners';
+
+import './background/lib';
 import BrowserAction from './background/browseraction';
 import Commands from './background/commands';
 import Container from './background/container';
