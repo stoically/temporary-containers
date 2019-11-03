@@ -3,15 +3,15 @@ export default {
   props: {
     app: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       preferences: this.app.preferences,
       permissions: this.app.permissions,
       activeTab: this.app.activeTab,
-      isHttpTab: this.app.activeTab.url.startsWith('http')
+      isHttpTab: this.app.activeTab.url.startsWith('http'),
     };
   },
   methods: {
@@ -19,8 +19,8 @@ export default {
       browser.runtime.sendMessage({
         method: 'createTabInTempContainer',
         payload: {
-          url: this.activeTab.url
-        }
+          url: this.activeTab.url,
+        },
       });
       window.close();
     },
@@ -29,8 +29,8 @@ export default {
         method: 'createTabInTempContainer',
         payload: {
           url: this.activeTab.url,
-          deletesHistory: true
-        }
+          deletesHistory: true,
+        },
       });
       window.close();
     },
@@ -40,8 +40,8 @@ export default {
         payload: {
           cookieStoreId: this.activeTab.cookieStoreId,
           tabId: this.activeTab.id,
-          url: this.activeTab.url
-        }
+          url: this.activeTab.url,
+        },
       });
       window.close();
     },
@@ -52,8 +52,8 @@ export default {
           cookieStoreId: this.activeTab.cookieStoreId,
           tabId: this.activeTab.id,
           name: this.activeTab.parsedUrl.hostname,
-          url: this.activeTab.url
-        }
+          url: this.activeTab.url,
+        },
       });
       window.close();
     },
@@ -63,66 +63,60 @@ export default {
         payload: {
           cookieStoreId: this.activeTab.cookieStoreId,
           tabId: this.activeTab.id,
-          url: this.activeTab.url
-        }
+          url: this.activeTab.url,
+        },
       });
       window.close();
-    }
-  }
+    },
+  },
 };
 </script>
 
-
 <template>
   <div class="ui segment">
-    <div
-      v-if="!isHttpTab"
-      class="ui small message"
-    >
+    <div v-if="!isHttpTab" class="ui small message">
       Actions aren't available in this tab
     </div>
 
-    <button
-      class="ui primary button"
-      :disabled="!isHttpTab"
-      @click="openInTmp"
-    >
+    <button class="ui primary button" :disabled="!isHttpTab" @click="openInTmp">
       Open tab URL in new Temporary Container
     </button>
-    <br><br>
+    <br /><br />
     <button
       class="ui negative button"
-      :disabled="!isHttpTab ||
-        !app.storage.tempContainers[activeTab.cookieStoreId]
+      :disabled="
+        !isHttpTab || !app.storage.tempContainers[activeTab.cookieStoreId]
       "
       @click="convertToPermanent"
     >
       Convert Temporary to Permanent Container
     </button>
-    <br><br>
+    <br /><br />
     <button
       class="ui negative button"
-      :disabled="!isHttpTab ||
-        activeTab.cookieStoreId === 'firefox-default' ||
-        app.storage.tempContainers[activeTab.cookieStoreId]
+      :disabled="
+        !isHttpTab ||
+          activeTab.cookieStoreId === 'firefox-default' ||
+          app.storage.tempContainers[activeTab.cookieStoreId]
       "
       @click="convertToTemporary"
     >
       Convert Permanent to Temporary Container
     </button>
-    <br><br>
+    <br /><br />
     <button
       v-if="permissions.history"
       class="ui negative button"
-      :disabled="!isHttpTab ||
-        !app.storage.tempContainers[activeTab.cookieStoreId] ||
-        !app.storage.tempContainers[activeTab.cookieStoreId].deletesHistory
+      :disabled="
+        !isHttpTab ||
+          !app.storage.tempContainers[activeTab.cookieStoreId] ||
+          !app.storage.tempContainers[activeTab.cookieStoreId].deletesHistory
       "
       @click="convertToRegular"
     >
       Convert from "Deletes History" to Regular Temporary Container
     </button>
-    <br><br>
+    <br /><br />
     <button
       v-if="permissions.history"
       class="ui negative button"

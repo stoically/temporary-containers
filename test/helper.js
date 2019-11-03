@@ -4,23 +4,23 @@ module.exports = {
       tabId = 1,
       createsTabId = 2,
       createsContainer = 'firefox-tmp1',
-      resetHistory = true
+      resetHistory = true,
     }) {
       const fakeCreatedContainer = {
-        cookieStoreId: createsContainer
+        cookieStoreId: createsContainer,
       };
       const fakeCreatedTab = {
         id: createsTabId,
-        openerTabId: tabId
+        openerTabId: tabId,
       };
       browser.contextualIdentities.create.resolves(fakeCreatedContainer);
       browser.tabs.create.resolves(fakeCreatedTab);
       browser.tabs.get.resolves({
         id: tabId,
-        cookieStoreId: createsContainer
+        cookieStoreId: createsContainer,
       });
       const [promise] = browser.browserAction.onClicked.addListener.yield({
-        id: tabId
+        id: tabId,
       });
       await promise;
       if (resetHistory) {
@@ -40,7 +40,7 @@ module.exports = {
       createsContainer = 'firefox-tmp1',
       createsTabId = 2,
       macWasFaster = false,
-      resetHistory = false
+      resetHistory = false,
     }) {
       if (!requestId) {
         requestId = this.requestId++;
@@ -53,22 +53,22 @@ module.exports = {
       const fakeRequest = {
         requestId,
         tabId,
-        url
+        url,
       };
       const fakeTab = {
         id: tabId,
         cookieStoreId: originContainer,
-        url: tabUrl
+        url: tabUrl,
       };
       const fakeCreatedContainer = {
-        cookieStoreId: createsContainer
+        cookieStoreId: createsContainer,
       };
       const fakeCreatedTab = {
         id: createsTabId,
-        openerTabId: tabId
+        openerTabId: tabId,
       };
       if (macWasFaster) {
-        browser.tabs.get.rejects({mac: 'was faster'});
+        browser.tabs.get.rejects({ mac: 'was faster' });
       } else {
         browser.tabs.get.resolves(fakeTab);
       }
@@ -83,41 +83,41 @@ module.exports = {
       clickType = 'left',
       domainCombination = false,
       senderUrl,
-      targetUrl
+      targetUrl,
     }) {
       switch (domainCombination) {
-      case 'notsameexact':
-        senderUrl = 'https://notexample.com';
-        targetUrl = 'https://example.com';
-        break;
+        case 'notsameexact':
+          senderUrl = 'https://notexample.com';
+          targetUrl = 'https://example.com';
+          break;
       }
 
       let clickEvent = {};
       switch (clickType) {
-      case 'middle':
-        clickEvent.button = 1;
-        break;
-      case 'ctrlleft':
-        clickEvent.button = 0;
-        clickEvent.ctrlKey = true;
-        break;
-      case 'left':
-        clickEvent.button = 0;
-        break;
+        case 'middle':
+          clickEvent.button = 1;
+          break;
+        case 'ctrlleft':
+          clickEvent.button = 0;
+          clickEvent.ctrlKey = true;
+          break;
+        case 'left':
+          clickEvent.button = 0;
+          break;
       }
 
       const fakeSender = {
         tab: {
           id: originTabId,
-          url: senderUrl
-        }
+          url: senderUrl,
+        },
       };
       const fakeMessage = {
         method: 'linkClicked',
         payload: {
           href: targetUrl,
-          event: clickEvent
-        }
+          event: clickEvent,
+        },
       };
       return await background.runtime.onMessage(fakeMessage, fakeSender);
     },
@@ -127,7 +127,7 @@ module.exports = {
       originContainer = 'firefox-default',
       url = 'http://example.com',
       targetContainer = false,
-      resetHistory = false
+      resetHistory = false,
     }) {
       if (resetHistory) {
         browser.tabs.remove.resetHistory();
@@ -135,21 +135,24 @@ module.exports = {
         browser.contextualIdentities.create.resetHistory();
       }
 
-      let confirmPageUrl = 'moz-extension://multi-account-containers/confirm-page.html?url=' +
-        encodeURIComponent(url) + '&cookieStoreId=' + targetContainer;
+      let confirmPageUrl =
+        'moz-extension://multi-account-containers/confirm-page.html?url=' +
+        encodeURIComponent(url) +
+        '&cookieStoreId=' +
+        targetContainer;
       if (originContainer !== 'firefox-default') {
         confirmPageUrl += '&currentCookieStoreId=' + originContainer;
       }
       const changeInfo = {
-        url: confirmPageUrl
+        url: confirmPageUrl,
       };
       const tab = {
         id: tabId,
         cookieStoreId: originContainer,
-        url: confirmPageUrl
+        url: confirmPageUrl,
       };
 
       return background.tabs.onUpdated(tabId, changeInfo, tab);
-    }
-  }
+    },
+  },
 };

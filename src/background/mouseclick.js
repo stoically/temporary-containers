@@ -6,7 +6,6 @@ class MouseClick {
     this.checkClickPreferences.bind(this);
   }
 
-
   initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
@@ -15,10 +14,13 @@ class MouseClick {
     this.isolation = this.background.isolation;
   }
 
-
   linkClicked(message, sender) {
     if (sender.tab.incognito) {
-      debug('[linkClicked] message came from an incognito tab, we dont handle that', message, sender);
+      debug(
+        '[linkClicked] message came from an incognito tab, we dont handle that',
+        message,
+        sender
+      );
       return;
     }
 
@@ -26,12 +28,16 @@ class MouseClick {
     const url = message.href;
     if (message.event.button === 1) {
       clickType = 'middle';
-    } else if (message.event.button === 0 &&
-                !message.event.ctrlKey &&
-                !message.event.metaKey) {
+    } else if (
+      message.event.button === 0 &&
+      !message.event.ctrlKey &&
+      !message.event.metaKey
+    ) {
       clickType = 'left';
-    } else if (message.event.button === 0 &&
-              (message.event.ctrlKey || message.event.metaKey)) {
+    } else if (
+      message.event.button === 0 &&
+      (message.event.ctrlKey || message.event.metaKey)
+    ) {
       clickType = 'ctrlleft';
     }
     if (!this.checkClick(clickType, message, sender)) {
@@ -43,56 +49,83 @@ class MouseClick {
       this.isolated[url].abortController.abort();
     }
 
-    const abortController = new AbortController;
+    const abortController = new AbortController();
     if (!this.isolated[url]) {
       this.isolated[url] = {
         clickType,
         tab: sender.tab,
         abortController,
-        count: 0
+        count: 0,
       };
     }
     this.isolated[url].count++;
 
-    delay(1500, {signal: abortController.signal}).then(() => {
-      debug('[linkClicked] cleaning up isolated', url);
-      delete this.isolated[url];
-    }).catch(debug);
+    delay(1500, { signal: abortController.signal })
+      .then(() => {
+        debug('[linkClicked] cleaning up isolated', url);
+        delete this.isolated[url];
+      })
+      .catch(debug);
   }
-
 
   checkClickPreferences(preferences, parsedClickedURL, parsedSenderTabURL) {
     if (preferences.action === 'always') {
-      debug('[checkClick] click handled based on preference "always"', preferences);
+      debug(
+        '[checkClick] click handled based on preference "always"',
+        preferences
+      );
       return true;
     }
 
     if (preferences.action === 'never') {
-      debug('[checkClickPreferences] click not handled based on preference "never"',
-        preferences, parsedClickedURL, parsedSenderTabURL);
+      debug(
+        '[checkClickPreferences] click not handled based on preference "never"',
+        preferences,
+        parsedClickedURL,
+        parsedSenderTabURL
+      );
       return false;
     }
 
     if (preferences.action === 'notsamedomainexact') {
       if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
-        debug('[checkClickPreferences] click handled based on preference "notsamedomainexact"',
-          preferences, parsedClickedURL, parsedSenderTabURL);
+        debug(
+          '[checkClickPreferences] click handled based on preference "notsamedomainexact"',
+          preferences,
+          parsedClickedURL,
+          parsedSenderTabURL
+        );
         return true;
       } else {
-        debug('[checkClickPreferences] click not handled based on preference "notsamedomainexact"',
-          preferences, parsedClickedURL, parsedSenderTabURL);
+        debug(
+          '[checkClickPreferences] click not handled based on preference "notsamedomainexact"',
+          preferences,
+          parsedClickedURL,
+          parsedSenderTabURL
+        );
         return false;
       }
     }
 
     if (preferences.action === 'notsamedomain') {
-      if (this.utils.sameDomain(parsedSenderTabURL.hostname, parsedClickedURL.hostname)) {
-        debug('[checkClickPreferences] click not handled from preference "notsamedomain"',
-          parsedClickedURL, parsedSenderTabURL);
+      if (
+        this.utils.sameDomain(
+          parsedSenderTabURL.hostname,
+          parsedClickedURL.hostname
+        )
+      ) {
+        debug(
+          '[checkClickPreferences] click not handled from preference "notsamedomain"',
+          parsedClickedURL,
+          parsedSenderTabURL
+        );
         return false;
       } else {
-        debug('[checkClickPreferences] click handled from preference "notsamedomain"',
-          parsedClickedURL, parsedSenderTabURL);
+        debug(
+          '[checkClickPreferences] click handled from preference "notsamedomain"',
+          parsedClickedURL,
+          parsedSenderTabURL
+        );
         return true;
       }
     }
@@ -115,24 +148,33 @@ class MouseClick {
         continue;
       }
       const preferences = domainPatternPreferences.mouseClick[type];
-      debug('[checkClick] per website pattern found', );
+      debug('[checkClick] per website pattern found');
       if (preferences.action === 'global') {
         debug('[checkClick] breaking because "global"');
         break;
       }
-      return this.checkClickPreferences(preferences,
-        parsedClickedURL, parsedSenderTabURL);
+      return this.checkClickPreferences(
+        preferences,
+        parsedClickedURL,
+        parsedSenderTabURL
+      );
     }
     debug('[checkClick] no website pattern found, checking global preferences');
-    return this.checkClickPreferences(this.pref.isolation.global.mouseClick[type],
-      parsedClickedURL, parsedSenderTabURL);
+    return this.checkClickPreferences(
+      this.pref.isolation.global.mouseClick[type],
+      parsedClickedURL,
+      parsedSenderTabURL
+    );
   }
 
   beforeHandleRequest(request) {
     if (!this.isolated[request.url]) {
       return;
     }
-    debug('[beforeHandleRequest] aborting isolated mouseclick cleanup', request.url);
+    debug(
+      '[beforeHandleRequest] aborting isolated mouseclick cleanup',
+      request.url
+    );
     this.isolated[request.url].abortController.abort();
   }
 
@@ -140,11 +182,13 @@ class MouseClick {
     if (!this.isolated[request.url]) {
       return;
     }
-    this.isolated[request.url].abortController = new AbortController;
-    delay(1500, {signal: this.isolated[request.url].abortController.signal}).then(() => {
-      debug('[beforeHandleRequest] cleaning up isolated', request.url);
-      delete this.isolated[request.url];
-    }).catch(debug);
+    this.isolated[request.url].abortController = new AbortController();
+    delay(1500, { signal: this.isolated[request.url].abortController.signal })
+      .then(() => {
+        debug('[beforeHandleRequest] cleaning up isolated', request.url);
+        delete this.isolated[request.url];
+      })
+      .catch(debug);
   }
 }
 

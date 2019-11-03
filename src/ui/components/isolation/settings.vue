@@ -3,33 +3,32 @@ export default {
   props: {
     action: {
       type: String,
-      required: true
+      required: true,
     },
     glossary: {
       type: String,
-      default: ''
+      default: '',
     },
     glossaryLabel: {
       type: String,
-      default: ''
+      default: '',
     },
     label: {
       type: String,
-      default: ''
+      default: '',
     },
     perdomain: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   watch: {
     action(newAction) {
       this.$emit('update:action', newAction);
-    }
-  }
+    },
+  },
 };
 </script>
-
 
 <template>
   <div class="field">
@@ -44,14 +43,8 @@ export default {
         {{ label }}
       </span>
     </label>
-    <select
-      v-model="action"
-      class="ui fluid dropdown"
-    >
-      <option
-        v-if="perdomain"
-        value="global"
-      >
+    <select v-model="action" class="ui fluid dropdown">
+      <option v-if="perdomain" value="global">
         Use Global
       </option>
       <option value="never">

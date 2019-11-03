@@ -5,7 +5,7 @@ class Preferences {
     this.defaults = {
       automaticMode: {
         active: false,
-        newTab: 'created'
+        newTab: 'created',
       },
       notifications: false,
       container: {
@@ -17,36 +17,36 @@ class Preferences {
         iconRandom: false,
         iconRandomExcluded: [],
         numberMode: 'keep',
-        removal: '15minutes'
+        removal: '15minutes',
       },
       iconColor: 'default',
       isolation: {
         active: true,
         global: {
           navigation: {
-            action: 'never'
+            action: 'never',
           },
           mouseClick: {
             middle: {
               action: 'never',
-              container: 'default'
+              container: 'default',
             },
             ctrlleft: {
               action: 'never',
-              container: 'default'
+              container: 'default',
             },
             left: {
               action: 'never',
-              container: 'default'
-            }
+              container: 'default',
+            },
           },
           excluded: {},
-          excludedContainers: {}
+          excludedContainers: {},
         },
         domain: [],
         mac: {
           action: 'disabled',
-        }
+        },
       },
       browserActionPopup: false,
       pageAction: false,
@@ -65,11 +65,11 @@ class Preferences {
       closeRedirectorTabs: {
         active: false,
         delay: 2000,
-        domains: ['t.co', 'outgoing.prod.mozaws.net', 'slack-redir.net']
+        domains: ['t.co', 'outgoing.prod.mozaws.net', 'slack-redir.net'],
       },
       ignoreRequests: ['getpocket.com', 'addons.mozilla.org'],
       cookies: {
-        domain: {}
+        domain: {},
       },
       deletesHistory: {
         active: false,
@@ -80,12 +80,12 @@ class Preferences {
         containerIsolation: 'never',
         containerRemoval: 'instant',
         containerMouseClicks: 'never',
-        statistics: false
+        statistics: false,
       },
       statistics: false,
       ui: {
         expandPreferences: false,
-        popupDefaultTab: 'isolation-global'
+        popupDefaultTab: 'isolation-global',
       },
     };
   }
@@ -98,11 +98,13 @@ class Preferences {
     this.pageaction = this.background.pageaction;
   }
 
-  async handleChanges({oldPreferences, newPreferences}) {
+  async handleChanges({ oldPreferences, newPreferences }) {
     if (oldPreferences.iconColor !== newPreferences.iconColor) {
       this.browseraction.setIcon(newPreferences.iconColor);
     }
-    if (oldPreferences.browserActionPopup !== newPreferences.browserActionPopup) {
+    if (
+      oldPreferences.browserActionPopup !== newPreferences.browserActionPopup
+    ) {
       if (newPreferences.browserActionPopup) {
         this.browseraction.setPopup();
       } else {
@@ -125,14 +127,22 @@ class Preferences {
     if (newPreferences.deletesHistory.active) {
       this.permissions.history = true;
     }
-    if (newPreferences.contextMenuBookmarks || newPreferences.deletesHistory.contextMenuBookmarks) {
+    if (
+      newPreferences.contextMenuBookmarks ||
+      newPreferences.deletesHistory.contextMenuBookmarks
+    ) {
       this.permissions.bookmarks = true;
     }
 
-    if (oldPreferences.contextMenu !== newPreferences.contextMenu ||
-      oldPreferences.contextMenuBookmarks !== newPreferences.contextMenuBookmarks ||
-      oldPreferences.deletesHistory.contextMenu !== newPreferences.deletesHistory.contextMenu ||
-      oldPreferences.deletesHistory.contextMenuBookmarks !== newPreferences.deletesHistory.contextMenuBookmarks)  {
+    if (
+      oldPreferences.contextMenu !== newPreferences.contextMenu ||
+      oldPreferences.contextMenuBookmarks !==
+        newPreferences.contextMenuBookmarks ||
+      oldPreferences.deletesHistory.contextMenu !==
+        newPreferences.deletesHistory.contextMenu ||
+      oldPreferences.deletesHistory.contextMenuBookmarks !==
+        newPreferences.deletesHistory.contextMenuBookmarks
+    ) {
       await this.contextmenu.remove();
       this.contextmenu.add();
     }

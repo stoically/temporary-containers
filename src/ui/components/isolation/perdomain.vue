@@ -11,35 +11,35 @@ const domainDefaults = {
   always: {
     action: 'disabled',
     allowedInPermanent: false,
-    allowedInTemporary: false
+    allowedInTemporary: false,
   },
   navigation: {
-    action: 'global'
+    action: 'global',
   },
   mouseClick: {
     middle: {
-      action: 'global'
+      action: 'global',
     },
     ctrlleft: {
-      action: 'global'
+      action: 'global',
     },
     left: {
-      action: 'global'
-    }
+      action: 'global',
+    },
   },
-  excluded: {}
+  excluded: {},
 };
 
 export default {
   components: {
     DomainPattern,
-    Settings
+    Settings,
   },
   props: {
     app: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -51,33 +51,40 @@ export default {
       editing: false,
       show: false,
       saved: false,
-      empty: true
+      empty: true,
     };
   },
   computed: {
     isolationDomains() {
-      return this.preferences.isolation.domain.reduce((accumulator, isolated, index) => {
-        isolated._index = index;
-        if (!isolated.pattern.includes(this.isolationDomainFilter)) {
+      return this.preferences.isolation.domain.reduce(
+        (accumulator, isolated, index) => {
+          isolated._index = index;
+          if (!isolated.pattern.includes(this.isolationDomainFilter)) {
+            return accumulator;
+          }
+          accumulator.push(isolated);
           return accumulator;
-        }
-        accumulator.push(isolated);
-        return accumulator;
-      }, []);
-    }
+        },
+        []
+      );
+    },
   },
   watch: {
     domain: {
-      handler(domain, oldDomain) {
+      handler(domain) {
         if (this.editing && !domain.pattern.trim()) {
           this.editing = false;
           this.domain = this.clone(domain);
-          const domainIndex = this.preferences.isolation.domain.findIndex(isolatedDomain =>
-            !isolatedDomain.pattern.trim()
+          const domainIndex = this.preferences.isolation.domain.findIndex(
+            isolatedDomain => !isolatedDomain.pattern.trim()
           );
           this.$delete(this.preferences.isolation.domain, domainIndex);
-        } else if (!this.editing &&
-          this.preferences.isolation.domain.find(_domain => _domain.pattern === domain.pattern)) {
+        } else if (
+          !this.editing &&
+          this.preferences.isolation.domain.find(
+            _domain => _domain.pattern === domain.pattern
+          )
+        ) {
           $('#isolationDomainForm').form('validate form');
         } else if (this.editing) {
           if (this.editClicked) {
@@ -91,16 +98,19 @@ export default {
         }
         this.empty = false;
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   async mounted() {
     this.$nextTick(() => {
       $('#isolationDomain .ui.accordion').accordion({
-        ...this.popup ? {
-          animateChildren: false,
-          duration: 0} : {},
-        exclusive: false
+        ...(this.popup
+          ? {
+              animateChildren: false,
+              duration: 0,
+            }
+          : {}),
+        exclusive: false,
       });
 
       $('#isolationDomain .ui.dropdown').dropdown();
@@ -109,12 +119,14 @@ export default {
       this.show = true;
     });
 
-    $.fn.form.settings.rules.domainPattern = (value) => {
+    $.fn.form.settings.rules.domainPattern = value => {
       if (this.editing) {
         this.reset();
         return true;
       } else {
-        return !this.preferences.isolation.domain.find(domain => domain.pattern === value);
+        return !this.preferences.isolation.domain.find(
+          domain => domain.pattern === value
+        );
       }
     };
 
@@ -125,16 +137,16 @@ export default {
           rules: [
             {
               type: 'empty',
-              prompt: 'Domain Pattern can\'t be empty'
+              prompt: "Domain Pattern can't be empty",
             },
             {
               type: 'domainPattern',
-              prompt: 'Domain Pattern already exists'
-            }
-          ]
-        }
+              prompt: 'Domain Pattern already exists',
+            },
+          ],
+        },
       },
-      onSuccess: (event) => {
+      onSuccess: event => {
         if (event) {
           event.preventDefault();
         }
@@ -147,18 +159,18 @@ export default {
           this.preferences.isolation.domain.push(this.clone(this.domain));
           this.reset();
         }
-      }
+      },
     });
 
     $('#isolationDomainExcludeDomainsForm').form({
       fields: {
-        isolationDomainExcludeDomainPattern: 'empty'
+        isolationDomainExcludeDomainPattern: 'empty',
       },
-      onSuccess: (event) => {
+      onSuccess: event => {
         event.preventDefault();
         this.$set(this.domain.excluded, this.excludeDomainPattern, {});
         this.excludeDomainPattern = '';
-      }
+      },
     });
 
     if (this.popup) {
@@ -180,7 +192,6 @@ export default {
       this.domain = this.clone(domainDefaults);
       this.domain.pattern = '';
       this.$nextTick(() => {
-
         this.empty = true;
       });
 
@@ -205,27 +216,41 @@ export default {
       this.resetDropdowns();
 
       if (!this.preferences.ui.expandPreferences) {
-
         $('#isolationPerDomainAccordion').accordion(
-          this.domain.always.action === domainDefaults.always.action ? 'close' : 'open', 0
+          this.domain.always.action === domainDefaults.always.action
+            ? 'close'
+            : 'open',
+          0
         );
         $('#isolationPerDomainAccordion').accordion(
-          this.domain.navigation.action === domainDefaults.navigation.action ? 'close' : 'open', 1
+          this.domain.navigation.action === domainDefaults.navigation.action
+            ? 'close'
+            : 'open',
+          1
         );
         $('#isolationPerDomainAccordion').accordion(
-          this.domain.mouseClick.middle.action === domainDefaults.mouseClick.middle.action &&
-        this.domain.mouseClick.ctrlleft.action === domainDefaults.mouseClick.ctrlleft.action &&
-        this.domain.mouseClick.left.action === domainDefaults.mouseClick.left.action ? 'close' : 'open', 2
+          this.domain.mouseClick.middle.action ===
+            domainDefaults.mouseClick.middle.action &&
+            this.domain.mouseClick.ctrlleft.action ===
+              domainDefaults.mouseClick.ctrlleft.action &&
+            this.domain.mouseClick.left.action ===
+              domainDefaults.mouseClick.left.action
+            ? 'close'
+            : 'open',
+          2
         );
         $('#isolationPerDomainAccordion').accordion(
-          !Object.keys(this.domain.excluded).length ? 'close' : 'open', 3
+          !Object.keys(this.domain.excluded).length ? 'close' : 'open',
+          3
         );
       }
     },
     remove(index, pattern) {
-      if (window.confirm(`
+      if (
+        window.confirm(`
         Remove ${pattern}?
-      `)) {
+      `)
+      ) {
         this.$delete(this.preferences.isolation.domain, index);
         if (this.editing && this.domain.pattern === pattern) {
           this.reset();
@@ -249,46 +274,42 @@ export default {
       if (event.moved) {
         this.preferences.isolation.domain.move(
           this.isolationDomains[event.moved.oldIndex]._index,
-          this.isolationDomains[event.moved.newIndex]._index,
+          this.isolationDomains[event.moved.newIndex]._index
         );
       }
     },
     focusIsolationDomainFilter() {
       this.$refs.isolationDomainFilter.focus();
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 </style>
 
-
 <template>
-  <div
-    v-show="show"
-    id="isolationDomain"
-  >
+  <div v-show="show" id="isolationDomain">
     <div class="ui form">
-      <form
-        id="isolationDomainForm"
-      >
+      <form id="isolationDomainForm">
         <domain-pattern
           id="isolationDomainPattern"
-          :tooltip="!popup ? undefined : {hidden: true}"
+          :tooltip="!popup ? undefined : { hidden: true }"
           :domain-pattern.sync="domain.pattern"
         />
       </form>
       <div
         id="isolationPerDomainAccordion"
         style="margin-top: 15px"
-        :style="empty ? 'opacity: 0.3; pointer-events: none': ''"
+        :style="empty ? 'opacity: 0.3; pointer-events: none' : ''"
         class="ui accordion"
       >
         <div class="title">
@@ -299,7 +320,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
+          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
         >
           <div>
             <select
@@ -315,34 +336,30 @@ export default {
               </option>
             </select>
             <div v-show="domain.always.action === 'enabled'">
-              <div
-                class="ui checkbox"
-                style="margin-top: 14px"
-              >
+              <div class="ui checkbox" style="margin-top: 14px">
                 <input
                   v-model="domain.always.allowedInPermanent"
                   type="checkbox"
-                >
+                />
                 <label>
-                  {{ !popup ?
-                    'Disable if Navigation in Permanent Containers' :
-                    'Disable in Permanent Containers'
+                  {{
+                    !popup
+                      ? 'Disable if Navigation in Permanent Containers'
+                      : 'Disable in Permanent Containers'
                   }}
                 </label>
               </div>
               <div />
-              <div
-                class="ui checkbox"
-                style="margin-top: 14px"
-              >
+              <div class="ui checkbox" style="margin-top: 14px">
                 <input
                   v-model="domain.always.allowedInTemporary"
                   type="checkbox"
-                >
+                />
                 <label>
-                  {{ !popup ?
-                    'Disable if Navigation in Temporary Containers' :
-                    'Disable in Temporary Containers'
+                  {{
+                    !popup
+                      ? 'Disable if Navigation in Temporary Containers'
+                      : 'Disable in Temporary Containers'
                   }}
                 </label>
               </div>
@@ -357,7 +374,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
+          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
         >
           <settings
             label="Target Domain"
@@ -373,7 +390,7 @@ export default {
         </div>
         <div
           class="content"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
+          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
         >
           <settings
             label="Middle Mouse"
@@ -399,17 +416,16 @@ export default {
         </div>
         <div
           class="content popup-exclude-margin"
-          :class="{'ui segment': !popup, 'popup-margin': popup}"
+          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
         >
           <div>
             <div class="field">
-              <form
-                id="isolationDomainExcludeDomainsForm"
-                class="ui form"
-              >
+              <form id="isolationDomainExcludeDomainsForm" class="ui form">
                 <domain-pattern
                   id="isolationDomainExcludeDomainPattern"
-                  :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
+                  :tooltip="
+                    !popup ? { position: 'top left' } : { hidden: true }
+                  "
                   :domain-pattern.sync="excludeDomainPattern"
                   :exclusion="true"
                 />
@@ -445,7 +461,7 @@ export default {
         </div>
       </div>
     </div>
-    <br>
+    <br />
     <div class="field">
       <button
         form="isolationDomainForm"
@@ -458,39 +474,28 @@ export default {
               <i class="check circle icon" />
               Saved
             </span>
-            <span v-if="!saved">
-              Done editing {{ domain.pattern }}
-            </span>
+            <span v-if="!saved"> Done editing {{ domain.pattern }} </span>
           </transition>
         </span>
-        <span v-else>
-          Add {{ domain.pattern }}
-        </span>
+        <span v-else> Add {{ domain.pattern }} </span>
       </button>
     </div>
-    <br>
-    <div
-      id="isolationDomainsAccordion"
-      :class="{'ui accordion': popup}"
-    >
+    <br />
+    <div id="isolationDomainsAccordion" :class="{ 'ui accordion': popup }">
       <div
         v-if="!Object.keys(isolationDomains).length && !isolationDomainFilter"
         style="margin-top: 10px"
-        :class="{'content': popup}"
+        :class="{ content: popup }"
       >
         No Isolated Domains added yet
       </div>
-      <div
-        v-else
-        :class="{'content': popup}"
-      >
-        <div :class="{title: popup}">
-          <i
-            v-if="popup"
-            class="dropdown icon"
-          />
+      <div v-else :class="{ content: popup }">
+        <div :class="{ title: popup }">
+          <i v-if="popup" class="dropdown icon" />
           <span
-            v-if="Object.keys(isolationDomains).length > 1 || isolationDomainFilter"
+            v-if="
+              Object.keys(isolationDomains).length > 1 || isolationDomainFilter
+            "
             class="ui icon mini input"
             style="margin-right: 10px"
           >
@@ -502,7 +507,7 @@ export default {
               placeholder="Filter Isolated Domains"
               @focus="expandIsolationDomainFilter"
               @click="expandIsolationDomainFilter"
-            >
+            />
             <i
               class="circular search link icon"
               @click="focusIsolationDomainFilter"
@@ -512,7 +517,7 @@ export default {
             <strong>Isolated Domains</strong>
           </span>
         </div>
-        <div :class="{'content': popup}">
+        <div :class="{ content: popup }">
           <div style="margin-top: 5px" />
           <draggable
             v-model="isolationDomains"
@@ -529,10 +534,7 @@ export default {
                 data-position="right center"
                 @click="edit(isolatedDomain._index)"
               >
-                <i
-                  class="icon-pencil"
-                  style="color: #2185d0"
-                />
+                <i class="icon-pencil" style="color: #2185d0" />
               </span>
               <span
                 :data-tooltip="`Remove ${isolatedDomain.pattern}`"
@@ -543,8 +545,11 @@ export default {
                 <i class="icon-trash-empty" />
               </span>
               <span
-                :data-tooltip="!popup && isolationDomains.length > 1 ?
-                  'Drag up/down - First in the list matches first' : undefined"
+                :data-tooltip="
+                  !popup && isolationDomains.length > 1
+                    ? 'Drag up/down - First in the list matches first'
+                    : undefined
+                "
                 data-position="right center"
                 :style="isolationDomains.length > 1 ? 'cursor: pointer' : ''"
               >

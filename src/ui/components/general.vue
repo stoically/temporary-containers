@@ -7,8 +7,8 @@ export default {
   props: {
     app: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -38,15 +38,15 @@ export default {
         'fruit',
         'pet',
         'tree',
-        'chill'
+        'chill',
       ],
       toolbarIconColors: [
         'default',
         'black-simple',
         'blue-simple',
         'red-simple',
-        'white-simple'
-      ]
+        'white-simple',
+      ],
     };
   },
   async mounted() {
@@ -57,17 +57,23 @@ export default {
 
     this.containerColors = this.containerColors.map(containerColor => ({
       id: containerColor,
-      text: this.t(`optionsGeneralContainerColor${containerColor.capitalize()}`)
+      text: this.t(
+        `optionsGeneralContainerColor${containerColor.capitalize()}`
+      ),
     }));
 
     this.containerIcons = this.containerIcons.map(containerIcon => ({
       id: containerIcon,
-      text: this.t(`optionsGeneralContainerIcon${containerIcon.capitalize()}`)
+      text: this.t(`optionsGeneralContainerIcon${containerIcon.capitalize()}`),
     }));
 
     this.toolbarIconColors = this.toolbarIconColors.map(toolbarIconColor => ({
       id: toolbarIconColor,
-      text: this.t(`optionsGeneralToolbarIconColor${toolbarIconColor.capitalize().replace('-s', 'S')}`)
+      text: this.t(
+        `optionsGeneralToolbarIconColor${toolbarIconColor
+          .capitalize()
+          .replace('-s', 'S')}`
+      ),
     }));
 
     this.initialized = true;
@@ -76,32 +82,35 @@ export default {
       $('#general .ui.dropdown').dropdown();
       $('#general .ui.checkbox').checkbox();
 
-
       $('#containerColorRandomExcluded').dropdown({
         placeholder: 'Select colors to exclude from random selection',
         values: this.containerColors.map(color => {
           return {
             name: color.text,
             value: color.id,
-            selected: !!this.preferences.container.colorRandomExcluded.includes(color.id)
+            selected: !!this.preferences.container.colorRandomExcluded.includes(
+              color.id
+            ),
           };
         }),
         maxSelections: this.containerColors.length - 2,
-        onAdd: (addedColor) => {
-          if (this.preferences.container.colorRandomExcluded.includes(addedColor)) {
+        onAdd: addedColor => {
+          if (
+            this.preferences.container.colorRandomExcluded.includes(addedColor)
+          ) {
             return;
           }
           this.preferences.container.colorRandomExcluded.push(addedColor);
         },
-        onRemove: (removedColor) => {
-          this.$delete(this.preferences.container.colorRandomExcluded,
-            this.preferences.container.colorRandomExcluded.findIndex(excludedColor =>
-              excludedColor === removedColor
+        onRemove: removedColor => {
+          this.$delete(
+            this.preferences.container.colorRandomExcluded,
+            this.preferences.container.colorRandomExcluded.findIndex(
+              excludedColor => excludedColor === removedColor
             )
           );
-        }
+        },
       });
-
 
       $('#containerIconRandomExcluded').dropdown({
         placeholder: 'Select icons to exclude from random selection',
@@ -109,23 +118,28 @@ export default {
           return {
             name: icon.text,
             value: icon.id,
-            selected: !!this.preferences.container.iconRandomExcluded.includes(icon.id)
+            selected: !!this.preferences.container.iconRandomExcluded.includes(
+              icon.id
+            ),
           };
         }),
         maxSelections: this.containerIcons.length - 2,
-        onAdd: (addedIcon) => {
-          if (this.preferences.container.iconRandomExcluded.includes(addedIcon)) {
+        onAdd: addedIcon => {
+          if (
+            this.preferences.container.iconRandomExcluded.includes(addedIcon)
+          ) {
             return;
           }
           this.preferences.container.iconRandomExcluded.push(addedIcon);
         },
-        onRemove: (removedIcon) => {
-          this.$delete(this.preferences.container.iconRandomExcluded,
-            this.preferences.container.iconRandomExcluded.findIndex(excludedIcon =>
-              excludedIcon === removedIcon
+        onRemove: removedIcon => {
+          this.$delete(
+            this.preferences.container.iconRandomExcluded,
+            this.preferences.container.iconRandomExcluded.findIndex(
+              excludedIcon => excludedIcon === removedIcon
             )
           );
-        }
+        },
       });
 
       this.show = true;
@@ -133,72 +147,63 @@ export default {
   },
   methods: {
     resetContainerNumber() {
-      if (!window.confirm(`
+      if (
+        !window.confirm(`
         Reset current number ${this.app.storage.tempContainerCounter} to 0?
-      `)) {
+      `)
+      ) {
         return;
       }
 
       browser.runtime.sendMessage({
-        method: 'resetContainerNumber'
+        method: 'resetContainerNumber',
       });
 
       this.app.storage.tempContainerCounter = 0;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <template>
-  <div
-    v-if="initialized"
-    v-show="show"
-    id="general"
-  >
+  <div v-if="initialized" v-show="show" id="general">
     <div class="ui form">
-      <div
-        id="automaticModeField"
-        class="field"
-      >
+      <div id="automaticModeField" class="field">
         <div class="ui checkbox">
           <input
             id="automaticMode"
             v-model="preferences.automaticMode.active"
             type="checkbox"
-          >
-          <label><span
-            data-glossary="Automatic Mode"
-            :data-glossary-label="t('automaticMode')"
+          />
+          <label
+            ><span
+              data-glossary="Automatic Mode"
+              :data-glossary-label="t('automaticMode')"
           /></label>
         </div>
       </div>
-      <div
-        id="popupField"
-        class="field"
-      >
+      <div id="popupField" class="field">
         <div class="ui checkbox">
           <input
             id="browserActionPopup"
             v-model="preferences.browserActionPopup"
             type="checkbox"
-          >
-          <label><span
-            id="popupbug"
-            data-glossary="Toolbar Popup"
-            data-glossary-label="Show popup when clicking the toolbar icon"
+          />
+          <label
+            ><span
+              id="popupbug"
+              data-glossary="Toolbar Popup"
+              data-glossary-label="Show popup when clicking the toolbar icon"
           /></label>
         </div>
       </div>
       <div class="field">
-        <div
-          id="notifications"
-          class="ui checkbox"
-        >
+        <div id="notifications" class="ui checkbox">
           <input
             id="notificationsCheckbox"
             v-model="preferences.notifications"
             type="checkbox"
-          >
+          />
           <label>{{ t('optionsGeneralNotifications') }}</label>
         </div>
       </div>
@@ -208,12 +213,9 @@ export default {
           id="containerNamePrefix"
           v-model="preferences.container.namePrefix"
           type="text"
-        >
+        />
       </div>
-      <div
-        id="containerColor"
-        class="field"
-      >
+      <div id="containerColor" class="field">
         <label v-if="!preferences.container.colorRandom">
           {{ t('optionsGeneralContainerColor') }}
         </label>
@@ -249,14 +251,11 @@ export default {
             id="containerColorRandom"
             v-model="preferences.container.colorRandom"
             type="checkbox"
-          >
+          />
           <label>{{ t('optionsGeneralContainerRandomColor') }}</label>
         </div>
       </div>
-      <div
-        id="containerIcon"
-        class="field"
-      >
+      <div id="containerIcon" class="field">
         <label v-if="!preferences.container.iconRandom">
           {{ t('optionsGeneralContainerIcon') }}
         </label>
@@ -292,7 +291,7 @@ export default {
             id="containerIconRandom"
             v-model="preferences.container.iconRandom"
             type="checkbox"
-          >
+          />
           <label>{{ t('optionsGeneralContainerIconRandom') }}</label>
         </div>
       </div>
@@ -319,11 +318,13 @@ export default {
       </div>
       <div class="field">
         {{ app.tempContainerCounter }}
-        <div v-if="preferences.container.numberMode === 'keep' && app.storage.tempContainerCounter > 0">
-          <button
-            class="ui tiny button"
-            @click="resetContainerNumber()"
-          >
+        <div
+          v-if="
+            preferences.container.numberMode === 'keep' &&
+              app.storage.tempContainerCounter > 0
+          "
+        >
+          <button class="ui tiny button" @click="resetContainerNumber()">
             Reset current number {{ app.storage.tempContainerCounter }} to 0
           </button>
         </div>

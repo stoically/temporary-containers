@@ -3,19 +3,19 @@ export default {
   props: {
     app: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       preferences: this.app.preferences,
       popup: this.app.popup,
-      show: false
+      show: false,
     };
   },
   mounted() {
     $('#isolationMac.ui.dropdown').dropdown();
-  }
+  },
 };
 </script>
 
@@ -31,8 +31,8 @@ export default {
           Disabled
         </option>
         <option value="enabled">
-          Isolate Navigations in Permanent Containers whose Target Domain isn't MAC-"Always open in"
-          assigned to that container
+          Isolate Navigations in Permanent Containers whose Target Domain isn't
+          MAC-"Always open in" assigned to that container
         </option>
       </select>
     </div>

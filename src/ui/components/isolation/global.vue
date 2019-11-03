@@ -5,13 +5,13 @@ import Settings from './settings';
 export default {
   components: {
     DomainPattern,
-    Settings
+    Settings,
   },
   props: {
     app: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -19,30 +19,38 @@ export default {
       storage: this.app.storage,
       popup: this.app.popup,
       show: false,
-      excludeDomainPattern: ''
+      excludeDomainPattern: '',
     };
   },
   async mounted() {
-
     this.$nextTick(() => {
       $('#isolationGlobal .ui.accordion').accordion({
-        ...this.popup ? {
-          animateChildren: false,
-          duration: 0} : {},
-        exclusive: false
+        ...(this.popup
+          ? {
+              animateChildren: false,
+              duration: 0,
+            }
+          : {}),
+        exclusive: false,
       });
       $('#isolationGlobal .ui.dropdown').dropdown();
       $('#isolationGlobal .ui.checkbox').checkbox();
 
       $('#isolationGlobalAccordion').accordion('open', 0);
 
-      if (this.preferences.isolation.global.mouseClick.middle.action !== 'never' ||
-        this.preferences.isolation.global.mouseClick.ctrlleft.action !== 'never' ||
-        this.preferences.isolation.global.mouseClick.left.action !== 'never') {
+      if (
+        this.preferences.isolation.global.mouseClick.middle.action !==
+          'never' ||
+        this.preferences.isolation.global.mouseClick.ctrlleft.action !==
+          'never' ||
+        this.preferences.isolation.global.mouseClick.left.action !== 'never'
+      ) {
         $('#isolationGlobalAccordion').accordion('open', 1);
       }
 
-      if (Object.keys(this.preferences.isolation.global.excludedContainers).length) {
+      if (
+        Object.keys(this.preferences.isolation.global.excludedContainers).length
+      ) {
         $('#isolationGlobalAccordion').accordion('open', 2);
       }
 
@@ -62,60 +70,69 @@ export default {
       excludeContainers.push({
         name: container.name,
         value: container.cookieStoreId,
-        selected: !!this.preferences.isolation.global.excludedContainers[container.cookieStoreId]
+        selected: !!this.preferences.isolation.global.excludedContainers[
+          container.cookieStoreId
+        ],
       });
     });
     $('#isolationGlobalExcludeContainers').dropdown({
-      placeholder: !this.popup ?
-        'Select Permanent Containers to Exclude from Isolation' :
-        'Permanent Containers to Exclude'
-      ,
+      placeholder: !this.popup
+        ? 'Select Permanent Containers to Exclude from Isolation'
+        : 'Permanent Containers to Exclude',
       values: excludeContainers,
-      onAdd: (addedContainer) => {
-        if (this.preferences.isolation.global.excludedContainers[addedContainer]) {
+      onAdd: addedContainer => {
+        if (
+          this.preferences.isolation.global.excludedContainers[addedContainer]
+        ) {
           return;
         }
-        this.$set(this.preferences.isolation.global.excludedContainers, addedContainer, {});
+        this.$set(
+          this.preferences.isolation.global.excludedContainers,
+          addedContainer,
+          {}
+        );
       },
-      onRemove: (removedContainer) => {
-        this.$delete(this.preferences.isolation.global.excludedContainers, removedContainer, {});
-      }
+      onRemove: removedContainer => {
+        this.$delete(
+          this.preferences.isolation.global.excludedContainers,
+          removedContainer,
+          {}
+        );
+      },
     });
 
     $('#isolationGlobalExcludeDomainsForm').form({
       fields: {
-        isolationGlobalExcludeDomainPattern: 'empty'
+        isolationGlobalExcludeDomainPattern: 'empty',
       },
-      onSuccess: (event) => {
+      onSuccess: event => {
         event.preventDefault();
-        this.$set(this.preferences.isolation.global.excluded, this.excludeDomainPattern, {});
+        this.$set(
+          this.preferences.isolation.global.excluded,
+          this.excludeDomainPattern,
+          {}
+        );
         this.excludeDomainPattern = '';
-      }
+      },
     });
-
   },
   methods: {
     removeExcludedDomain(excludedDomainPattern) {
-      this.$delete(this.preferences.isolation.global.excluded, excludedDomainPattern);
-    }
-  }
+      this.$delete(
+        this.preferences.isolation.global.excluded,
+        excludedDomainPattern
+      );
+    },
+  },
 };
 </script>
 
 <template>
-  <div
-    v-show="show"
-    id="isolationGlobal"
-  >
+  <div v-show="show" id="isolationGlobal">
     <div class="ui form">
-      <div
-        id="isolationGlobalAccordion"
-        class="ui accordion"
-      >
+      <div id="isolationGlobalAccordion" class="ui accordion">
         <div class="field">
-          <div
-            class="title"
-          >
+          <div class="title">
             <h4>
               <i class="dropdown icon" />
               Navigation
@@ -123,7 +140,7 @@ export default {
           </div>
           <div
             class="content"
-            :class="{'ui segment': !popup, 'popup-margin': popup}"
+            :class="{ 'ui segment': !popup, 'popup-margin': popup }"
           >
             <settings
               label="Target Domain"
@@ -140,15 +157,19 @@ export default {
           </div>
           <div
             class="content"
-            :class="{'ui segment': !popup, 'popup-margin': popup}"
+            :class="{ 'ui segment': !popup, 'popup-margin': popup }"
           >
             <settings
               label="Middle Mouse"
-              :action.sync="preferences.isolation.global.mouseClick.middle.action"
+              :action.sync="
+                preferences.isolation.global.mouseClick.middle.action
+              "
             />
             <settings
               label="Ctrl/Cmd+Left Mouse"
-              :action.sync="preferences.isolation.global.mouseClick.ctrlleft.action"
+              :action.sync="
+                preferences.isolation.global.mouseClick.ctrlleft.action
+              "
             />
             <settings
               label="Left Mouse"
@@ -165,7 +186,7 @@ export default {
           </div>
           <div
             class="content"
-            :class="{'ui segment': !popup, 'popup-margin': popup}"
+            :class="{ 'ui segment': !popup, 'popup-margin': popup }"
           >
             <div class="field">
               <div
@@ -188,16 +209,15 @@ export default {
           </div>
           <div
             class="content"
-            :class="{'ui segment': !popup, 'popup-margin': popup}"
+            :class="{ 'ui segment': !popup, 'popup-margin': popup }"
           >
             <div class="field">
-              <form
-                id="isolationGlobalExcludeDomainsForm"
-                class="ui form"
-              >
+              <form id="isolationGlobalExcludeDomainsForm" class="ui form">
                 <domain-pattern
                   id="isolationGlobalExcludeDomainPattern"
-                  :tooltip="!popup ? {position: 'top left'} : {hidden: true}"
+                  :tooltip="
+                    !popup ? { position: 'top left' } : { hidden: true }
+                  "
                   :domain-pattern.sync="excludeDomainPattern"
                   :exclusion="true"
                 />
@@ -208,12 +228,17 @@ export default {
                 </div>
               </form>
               <div style="margin-top: 20px;">
-                <div v-if="!Object.keys(preferences.isolation.global.excluded).length">
+                <div
+                  v-if="
+                    !Object.keys(preferences.isolation.global.excluded).length
+                  "
+                >
                   No domains excluded
                 </div>
                 <div v-else>
                   <div
-                    v-for="(_, excludedDomainPattern) in preferences.isolation.global.excluded"
+                    v-for="(_, excludedDomainPattern) in preferences.isolation
+                      .global.excluded"
                     :key="excludedDomainPattern"
                   >
                     <div style="margin-top: 5px" />

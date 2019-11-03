@@ -3,12 +3,11 @@ export default {
   props: {
     tab: {
       type: String,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 };
 </script>
-
 
 <template>
   <div>
@@ -26,9 +25,6 @@ export default {
         {{ tab }}
       </div>
     </div>
-    <div
-      class="ui divider"
-      style="margin: 5px 0 10px 0"
-    />
+    <div class="ui divider" style="margin: 5px 0 10px 0" />
   </div>
 </template>

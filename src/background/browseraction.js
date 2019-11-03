@@ -3,7 +3,6 @@ class BrowserAction {
     this.background = background;
   }
 
-
   initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
@@ -20,29 +19,25 @@ class BrowserAction {
     }
   }
 
-
   onClicked() {
     return this.container.createTabInTempContainer({
-      deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic'
+      deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic',
     });
   }
-
 
   setPopup() {
     browser.browserAction.setPopup({
-      popup: 'popup.html'
+      popup: 'popup.html',
     });
-    browser.browserAction.setTitle({title: 'Temporary Containers'});
+    browser.browserAction.setTitle({ title: 'Temporary Containers' });
   }
-
 
   unsetPopup() {
     browser.browserAction.setPopup({
-      popup: null
+      popup: null,
     });
-    browser.browserAction.setTitle({title: null});
+    browser.browserAction.setTitle({ title: null });
   }
-
 
   setIcon(iconColor) {
     const iconPath = '../icons';
@@ -52,12 +47,11 @@ class BrowserAction {
     const icon = {
       path: {
         16: `${iconPath}/page-${iconColor}-16.svg`,
-        32: `${iconPath}/page-${iconColor}-32.svg`
-      }
+        32: `${iconPath}/page-${iconColor}-32.svg`,
+      },
     };
     browser.browserAction.setIcon(icon);
   }
-
 
   addBadge(tabId) {
     if (!this.pref.isolation.active) {
@@ -66,18 +60,17 @@ class BrowserAction {
 
     browser.browserAction.setTitle({
       title: 'Automatic Mode on navigation active',
-      tabId: tabId
+      tabId: tabId,
     });
     browser.browserAction.setBadgeBackgroundColor({
       color: '#f9f9fa',
-      tabId: tabId
+      tabId: tabId,
     });
     browser.browserAction.setBadgeText({
       text: 'A',
-      tabId: tabId
+      tabId: tabId,
     });
   }
-
 
   removeBadge(tabId) {
     if (!this.pref.isolation.active) {
@@ -85,39 +78,42 @@ class BrowserAction {
     }
 
     browser.browserAction.setTitle({
-      title: !this.pref.browserActionPopup ?
-        'Open a new tab in a new Temporary Container (Alt+C)' :
-        'Temporary Containers',
-      tabId
+      title: !this.pref.browserActionPopup
+        ? 'Open a new tab in a new Temporary Container (Alt+C)'
+        : 'Temporary Containers',
+      tabId,
     });
     browser.browserAction.setBadgeText({
       text: null,
-      tabId: tabId
+      tabId: tabId,
     });
   }
 
   async addIsolationInactiveBadge() {
     browser.browserAction.setBadgeBackgroundColor({
-      color: 'red'
+      color: 'red',
     });
     browser.browserAction.setBadgeText({
-      text: '!'
+      text: '!',
     });
 
-    const tabs = await browser.tabs.query({currentWindow: true, active: true});
+    const tabs = await browser.tabs.query({
+      currentWindow: true,
+      active: true,
+    });
     browser.browserAction.setBadgeBackgroundColor({
       color: 'red',
-      tabId: tabs[0].id
+      tabId: tabs[0].id,
     });
     browser.browserAction.setBadgeText({
       text: null,
-      tabId: tabs[0].id
+      tabId: tabs[0].id,
     });
   }
 
   removeIsolationInactiveBadge() {
     browser.browserAction.setBadgeText({
-      text: ''
+      text: '',
     });
   }
 }

@@ -45,7 +45,10 @@ class TmpRequest {
     try {
       returnVal = await this.handleRequest(request);
     } catch (error) {
-      debug('[webRequestOnBeforeRequest] handling request failed', error.toString());
+      debug(
+        '[webRequestOnBeforeRequest] handling request failed',
+        error.toString()
+      );
     }
 
     this.mouseclick.afterHandleRequest(request);
@@ -68,15 +71,17 @@ class TmpRequest {
     if (this.shouldCancelRequest(request)) {
       debug('[webRequestOnBeforeRequest] canceling', request);
       this.cancelRequest(request);
-      return {cancel: true};
+      return { cancel: true };
     }
     return;
   }
 
-
   async handleRequest(request) {
     if (request.tabId === -1) {
-      debug('[handleRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?', request);
+      debug(
+        '[handleRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?',
+        request
+      );
       return;
     }
 
@@ -98,9 +103,16 @@ class TmpRequest {
       if (tab && tab.openerTabId) {
         openerTab = await browser.tabs.get(tab.openerTabId);
       }
-      debug('[handleRequest] onbeforeRequest requested tab information', tab, openerTab);
+      debug(
+        '[handleRequest] onbeforeRequest requested tab information',
+        tab,
+        openerTab
+      );
     } catch (error) {
-      debug('[handleRequest] onbeforeRequest retrieving tab information failed, mac was probably faster', error);
+      debug(
+        '[handleRequest] onbeforeRequest retrieving tab information failed, mac was probably faster',
+        error
+      );
     }
 
     if (tab && tab.incognito) {
@@ -113,7 +125,10 @@ class TmpRequest {
       try {
         macAssignment = await this.mac.getAssignment(request.url);
       } catch (error) {
-        debug('[handleRequest] contacting mac failed, probably old version', error);
+        debug(
+          '[handleRequest] contacting mac failed, probably old version',
+          error
+        );
       }
     }
     if (macAssignment) {
@@ -125,23 +140,30 @@ class TmpRequest {
       }
     }
 
-    if (await this.externalAddonHasPrecedence({request, tab, openerTab})) {
+    if (await this.externalAddonHasPrecedence({ request, tab, openerTab })) {
       return;
     }
 
     this.container.maybeAddHistory(tab, request.url);
 
-    if (this.pref.ignoreRequests.length &&
+    if (
+      this.pref.ignoreRequests.length &&
       this.pref.ignoreRequests.find(ignorePattern => {
         return this.isolation.matchDomainPattern(request.url, ignorePattern);
-      })) {
-      debug('[handleRequest] request url is on the ignoreRequests list', request);
+      })
+    ) {
+      debug(
+        '[handleRequest] request url is on the ignoreRequests list',
+        request
+      );
       return;
     }
 
     if (tab && this.container.isClean(tab.cookieStoreId)) {
       // removing this clean check can result in endless loops
-      debug('[handleRequest] not isolating because the tmp container is still clean');
+      debug(
+        '[handleRequest] not isolating because the tmp container is still clean'
+      );
       if (!this.cleanRequests[request.requestId]) {
         this.cleanRequests[request.requestId] = true;
         delay(300000).then(() => {
@@ -152,13 +174,24 @@ class TmpRequest {
     }
 
     if (this.cleanRequests[request.requestId]) {
-      debug('[handleRequest] not isolating because of clean redirect requests', request);
+      debug(
+        '[handleRequest] not isolating because of clean redirect requests',
+        request
+      );
       return false;
     }
 
-    const isolated = await this.isolation.maybeIsolate({tab, request, openerTab, macAssignment});
+    const isolated = await this.isolation.maybeIsolate({
+      tab,
+      request,
+      openerTab,
+      macAssignment,
+    });
     if (isolated) {
-      debug('[handleRequest] we decided to isolate and open new tmpcontainer', request);
+      debug(
+        '[handleRequest] we decided to isolate and open new tmpcontainer',
+        request
+      );
       return isolated;
     }
 
@@ -166,21 +199,43 @@ class TmpRequest {
       return;
     }
 
-    if (tab && tab.cookieStoreId === `${this.background.containerPrefix}-default` && openerTab) {
+    if (
+      tab &&
+      tab.cookieStoreId === `${this.background.containerPrefix}-default` &&
+      openerTab
+    ) {
       debug('[handleRequest] default container and openerTab', openerTab);
-      if (!openerTab.url.startsWith('about:') && !openerTab.url.startsWith('moz-extension:')) {
-        debug('[handleRequest] request didnt came from about/moz-extension page', openerTab);
+      if (
+        !openerTab.url.startsWith('about:') &&
+        !openerTab.url.startsWith('moz-extension:')
+      ) {
+        debug(
+          '[handleRequest] request didnt came from about/moz-extension page',
+          openerTab
+        );
         return;
       }
     }
 
-    if (tab && tab.cookieStoreId !== `${this.background.containerPrefix}-default`) {
-      debug('[handleRequest] onBeforeRequest tab belongs to a non-default container', tab, request);
+    if (
+      tab &&
+      tab.cookieStoreId !== `${this.background.containerPrefix}-default`
+    ) {
+      debug(
+        '[handleRequest] onBeforeRequest tab belongs to a non-default container',
+        tab,
+        request
+      );
       return;
     }
 
     if (macAssignment) {
-      debug('[handleRequest] decided to reopen but mac assigned, maybe reopen confirmpage', request, tab, macAssignment);
+      debug(
+        '[handleRequest] decided to reopen but mac assigned, maybe reopen confirmpage',
+        request,
+        tab,
+        macAssignment
+      );
       return this.mac.maybeReopenConfirmPage(macAssignment, request, tab);
     }
 
@@ -195,16 +250,18 @@ class TmpRequest {
       url: request.url,
       deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic',
       request,
-      dontPin: false
+      dontPin: false,
     });
 
     return { cancel: true };
   }
 
   cancelRequest(request) {
-    if (!request ||
+    if (
+      !request ||
       typeof request.requestId === 'undefined' ||
-      typeof request.tabId === 'undefined') {
+      typeof request.tabId === 'undefined'
+    ) {
       debug('[cancelRequest] invalid request', request);
       return;
     }
@@ -213,7 +270,10 @@ class TmpRequest {
       this.canceledRequests[request.requestId] = true;
       // requestIds are unique per session, so we have no pressure to remove them
       setTimeout(() => {
-        debug('[webRequestOnBeforeRequest] cleaning up canceledRequests', request);
+        debug(
+          '[webRequestOnBeforeRequest] cleaning up canceledRequests',
+          request
+        );
         delete this.canceledRequests[request.requestId];
       }, 300000);
     }
@@ -223,11 +283,11 @@ class TmpRequest {
       // workaround until https://bugzilla.mozilla.org/show_bug.cgi?id=1437748 is resolved
       this.canceledTabs[request.tabId] = {
         requestIds: {
-          [request.requestId]: true
+          [request.requestId]: true,
         },
         urls: {
-          [request.url]: true
-        }
+          [request.url]: true,
+        },
       };
       // cleanup canceledTabs later
       setTimeout(() => {
@@ -250,73 +310,112 @@ class TmpRequest {
     }
   }
 
-
   shouldCancelRequest(request) {
-    if (!request ||
+    if (
+      !request ||
       typeof request.requestId === 'undefined' ||
-      typeof request.tabId === 'undefined') {
+      typeof request.tabId === 'undefined'
+    ) {
       debug('[shouldCancelRequest] invalid request', request);
       return;
     }
 
-    if (this.canceledRequests[request.requestId] ||
-        (this.canceledTabs[request.tabId] &&
-         (this.canceledTabs[request.tabId].requestIds[request.requestId] ||
-          this.canceledTabs[request.tabId].urls[request.url]))) {
+    if (
+      this.canceledRequests[request.requestId] ||
+      (this.canceledTabs[request.tabId] &&
+        (this.canceledTabs[request.tabId].requestIds[request.requestId] ||
+          this.canceledTabs[request.tabId].urls[request.url]))
+    ) {
       return true;
     }
     return false;
   }
 
-
-  async externalAddonHasPrecedence({request, tab, openerTab}) {
+  async externalAddonHasPrecedence({ request, tab, openerTab }) {
     const parsedUrl = new URL(request.url);
 
     if (this.management.addons['containerise@kinte.sh'].enabled) {
       try {
-        const hostmap = await browser.runtime.sendMessage('containerise@kinte.sh', {
-          method: 'getHostMap',
-          url: request.url
-        });
-        if (typeof hostmap === 'object' && hostmap.cookieStoreId && hostmap.enabled) {
-          debug('[handleRequest] assigned with containerise we do nothing', hostmap);
+        const hostmap = await browser.runtime.sendMessage(
+          'containerise@kinte.sh',
+          {
+            method: 'getHostMap',
+            url: request.url,
+          }
+        );
+        if (
+          typeof hostmap === 'object' &&
+          hostmap.cookieStoreId &&
+          hostmap.enabled
+        ) {
+          debug(
+            '[handleRequest] assigned with containerise we do nothing',
+            hostmap
+          );
           return true;
         } else {
           debug('[handleRequest] not assigned with containerise', hostmap);
         }
       } catch (error) {
-        debug('[handleRequest] contacting containerise failed, probably old version', error);
+        debug(
+          '[handleRequest] contacting containerise failed, probably old version',
+          error
+        );
       }
     }
 
-    if (this.management.addons['block_outside_container@jspenguin.org'].enabled) {
+    if (
+      this.management.addons['block_outside_container@jspenguin.org'].enabled
+    ) {
       try {
-        let response = await browser.runtime.sendMessage('block_outside_container@jspenguin.org', {
-          action: 'rule_exists',
-          domain: parsedUrl.hostname,
-        });
+        let response = await browser.runtime.sendMessage(
+          'block_outside_container@jspenguin.org',
+          {
+            action: 'rule_exists',
+            domain: parsedUrl.hostname,
+          }
+        );
         if (response.rule_exists) {
-          debug('[handleRequest] assigned with block_outside_container we do nothing');
+          debug(
+            '[handleRequest] assigned with block_outside_container we do nothing'
+          );
           return true;
         } else {
           debug('[handleRequest] not assigned with block_outside_container');
         }
       } catch (error) {
-        debug('[handleRequest] contacting block_outside_container failed', error);
+        debug(
+          '[handleRequest] contacting block_outside_container failed',
+          error
+        );
       }
     }
 
     const parsedTabUrl = tab && /^https?:/.test(tab.url) && new URL(tab.url);
-    const parsedOpenerTabUrl = openerTab && /^https?:/.test(openerTab.url) && new URL(openerTab.url);
-    for (const containWhat of ['@contain-facebook', '@contain-google', '@contain-twitter', '@contain-youtube', '@contain-amazon']) {
+    const parsedOpenerTabUrl =
+      openerTab && /^https?:/.test(openerTab.url) && new URL(openerTab.url);
+    for (const containWhat of [
+      '@contain-facebook',
+      '@contain-google',
+      '@contain-twitter',
+      '@contain-youtube',
+      '@contain-amazon',
+    ]) {
       if (!this.management.addons[containWhat].enabled) {
         continue;
       }
       for (const RE of this.management.addons[containWhat].REs) {
-        if (RE.test(parsedUrl.hostname) ||
-           (parsedTabUrl && RE.test(parsedTabUrl.hostname)) ||
-           (parsedOpenerTabUrl && RE.test(parsedOpenerTabUrl.hostname))) {
-          debug('[handleRequest] handled by active container addon, ignoring', containWhat, RE, request.url);
+        if (
+          RE.test(parsedUrl.hostname) ||
+          (parsedTabUrl && RE.test(parsedTabUrl.hostname)) ||
+          (parsedOpenerTabUrl && RE.test(parsedOpenerTabUrl.hostname))
+        ) {
+          debug(
+            '[handleRequest] handled by active container addon, ignoring',
+            containWhat,
+            RE,
+            request.url
+          );
           return true;
         }
       }

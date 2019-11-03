@@ -9,17 +9,14 @@ class Statistics {
     this.requests = {};
   }
 
-
   initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
   }
 
-
   async collect(request) {
-    if (!this.pref.statistics &&
-        !this.pref.deletesHistory.statistics) {
+    if (!this.pref.statistics && !this.pref.deletesHistory.statistics) {
       return;
     }
 
@@ -40,17 +37,20 @@ class Statistics {
 
     if (!this.requests[tab.cookieStoreId]) {
       this.requests[tab.cookieStoreId] = {
-        contentLength: 0
+        contentLength: 0,
       };
     }
     if (!request.fromCache) {
-      const contentLength = request.responseHeaders.find(header => header.name === 'content-length');
+      const contentLength = request.responseHeaders.find(
+        header => header.name === 'content-length'
+      );
       if (contentLength) {
-        this.requests[tab.cookieStoreId].contentLength += parseInt(contentLength.value);
+        this.requests[tab.cookieStoreId].contentLength += parseInt(
+          contentLength.value
+        );
       }
     }
   }
-
 
   update(historyClearedCount, cookieCount, cookieStoreId) {
     this.removedContainerCount++;
@@ -62,8 +62,10 @@ class Statistics {
       this.storage.local.statistics.containersDeleted++;
     }
 
-    if (this.pref.deletesHistory.statistics &&
-        this.container.isTemporary(cookieStoreId, 'deletesHistory')) {
+    if (
+      this.pref.deletesHistory.statistics &&
+      this.container.isTemporary(cookieStoreId, 'deletesHistory')
+    ) {
       this.storage.local.statistics.deletesHistory.containersDeleted++;
       if (historyClearedCount) {
         this.storage.local.statistics.deletesHistory.urlsDeleted += historyClearedCount;
@@ -79,17 +81,20 @@ class Statistics {
       this.removedContainerCookiesCount += cookieCount;
     }
 
-    if (this.requests[cookieStoreId] &&
-        this.requests[cookieStoreId].contentLength) {
+    if (
+      this.requests[cookieStoreId] &&
+      this.requests[cookieStoreId].contentLength
+    ) {
       if (this.pref.statistics) {
-        this.storage.local.statistics.cacheDeleted += this.requests[cookieStoreId].contentLength;
+        this.storage.local.statistics.cacheDeleted += this.requests[
+          cookieStoreId
+        ].contentLength;
       }
       this.removedContentLength += this.requests[cookieStoreId].contentLength;
     }
 
     delete this.requests[cookieStoreId];
   }
-
 
   finish() {
     if (this.removedContainerCount) {
@@ -98,7 +103,9 @@ class Statistics {
         notificationMessage += `\nand ${this.removedContainerCookiesCount} Cookies`;
       }
       if (this.removedContentLength) {
-        notificationMessage += `\nand ~${this.formatBytes(this.removedContentLength)} Cache`;
+        notificationMessage += `\nand ~${this.formatBytes(
+          this.removedContentLength
+        )} Cache`;
       }
       if (this.removedContainerHistoryCount) {
         notificationMessage += `\nand ${this.removedContainerHistoryCount} URLs from History`;
@@ -111,7 +118,6 @@ class Statistics {
     this.removedContainerHistoryCount = 0;
     this.removedContentLength = 0;
   }
-
 
   formatBytes(bytes, decimals) {
     // https://stackoverflow.com/a/18650828

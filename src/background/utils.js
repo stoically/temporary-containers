@@ -3,12 +3,16 @@ class Utils {
     return psl.parse(origin).domain === psl.parse(target).domain;
   }
 
-  addMissingKeys({defaults, source}) {
+  addMissingKeys({ defaults, source }) {
     let addedMissing = false;
     const addKeys = (_default, _source) => {
       Object.keys(_default).map(key => {
         if (_source[key] === undefined) {
-          debug('[addMissingKeys] key not found, setting default', key, _default[key]);
+          debug(
+            '[addMissingKeys] key not found, setting default',
+            key,
+            _default[key]
+          );
           _source[key] = _default[key];
           addedMissing = true;
         } else if (Array.isArray(_source[key])) {

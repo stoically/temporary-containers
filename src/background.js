@@ -28,11 +28,12 @@ class TemporaryContainers {
     this.containerPrefix = 'firefox';
   }
 
-
   async initialize() {
     this.version = browser.runtime.getManifest().version;
-    this.browserVersion = parseInt((await browser.runtime.getBrowserInfo()).version);
-    const {permissions} = await browser.permissions.getAll();
+    this.browserVersion = parseInt(
+      (await browser.runtime.getBrowserInfo()).version
+    );
+    const { permissions } = await browser.permissions.getAll();
     this.permissions = {
       bookmarks: permissions.includes('bookmarks'),
       history: permissions.includes('history'),
@@ -94,7 +95,7 @@ window.tmp = new TemporaryContainers();
     if (tmp.storage.installed) {
       debug('[bg] fresh install, showing options');
       browser.tabs.create({
-        url: browser.runtime.getURL('options.html?installed')
+        url: browser.runtime.getURL('options.html?installed'),
       });
     }
   } catch (error) {
@@ -102,18 +103,18 @@ window.tmp = new TemporaryContainers();
       browser.tabs.create({
         url: browser.runtime.getURL(`
           options.html?error=${encodeURIComponent(error.toString())}
-        `)
+        `),
       });
     });
     browser.browserAction.setPopup({
-      popup: null
+      popup: null,
     });
-    browser.browserAction.setTitle({title: 'Temporary Containers Error'});
+    browser.browserAction.setTitle({ title: 'Temporary Containers Error' });
     browser.browserAction.setBadgeBackgroundColor({
-      color: 'red'
+      color: 'red',
     });
     browser.browserAction.setBadgeText({
-      text: 'E'
+      text: 'E',
     });
     browser.browserAction.enable();
 

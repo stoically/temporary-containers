@@ -5,7 +5,7 @@ class Migration {
     this.background = background;
   }
 
-  async migrate({preferences, previousVersion}) {
+  async migrate({ preferences, previousVersion }) {
     this.storage = this.background.storage;
     this.previousVersion = previousVersion;
 
@@ -21,52 +21,73 @@ class Migration {
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('0.91')) {
-      debug('updated from version <= 0.91, migrate container numbers into dedicated array');
+      debug(
+        'updated from version <= 0.91, migrate container numbers into dedicated array'
+      );
       Object.values(this.storage.local.tempContainers).map(container => {
         this.storage.local.tempContainersNumbers.push(container.number);
       });
     }
-    if ((this.updatedFromVersionEqualToOrLessThan('0.103') && !this.previousVersionBeta) ||
-      (this.previousVersionBeta && this.updatedFromVersionEqualToOrLessThan('1.0.1'))) {
-      debug('updated from version <= 0.103, migrate deletesHistory.active and ignoreRequestsTo');
+    if (
+      (this.updatedFromVersionEqualToOrLessThan('0.103') &&
+        !this.previousVersionBeta) ||
+      (this.previousVersionBeta &&
+        this.updatedFromVersionEqualToOrLessThan('1.0.1'))
+    ) {
+      debug(
+        'updated from version <= 0.103, migrate deletesHistory.active and ignoreRequestsTo'
+      );
       if (this.background.permissions.history) {
         preferences.deletesHistory.active = true;
       }
 
       if (preferences.ignoreRequestsToAMO === false) {
-        preferences.ignoreRequests =
-          preferences.ignoreRequests.filter(ignoredPattern =>
-            ignoredPattern !== 'addons.mozilla.org'
-          );
+        preferences.ignoreRequests = preferences.ignoreRequests.filter(
+          ignoredPattern => ignoredPattern !== 'addons.mozilla.org'
+        );
       }
       if (preferences.ignoreRequestsToPocket === false) {
-        preferences.ignoreRequests =
-          preferences.ignoreRequests.filter(ignoredPattern =>
-            ignoredPattern !== 'getpocket.com'
-          );
+        preferences.ignoreRequests = preferences.ignoreRequests.filter(
+          ignoredPattern => ignoredPattern !== 'getpocket.com'
+        );
       }
       delete preferences.ignoreRequestsToAMO;
       delete preferences.ignoreRequestsToPocket;
     }
-    if ((this.updatedFromVersionEqualToOrLessThan('0.103') && !this.previousVersionBeta) ||
-      (this.previousVersionBeta && this.updatedFromVersionEqualToOrLessThan('1.0.6'))) {
-      debug('updated from version <= 0.103, migrate per domain isolation to array');
+    if (
+      (this.updatedFromVersionEqualToOrLessThan('0.103') &&
+        !this.previousVersionBeta) ||
+      (this.previousVersionBeta &&
+        this.updatedFromVersionEqualToOrLessThan('1.0.6'))
+    ) {
+      debug(
+        'updated from version <= 0.103, migrate per domain isolation to array'
+      );
       const perDomainIsolation = [];
       Object.keys(preferences.isolation.domain).map(domainPattern => {
-        perDomainIsolation.push(Object.assign({
-          pattern: domainPattern,
-        }, preferences.isolation.domain[domainPattern]));
+        perDomainIsolation.push(
+          Object.assign(
+            {
+              pattern: domainPattern,
+            },
+            preferences.isolation.domain[domainPattern]
+          )
+        );
       });
       preferences.isolation.domain = perDomainIsolation;
     }
     if (this.updatedFromVersionEqualToOrLessThan('0.103')) {
-      debug('[migrate] updated from version <= 0.103, migrate popup default tab to isolation-per-domain');
+      debug(
+        '[migrate] updated from version <= 0.103, migrate popup default tab to isolation-per-domain'
+      );
       if (preferences.browserActionPopup || preferences.pageAction) {
         preferences.ui.popupDefaultTab = 'isolation-per-domain';
       }
     }
     if (this.updatedFromVersionEqualToOrLessThan('1.1')) {
-      debug('[migrate] updated from version <= 1.1, migrate redirectorCloseTabs');
+      debug(
+        '[migrate] updated from version <= 1.1, migrate redirectorCloseTabs'
+      );
       preferences.closeRedirectorTabs.domains.push('slack-redir.net');
     }
 

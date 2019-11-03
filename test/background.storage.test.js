@@ -12,9 +12,9 @@ describe('storage', () => {
     browser.storage.local.get.resolves({
       ...background.storage.defaults,
       preferences: {
-        ...background.preferences.defaults
+        ...background.preferences.defaults,
       },
-      version: '0.1'
+      version: '0.1',
     });
     background.preferences.defaults.newPreference = true;
     await background.initialize();

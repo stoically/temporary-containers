@@ -17,18 +17,18 @@ export default {
     Statistics,
     Message,
     Breadcrumb,
-    Glossary
+    Glossary,
   },
   props: {
     app: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       initialized: false,
-      show: false
+      show: false,
     };
   },
   watch: {
@@ -41,17 +41,17 @@ export default {
       this.$nextTick(() => {
         $('.ui.accordion').accordion({
           animateChildren: false,
-          duration: 0
+          duration: 0,
         });
 
         $('.ui.sidebar').sidebar({
-          transition: 'overlay'
+          transition: 'overlay',
         });
 
         this.show = true;
         $.tab('change tab', this.app.preferences.ui.popupDefaultTab);
       });
-    }
+    },
   },
   methods: {
     changeTab(tab) {
@@ -63,7 +63,7 @@ export default {
     },
     createTmp() {
       browser.runtime.sendMessage({
-        method: 'createTabInTempContainer'
+        method: 'createTabInTempContainer',
       });
       window.close();
     },
@@ -71,33 +71,34 @@ export default {
       browser.runtime.sendMessage({
         method: 'createTabInTempContainer',
         payload: {
-          deletesHistory: true
-        }
+          deletesHistory: true,
+        },
       });
       window.close();
     },
     async openPreferences() {
       const tabs = await browser.tabs.query({
-        url: browser.runtime.getURL('options.html')
+        url: browser.runtime.getURL('options.html'),
       });
       if (tabs.length) {
         const tab = tabs[0];
-        await browser.tabs.update(tab.id, {active: true});
+        await browser.tabs.update(tab.id, { active: true });
         await browser.tabs.reload(tab.id);
         if (tab.windowId !== browser.windows.WINDOW_ID_CURRENT) {
-          await browser.windows.update(tab.windowId, {focused: true});
+          await browser.windows.update(tab.windowId, { focused: true });
         }
       } else {
         await browser.tabs.create({
-          url: browser.runtime.getURL('options.html')
+          url: browser.runtime.getURL('options.html'),
         });
       }
       window.close();
     },
     toggleIsolation() {
-      this.app.preferences.isolation.active = !this.app.preferences.isolation.active;
-    }
-  }
+      this.app.preferences.isolation.active = !this.app.preferences.isolation
+        .active;
+    },
+  },
 };
 </script>
 
@@ -108,7 +109,9 @@ export default {
   min-width: 370px;
   min-height: 470px;
 }
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
 .popup-margin {
   margin: 0 20px 10px 0;
 }
@@ -120,53 +123,29 @@ export default {
 <template>
   <div class="pusher">
     <message v-if="!app.initialized" />
-    <div
-      v-if="initialized"
-      v-show="show"
-    >
+    <div v-if="initialized" v-show="show">
       <div class="ui sidebar vertical menu">
-        <a
-          class="item"
-          @click="changeTab('isolation-global')"
-        >
+        <a class="item" @click="changeTab('isolation-global')">
           <i class="icon-circle-empty" /> Isolation Global
         </a>
-        <a
-          class="item"
-          @click="changeTab('isolation-per-domain')"
-        >
+        <a class="item" @click="changeTab('isolation-per-domain')">
           <i class="icon-circle-empty" /> Isolation Per Domain
         </a>
-        <a
-          class="item"
-          @click="changeTab('isolation-mac')"
-        >
+        <a class="item" @click="changeTab('isolation-mac')">
           <i class="icon-circle-empty" /> Isolation MAC
         </a>
-        <a
-          class="item"
-          @click="changeTab('actions')"
-        >
+        <a class="item" @click="changeTab('actions')">
           <i class="icon-exchange" /> Actions
         </a>
-        <a
-          class="item"
-          @click="changeTab('statistics')"
-        >
+        <a class="item" @click="changeTab('statistics')">
           <i class="icon-chart-bar" /> Statistics
         </a>
       </div>
       <div>
         <div class="ui pushable">
-          <div
-            id="container"
-            class="ui"
-          >
+          <div id="container" class="ui">
             <div class="ui icon menu">
-              <a
-                class="item"
-                @click="toggleSidebar"
-              >
+              <a class="item" @click="toggleSidebar">
                 <i class="icon-menu" />
               </a>
               <div class="right menu">
@@ -206,10 +185,7 @@ export default {
                   title="Open new Temporary Container"
                   @click="createTmp"
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                  >
+                  <svg width="16" height="16">
                     <image
                       xlink:href="../icons/page-w-16.svg"
                       x="0"
@@ -224,37 +200,22 @@ export default {
 
             <message />
 
-            <div
-              class="ui tab"
-              data-tab="isolation-global"
-            >
+            <div class="ui tab" data-tab="isolation-global">
               <breadcrumb tab="Global" />
               <isolation-global :app="app" />
             </div>
-            <div
-              class="ui tab"
-              data-tab="isolation-per-domain"
-            >
+            <div class="ui tab" data-tab="isolation-per-domain">
               <breadcrumb tab="Per Domain" />
               <isolation-per-domain :app="app" />
             </div>
-            <div
-              class="ui tab"
-              data-tab="isolation-mac"
-            >
+            <div class="ui tab" data-tab="isolation-mac">
               <breadcrumb tab="Multi-Account Containers" />
               <isolation-mac :app="app" />
             </div>
-            <div
-              class="ui tab"
-              data-tab="actions"
-            >
+            <div class="ui tab" data-tab="actions">
               <actions :app="app" />
             </div>
-            <div
-              class="ui tab"
-              data-tab="statistics"
-            >
+            <div class="ui tab" data-tab="statistics">
               <statistics :app="app" />
             </div>
           </div>

@@ -10,19 +10,19 @@ class TmpStorage {
       tempContainers: {},
       tempContainersNumbers: [],
       statistics: {
-        startTime: new Date,
+        startTime: new Date(),
         containersDeleted: 0,
         cookiesDeleted: 0,
         cacheDeleted: 0,
         deletesHistory: {
           containersDeleted: 0,
           cookiesDeleted: 0,
-          urlsDeleted: 0
-        }
+          urlsDeleted: 0,
+        },
       },
       preferences: background.preferences.defaults,
       lastFileExport: false,
-      version: false
+      version: false,
     };
   }
 
@@ -47,10 +47,12 @@ class TmpStorage {
     }
 
     debug('[initialize] storage initialized', this.local);
-    if (this.background.utils.addMissingKeys({
-      defaults: this.defaults,
-      source: this.local
-    })) {
+    if (
+      this.background.utils.addMissingKeys({
+        defaults: this.defaults,
+        source: this.local,
+      })
+    ) {
       await this.persist();
     }
 
@@ -59,7 +61,7 @@ class TmpStorage {
       try {
         await this.background.migration.migrate({
           preferences: this.local.preferences,
-          previousVersion: this.local.version
+          previousVersion: this.local.version,
         });
       } catch (error) {
         debug('[initialize] migration failed', error.toString());
@@ -79,7 +81,10 @@ class TmpStorage {
       debug('[persist] storage persisted');
       return true;
     } catch (error) {
-      debug('[persist] something went wrong while trying to persist the storage', error);
+      debug(
+        '[persist] something went wrong while trying to persist the storage',
+        error
+      );
       return false;
     }
   }
@@ -94,8 +99,8 @@ class TmpStorage {
       this.local.preferences.container.color = 'red';
     }
 
-    if (!await this.persist()) {
-      throw(new Error('[install] something went wrong while installing'));
+    if (!(await this.persist())) {
+      throw new Error('[install] something went wrong while installing');
     }
     debug('[install] storage installed', this.local);
     this.installed = true;

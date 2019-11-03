@@ -2,27 +2,27 @@ global.preferencesTestSet = [
   {
     automaticMode: {
       active: false,
-      newTab: 'created'
-    }
+      newTab: 'created',
+    },
   },
   {
     automaticMode: {
       active: true,
-      newTab: 'created'
-    }
+      newTab: 'created',
+    },
   },
   {
     automaticMode: {
       active: true,
-      newTab: 'navigation'
-    }
+      newTab: 'navigation',
+    },
   },
   {
     automaticMode: {
       active: false,
-      newTab: 'navigation'
-    }
-  }
+      newTab: 'navigation',
+    },
+  },
 ];
 
 if (!process.listenerCount('unhandledRejection')) {
@@ -50,7 +50,9 @@ global.URL = require('url').URL;
 global.helper = require('./helper');
 
 const buildWebExtension = async (build = {}) => {
-  global.clock = sinon.useFakeTimers({toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval']});
+  global.clock = sinon.useFakeTimers({
+    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
+  });
   const webExtension = await webExtensionsJSDOM.fromManifest(manifestPath, {
     sinon,
     apiFake: build.apiFake || undefined,
@@ -64,25 +66,34 @@ const buildWebExtension = async (build = {}) => {
           };
 
           window.browser._mochaTest = true;
-        }
-      }
-    }
+        },
+      },
+    },
   });
-  webExtension.background.browser.runtime.getManifest.returns({version: '0.1'});
-  webExtension.background.browser.runtime.getBrowserInfo.resolves({name: 'Firefox', version: 67});
+  webExtension.background.browser.runtime.getManifest.returns({
+    version: '0.1',
+  });
+  webExtension.background.browser.runtime.getBrowserInfo.resolves({
+    name: 'Firefox',
+    version: 67,
+  });
 
-  webExtension.background.browser.permissions.getAll.resolves({permissions: []});
+  webExtension.background.browser.permissions.getAll.resolves({
+    permissions: [],
+  });
   if (!build.apiFake) {
-    webExtension.background.browser.tabs.query.resolves([{},{}]);
+    webExtension.background.browser.tabs.query.resolves([{}, {}]);
     webExtension.background.browser.storage.local.get.resolves({});
     webExtension.background.browser.contextualIdentities.get.resolves({});
     webExtension.background.browser.cookies.getAll.resolves([]);
   }
-  webExtension.background.browser.management.getAll.resolves([{
-    id: '@testpilot-containers',
-    enabled: true,
-    version: '6.0.0'
-  }]);
+  webExtension.background.browser.management.getAll.resolves([
+    {
+      id: '@testpilot-containers',
+      enabled: true,
+      version: '6.0.0',
+    },
+  ]);
 
   if (process.argv.includes('--tmp-debug')) {
     webExtension.background.window.log.DEBUG = true;
@@ -112,9 +123,11 @@ global.loadBackground = async (preferences = {}) => {
   if (preferences) {
     Object.assign(background.storage.local.preferences, preferences);
     // eslint-disable-next-line require-atomic-updates
-    background.storage.local.preferences.isolation.global.mouseClick.middle.action = 'always';
+    background.storage.local.preferences.isolation.global.mouseClick.middle.action =
+      'always';
     // eslint-disable-next-line require-atomic-updates
-    background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action = 'always';
+    background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
+      'always';
   }
   return background;
 };
@@ -129,7 +142,6 @@ global.loadUninstalledBackground = async () => {
   const background = global.background;
   return background;
 };
-
 
 afterEach(() => {
   sinon.restore();

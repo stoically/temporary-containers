@@ -1,11 +1,9 @@
 {
-    "parserOptions": {
-        "parser": "babel-eslint",
-        "sourceType": "module"
-    },
-    "extends": "plugin:vue/recommended",
-    "rules": {
-        "no-undef": 0,
-        "no-unused-vars": 0
-    }
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "globals": {
+    "$": "readonly",
+    "Vue": "readonly"
+  }
 }
