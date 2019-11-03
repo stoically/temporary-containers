@@ -228,8 +228,8 @@ export default {
             <label>Alt+C - Open a new tab in a new Temporary Container</label>
           </div>
         </div>
-        <div class="field" :class="{ hidden: !permissions.history }">
-          <div class="ui checkbox">
+        <div class="field">
+          <div class="ui checkbox" :class="{ hidden: !permissions.history }">
             <input
               v-model="preferences.keyboardShortcuts.AltP"
               type="checkbox"
