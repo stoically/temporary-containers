@@ -112,4 +112,4 @@ class Commands {
   }
 }
 
-window.Commands = Commands;
+export default Commands;

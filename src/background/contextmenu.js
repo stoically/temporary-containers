@@ -191,4 +191,4 @@ class ContextMenu {
   }
 }
 
-window.ContextMenu = ContextMenu;
+export default ContextMenu;

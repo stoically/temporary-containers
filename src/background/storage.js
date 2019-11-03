@@ -108,4 +108,4 @@ class TmpStorage {
   }
 }
 
-window.TmpStorage = TmpStorage;
+export default TmpStorage;

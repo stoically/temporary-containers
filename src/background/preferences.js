@@ -149,4 +149,4 @@ class Preferences {
   }
 }
 
-window.Preferences = Preferences;
+export default Preferences;

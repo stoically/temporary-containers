@@ -130,4 +130,4 @@ class Statistics {
   }
 }
 
-window.Statistics = Statistics;
+export default Statistics;

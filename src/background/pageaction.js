@@ -50,4 +50,4 @@ class PageAction {
   }
 }
 
-window.PageAction = PageAction;
+export default PageAction;

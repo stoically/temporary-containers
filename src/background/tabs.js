@@ -336,4 +336,4 @@ class Tabs {
   }
 }
 
-window.Tabs = Tabs;
+export default Tabs;

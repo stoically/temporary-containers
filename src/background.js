@@ -1,29 +1,49 @@
+import './background/lib';
+import './background/log';
+import eventListeners from './background/event-listeners';
+import BrowserAction from './background/browseraction';
+import Commands from './background/commands';
+import Container from './background/container';
+import ContextMenu from './background/contextmenu';
+import Cookies from './background/cookies';
+import Isolation from './background/isolation';
+import MultiAccountContainers from './background/mac';
+import Management from './background/management';
+import Migration from './background/migration';
+import MouseClick from './background/mouseclick';
+import PageAction from './background/pageaction';
+import Preferences from './background/preferences.js';
+import TmpRequest from './background/request';
+import Runtime from './background/runtime';
+import Statistics from './background/statistics';
+import TmpStorage from './background/storage';
+import Tabs from './background/tabs';
+import Utils from './background/utils';
+
 class TemporaryContainers {
   constructor() {
     this.initialized = false;
     debug('[tmp] initializing');
 
-    // TODO use import via script module instead of window vars when jsdom supports it
-    // See: https://github.com/stoically/temporary-containers/issues/275
-    this.utils = new window.Utils(this);
-    this.preferences = new window.Preferences(this);
-    this.storage = new window.TmpStorage(this);
+    this.utils = new Utils(this);
+    this.preferences = new Preferences(this);
+    this.storage = new TmpStorage(this);
 
-    this.runtime = new window.Runtime(this);
-    this.management = new window.Management(this);
-    this.request = new window.TmpRequest(this);
-    this.container = new window.Container(this);
-    this.mouseclick = new window.MouseClick(this);
-    this.tabs = new window.Tabs(this);
-    this.commands = new window.Commands(this);
-    this.browseraction = new window.BrowserAction(this);
-    this.pageaction = new window.PageAction(this);
-    this.contextmenu = new window.ContextMenu(this);
-    this.cookies = new window.Cookies(this);
-    this.isolation = new window.Isolation(this);
-    this.statistics = new window.Statistics(this);
-    this.mac = new window.MultiAccountContainers(this);
-    this.migration = new window.Migration(this);
+    this.runtime = new Runtime(this);
+    this.management = new Management(this);
+    this.request = new TmpRequest(this);
+    this.container = new Container(this);
+    this.mouseclick = new MouseClick(this);
+    this.tabs = new Tabs(this);
+    this.commands = new Commands(this);
+    this.browseraction = new BrowserAction(this);
+    this.pageaction = new PageAction(this);
+    this.contextmenu = new ContextMenu(this);
+    this.cookies = new Cookies(this);
+    this.isolation = new Isolation(this);
+    this.statistics = new Statistics(this);
+    this.mac = new MultiAccountContainers(this);
+    this.migration = new Migration(this);
 
     this.containerPrefix = 'firefox';
   }
@@ -74,7 +94,7 @@ class TemporaryContainers {
 
     debug('[tmp] initialized');
     this.initialized = true;
-    window.eventListeners.tmpInitialized(true);
+    eventListeners.tmpInitialized(true);
     browser.browserAction.enable();
   }
 }
@@ -118,6 +138,6 @@ window.tmp = new TemporaryContainers();
     });
     browser.browserAction.enable();
 
-    window.eventListeners.remove();
+    eventListeners.remove();
   }
 })();

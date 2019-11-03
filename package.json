@@ -6,20 +6,20 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "clean": "rimraf web-ext-artifacts .web-ext-artifacts .cache dist",
     "build": "npm run lint && npm run test && npm run test:functional && npm run build:parcel && npm run build:cp && npm run build:webext && npm run lint:addon && ncu",
-    "build:parcel": "npm run clean && parcel build src/ui/options.html src/ui/popup.html --no-minify --no-source-maps",
+    "build:parcel": "npm run clean && parcel build src/background.js src/*.html --no-minify --no-source-maps",
     "build:sign": "node build-sign.js && npm run lint && npm run test && npm run test:functional && npm run build:parcel && npm run build:cp && npm run build:webext:sign && git checkout -- src/manifest.json && ncu",
     "build:webext": "web-ext build -s dist",
     "build:webext:sign": "web-ext sign --channel unlisted -s dist",
     "build:cp": "cp README.md LICENSE dist",
     "lint": "eslint {*,src/**/*,test/**/*}.{js,vue}",
     "lint:addon": "addons-linter web-ext-artifacts/temporary_containers-*.zip",
-    "format": "prettier --write '{*,src/!(vendor)/*,test/**/*}.{html,css,json,yml,md}'",
-    "test": "nyc --reporter=html --reporter=text mocha --reporter=progress ./test/setup.js test/*.test.js --timeout 60000",
-    "test:watch": "mocha ./test/setup.js test/*.test.js -b --reporter=progress --watch --inspect",
+    "format": "prettier --write '{*,src/**/*,test/**/*}.{html,css,json,yml,md}'",
+    "test": "npm run build:parcel && nyc --reporter=html --reporter=text mocha --reporter=progress ./test/setup.js test/*.test.js --timeout 60000",
+    "test:watch": "mocha ./test/setup.js test/*.test.js -b --reporter=progress --watch --watch-files 'src/**/*.js' --delay --inspect",
     "test:watch:verbose": "mocha ./test/setup.js test/*.test.js -b --reporter=spec --tmp-debug --watch --inspect",
     "test:functional": "npm run build:parcel && mocha ./test/functional/*.test.js --timeout 10000",
     "check:dependencies": "ncu",
-    "watch": "rimraf dist && parcel src/ui/options.html src/ui/popup.html --hmr-hostname=localhost"
+    "watch": "rimraf dist && parcel src/background.js src/*.html --hmr-hostname=localhost"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,11 @@
     "url": "https://github.com/stoically/temporary-containers/issues"
   },
   "homepage": "https://github.com/stoically/temporary-containers#readme",
+  "dependencies": {
+    "delay": "^4.3.0",
+    "p-queue": "^6.2.0",
+    "psl": "^1.4.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
@@ -61,14 +66,9 @@
     "webextensions-jsdom": "^0.17.0"
   },
   "peerDependencies": {
-    "delay": "^4.3.0",
-    "glob-to-regexp": "^0.4.1",
     "jquery": "^3.4.1",
     "jquery-address": "^1.6.0",
-    "p-queue": "^3.0.0",
-    "psl": "^1.4.0",
     "semantic-ui": "^2.4.2",
-    "semver-compare": "^1.0.0",
     "sortablejs": "^1.10.1",
     "vue": "^2.6.10",
     "vuedraggable": "^2.23.2"
@@ -86,8 +86,13 @@
     ],
     "watcherGlob": "**",
     "excludeGlob": [
+      "background.js",
+      "background",
+      "background/**",
+      "*.html",
       "ui",
-      "ui/**"
+      "ui/**",
+      ".*"
     ],
     "globOptions": {
       "dot": true

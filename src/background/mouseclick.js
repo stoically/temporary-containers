@@ -192,4 +192,4 @@ class MouseClick {
   }
 }
 
-window.MouseClick = MouseClick;
+export default MouseClick;

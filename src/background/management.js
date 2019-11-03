@@ -581,4 +581,4 @@ class Management {
   }
 }
 
-window.Management = Management;
+export default Management;

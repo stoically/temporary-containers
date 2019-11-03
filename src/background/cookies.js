@@ -174,4 +174,4 @@ class Cookies {
   }
 }
 
-window.Cookies = Cookies;
+export default Cookies;

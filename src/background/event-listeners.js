@@ -76,10 +76,6 @@ class EventListeners {
         api: ['management', 'onEnabled'],
         target: ['management', 'enable'],
       },
-      {
-        api: ['management', 'onInstalled'],
-        target: ['management', 'enable'],
-      },
       ['commands', 'onCommand'],
       ['tabs', 'onActivated'],
       ['tabs', 'onCreated'],
@@ -163,4 +159,4 @@ class EventListeners {
   }
 }
 
-window.eventListeners = new EventListeners();
+export default new EventListeners();

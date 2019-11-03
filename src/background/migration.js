@@ -7,6 +7,7 @@ class Migration {
 
   async migrate({ preferences, previousVersion }) {
     this.storage = this.background.storage;
+    this.utils = this.background.utils;
     this.previousVersion = previousVersion;
 
     if (!this.previousVersion) {
@@ -101,8 +102,8 @@ class Migration {
   }
 
   updatedFromVersionEqualToOrLessThan(compareVersion) {
-    return versionCompare(compareVersion, this.previousVersion) >= 0;
+    return this.utils.versionCompare(compareVersion, this.previousVersion) >= 0;
   }
 }
 
-window.Migration = Migration;
+export default Migration;

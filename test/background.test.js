@@ -26,7 +26,7 @@ preferencesTestSet.map(preferences => {
         browser.commands.onCommand.addListener.yield();
         background.commands.onCommand.should.have.been.calledOnce;
 
-        browser.runtime.onInstalled.addListener.should.have.been.calledTwice;
+        browser.runtime.onInstalled.addListener.should.have.been.calledOnce;
         browser.runtime.onStartup.addListener.should.have.been.calledOnce;
         browser.runtime.onMessage.addListener.should.have.been.calledOnce;
 

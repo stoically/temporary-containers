@@ -118,4 +118,4 @@ class BrowserAction {
   }
 }
 
-window.BrowserAction = BrowserAction;
+export default BrowserAction;

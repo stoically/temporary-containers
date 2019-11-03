@@ -423,4 +423,4 @@ class TmpRequest {
   }
 }
 
-window.TmpRequest = TmpRequest;
+export default TmpRequest;

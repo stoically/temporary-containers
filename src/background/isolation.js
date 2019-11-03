@@ -513,10 +513,10 @@ class Isolation {
           : new URL(url);
       return (
         parsedUrl.hostname === domainPattern ||
-        globToRegexp(domainPattern).test(parsedUrl.hostname)
+        this.utils.globToRegexp(domainPattern).test(parsedUrl.hostname)
       );
     }
   }
 }
 
-window.Isolation = Isolation;
+export default Isolation;

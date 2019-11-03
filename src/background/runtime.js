@@ -163,4 +163,4 @@ class Runtime {
   }
 }
 
-window.Runtime = Runtime;
+export default Runtime;

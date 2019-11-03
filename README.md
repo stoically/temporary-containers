@@ -25,7 +25,8 @@ Check `about:debugging` and click `Debug` under Temporary Container to see the c
 
 ### Run the tests
 
-- Once: `npm test` - this also shows a coverage summary and generates a detailed report in the `coverage` directory
+- Once: `npm test`
+  - Shows a coverage summary and generates a detailed report in the `coverage` directory
 - Watcher: `npm run test:watch`
   - Set `security.csp.enable` to `false` in `about:config` if you want working parcel hmr for UI dev and change back to `true` when you're done
 

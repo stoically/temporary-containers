@@ -204,4 +204,4 @@ class MultiAccountContainers {
   }
 }
 
-window.MultiAccountContainers = MultiAccountContainers;
+export default MultiAccountContainers;

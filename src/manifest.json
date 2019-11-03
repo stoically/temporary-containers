@@ -111,32 +111,7 @@
     }
   ],
   "background": {
-    "scripts": [
-      "background/log.js",
-      "background/event-listeners.js",
-      "background/migration-legacy.js",
-
-      "background/lib.js",
-      "background/browseraction.js",
-      "background/commands.js",
-      "background/container.js",
-      "background/contextmenu.js",
-      "background/cookies.js",
-      "background/isolation.js",
-      "background/mac.js",
-      "background/management.js",
-      "background/migration.js",
-      "background/mouseclick.js",
-      "background/pageaction.js",
-      "background/preferences.js",
-      "background/request.js",
-      "background/runtime.js",
-      "background/statistics.js",
-      "background/storage.js",
-      "background/tabs.js",
-      "background/utils.js",
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "applications": {
     "gecko": {

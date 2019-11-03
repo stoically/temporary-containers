@@ -332,6 +332,7 @@ class Container {
       cookieStoreId,
       tabId
     );
+
     this.removeContainerFetchMassRemoval[containerType].push(cookieStoreId);
     if (this.removeContainerFetchMassRemoval[containerType].length > 1) {
       return;
@@ -777,4 +778,4 @@ class Container {
   }
 }
 
-window.Container = Container;
+export default Container;

@@ -6,12 +6,9 @@
   "globals": {
     "tmp": "readonly",
     "debug": "readonly",
-    "lib": "readonly",
     "psl": "readonly",
     "log": "readonly",
     "delay": "readonly",
-    "globToRegexp": "readonly",
-    "PQueue": "readonly",
-    "versionCompare": "readonly"
+    "PQueue": "readonly"
   }
 }
