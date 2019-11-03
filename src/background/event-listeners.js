@@ -88,7 +88,6 @@ class EventListeners {
       ['runtime', 'onMessage'],
       ['runtime', 'onMessageExternal'],
       ['runtime', 'onStartup'],
-      ['runtime', 'onUpdateAvailable'],
     ].map(conf => {
       const confIsObj = typeof conf === 'object';
       const api = (confIsObj && conf.api) || conf;
