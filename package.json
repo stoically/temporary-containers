@@ -11,8 +11,9 @@
     "build:webext": "web-ext build -s dist",
     "build:webext:sign": "web-ext sign --channel unlisted -s dist",
     "build:cp": "cp README.md LICENSE dist",
-    "lint": "eslint {src,test}/**/*.{js,vue}",
+    "lint": "eslint {*,src/**/*,test/**/*}.{js,vue}",
     "lint:addon": "addons-linter web-ext-artifacts/temporary_containers-*.zip",
+    "format": "prettier --write '{*,src/!(vendor)/*,test/**/*}.{html,css,json,yml,md}'",
     "test": "nyc --reporter=html --reporter=text mocha --reporter=progress ./test/setup.js test/*.test.js --timeout 60000",
     "test:watch": "mocha ./test/setup.js test/*.test.js -b --reporter=progress --watch --inspect",
     "test:watch:verbose": "mocha ./test/setup.js test/*.test.js -b --reporter=spec --tmp-debug --watch --inspect",
@@ -101,7 +102,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "npm run lint",
+      "pre-commit": "npm run format && npm run lint",
       "pre-push": "npm test"
     }
   },
@@ -110,5 +111,10 @@
     "exclude": [
       "test/**/*.js"
     ]
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "singleQuote": true
   }
 }

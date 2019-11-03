@@ -3,18 +3,18 @@ services:
   - xvfb
 
 language: node_js
-node_js: "lts/*"
+node_js: 'lts/*'
 
 addons:
   firefox: latest
 
 script:
   - if [[ $TRAVIS_TAG == *"beta"* ]]; then
-      npm run build:sign;
+    npm run build:sign;
     else
-      unset WEB_EXT_API_KEY;
-      unset WEB_EXT_API_SECRET;
-      npm run build;
+    unset WEB_EXT_API_KEY;
+    unset WEB_EXT_API_SECRET;
+    npm run build;
     fi
 
 after_success: npm run coverage
@@ -34,12 +34,12 @@ deploy:
 
 after_deploy:
   - if [[ $TRAVIS_TAG == *"beta"* ]]; then
-      git clone https://github.com/stoically/temporary-containers.git;
-      cd temporary-containers;
-      git checkout beta-updates;
-      export BETA_VERSION=$(echo $TRAVIS_TAG | sed "s/^v//");
-      sed -i -e "s/[0-9]\+\.[0-9]\+\(beta[0-9]\+\)\?/$BETA_VERSION/g" updates.json;
-      sed -i -e "s/-fx\\.xpi/-an\\+fx\\.xpi/" updates.json;
-      git commit -am "$TRAVIS_TAG";
-      git push https://$GITHUB_TOKEN:x-oauth-basic@github.com/stoically/temporary-containers.git/ beta-updates;
+    git clone https://github.com/stoically/temporary-containers.git;
+    cd temporary-containers;
+    git checkout beta-updates;
+    export BETA_VERSION=$(echo $TRAVIS_TAG | sed "s/^v//");
+    sed -i -e "s/[0-9]\+\.[0-9]\+\(beta[0-9]\+\)\?/$BETA_VERSION/g" updates.json;
+    sed -i -e "s/-fx\\.xpi/-an\\+fx\\.xpi/" updates.json;
+    git commit -am "$TRAVIS_TAG";
+    git push https://$GITHUB_TOKEN:x-oauth-basic@github.com/stoically/temporary-containers.git/ beta-updates;
     fi
