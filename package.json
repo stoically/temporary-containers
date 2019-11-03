@@ -32,17 +32,17 @@
   },
   "homepage": "https://github.com/stoically/temporary-containers#readme",
   "dependencies": {
-    "delay": "^4.3.0",
-    "p-queue": "^6.2.0",
-    "psl": "^1.4.0"
+    "delay": "4.3.0",
+    "p-queue": "6.2.0",
+    "psl": "1.4.0"
   },
   "peerDependencies": {
-    "jquery": "^3.4.1",
-    "jquery-address": "^1.6.0",
-    "semantic-ui": "^2.4.2",
-    "sortablejs": "^1.10.1",
-    "vue": "^2.6.10",
-    "vuedraggable": "^2.23.2"
+    "jquery": "3.4.1",
+    "jquery-address": "1.6.0",
+    "semantic-ui": "2.4.2",
+    "sortablejs": "1.10.1",
+    "vue": "2.6.10",
+    "vuedraggable": "2.23.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
