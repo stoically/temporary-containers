@@ -16,12 +16,12 @@ preferencesTestSet.map(preferences => {
         browser.contextualIdentities.remove.resolves({});
 
         const [promise] = browser.tabs.onRemoved.addListener.yield(2);
-        await promise;
-        clock.tick(15000);
         await nextTick();
+        clock.tick(2000);
+        await promise;
         clock.tick(900000);
         await nextTick();
-        clock.tick(5000);
+        clock.tick(3000);
         await nextTick();
 
         browser.contextualIdentities.remove.should.have.been.calledOnce;
@@ -42,12 +42,12 @@ preferencesTestSet.map(preferences => {
         browser.contextualIdentities.remove.resolves({});
 
         const [promise] = browser.tabs.onRemoved.addListener.yield(2);
-        await promise;
-        clock.tick(15000);
         await nextTick();
+        clock.tick(2000);
+        await promise;
         clock.tick(300000);
         await nextTick();
-        clock.tick(5000);
+        clock.tick(3000);
         await nextTick();
 
         browser.contextualIdentities.remove.should.have.been.calledOnce;
@@ -68,9 +68,9 @@ preferencesTestSet.map(preferences => {
         browser.contextualIdentities.remove.resolves({});
 
         const [promise] = browser.tabs.onRemoved.addListener.yield(2);
-        await promise;
-        clock.tick(15000);
         await nextTick();
+        clock.tick(2000);
+        await promise;
         clock.tick(150000);
         await nextTick();
         clock.tick(5000);
@@ -94,9 +94,9 @@ preferencesTestSet.map(preferences => {
         browser.contextualIdentities.remove.resolves({});
 
         const [promise] = browser.tabs.onRemoved.addListener.yield(2);
-        await promise;
-        clock.tick(15000);
+        clock.tick(2000);
         await nextTick();
+        await promise;
 
         browser.contextualIdentities.remove.should.have.been.calledOnce;
       });

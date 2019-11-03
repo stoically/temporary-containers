@@ -153,8 +153,7 @@ class Runtime {
   }
 
   async onStartup() {
-    // queue a container cleanup
-    delay(15000).then(() => this.container.cleanup(true));
+    this.container.cleanup(true);
 
     if (this.pref.container.numberMode === 'keepuntilrestart') {
       this.storage.local.tempContainerCounter = 0;

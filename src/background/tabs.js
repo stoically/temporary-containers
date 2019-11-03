@@ -125,7 +125,9 @@ class Tabs {
     if (this.container.tabCreatedAsMacConfirmPage[tabId]) {
       delete this.tabCreatedAsMacConfirmPage[tabId];
     }
-    this.container.addToRemoveQueue(tabId);
+
+    await delay(2000);
+    this.container.addTabToRemoveQueue(tabId);
   }
 
   async onActivated(activeInfo) {

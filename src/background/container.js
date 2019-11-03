@@ -31,16 +31,8 @@ class Container {
     this.urlCreatedContainer = {};
     this.requestCreatedTab = {};
     this.tabCreatedAsMacConfirmPage = {};
-    this.removingContainerQueue = false;
-    this.removeContainerFetchMassRemoval = {
-      regular: [],
-      deletesHistory: [],
-    };
+    this.removeContainerQueued = false;
     this.removeContainerQueue = new PQueue({ concurrency: 1 });
-    this.removeContainerDelayQueue = new PQueue();
-    this.removeContainerQueueMaybeDone = this.removeContainerQueueMaybeDone.bind(
-      this
-    );
     this.noContainerTabs = {};
     this.lastCreatedInactiveTab = {};
   }
@@ -301,7 +293,7 @@ class Container {
     };
   }
 
-  async addToRemoveQueue(tabId) {
+  async addTabToRemoveQueue(tabId) {
     if (!this.tabContainerMap[tabId]) {
       debug(
         '[addToRemoveQueue] removed tab that isnt in the tabContainerMap',
@@ -311,10 +303,17 @@ class Container {
       return;
     }
     const cookieStoreId = this.tabContainerMap[tabId];
+    debug(
+      '[addToRemoveQueue] queuing container removal because of tab removal',
+      tabId
+    );
+    this.addToRemoveQueue(cookieStoreId);
+  }
+
+  async addToRemoveQueue(cookieStoreId, noDelay = false) {
     if (!this.storage.local.tempContainers[cookieStoreId]) {
       debug(
         '[addToRemoveQueue] container from the tabContainerMap is unknown',
-        tabId,
         cookieStoreId
       );
       return;
@@ -327,114 +326,79 @@ class Container {
       containerType === 'deletesHistory'
         ? this.pref.deletesHistory.containerRemoval
         : this.pref.container.removal;
-    debug(
-      '[addToRemoveQueue] queuing container removal because of tab removal',
-      cookieStoreId,
-      tabId
-    );
 
-    this.removeContainerFetchMassRemoval[containerType].push(cookieStoreId);
-    if (this.removeContainerFetchMassRemoval[containerType].length > 1) {
-      return;
-    }
-    debug(
-      '[addToRemoveQueue] registering fetch mass removal delay',
-      containerType,
-      this.removeContainerFetchMassRemoval[containerType]
-    );
-    this.removingContainerQueue = true;
-    await delay(15000);
-
-    const queue = this.removeContainerFetchMassRemoval[containerType].splice(0);
+    let delayTime = 0;
     switch (containerRemoval) {
-      case 'instant':
-        debug(
-          '[addToRemoveQueue] trying to instant remove queue',
-          containerType,
-          queue
-        );
-        this.removeContainerQueue
-          .add(() => this.tryToRemoveQueue(queue))
-          .then(this.removeContainerQueueMaybeDone);
-        break;
-
       case '2minutes':
-        this.delayedRemoveQueue(containerType, queue, 120000);
+        delayTime = 120000;
         break;
 
       case '5minutes':
-        this.delayedRemoveQueue(containerType, queue, 300000);
+        delayTime = 300000;
         break;
 
       case '15minutes':
-        this.delayedRemoveQueue(containerType, queue, 900000);
-        break;
-
-      default:
-        debug('[addToRemoveQueue] this should never happen', containerRemoval);
-        this.removeContainerQueueMaybeDone();
+        delayTime = 900000;
         break;
     }
-  }
 
-  async delayedRemoveQueue(containerType, queue, delayTime) {
-    debug(
-      '[addToRemoveQueue] registering delay for queue removal',
-      delayTime,
-      containerType,
-      queue
-    );
-    this.maybeShowNotification(
-      `Queued ${queue.length} Temporary Containers for removal in ${delayTime /
-        1000 /
-        60}minutes`
-    );
-    this.removeContainerDelayQueue.add(async () => {
-      await delay(delayTime);
+    if (delayTime && !noDelay) {
+      this.removeContainerQueued = true;
       debug(
-        '[addToRemoveQueue] trying to remove queue after timeout',
+        '[addToRemoveQueue] waiting to add container removal to queue',
         delayTime,
-        containerType,
-        queue
+        cookieStoreId
       );
-      this.removeContainerQueue
-        .add(() => this.tryToRemoveQueue(queue))
-        .then(this.removeContainerQueueMaybeDone);
-    });
-  }
-
-  async tryToRemoveQueue(queue) {
-    debug('[tryToRemoveQueue] removal queue', queue);
-    for (const cookieStoreId of queue) {
-      if (!this.storage.local.tempContainers[cookieStoreId]) {
-        debug(
-          '[tryToRemoveQueue] unknown container, probably already removed',
-          cookieStoreId
-        );
-        continue;
-      }
-      const containerRemoved = await this.tryToRemove(cookieStoreId);
-      if (containerRemoved) {
-        debug(
-          '[tryToRemoveQueue] container removed, waiting a bit',
-          cookieStoreId
-        );
-        await delay(5000);
-      }
+      await delay(delayTime);
     }
-    this.statistics.finish();
+
+    debug('[addToRemoveQueue] queuing container removal', cookieStoreId);
+
+    this.removeContainerQueue
+      .add(async () => {
+        if (!this.storage.local.tempContainers[cookieStoreId]) {
+          debug(
+            '[addToRemoveQueue] unknown container, probably already removed',
+            cookieStoreId
+          );
+          return;
+        }
+        const containerRemoved = await this.tryToRemove(cookieStoreId);
+        if (containerRemoved) {
+          debug(
+            '[addToRemoveQueue] container removed, waiting a bit',
+            cookieStoreId
+          );
+          await delay(3000);
+        }
+      })
+      .then(() => {
+        if (this.removeContainerQueue.pending) {
+          return;
+        }
+        debug('[addToRemoveQueue] queue empty');
+        this.removeContainerQueued = false;
+        this.statistics.finish();
+
+        // fallback cleanup of container numbers
+        this.storage.local.tempContainersNumbers = Object.values(
+          this.storage.local.tempContainers
+        ).map(container => container.number);
+      });
   }
 
   maybeShowNotification(message) {
-    if (this.pref.notifications && this.permissions.notifications) {
-      debug('[maybeShowNotification] showing notification');
-      browser.notifications.create({
-        type: 'basic',
-        title: 'Temporary Containers',
-        iconUrl: 'icons/page-w-32.svg',
-        message,
-      });
+    if (!this.pref.notifications || !this.permissions.notifications) {
+      return;
     }
+
+    debug('[maybeShowNotification] showing notification');
+    browser.notifications.create({
+      type: 'basic',
+      title: 'Temporary Containers',
+      iconUrl: 'icons/page-w-32.svg',
+      message,
+    });
   }
 
   async tryToRemove(cookieStoreId) {
@@ -452,11 +416,8 @@ class Container {
         error
       );
       this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-        number => {
-          return (
-            this.storage.local.tempContainers[cookieStoreId].number !== number
-          );
-        }
+        number =>
+          this.storage.local.tempContainers[cookieStoreId].number !== number
       );
       delete this.storage.local.tempContainers[cookieStoreId];
       await this.storage.persist();
@@ -509,32 +470,6 @@ class Container {
     return true;
   }
 
-  removeContainerQueueMaybeDone() {
-    debug(
-      '[removeContainerQueueMaybeDone] maybe queue is done',
-      this.removeContainerQueue.size,
-      this.removeContainerQueue.pending,
-      this.removeContainerDelayQueue.size,
-      this.removeContainerDelayQueue.pending
-    );
-    if (
-      this.removeContainerQueue.size === 0 &&
-      this.removeContainerQueue.pending === 0 &&
-      this.removeContainerDelayQueue.size === 0 &&
-      this.removeContainerDelayQueue.pending === 0
-    ) {
-      debug('[removeContainerQueueMaybeDone] yep');
-      this.removingContainerQueue = false;
-    } else {
-      debug('[removeContainerQueueMaybeDone] nope');
-    }
-
-    // fallback cleanup of container numbers
-    this.storage.local.tempContainersNumbers = Object.values(
-      this.storage.local.tempContainers
-    ).map(container => container.number);
-  }
-
   async removeContainer(cookieStoreId) {
     try {
       const contextualIdentity = await browser.contextualIdentities.remove(
@@ -570,8 +505,8 @@ class Container {
       return;
     }
 
-    if (this.removingContainerQueue && !browserStart) {
-      debug('[cleanup] skipping because we currently removing a queue');
+    if (this.removeContainerQueued && !browserStart) {
+      debug('[cleanup] skipping because queue isnt empty');
       return;
     }
     const containers = Object.keys(this.storage.local.tempContainers);
@@ -586,10 +521,7 @@ class Container {
       return;
     }
 
-    this.removingContainerQueue = true;
-    this.removeContainerQueue
-      .add(() => this.tryToRemoveQueue(containers))
-      .then(this.removeContainerQueueMaybeDone);
+    containers.map(cookieStoreId => this.addToRemoveQueue(cookieStoreId, true));
   }
 
   async maybeAddHistory(tab, url) {
