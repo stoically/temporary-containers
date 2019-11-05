@@ -259,20 +259,17 @@ class Tabs {
     // don't do a cleanup if there are only incognito-tabs, no tabs, or a sessionrestore tab
     try {
       const tabs = await browser.tabs.query({});
-      if (!tabs.length) {
-        return true;
-      }
       if (
-        tabs.filter(tab => tab.incognito || tab.url === 'about:sessionrestore')
-          .length
+        !tabs.length ||
+        tabs.find(tab => tab.url === 'about:sessionrestore') ||
+        !tabs.filter(tab => !tab.incognito).length
       ) {
         return true;
       }
-      return false;
     } catch (error) {
       debug('[onlyIncognitoOrNone] failed to query tabs', error);
-      return false;
     }
+    return false;
   }
 
   async createInSameContainer() {
