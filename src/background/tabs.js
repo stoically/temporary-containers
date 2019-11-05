@@ -262,7 +262,7 @@ class Tabs {
       if (
         !tabs.length ||
         tabs.find(tab => tab.url === 'about:sessionrestore') ||
-        !tabs.filter(tab => !tab.incognito).length
+        !tabs.find(tab => !tab.incognito)
       ) {
         return true;
       }
