@@ -8,6 +8,7 @@ import Commands from './background/commands';
 import Container from './background/container';
 import ContextMenu from './background/contextmenu';
 import Cookies from './background/cookies';
+import Convert from './background/convert';
 import History from './background/history';
 import Isolation from './background/isolation';
 import MultiAccountContainers from './background/mac';
@@ -46,6 +47,7 @@ class TemporaryContainers {
     this.isolation = new Isolation(this);
     this.history = new History(this);
     this.cleanup = new Cleanup(this);
+    this.convert = new Convert(this);
     this.statistics = new Statistics(this);
     this.mac = new MultiAccountContainers(this);
     this.migration = new Migration(this);
@@ -95,6 +97,7 @@ class TemporaryContainers {
     this.isolation.initialize();
     this.history.initialize();
     this.cleanup.initialize();
+    this.convert.initialize();
 
     await this.management.initialize();
     await this.tabs.initialize();

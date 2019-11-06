@@ -302,52 +302,6 @@ class Container {
     );
   }
 
-  async convertTempContainerToPermanent({ cookieStoreId, tabId, name, url }) {
-    delete this.storage.local.tempContainers[cookieStoreId];
-    await this.storage.persist();
-    await browser.contextualIdentities.update(cookieStoreId, {
-      name,
-      color: 'blue',
-    });
-    await browser.tabs.create({
-      cookieStoreId,
-      url,
-    });
-    await this.tabs.remove({ id: tabId });
-  }
-
-  async convertTempContainerToRegular({ cookieStoreId, tabId, url }) {
-    this.storage.local.tempContainers[cookieStoreId].deletesHistory = false;
-    delete this.storage.local.tempContainers[cookieStoreId].history;
-    await this.storage.persist();
-    const name = this.storage.local.tempContainers[cookieStoreId].name.replace(
-      '-deletes-history',
-      ''
-    );
-    await browser.contextualIdentities.update(cookieStoreId, { name });
-    await browser.tabs.create({
-      cookieStoreId,
-      url,
-    });
-    await this.tabs.remove({ id: tabId });
-  }
-
-  async convertPermanentToTempContainer({ cookieStoreId, tabId, url }) {
-    const containerOptions = this.generateContainerNameIconColor();
-    await browser.contextualIdentities.update(cookieStoreId, {
-      name: containerOptions.name,
-      icon: containerOptions.icon,
-      color: containerOptions.color,
-    });
-    this.storage.local.tempContainers[cookieStoreId] = containerOptions;
-    await this.storage.persist();
-    await browser.tabs.create({
-      cookieStoreId,
-      url,
-    });
-    await this.tabs.remove({ id: tabId });
-  }
-
   isClean(cookieStoreId) {
     return (
       this.storage.local.tempContainers[cookieStoreId] &&

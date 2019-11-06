@@ -13,6 +13,7 @@ class Runtime {
     this.migration = this.background.migration;
     this.contextmenu = this.background.contextmenu;
     this.cleanup = this.background.cleanup;
+    this.convert = this.background.convert;
     this.utils = this.background.utils;
   }
 
@@ -102,7 +103,7 @@ class Runtime {
         });
 
       case 'convertTempContainerToPermanent':
-        return this.container.convertTempContainerToPermanent({
+        return this.convert.convertTempContainerToPermanent({
           cookieStoreId: message.payload.cookieStoreId,
           tabId: message.payload.tabId,
           name: message.payload.name,
@@ -110,14 +111,14 @@ class Runtime {
         });
 
       case 'convertTempContainerToRegular':
-        return this.container.convertTempContainerToRegular({
+        return this.convert.convertTempContainerToRegular({
           cookieStoreId: message.payload.cookieStoreId,
           tabId: message.payload.tabId,
           url: message.payload.url,
         });
 
       case 'convertPermanentToTempContainer':
-        return this.container.convertPermanentToTempContainer({
+        return this.convert.convertPermanentToTempContainer({
           cookieStoreId: message.payload.cookieStoreId,
           tabId: message.payload.tabId,
           url: message.payload.url,
