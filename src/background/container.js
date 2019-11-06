@@ -80,7 +80,10 @@ class Container {
     const containerOptions = this.generateContainerNameIconColor(
       (request && request.url) || url
     );
-    this.storage.local.tempContainersNumbers.push(containerOptions.number);
+
+    if (containerOptions.number) {
+      this.storage.local.tempContainersNumbers.push(containerOptions.number);
+    }
 
     if (deletesHistory) {
       if (this.permissions.history) {
