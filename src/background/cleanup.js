@@ -51,34 +51,19 @@ class ContainerCleanup {
       .deletesHistory
       ? 'deletesHistory'
       : 'regular';
-    const containerRemoval =
+    const containerRemovalDelay =
       containerType === 'deletesHistory'
         ? this.pref.deletesHistory.containerRemoval
         : this.pref.container.removal;
 
-    let delayTime = 0;
-    switch (containerRemoval) {
-      case '2minutes':
-        delayTime = 120000;
-        break;
-
-      case '5minutes':
-        delayTime = 300000;
-        break;
-
-      case '15minutes':
-        delayTime = 900000;
-        break;
-    }
-
-    if (delayTime && !noDelay) {
+    if (containerRemovalDelay && !noDelay) {
       this.removeContainerQueued = true;
       debug(
         '[addToRemoveQueue] waiting to add container removal to queue',
-        delayTime,
+        containerRemovalDelay,
         cookieStoreId
       );
-      await delay(delayTime);
+      await delay(containerRemovalDelay);
     }
 
     debug('[addToRemoveQueue] queuing container removal', cookieStoreId);
@@ -117,7 +102,7 @@ class ContainerCleanup {
   }
 
   async tryToRemove(cookieStoreId) {
-    if (await this.tabs.onlyIncognitoNoneOrSessionRestore()) {
+    if (await this.onlyIncognitoNoneOrSessionRestoreTabs()) {
       debug('[tryToRemove] canceling, only incognito or no tabs');
       return false;
     }
@@ -229,7 +214,7 @@ class ContainerCleanup {
       debug('[cleanup] canceling, no containers at all');
       return;
     }
-    if (await this.tabs.onlyIncognitoNoneOrSessionRestore()) {
+    if (await this.onlyIncognitoNoneOrSessionRestoreTabs()) {
       debug(
         '[cleanup] canceling, only incognito, no tabs or sessionrestore tab'
       );
@@ -237,6 +222,23 @@ class ContainerCleanup {
     }
 
     containers.map(cookieStoreId => this.addToRemoveQueue(cookieStoreId, true));
+  }
+
+  async onlyIncognitoNoneOrSessionRestoreTabs() {
+    // don't do a cleanup if there are only incognito-tabs, no tabs, or a sessionrestore tab
+    try {
+      const tabs = await browser.tabs.query({});
+      if (
+        !tabs.length ||
+        tabs.find(tab => tab.url === 'about:sessionrestore') ||
+        !tabs.find(tab => !tab.incognito)
+      ) {
+        return true;
+      }
+    } catch (error) {
+      debug('[onlyIncognitoOrNone] failed to query tabs', error);
+    }
+    return false;
   }
 
   maybeShowNotification(message) {

@@ -257,23 +257,6 @@ class Tabs {
     );
   }
 
-  async onlyIncognitoNoneOrSessionRestore() {
-    // don't do a cleanup if there are only incognito-tabs, no tabs, or a sessionrestore tab
-    try {
-      const tabs = await browser.tabs.query({});
-      if (
-        !tabs.length ||
-        tabs.find(tab => tab.url === 'about:sessionrestore') ||
-        !tabs.find(tab => !tab.incognito)
-      ) {
-        return true;
-      }
-    } catch (error) {
-      debug('[onlyIncognitoOrNone] failed to query tabs', error);
-    }
-    return false;
-  }
-
   async createInSameContainer() {
     this.creatingInSameContainer = true;
     try {

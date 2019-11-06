@@ -17,7 +17,7 @@ class Preferences {
         iconRandom: false,
         iconRandomExcluded: [],
         numberMode: 'keep',
-        removal: '15minutes',
+        removal: 900000, // ms
       },
       iconColor: 'default',
       isolation: {
@@ -78,7 +78,7 @@ class Preferences {
         contextMenuBookmarks: false,
         containerAlwaysPerDomain: 'never',
         containerIsolation: 'never',
-        containerRemoval: 'instant',
+        containerRemoval: 0, // ms
         containerMouseClicks: 'never',
         statistics: false,
       },

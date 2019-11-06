@@ -144,10 +144,10 @@ export default {
           v-model="preferences.deletesHistory.containerRemoval"
           class="ui fluid dropdown"
         >
-          <option value="15minutes">
+          <option :value="900000">
             15 minutes after the last tab in it closes
           </option>
-          <option value="instant">
+          <option :value="0">
             After the last tab in it closes (default)
           </option>
         </select>

@@ -28,6 +28,7 @@ class Migration {
         this.storage.local.tempContainersNumbers.push(container.number);
       });
     }
+
     if (
       (this.updatedFromVersionEqualToOrLessThan('0.103') &&
         !this.previousVersionBeta) ||
@@ -54,6 +55,7 @@ class Migration {
       delete preferences.ignoreRequestsToAMO;
       delete preferences.ignoreRequestsToPocket;
     }
+
     if (
       (this.updatedFromVersionEqualToOrLessThan('0.103') &&
         !this.previousVersionBeta) ||
@@ -76,6 +78,7 @@ class Migration {
       });
       preferences.isolation.domain = perDomainIsolation;
     }
+
     if (this.updatedFromVersionEqualToOrLessThan('0.103')) {
       debug(
         '[migrate] updated from version <= 0.103, migrate popup default tab to isolation-per-domain'
@@ -84,11 +87,49 @@ class Migration {
         preferences.ui.popupDefaultTab = 'isolation-per-domain';
       }
     }
+
     if (this.updatedFromVersionEqualToOrLessThan('1.1')) {
       debug(
         '[migrate] updated from version <= 1.1, migrate redirectorCloseTabs'
       );
       preferences.closeRedirectorTabs.domains.push('slack-redir.net');
+    }
+
+    if (
+      (this.updatedFromVersionEqualToOrLessThan('1.3') &&
+        !this.previousVersionBeta) ||
+      (this.previousVersionBeta &&
+        this.updatedFromVersionEqualToOrLessThan('1.4.1'))
+    ) {
+      debug('[migrate] updated from version <= 1.3, migrate container.removal');
+
+      switch (preferences.container.removal) {
+        case 'instant':
+          preferences.container.removal = 0;
+          break;
+
+        case '2minutes':
+          preferences.container.removal = 120000;
+          break;
+
+        case '5minutes':
+          preferences.container.removal = 300000;
+          break;
+
+        case '15minutes':
+          preferences.container.removal = 900000;
+          break;
+      }
+
+      switch (preferences.deletesHistory.containerRemoval) {
+        case 'instant':
+          preferences.deletesHistory.containerRemoval = 0;
+          break;
+
+        case '15minutes':
+          preferences.deletesHistory.containerRemoval = 900000;
+          break;
+      }
     }
 
     // hint: don't use preferences/storage-defaults here, ^

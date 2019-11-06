@@ -339,16 +339,16 @@ export default {
           v-model="preferences.container.removal"
           class="ui fluid dropdown"
         >
-          <option value="15minutes">
+          <option :value="900000">
             {{ t('optionsGeneralContainerRemoval15Minutes') }}
           </option>
-          <option value="5minutes">
+          <option :value="300000">
             {{ t('optionsGeneralContainerRemoval5Minutes') }}
           </option>
-          <option value="2minutes">
+          <option :value="120000">
             {{ t('optionsGeneralContainerRemoval2Minutes') }}
           </option>
-          <option value="instant">
+          <option :value="0">
             {{ t('optionsGeneralContainerRemovalInstant') }}
           </option>
         </select>
