@@ -77,6 +77,23 @@ class Container {
       });
     }
 
+    const contextualIdentity = await this.createTempContainer({
+      url,
+      request,
+      deletesHistory,
+    });
+
+    return this.createTab({
+      url,
+      tab,
+      active,
+      dontPin,
+      macConfirmPage,
+      contextualIdentity,
+    });
+  }
+
+  async createTempContainer({ url, request, deletesHistory }) {
     const containerOptions = this.generateContainerNameIconColor(
       (request && request.url) || url
     );
@@ -114,92 +131,103 @@ class Container {
       ] = containerOptions;
       await this.storage.persist();
 
-      try {
-        const newTabOptions = {
-          url,
-          cookieStoreId: contextualIdentity.cookieStoreId,
-        };
-        if (tab) {
-          newTabOptions.active = tab.active;
-          if (tab.index >= 0) {
-            if (
-              !tab.active &&
-              this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
-            ) {
-              debug(
-                '[createTabInTempContainer] lastCreatedInactiveTab id',
-                this.lastCreatedInactiveTab
-              );
-              try {
-                const lastCreatedInactiveTab = await browser.tabs.get(
-                  this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
-                );
-                debug(
-                  '[createTabInTempContainer] lastCreatedInactiveTab',
-                  lastCreatedInactiveTab
-                );
-                newTabOptions.index = lastCreatedInactiveTab.index + 1;
-              } catch (error) {
-                debug(
-                  '[createTabInTempContainer] failed to get lastCreatedInactiveTab',
-                  error
-                );
-                newTabOptions.index = tab.index + 1;
-              }
-            } else {
-              newTabOptions.index = tab.index + 1;
-            }
-          }
-          if (tab.pinned && !dontPin) {
-            newTabOptions.pinned = true;
-          }
-          if (tab.openerTabId) {
-            newTabOptions.openerTabId = tab.openerTabId;
-          }
-        }
-        if (active === false) {
-          newTabOptions.active = false;
-        }
-
-        debug(
-          '[createTabInTempContainer] creating tab in temporary container',
-          newTabOptions
-        );
-        const newTab = await browser.tabs.create(newTabOptions);
-        if (tab && !tab.active) {
-          this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] =
-            newTab.id;
-        }
-        debug(
-          '[createTabInTempContainer] new tab in temp container created',
-          newTab
-        );
-        if (url) {
-          this.urlCreatedContainer[url] = contextualIdentity.cookieStoreId;
-          delay(1000).then(() => {
-            debug(
-              '[createTabInTempContainer] cleaning up urlCreatedContainer',
-              url
-            );
-            delete this.urlCreatedContainer[url];
-          });
-        }
-        this.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
-        if (macConfirmPage) {
-          this.tabCreatedAsMacConfirmPage[newTab.id] = true;
-        }
-        await this.storage.persist();
-
-        return newTab;
-      } catch (error) {
-        debug('[createTabInTempContainer] error while creating new tab', error);
-      }
+      return contextualIdentity;
     } catch (error) {
       debug(
         '[createTabInTempContainer] error while creating container',
         containerOptions.name,
         error
       );
+    }
+  }
+
+  async createTab({
+    url,
+    tab,
+    active,
+    dontPin,
+    macConfirmPage,
+    contextualIdentity,
+  }) {
+    try {
+      const newTabOptions = {
+        url,
+        cookieStoreId: contextualIdentity.cookieStoreId,
+      };
+      if (tab) {
+        newTabOptions.active = tab.active;
+        if (tab.index >= 0) {
+          if (
+            !tab.active &&
+            this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
+          ) {
+            debug(
+              '[createTabInTempContainer] lastCreatedInactiveTab id',
+              this.lastCreatedInactiveTab
+            );
+            try {
+              const lastCreatedInactiveTab = await browser.tabs.get(
+                this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
+              );
+              debug(
+                '[createTabInTempContainer] lastCreatedInactiveTab',
+                lastCreatedInactiveTab
+              );
+              newTabOptions.index = lastCreatedInactiveTab.index + 1;
+            } catch (error) {
+              debug(
+                '[createTabInTempContainer] failed to get lastCreatedInactiveTab',
+                error
+              );
+              newTabOptions.index = tab.index + 1;
+            }
+          } else {
+            newTabOptions.index = tab.index + 1;
+          }
+        }
+        if (tab.pinned && !dontPin) {
+          newTabOptions.pinned = true;
+        }
+        if (tab.openerTabId) {
+          newTabOptions.openerTabId = tab.openerTabId;
+        }
+      }
+      if (active === false) {
+        newTabOptions.active = false;
+      }
+
+      debug(
+        '[createTabInTempContainer] creating tab in temporary container',
+        newTabOptions
+      );
+      const newTab = await browser.tabs.create(newTabOptions);
+      if (tab && !tab.active) {
+        this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] =
+          newTab.id;
+      }
+      debug(
+        '[createTabInTempContainer] new tab in temp container created',
+        newTab
+      );
+      if (url) {
+        this.urlCreatedContainer[url] = contextualIdentity.cookieStoreId;
+        delay(1000).then(() => {
+          debug(
+            '[createTabInTempContainer] cleaning up urlCreatedContainer',
+            url
+          );
+          delete this.urlCreatedContainer[url];
+        });
+      }
+      this.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
+      if (macConfirmPage) {
+        this.tabCreatedAsMacConfirmPage[newTab.id] = true;
+      }
+      await this.storage.persist();
+
+      return newTab;
+    } catch (error) {
+      debug('[createTabInTempContainer] error while creating new tab', error);
     }
   }
 
