@@ -177,17 +177,8 @@ class ContextMenu {
     if (windowId === browser.windows.WINDOW_ID_NONE) {
       return;
     }
-    this.remove();
-    try {
-      const activeTab = await browser.tabs.query({
-        windowId: windowId,
-      });
-      if (!activeTab[0].incognito) {
-        this.add();
-      }
-    } catch (error) {
-      debug('failed to get the active tab from window');
-    }
+    await this.remove();
+    this.add();
   }
 }
 

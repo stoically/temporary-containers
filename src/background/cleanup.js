@@ -102,8 +102,8 @@ class ContainerCleanup {
   }
 
   async tryToRemove(cookieStoreId) {
-    if (await this.onlyIncognitoNoneOrSessionRestoreTabs()) {
-      debug('[tryToRemove] canceling, only incognito or no tabs');
+    if (await this.onlySessionRestoreOrNoTabs()) {
+      debug('[tryToRemove] canceling, only sessionrestore or no tabs');
       return false;
     }
 
@@ -214,29 +214,26 @@ class ContainerCleanup {
       debug('[cleanup] canceling, no containers at all');
       return;
     }
-    if (await this.onlyIncognitoNoneOrSessionRestoreTabs()) {
-      debug(
-        '[cleanup] canceling, only incognito, no tabs or sessionrestore tab'
-      );
+    if (await this.onlySessionRestoreOrNoTabs()) {
+      debug('[cleanup] canceling, only sessionrestore or no tabs');
       return;
     }
 
     containers.map(cookieStoreId => this.addToRemoveQueue(cookieStoreId, true));
   }
 
-  async onlyIncognitoNoneOrSessionRestoreTabs() {
-    // don't do a cleanup if there are only incognito-tabs, no tabs, or a sessionrestore tab
+  async onlySessionRestoreOrNoTabs() {
+    // don't do a cleanup if there are no tabs or a sessionrestore tab
     try {
       const tabs = await browser.tabs.query({});
       if (
         !tabs.length ||
-        tabs.find(tab => tab.url === 'about:sessionrestore') ||
-        !tabs.find(tab => !tab.incognito)
+        tabs.find(tab => tab.url === 'about:sessionrestore')
       ) {
         return true;
       }
     } catch (error) {
-      debug('[onlyIncognitoOrNone] failed to query tabs', error);
+      debug('[onlySessionRestoreOrNoTabs] failed to query tabs', error);
     }
     return false;
   }

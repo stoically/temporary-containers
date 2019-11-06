@@ -15,15 +15,6 @@ class MouseClick {
   }
 
   linkClicked(message, sender) {
-    if (sender.tab.incognito) {
-      debug(
-        '[linkClicked] message came from an incognito tab, we dont handle that',
-        message,
-        sender
-      );
-      return;
-    }
-
     let clickType;
     const url = message.href;
     if (message.event.button === 1) {

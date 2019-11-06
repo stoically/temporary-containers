@@ -23,12 +23,6 @@ class Tabs {
         this.container.tabContainerMap[tab.id] = tab.cookieStoreId;
       }
 
-      if (tab.incognito) {
-        // disable browseraction for all incognito tabs
-        // relevant if installed, updated or disabled+enabled in incognito window
-        browser.browserAction.disable(tab.id);
-      }
-
       // maybe reload or set badge
       this.maybeReloadInTempContainer(tab);
     });
@@ -36,11 +30,6 @@ class Tabs {
 
   async onCreated(tab) {
     debug('[onCreated] tab created', tab);
-    if (tab.incognito) {
-      debug('[onCreated] tab incognito, we ignore that', tab);
-      browser.browserAction.disable(tab.id);
-      return;
-    }
     if (
       !tab.active &&
       this.container.lastCreatedInactiveTab[
@@ -81,11 +70,6 @@ class Tabs {
 
   async onUpdated(tabId, changeInfo, tab) {
     debug('[onUpdated] tab updated', tab, changeInfo);
-    if (tab.incognito) {
-      debug('[onUpdated] tab incognito, we ignore that');
-      browser.browserAction.disable(tab.id);
-      return;
-    }
     if (changeInfo.url) {
       debug('[onUpdated] url changed', changeInfo);
       await this.history.maybeAddHistory(tab, changeInfo.url);
@@ -138,21 +122,10 @@ class Tabs {
       browser.windows.WINDOW_ID_CURRENT
     ] = false;
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
-    if (!activatedTab.incognito) {
-      this.pageaction.showOrHide(activatedTab);
-    }
+    this.pageaction.showOrHide(activatedTab);
   }
 
   async maybeReloadInTempContainer(tab, changeInfo = {}) {
-    if (tab.incognito) {
-      debug(
-        '[maybeReloadInTempContainer] tab is incognito, ignore it and disable browseraction',
-        tab
-      );
-      browser.browserAction.disable(tab.id);
-      return;
-    }
-
     if (this.container.creatingInSameContainer) {
       debug(
         '[maybeReloadInTempContainer] we are in the process of creating a tab in same container, ignore'

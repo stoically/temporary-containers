@@ -116,11 +116,6 @@ class Request {
       );
     }
 
-    if (tab && tab.incognito) {
-      debug('[handleRequest] tab is incognito, ignore it', tab);
-      return;
-    }
-
     let macAssignment;
     if (this.management.addons['@testpilot-containers'].enabled) {
       try {

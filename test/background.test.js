@@ -125,7 +125,6 @@ preferencesTestSet.map(preferences => {
       it('one open about:home should reopen in temporary container', async () => {
         await loadBareBackground(preferences);
         const fakeAboutHomeTab = {
-          incognito: false,
           cookieStoreId: 'firefox-default',
           url: 'about:home',
         };
@@ -149,7 +148,6 @@ preferencesTestSet.map(preferences => {
       it('one open tab not in the default container should not reopen in temporary container', async () => {
         const background = await loadBareBackground(preferences);
         const fakeNotDefaultTab = {
-          incognito: false,
           cookieStoreId: 'not-default',
           url: 'about:home',
         };
