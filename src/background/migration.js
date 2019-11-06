@@ -1,4 +1,3 @@
-/* eslint-disable require-atomic-updates */
 /* istanbul ignore next */
 class Migration {
   constructor(background) {

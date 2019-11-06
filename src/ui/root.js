@@ -115,7 +115,6 @@ export default (App, { popup = false }) => {
 
         let storage;
         try {
-          // eslint-disable-next-line require-atomic-updates
           storage = await browser.storage.local.get([
             'preferences',
             'statistics',

@@ -13,6 +13,7 @@ class Statistics {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
+    this.cleanup = this.background.cleanup;
   }
 
   async collect(request) {
@@ -110,7 +111,7 @@ class Statistics {
       if (this.removedContainerHistoryCount) {
         notificationMessage += `\nand ${this.removedContainerHistoryCount} URLs from History`;
       }
-      this.container.maybeShowNotification(notificationMessage);
+      this.cleanup.maybeShowNotification(notificationMessage);
     }
 
     this.removedContainerCount = 0;

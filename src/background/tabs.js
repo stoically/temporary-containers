@@ -13,6 +13,8 @@ class Tabs {
     this.pageaction = this.background.pageaction;
     this.contextmenu = this.background.contextmenu;
     this.mac = this.background.mac;
+    this.history = this.background.history;
+    this.cleanup = this.background.cleanup;
 
     const tabs = await browser.tabs.query({});
     tabs.map(tab => {
@@ -86,7 +88,7 @@ class Tabs {
     }
     if (changeInfo.url) {
       debug('[onUpdated] url changed', changeInfo);
-      await this.container.maybeAddHistory(tab, changeInfo.url);
+      await this.history.maybeAddHistory(tab, changeInfo.url);
     }
     if (
       this.pref.closeRedirectorTabs.active &&
@@ -127,7 +129,7 @@ class Tabs {
     }
 
     await delay(2000);
-    this.container.addTabToRemoveQueue(tabId);
+    this.cleanup.addTabToRemoveQueue(tabId);
   }
 
   async onActivated(activeInfo) {

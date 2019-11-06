@@ -31,8 +31,6 @@ class Container {
     this.urlCreatedContainer = {};
     this.requestCreatedTab = {};
     this.tabCreatedAsMacConfirmPage = {};
-    this.removeContainerQueued = false;
-    this.removeContainerQueue = new PQueue({ concurrency: 1 });
     this.noContainerTabs = {};
     this.lastCreatedInactiveTab = {};
   }
@@ -44,17 +42,11 @@ class Container {
     this.mouseclick = this.background.mouseclick;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
-    this.statistics = this.background.statistics;
 
     if (this.background.browserVersion >= 67) {
       this.containerColors.push('toolbar');
       this.containerIcons.push('fence');
     }
-
-    setInterval(() => {
-      debug('[interval] container removal interval');
-      this.cleanup();
-    }, 600000);
   }
 
   async createTabInTempContainer({
@@ -85,7 +77,7 @@ class Container {
       });
     }
 
-    const containerOptions = this.getContainerNameIconColor(
+    const containerOptions = this.generateContainerNameIconColor(
       (request && request.url) || url
     );
     this.storage.local.tempContainersNumbers.push(containerOptions.number);
@@ -233,7 +225,7 @@ class Container {
     return newTab;
   }
 
-  getContainerNameIconColor(url) {
+  generateContainerNameIconColor(url) {
     let tempContainerNumber = '';
     if (this.pref.container.numberMode.startsWith('keep')) {
       this.storage.local.tempContainerCounter++;
@@ -293,278 +285,6 @@ class Container {
     };
   }
 
-  async addTabToRemoveQueue(tabId) {
-    if (!this.tabContainerMap[tabId]) {
-      debug(
-        '[addToRemoveQueue] removed tab that isnt in the tabContainerMap',
-        tabId,
-        this.tabContainerMap
-      );
-      return;
-    }
-    const cookieStoreId = this.tabContainerMap[tabId];
-    debug(
-      '[addToRemoveQueue] queuing container removal because of tab removal',
-      tabId
-    );
-    this.addToRemoveQueue(cookieStoreId);
-  }
-
-  async addToRemoveQueue(cookieStoreId, noDelay = false) {
-    if (!this.storage.local.tempContainers[cookieStoreId]) {
-      debug(
-        '[addToRemoveQueue] container from the tabContainerMap is unknown',
-        cookieStoreId
-      );
-      return;
-    }
-    const containerType = this.storage.local.tempContainers[cookieStoreId]
-      .deletesHistory
-      ? 'deletesHistory'
-      : 'regular';
-    const containerRemoval =
-      containerType === 'deletesHistory'
-        ? this.pref.deletesHistory.containerRemoval
-        : this.pref.container.removal;
-
-    let delayTime = 0;
-    switch (containerRemoval) {
-      case '2minutes':
-        delayTime = 120000;
-        break;
-
-      case '5minutes':
-        delayTime = 300000;
-        break;
-
-      case '15minutes':
-        delayTime = 900000;
-        break;
-    }
-
-    if (delayTime && !noDelay) {
-      this.removeContainerQueued = true;
-      debug(
-        '[addToRemoveQueue] waiting to add container removal to queue',
-        delayTime,
-        cookieStoreId
-      );
-      await delay(delayTime);
-    }
-
-    debug('[addToRemoveQueue] queuing container removal', cookieStoreId);
-
-    this.removeContainerQueue
-      .add(async () => {
-        if (!this.storage.local.tempContainers[cookieStoreId]) {
-          debug(
-            '[addToRemoveQueue] unknown container, probably already removed',
-            cookieStoreId
-          );
-          return;
-        }
-        const containerRemoved = await this.tryToRemove(cookieStoreId);
-        if (containerRemoved) {
-          debug(
-            '[addToRemoveQueue] container removed, waiting a bit',
-            cookieStoreId
-          );
-          await delay(3000);
-        }
-      })
-      .then(() => {
-        if (this.removeContainerQueue.pending) {
-          return;
-        }
-        debug('[addToRemoveQueue] queue empty');
-        this.removeContainerQueued = false;
-        this.statistics.finish();
-
-        // fallback cleanup of container numbers
-        this.storage.local.tempContainersNumbers = Object.values(
-          this.storage.local.tempContainers
-        ).map(container => container.number);
-      });
-  }
-
-  maybeShowNotification(message) {
-    if (!this.pref.notifications || !this.permissions.notifications) {
-      return;
-    }
-
-    debug('[maybeShowNotification] showing notification');
-    browser.notifications.create({
-      type: 'basic',
-      title: 'Temporary Containers',
-      iconUrl: 'icons/page-w-32.svg',
-      message,
-    });
-  }
-
-  async tryToRemove(cookieStoreId) {
-    if (await this.tabs.onlyIncognitoNoneOrSessionRestore()) {
-      debug('[tryToRemove] canceling, only incognito or no tabs');
-      return false;
-    }
-
-    try {
-      await browser.contextualIdentities.get(cookieStoreId);
-    } catch (error) {
-      debug(
-        '[tryToRemove] container not found, removing entry from storage',
-        cookieStoreId,
-        error
-      );
-      this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-        number =>
-          this.storage.local.tempContainers[cookieStoreId].number !== number
-      );
-      delete this.storage.local.tempContainers[cookieStoreId];
-      await this.storage.persist();
-      return false;
-    }
-
-    try {
-      const tempTabs = await browser.tabs.query({
-        cookieStoreId,
-      });
-      if (tempTabs.length > 0) {
-        debug(
-          '[tryToRemove] not removing container because it still has tabs',
-          cookieStoreId,
-          tempTabs.length
-        );
-        return false;
-      }
-      debug(
-        '[tryToRemove] no tabs in temp container anymore, deleting container',
-        cookieStoreId
-      );
-    } catch (error) {
-      debug('[tryToRemove] failed to query tabs', cookieStoreId, error);
-      return false;
-    }
-    let cookies = [];
-    try {
-      cookies = await browser.cookies.getAll({ storeId: cookieStoreId });
-    } catch (error) {
-      debug('[tryToRemove] couldnt get cookies', cookieStoreId, error);
-    }
-
-    const historyClearedCount = this.maybeClearHistory(cookieStoreId);
-    this.statistics.update(historyClearedCount, cookies.length, cookieStoreId);
-    this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-      number => {
-        return (
-          this.storage.local.tempContainers[cookieStoreId].number !== number
-        );
-      }
-    );
-
-    const containerRemoved = await this.removeContainer(cookieStoreId);
-    if (containerRemoved) {
-      delete this.storage.local.tempContainers[cookieStoreId];
-    }
-
-    await this.storage.persist();
-    return true;
-  }
-
-  async removeContainer(cookieStoreId) {
-    try {
-      const contextualIdentity = await browser.contextualIdentities.remove(
-        cookieStoreId
-      );
-      if (!contextualIdentity) {
-        debug(
-          '[tryToRemoveContainer] couldnt find container to remove, probably already removed',
-          cookieStoreId
-        );
-      } else {
-        debug('[tryToRemoveContainer] container removed', cookieStoreId);
-      }
-      Object.keys(this.tabContainerMap).map(tabId => {
-        if (this.tabContainerMap[tabId] === cookieStoreId) {
-          delete this.tabContainerMap[tabId];
-        }
-      });
-      return true;
-    } catch (error) {
-      debug(
-        '[tryToRemoveContainer] error while removing container',
-        cookieStoreId,
-        error
-      );
-      return false;
-    }
-  }
-
-  async cleanup(browserStart) {
-    if (!this.background.initialized) {
-      debug('[cleanup] skipping because not initialized');
-      return;
-    }
-
-    if (this.removeContainerQueued && !browserStart) {
-      debug('[cleanup] skipping because queue isnt empty');
-      return;
-    }
-    const containers = Object.keys(this.storage.local.tempContainers);
-    if (!containers.length) {
-      debug('[cleanup] canceling, no containers at all');
-      return;
-    }
-    if (await this.tabs.onlyIncognitoNoneOrSessionRestore()) {
-      debug(
-        '[cleanup] canceling, only incognito, no tabs or sessionrestore tab'
-      );
-      return;
-    }
-
-    containers.map(cookieStoreId => this.addToRemoveQueue(cookieStoreId, true));
-  }
-
-  async maybeAddHistory(tab, url) {
-    if (!tab || url === 'about:blank' || url === 'about:newtab') {
-      return;
-    }
-    if (
-      tab.cookieStoreId !== `${this.background.containerPrefix}-default` &&
-      this.storage.local.tempContainers[tab.cookieStoreId] &&
-      this.storage.local.tempContainers[tab.cookieStoreId].deletesHistory
-    ) {
-      if (!this.storage.local.tempContainers[tab.cookieStoreId].history) {
-        this.storage.local.tempContainers[tab.cookieStoreId].history = {};
-      }
-      this.storage.local.tempContainers[tab.cookieStoreId].history[url] = {
-        tabId: tab.id,
-      };
-      await this.storage.persist();
-    }
-  }
-
-  maybeClearHistory(cookieStoreId) {
-    let count = 0;
-    if (
-      this.storage.local.tempContainers[cookieStoreId] &&
-      this.storage.local.tempContainers[cookieStoreId].deletesHistory &&
-      this.storage.local.tempContainers[cookieStoreId].history
-    ) {
-      const urls = Object.keys(
-        this.storage.local.tempContainers[cookieStoreId].history
-      );
-      count = urls.length;
-      urls.map(url => {
-        if (!url) {
-          return;
-        }
-        debug('[tryToRemoveContainer] removing url from history', url);
-        browser.history.deleteUrl({ url });
-      });
-    }
-    return count;
-  }
-
   isPermanent(cookieStoreId) {
     if (
       cookieStoreId !== `${this.background.containerPrefix}-default` &&
@@ -613,7 +333,7 @@ class Container {
   }
 
   async convertPermanentToTempContainer({ cookieStoreId, tabId, url }) {
-    const containerOptions = this.getContainerNameIconColor();
+    const containerOptions = this.generateContainerNameIconColor();
     await browser.contextualIdentities.update(cookieStoreId, {
       name: containerOptions.name,
       icon: containerOptions.icon,

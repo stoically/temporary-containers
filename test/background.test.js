@@ -53,10 +53,10 @@ preferencesTestSet.map(preferences => {
 
       it('should have registered a container cleanup interval', async () => {
         const background = await loadBareBackground(preferences);
-        sinon.stub(background.container, 'cleanup');
+        sinon.stub(background.cleanup, 'cleanup');
         await background.initialize();
         clock.tick(600000);
-        background.container.cleanup.should.have.been.calledOnce;
+        background.cleanup.cleanup.should.have.been.calledOnce;
       });
 
       describe('should catch early requests', () => {
@@ -503,7 +503,7 @@ preferencesTestSet.map(preferences => {
         }
 
         await browser.tabs.remove(tabs[0].id);
-        await background.container.cleanup(true);
+        await background.cleanup.cleanup(true);
         await new Promise(process.nextTick);
         await browser.tabs._create({});
         (await browser.contextualIdentities.get(

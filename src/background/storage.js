@@ -1,4 +1,4 @@
-class TmpStorage {
+class Storage {
   constructor(background) {
     this.background = background;
     this.installed = false;
@@ -108,4 +108,4 @@ class TmpStorage {
   }
 }
 
-export default TmpStorage;
+export default Storage;

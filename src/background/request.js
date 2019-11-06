@@ -1,4 +1,4 @@
-class TmpRequest {
+class Request {
   constructor(background) {
     this.background = background;
     this.canceledTabs = {};
@@ -19,6 +19,7 @@ class TmpRequest {
     this.tabs = this.background.tabs;
     this.isolation = this.background.isolation;
     this.management = this.background.management;
+    this.history = this.background.history;
   }
 
   cleanupCanceled(request) {
@@ -144,7 +145,7 @@ class TmpRequest {
       return;
     }
 
-    this.container.maybeAddHistory(tab, request.url);
+    this.history.maybeAddHistory(tab, request.url);
 
     if (
       this.pref.ignoreRequests.length &&
@@ -423,4 +424,4 @@ class TmpRequest {
   }
 }
 
-export default TmpRequest;
+export default Request;

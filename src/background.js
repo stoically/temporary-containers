@@ -3,10 +3,12 @@ import eventListeners from './background/event-listeners';
 
 import './background/lib';
 import BrowserAction from './background/browseraction';
+import Cleanup from './background/cleanup';
 import Commands from './background/commands';
 import Container from './background/container';
 import ContextMenu from './background/contextmenu';
 import Cookies from './background/cookies';
+import History from './background/history';
 import Isolation from './background/isolation';
 import MultiAccountContainers from './background/mac';
 import Management from './background/management';
@@ -14,10 +16,10 @@ import Migration from './background/migration';
 import MouseClick from './background/mouseclick';
 import PageAction from './background/pageaction';
 import Preferences from './background/preferences.js';
-import TmpRequest from './background/request';
+import Request from './background/request';
 import Runtime from './background/runtime';
 import Statistics from './background/statistics';
-import TmpStorage from './background/storage';
+import Storage from './background/storage';
 import Tabs from './background/tabs';
 import Utils from './background/utils';
 
@@ -28,11 +30,11 @@ class TemporaryContainers {
 
     this.utils = new Utils(this);
     this.preferences = new Preferences(this);
-    this.storage = new TmpStorage(this);
+    this.storage = new Storage(this);
 
     this.runtime = new Runtime(this);
     this.management = new Management(this);
-    this.request = new TmpRequest(this);
+    this.request = new Request(this);
     this.container = new Container(this);
     this.mouseclick = new MouseClick(this);
     this.tabs = new Tabs(this);
@@ -42,6 +44,8 @@ class TemporaryContainers {
     this.contextmenu = new ContextMenu(this);
     this.cookies = new Cookies(this);
     this.isolation = new Isolation(this);
+    this.history = new History(this);
+    this.cleanup = new Cleanup(this);
     this.statistics = new Statistics(this);
     this.mac = new MultiAccountContainers(this);
     this.migration = new Migration(this);
@@ -89,6 +93,8 @@ class TemporaryContainers {
     this.statistics.initialize();
     this.mac.initialize();
     this.isolation.initialize();
+    this.history.initialize();
+    this.cleanup.initialize();
 
     await this.management.initialize();
     await this.tabs.initialize();

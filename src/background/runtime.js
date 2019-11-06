@@ -12,6 +12,7 @@ class Runtime {
     this.browseraction = this.background.browseraction;
     this.migration = this.background.migration;
     this.contextmenu = this.background.contextmenu;
+    this.cleanup = this.background.cleanup;
     this.utils = this.background.utils;
   }
 
@@ -153,7 +154,7 @@ class Runtime {
   }
 
   async onStartup() {
-    this.container.cleanup(true);
+    this.cleanup.cleanup(true);
 
     if (this.pref.container.numberMode === 'keepuntilrestart') {
       this.storage.local.tempContainerCounter = 0;
