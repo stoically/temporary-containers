@@ -29,12 +29,7 @@ class Migration {
       });
     }
 
-    if (
-      (this.updatedFromVersionEqualToOrLessThan('0.103') &&
-        !this.previousVersionBeta) ||
-      (this.previousVersionBeta &&
-        this.updatedFromVersionEqualToOrLessThan('1.0.1'))
-    ) {
+    if (this.updatedFromVersionEqualToOrLessThan('0.103', '1.0.1')) {
       debug(
         'updated from version <= 0.103, migrate deletesHistory.active and ignoreRequestsTo'
       );
@@ -56,12 +51,7 @@ class Migration {
       delete preferences.ignoreRequestsToPocket;
     }
 
-    if (
-      (this.updatedFromVersionEqualToOrLessThan('0.103') &&
-        !this.previousVersionBeta) ||
-      (this.previousVersionBeta &&
-        this.updatedFromVersionEqualToOrLessThan('1.0.6'))
-    ) {
+    if (this.updatedFromVersionEqualToOrLessThan('0.103', '1.0.6')) {
       debug(
         'updated from version <= 0.103, migrate per domain isolation to array'
       );
@@ -95,12 +85,7 @@ class Migration {
       preferences.closeRedirectorTabs.domains.push('slack-redir.net');
     }
 
-    if (
-      (this.updatedFromVersionEqualToOrLessThan('1.3') &&
-        !this.previousVersionBeta) ||
-      (this.previousVersionBeta &&
-        this.updatedFromVersionEqualToOrLessThan('1.4.1'))
-    ) {
+    if (this.updatedFromVersionEqualToOrLessThan('1.3', '1.4.1')) {
       debug('[migrate] updated from version <= 1.3, migrate container.removal');
 
       switch (preferences.container.removal) {
@@ -141,7 +126,10 @@ class Migration {
     await this.storage.persist();
   }
 
-  updatedFromVersionEqualToOrLessThan(compareVersion) {
+  updatedFromVersionEqualToOrLessThan(compareVersion, compareBetaVersion) {
+    if (compareBetaVersion && this.previousVersionBeta) {
+      compareVersion = compareBetaVersion;
+    }
     return this.utils.versionCompare(compareVersion, this.previousVersion) >= 0;
   }
 }
