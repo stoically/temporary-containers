@@ -235,7 +235,6 @@ class Tabs {
           index: activeTab.index + 1,
           cookieStoreId: activeTab.cookieStoreId,
         });
-        this.creatingInSameContainer = false;
         debug(
           '[createInSameContainer] new same container tab created',
           activeTab,
@@ -243,12 +242,11 @@ class Tabs {
         );
       } catch (error) {
         debug('[createInSameContainer] couldnt create tab', error);
-        this.creatingInSameContainer = false;
       }
     } catch (error) {
       debug('[createInSameContainer] couldnt query tabs', error);
-      this.creatingInSameContainer = false;
     }
+    this.creatingInSameContainer = false;
   }
 
   async remove(tab) {
