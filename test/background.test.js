@@ -192,15 +192,6 @@ preferencesTestSet.map(preferences => {
         await browser.tabs._create({ url: 'about:newtab' });
         browser.tabs.create.should.have.been.calledOnce;
       });
-
-      it('should reopen about:blank in temporary container', async () => {
-        const background = await loadBareBackground(preferences, {
-          apiFake: true,
-        });
-        await background.initialize();
-        await browser.tabs._create({});
-        browser.tabs.create.should.have.been.calledOnce;
-      });
     });
 
     describe('tabs loading URLs in default-container', () => {
@@ -488,7 +479,7 @@ preferencesTestSet.map(preferences => {
         background.storage.local.preferences.container.numberMode = 'reuse';
         const tabPromises = [];
         for (let i = 0; i < 5; i++) {
-          tabPromises.push(browser.tabs._create({}));
+          tabPromises.push(browser.tabs._create({ url: 'about:newtab' }));
         }
         await Promise.all(tabPromises);
         const tabs = await browser.tabs.query({});
@@ -503,11 +494,11 @@ preferencesTestSet.map(preferences => {
         await browser.tabs.remove(tabs[0].id);
         await background.cleanup.cleanup(true);
         await new Promise(process.nextTick);
-        await browser.tabs._create({});
+        await browser.tabs._create({ url: 'about:newtab' });
         (await browser.contextualIdentities.get(
           (await browser.tabs.create.lastCall.returnValue).cookieStoreId
         )).name.should.equal('tmp1');
-        await browser.tabs._create({});
+        await browser.tabs._create({ url: 'about:newtab' });
         (await browser.contextualIdentities.get(
           (await browser.tabs.create.lastCall.returnValue).cookieStoreId
         )).name.should.equal('tmp6');

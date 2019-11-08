@@ -132,7 +132,7 @@ class Tabs {
     this.pageaction.showOrHide(activatedTab);
   }
 
-  async maybeReloadInTempContainer(tab, changeInfo = {}) {
+  async maybeReloadInTempContainer(tab) {
     if (this.container.creatingInSameContainer) {
       debug(
         '[maybeReloadInTempContainer] we are in the process of creating a tab in same container, ignore'
@@ -169,9 +169,7 @@ class Tabs {
       !deletesHistoryContainer &&
       this.pref.automaticMode.newTab === 'navigation' &&
       tab.cookieStoreId === `${this.background.containerPrefix}-default` &&
-      (tab.url === 'about:home' ||
-        tab.url === 'about:newtab' ||
-        (changeInfo.status === 'loading' && changeInfo.url === 'about:blank'))
+      (tab.url === 'about:home' || tab.url === 'about:newtab')
     ) {
       debug(
         '[maybeReloadInTempContainer] automatic mode on navigation, setting icon badge',
@@ -202,9 +200,7 @@ class Tabs {
       (this.pref.automaticMode.newTab === 'created' ||
         deletesHistoryContainer) &&
       tab.cookieStoreId === `${this.background.containerPrefix}-default` &&
-      (tab.url === 'about:home' ||
-        tab.url === 'about:newtab' ||
-        (changeInfo.status === 'loading' && changeInfo.url === 'about:blank'))
+      (tab.url === 'about:home' || tab.url === 'about:newtab')
     ) {
       debug(
         '[maybeReloadInTempContainer] about:home/new tab in firefox-default container, reload in temp container',
