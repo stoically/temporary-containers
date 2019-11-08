@@ -27,7 +27,6 @@ class Container {
       'chill',
     ];
 
-    this.tabContainerMap = {};
     this.urlCreatedContainer = {};
     this.requestCreatedTab = {};
     this.tabCreatedAsMacConfirmPage = {};
@@ -219,7 +218,7 @@ class Container {
           delete this.urlCreatedContainer[url];
         });
       }
-      this.tabContainerMap[newTab.id] = contextualIdentity.cookieStoreId;
+      this.tabs.containerMap.set(newTab.id, contextualIdentity.cookieStoreId);
       if (macConfirmPage) {
         this.tabCreatedAsMacConfirmPage[newTab.id] = true;
       }
@@ -341,21 +340,13 @@ class Container {
   }
 
   markUnclean(tabId) {
-    const cookieStoreId = this.tabContainerMap[tabId];
+    const cookieStoreId = this.tabs.containerMap.get(tabId);
     if (cookieStoreId && this.isClean(cookieStoreId)) {
       debug(
         '[markUnclean] marking tmp container as not clean anymore',
         cookieStoreId
       );
       this.storage.local.tempContainers[cookieStoreId].clean = false;
-    }
-  }
-
-  markClean(tabId) {
-    const cookieStoreId = this.tabContainerMap[tabId];
-    if (cookieStoreId && !this.isClean(cookieStoreId)) {
-      debug('[markClean] marking tmp container as clean', cookieStoreId);
-      this.storage.local.tempContainers[cookieStoreId].clean = true;
     }
   }
 
@@ -450,14 +441,6 @@ class Container {
 
   getAllIds() {
     return Object.keys(this.storage.local.tempContainers);
-  }
-
-  removeFromTabMap(cookieStoreId) {
-    Object.keys(this.tabContainerMap).map(tabId => {
-      if (this.tabContainerMap[tabId] === cookieStoreId) {
-        delete this.tabContainerMap[tabId];
-      }
-    });
   }
 }
 

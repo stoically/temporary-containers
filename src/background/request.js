@@ -22,12 +22,6 @@ class Request {
     this.history = this.background.history;
   }
 
-  cleanupCanceled(request) {
-    if (this.canceledTabs[request.tabId]) {
-      delete this.canceledTabs[request.tabId];
-    }
-  }
-
   async webRequestOnBeforeRequest(request) {
     debug('[webRequestOnBeforeRequest] incoming request', request);
     const requestIdUrl = `${request.requestId}+${request.url}`;
@@ -325,6 +319,12 @@ class Request {
       return true;
     }
     return false;
+  }
+
+  cleanupCanceled(request) {
+    if (this.canceledTabs[request.tabId]) {
+      delete this.canceledTabs[request.tabId];
+    }
   }
 
   async externalAddonHasPrecedence({ request, tab, openerTab }) {

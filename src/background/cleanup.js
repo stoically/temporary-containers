@@ -132,7 +132,6 @@ class ContainerCleanup {
       } else {
         debug('[removeContainer] container removed', cookieStoreId);
       }
-      this.container.removeFromTabMap(cookieStoreId);
       return true;
     } catch (error) {
       debug(
@@ -156,8 +155,10 @@ class ContainerCleanup {
     }
 
     if (containers.length) {
-      containers.map(cookieStoreId =>
-        this.addToRemoveQueue(cookieStoreId, skipDelay)
+      containers.map(
+        cookieStoreId =>
+          !this.queued.has(cookieStoreId) &&
+          this.addToRemoveQueue(cookieStoreId, skipDelay)
       );
     }
   }

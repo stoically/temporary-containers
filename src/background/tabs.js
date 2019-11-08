@@ -2,10 +2,11 @@ class Tabs {
   constructor(background) {
     this.background = background;
 
+    this.containerMap = new Map();
     this.creatingInSameContainer = false;
   }
 
-  async initialize() {
+  initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
@@ -16,20 +17,95 @@ class Tabs {
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
 
-    const tabs = await browser.tabs.query({});
-    tabs.map(tab => {
-      if (this.storage.local.tempContainers[tab.cookieStoreId]) {
-        // build tabContainerMap
-        this.container.tabContainerMap[tab.id] = tab.cookieStoreId;
-      }
-
-      // maybe reload or set badge
-      this.maybeReloadInTempContainer(tab);
-    });
+    return this.maybeReopenAlreadyOpen();
   }
 
   async onCreated(tab) {
+    // onUpdated sometimes fires before onCreated
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
     debug('[onCreated] tab created', tab);
+    this.containerMap.set(tab.id, tab.cookieStoreId);
+    const reopened = await this.maybeReloadInTempContainer(tab);
+    if (!reopened) {
+      this.maybeMoveTab(tab);
+    }
+  }
+
+  async onUpdated(tabId, changeInfo, tab) {
+    debug('[onUpdated] tab updated', tab, changeInfo);
+    this.maybeCloseRedirectorTab(tabId, tab, changeInfo);
+
+    if (changeInfo.url) {
+      debug('[onUpdated] url changed', changeInfo);
+      this.history.maybeAddHistory(tab, changeInfo.url);
+      this.pageaction.showOrHide(tab);
+
+      if (changeInfo.url.startsWith('moz-extension://')) {
+        debug(
+          '[maybeReloadInTempContainer] moz-extension:// tab, check for mac confirm page',
+          changeInfo
+        );
+        await this.mac.handleConfirmPage(tab);
+      }
+    }
+  }
+
+  async onRemoved(tabId) {
+    debug('[onRemoved]', tabId);
+
+    if (this.container.noContainerTabs[tabId]) {
+      delete this.container.noContainerTabs[tabId];
+    }
+    if (this.container.tabCreatedAsMacConfirmPage[tabId]) {
+      delete this.tabCreatedAsMacConfirmPage[tabId];
+    }
+
+    const cookieStoreId = this.containerMap.get(tabId);
+    if (cookieStoreId && this.container.isTemporary(cookieStoreId)) {
+      debug(
+        '[onRemoved] queuing container removal because of tab removal',
+        tabId
+      );
+      delay(2000).then(() => this.cleanup.addToRemoveQueue(cookieStoreId));
+    }
+
+    this.containerMap.delete(tabId);
+  }
+
+  async onActivated(activeInfo) {
+    debug('[onActivated]', activeInfo);
+    this.container.lastCreatedInactiveTab[
+      browser.windows.WINDOW_ID_CURRENT
+    ] = false;
+    const activatedTab = await browser.tabs.get(activeInfo.tabId);
+    this.pageaction.showOrHide(activatedTab);
+  }
+
+  maybeCloseRedirectorTab(tabId, tab, changeInfo) {
+    if (
+      this.pref.closeRedirectorTabs.active &&
+      changeInfo.status &&
+      changeInfo.status === 'complete'
+    ) {
+      const url = new URL(tab.url);
+      if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
+        delay(this.pref.closeRedirectorTabs.delay).then(async () => {
+          try {
+            const tab = await browser.tabs.get(tabId);
+            const url = new URL(tab.url);
+            if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
+              debug('[onUpdated] removing redirector tab', changeInfo, tab);
+              browser.tabs.remove(tabId);
+            }
+          } catch (error) {
+            debug('[onUpdate] error while requesting tab info', error);
+          }
+        });
+      }
+    }
+  }
+
+  async maybeMoveTab(tab) {
     if (
       !tab.active &&
       this.container.lastCreatedInactiveTab[
@@ -56,80 +132,11 @@ class Tabs {
         debug('[onCreated] getting lastCreatedInactiveTab failed', error);
       }
     }
-    if (
-      tab &&
-      tab.cookieStoreId &&
-      !this.container.tabContainerMap[tab.id] &&
-      this.storage.local.tempContainers[tab.cookieStoreId]
-    ) {
-      this.container.tabContainerMap[tab.id] = tab.cookieStoreId;
-    }
-
-    await this.maybeReloadInTempContainer(tab);
   }
 
-  async onUpdated(tabId, changeInfo, tab) {
-    debug('[onUpdated] tab updated', tab, changeInfo);
-    if (changeInfo.url) {
-      debug('[onUpdated] url changed', changeInfo);
-      await this.history.maybeAddHistory(tab, changeInfo.url);
-    }
-    if (
-      this.pref.closeRedirectorTabs.active &&
-      changeInfo.status &&
-      changeInfo.status === 'complete'
-    ) {
-      const url = new URL(tab.url);
-      if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
-        delay(this.pref.closeRedirectorTabs.delay).then(async () => {
-          try {
-            const tab = await browser.tabs.get(tabId);
-            const url = new URL(tab.url);
-            if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
-              debug('[onUpdated] removing redirector tab', changeInfo, tab);
-              browser.tabs.remove(tabId);
-            }
-          } catch (error) {
-            debug('[onUpdate] error while requesting tab info', error);
-          }
-        });
-      }
-    }
-    if (!changeInfo.url) {
-      debug('[onUpdated] url didnt change, not relevant', tabId, changeInfo);
-      return;
-    }
-    await this.pageaction.showOrHide(tab);
-    await this.maybeReloadInTempContainer(tab, changeInfo);
-  }
-
-  async onRemoved(tabId) {
-    debug('[onRemoved]', tabId);
-    if (this.container.noContainerTabs[tabId]) {
-      delete this.container.noContainerTabs[tabId];
-    }
-    if (this.container.tabCreatedAsMacConfirmPage[tabId]) {
-      delete this.tabCreatedAsMacConfirmPage[tabId];
-    }
-
-    const cookieStoreId = this.container.tabContainerMap[tabId];
-    if (cookieStoreId) {
-      debug(
-        '[onRemoved] queuing container removal because of tab removal',
-        tabId
-      );
-      await delay(2000);
-      this.cleanup.addToRemoveQueue(cookieStoreId);
-    }
-  }
-
-  async onActivated(activeInfo) {
-    debug('[onActivated]', activeInfo);
-    this.container.lastCreatedInactiveTab[
-      browser.windows.WINDOW_ID_CURRENT
-    ] = false;
-    const activatedTab = await browser.tabs.get(activeInfo.tabId);
-    this.pageaction.showOrHide(activatedTab);
+  async maybeReopenAlreadyOpen() {
+    const tabs = await browser.tabs.query({});
+    return Promise.all(tabs.map(tab => this.maybeReloadInTempContainer(tab)));
   }
 
   async maybeReloadInTempContainer(tab) {
@@ -142,15 +149,6 @@ class Tabs {
 
     if (this.container.noContainerTabs[tab.id]) {
       debug('[maybeReloadInTempContainer] nocontainer tab, ignore');
-      return;
-    }
-
-    if (tab.url && tab.url.startsWith('moz-extension://')) {
-      debug(
-        '[maybeReloadInTempContainer] moz-extension:// tab, do something special',
-        tab
-      );
-      await this.mac.handleConfirmPage(tab);
       return;
     }
 
@@ -185,7 +183,7 @@ class Tabs {
       this.pref.automaticMode.newTab === 'navigation'
     ) {
       debug(
-        '[maybeReloadInTempContainer] automatic mode on navigation but already in tmp container, open in default container',
+        '[maybeReloadInTempContainer] about:home and automatic mode on navigation but already in tmp container, open in default container',
         tab
       );
       await browser.tabs.create({
@@ -193,7 +191,7 @@ class Tabs {
       });
       await this.remove(tab);
       this.browseraction.addBadge(tab.id);
-      return;
+      return true;
     }
 
     if (
@@ -211,24 +209,11 @@ class Tabs {
         tab,
         deletesHistory: deletesHistoryContainer,
       });
-      return;
+      return true;
     }
 
-    if (
-      tab.url &&
-      !tab.url.startsWith('about:') &&
-      !tab.url.startsWith('moz-extension:') &&
-      this.storage.local.tempContainers[tab.cookieStoreId] &&
-      this.storage.local.tempContainers[tab.cookieStoreId].clean
-    ) {
-      debug(
-        '[maybeReloadInTempContainer] marking tmp container as not clean anymore',
-        tab
-      );
-      this.storage.local.tempContainers[tab.cookieStoreId].clean = false;
-    }
     debug(
-      '[maybeReloadInTempContainer] not a home/new/moz tab or disabled, we dont handle that',
+      '[maybeReloadInTempContainer] not a home/new tab, we dont handle that',
       tab
     );
   }
