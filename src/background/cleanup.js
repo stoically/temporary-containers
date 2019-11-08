@@ -2,8 +2,8 @@ class ContainerCleanup {
   constructor(background) {
     this.background = background;
 
-    this.removeContainerQueued = false;
-    this.removeContainerQueue = new PQueue({ concurrency: 1 });
+    this.queued = new Set();
+    this.queue = new PQueue({ concurrency: 1 });
 
     setInterval(() => {
       debug('[interval] container cleanup interval');
@@ -22,42 +22,15 @@ class ContainerCleanup {
     this.permissions = this.background.permissions;
   }
 
-  async addTabToRemoveQueue(tabId) {
-    if (!this.container.tabContainerMap[tabId]) {
-      debug(
-        '[addToRemoveQueue] removed tab that isnt in the tabContainerMap',
-        tabId,
-        this.container.tabContainerMap
-      );
+  async addToRemoveQueue(cookieStoreId, skipDelay = false) {
+    if (this.queued.has(cookieStoreId)) {
+      debug('[addToRemoveQueue] container already in queue', cookieStoreId);
       return;
     }
-    const cookieStoreId = this.container.tabContainerMap[tabId];
-    debug(
-      '[addToRemoveQueue] queuing container removal because of tab removal',
-      tabId
-    );
-    this.addToRemoveQueue(cookieStoreId);
-  }
+    this.queued.add(cookieStoreId);
 
-  async addToRemoveQueue(cookieStoreId, noDelay = false) {
-    if (!this.storage.local.tempContainers[cookieStoreId]) {
-      debug(
-        '[addToRemoveQueue] container from the tabContainerMap is unknown',
-        cookieStoreId
-      );
-      return;
-    }
-    const containerType = this.storage.local.tempContainers[cookieStoreId]
-      .deletesHistory
-      ? 'deletesHistory'
-      : 'regular';
-    const containerRemovalDelay =
-      containerType === 'deletesHistory'
-        ? this.pref.deletesHistory.containerRemoval
-        : this.pref.container.removal;
-
-    if (containerRemovalDelay && !noDelay) {
-      this.removeContainerQueued = true;
+    const containerRemovalDelay = this.container.getRemovalDelay(cookieStoreId);
+    if (containerRemovalDelay && !skipDelay) {
       debug(
         '[addToRemoveQueue] waiting to add container removal to queue',
         containerRemovalDelay,
@@ -68,16 +41,11 @@ class ContainerCleanup {
 
     debug('[addToRemoveQueue] queuing container removal', cookieStoreId);
 
-    this.removeContainerQueue
+    this.queue
       .add(async () => {
-        if (!this.storage.local.tempContainers[cookieStoreId]) {
-          debug(
-            '[addToRemoveQueue] unknown container, probably already removed',
-            cookieStoreId
-          );
-          return;
-        }
         const containerRemoved = await this.tryToRemove(cookieStoreId);
+        this.queued.delete(cookieStoreId);
+
         if (containerRemoved) {
           debug(
             '[addToRemoveQueue] container removed, waiting a bit',
@@ -87,26 +55,18 @@ class ContainerCleanup {
         }
       })
       .then(() => {
-        if (this.removeContainerQueue.pending) {
+        if (this.queue.pending) {
           return;
         }
         debug('[addToRemoveQueue] queue empty');
-        this.removeContainerQueued = false;
         this.statistics.finish();
 
         // fallback cleanup of container numbers
-        this.storage.local.tempContainersNumbers = Object.values(
-          this.storage.local.tempContainers
-        ).map(container => container.number);
+        this.container.cleanupNumbers();
       });
   }
 
   async tryToRemove(cookieStoreId) {
-    if (await this.onlySessionRestoreOrNoTabs()) {
-      debug('[tryToRemove] canceling, only sessionrestore or no tabs');
-      return false;
-    }
-
     try {
       await browser.contextualIdentities.get(cookieStoreId);
     } catch (error) {
@@ -115,12 +75,7 @@ class ContainerCleanup {
         cookieStoreId,
         error
       );
-      this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-        number =>
-          this.storage.local.tempContainers[cookieStoreId].number !== number
-      );
-      delete this.storage.local.tempContainers[cookieStoreId];
-      await this.storage.persist();
+      await this.container.removeFromStorage(cookieStoreId);
       return false;
     }
 
@@ -153,13 +108,7 @@ class ContainerCleanup {
 
     const historyClearedCount = this.history.maybeClearHistory(cookieStoreId);
     this.statistics.update(historyClearedCount, cookies.length, cookieStoreId);
-    this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-      number => {
-        return (
-          this.storage.local.tempContainers[cookieStoreId].number !== number
-        );
-      }
-    );
+    this.container.cleanupNumber(cookieStoreId);
 
     const containerRemoved = await this.removeContainer(cookieStoreId);
     if (containerRemoved) {
@@ -177,21 +126,17 @@ class ContainerCleanup {
       );
       if (!contextualIdentity) {
         debug(
-          '[tryToRemoveContainer] couldnt find container to remove, probably already removed',
+          '[removeContainer] couldnt find container to remove, probably already removed',
           cookieStoreId
         );
       } else {
-        debug('[tryToRemoveContainer] container removed', cookieStoreId);
+        debug('[removeContainer] container removed', cookieStoreId);
       }
-      Object.keys(this.container.tabContainerMap).map(tabId => {
-        if (this.container.tabContainerMap[tabId] === cookieStoreId) {
-          delete this.container.tabContainerMap[tabId];
-        }
-      });
+      this.container.removeFromTabMap(cookieStoreId);
       return true;
     } catch (error) {
       debug(
-        '[tryToRemoveContainer] error while removing container',
+        '[removeContainer] error while removing container',
         cookieStoreId,
         error
       );
@@ -199,17 +144,8 @@ class ContainerCleanup {
     }
   }
 
-  async cleanup(browserStart) {
-    if (!this.background.initialized) {
-      debug('[cleanup] skipping because not initialized');
-      return;
-    }
-
-    if (this.removeContainerQueued && !browserStart) {
-      debug('[cleanup] skipping because queue isnt empty');
-      return;
-    }
-    const containers = Object.keys(this.storage.local.tempContainers);
+  async cleanup(skipDelay = false) {
+    const containers = this.container.getAllIds();
     if (!containers.length) {
       debug('[cleanup] canceling, no containers at all');
       return;
@@ -219,7 +155,11 @@ class ContainerCleanup {
       return;
     }
 
-    containers.map(cookieStoreId => this.addToRemoveQueue(cookieStoreId, true));
+    if (containers.length) {
+      containers.map(cookieStoreId =>
+        this.addToRemoveQueue(cookieStoreId, skipDelay)
+      );
+    }
   }
 
   async onlySessionRestoreOrNoTabs() {

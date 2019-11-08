@@ -413,6 +413,52 @@ class Container {
 
     return availableColors;
   }
+
+  removeFromStorage(cookieStoreId) {
+    this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
+      number =>
+        this.storage.local.tempContainers[cookieStoreId].number !== number
+    );
+    delete this.storage.local.tempContainers[cookieStoreId];
+    return this.storage.persist();
+  }
+
+  getType(cookieStoreId) {
+    return this.storage.local.tempContainers[cookieStoreId].deletesHistory
+      ? 'deletesHistory'
+      : 'regular';
+  }
+
+  getRemovalDelay(cookieStoreId) {
+    return this.getType(cookieStoreId) === 'deletesHistory'
+      ? this.pref.deletesHistory.containerRemoval
+      : this.pref.container.removal;
+  }
+
+  cleanupNumbers() {
+    this.storage.local.tempContainersNumbers = Object.values(
+      this.storage.local.tempContainers
+    ).map(container => container.number);
+  }
+
+  cleanupNumber(cookieStoreId) {
+    this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
+      number =>
+        this.storage.local.tempContainers[cookieStoreId].number !== number
+    );
+  }
+
+  getAllIds() {
+    return Object.keys(this.storage.local.tempContainers);
+  }
+
+  removeFromTabMap(cookieStoreId) {
+    Object.keys(this.tabContainerMap).map(tabId => {
+      if (this.tabContainerMap[tabId] === cookieStoreId) {
+        delete this.tabContainerMap[tabId];
+      }
+    });
+  }
 }
 
 export default Container;

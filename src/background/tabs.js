@@ -112,8 +112,15 @@ class Tabs {
       delete this.tabCreatedAsMacConfirmPage[tabId];
     }
 
-    await delay(2000);
-    this.cleanup.addTabToRemoveQueue(tabId);
+    const cookieStoreId = this.container.tabContainerMap[tabId];
+    if (cookieStoreId) {
+      debug(
+        '[onRemoved] queuing container removal because of tab removal',
+        tabId
+      );
+      await delay(2000);
+      this.cleanup.addToRemoveQueue(cookieStoreId);
+    }
   }
 
   async onActivated(activeInfo) {
