@@ -72,7 +72,7 @@
     "vue-template-compiler": "^2.6.10",
     "web-ext": "^3.2.0",
     "webextensions-geckodriver": "^0.6.1",
-    "webextensions-jsdom": "^0.17.0"
+    "webextensions-jsdom": "^0.18.0"
   },
   "browserslist": [
     "Firefox >= 60"
