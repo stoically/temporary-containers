@@ -1,15 +1,21 @@
-class MouseClick {
+import { debug } from './log';
+import { delay } from './lib';
+
+export class MouseClick {
+  private isolated = {};
+
+  private background: any;
+  private pref: any;
+  private utils: any;
+  private isolation: any;
+
   constructor(background) {
     this.background = background;
     this.isolated = {};
-
-    this.checkClickPreferences.bind(this);
   }
 
   initialize() {
     this.pref = this.background.pref;
-    this.storage = this.background.storage;
-    this.container = this.background.container;
     this.utils = this.background.utils;
     this.isolation = this.background.isolation;
   }
@@ -59,7 +65,11 @@ class MouseClick {
       .catch(debug);
   }
 
-  checkClickPreferences(preferences, parsedClickedURL, parsedSenderTabURL) {
+  checkClickPreferences = (
+    preferences,
+    parsedClickedURL,
+    parsedSenderTabURL
+  ) => {
     if (preferences.action === 'always') {
       debug(
         '[checkClick] click handled based on preference "always"',
@@ -123,7 +133,7 @@ class MouseClick {
 
     debug('[checkClickPreferences] this should never happen');
     return false;
-  }
+  };
 
   checkClick(type, message, sender) {
     const parsedSenderTabURL = new URL(sender.tab.url);
@@ -182,5 +192,3 @@ class MouseClick {
       .catch(debug);
   }
 }
-
-export default MouseClick;

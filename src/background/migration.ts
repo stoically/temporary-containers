@@ -1,5 +1,13 @@
 /* istanbul ignore next */
-class Migration {
+import { debug } from './log';
+
+export class Migration {
+  private background: any;
+  private storage: any;
+  private utils: any;
+  private previousVersion: string;
+  private previousVersionBeta: boolean;
+
   constructor(background) {
     this.background = background;
   }
@@ -10,7 +18,7 @@ class Migration {
     this.previousVersion = previousVersion;
 
     if (!this.previousVersion) {
-      await window.migrationLegacy(this);
+      await (window as any).migrationLegacy(this);
     }
 
     debug('[migrate] previousVersion', this.previousVersion);
@@ -126,12 +134,10 @@ class Migration {
     await this.storage.persist();
   }
 
-  updatedFromVersionEqualToOrLessThan(compareVersion, compareBetaVersion) {
+  updatedFromVersionEqualToOrLessThan(compareVersion, compareBetaVersion = '') {
     if (compareBetaVersion && this.previousVersionBeta) {
       compareVersion = compareBetaVersion;
     }
     return this.utils.versionCompare(compareVersion, this.previousVersion) >= 0;
   }
 }
-
-export default Migration;

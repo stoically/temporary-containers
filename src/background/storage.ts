@@ -1,8 +1,41 @@
-class Storage {
-  constructor(background) {
+import { TemporaryContainers } from '../background';
+import { IContainerOptions } from './container';
+import { debug } from './log';
+import { IPreferences } from './preferences';
+
+interface IStorageLocal {
+  containerPrefix: boolean;
+  tempContainerCounter: number;
+  tempContainers: {
+    [key: string]: IContainerOptions;
+  };
+  tempContainersNumbers: number[];
+  statistics: {
+    startTime: Date;
+    containersDeleted: number;
+    cookiesDeleted: number;
+    cacheDeleted: number;
+    deletesHistory: {
+      containersDeleted: number;
+      cookiesDeleted: number;
+      urlsDeleted: number;
+    };
+  };
+  preferences: IPreferences;
+  lastFileExport: false;
+  version: false | string;
+}
+
+export class Storage {
+  public local!: IStorageLocal;
+  public installed: boolean;
+
+  private defaults: IStorageLocal;
+  private background: TemporaryContainers;
+
+  constructor(background: TemporaryContainers) {
     this.background = background;
     this.installed = false;
-    this.local = null;
 
     this.defaults = {
       containerPrefix: false,
@@ -26,8 +59,8 @@ class Storage {
     };
   }
 
-  async initialize() {
-    this.local = await browser.storage.local.get();
+  public async initialize() {
+    this.local = (await browser.storage.local.get()) as IStorageLocal;
 
     // empty storage *should* mean new install
     if (!this.local || !Object.keys(this.local).length) {
@@ -71,7 +104,7 @@ class Storage {
     return true;
   }
 
-  async persist() {
+  public async persist() {
     try {
       if (!this.local || !Object.keys(this.local).length) {
         debug('[persist] tried to persist corrupt storage', this.local);
@@ -89,7 +122,7 @@ class Storage {
     }
   }
 
-  async install() {
+  public async install() {
     debug('[install] installing storage');
 
     this.local = this.background.utils.clone(this.defaults);
@@ -107,5 +140,3 @@ class Storage {
     return true;
   }
 }
-
-export default Storage;

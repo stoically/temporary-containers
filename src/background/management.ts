@@ -1,3 +1,5 @@
+import { debug } from './log';
+
 const CONTAIN_URLS = {
   facebook: {
     // https://github.com/mozilla/contain-facebook/blob/master/src/background.js
@@ -492,61 +494,59 @@ for (const containWhat of Object.keys(CONTAIN_URLS)) {
   }
 }
 
-class Management {
-  constructor() {
-    this.addons = {
-      '@testpilot-containers': {
-        name: 'Firefox Multi-Account Containers',
-        enabled: false,
-        version: false,
-      },
-      'containerise@kinte.sh': {
-        name: 'Containerise',
-        enabled: false,
-        version: false,
-      },
-      'block_outside_container@jspenguin.org': {
-        name: 'Block sites outside container',
-        enabled: false,
-        version: false,
-      },
-      'treestyletab@piro.sakura.ne.jp': {
-        name: 'Tree Style Tab',
-        enabled: false,
-        version: false,
-      },
-      '@contain-facebook': {
-        name: 'Facebook Container',
-        enabled: false,
-        version: false,
-        REs: CONTAIN_URLS.facebook.REs,
-      },
-      '@contain-google': {
-        name: 'Google Container',
-        enabled: false,
-        version: false,
-        REs: CONTAIN_URLS.google.REs,
-      },
-      '@contain-twitter': {
-        name: 'Twitter Container',
-        enabled: false,
-        version: false,
-        REs: CONTAIN_URLS.twitter.REs,
-      },
-      '@contain-youtube': {
-        name: 'YouTube Container',
-        enabled: false,
-        version: false,
-        REs: CONTAIN_URLS.youtube.REs,
-      },
-      '@contain-amazon': {
-        name: 'Amazon Container',
-        enabled: false,
-        version: false,
-        REs: CONTAIN_URLS.amazon.REs,
-      },
-    };
-  }
+export class Management {
+  private addons = {
+    '@testpilot-containers': {
+      name: 'Firefox Multi-Account Containers',
+      enabled: false,
+      version: false,
+    },
+    'containerise@kinte.sh': {
+      name: 'Containerise',
+      enabled: false,
+      version: false,
+    },
+    'block_outside_container@jspenguin.org': {
+      name: 'Block sites outside container',
+      enabled: false,
+      version: false,
+    },
+    'treestyletab@piro.sakura.ne.jp': {
+      name: 'Tree Style Tab',
+      enabled: false,
+      version: false,
+    },
+    '@contain-facebook': {
+      name: 'Facebook Container',
+      enabled: false,
+      version: false,
+      REs: CONTAIN_URLS.facebook.REs,
+    },
+    '@contain-google': {
+      name: 'Google Container',
+      enabled: false,
+      version: false,
+      REs: CONTAIN_URLS.google.REs,
+    },
+    '@contain-twitter': {
+      name: 'Twitter Container',
+      enabled: false,
+      version: false,
+      REs: CONTAIN_URLS.twitter.REs,
+    },
+    '@contain-youtube': {
+      name: 'YouTube Container',
+      enabled: false,
+      version: false,
+      REs: CONTAIN_URLS.youtube.REs,
+    },
+    '@contain-amazon': {
+      name: 'Amazon Container',
+      enabled: false,
+      version: false,
+      REs: CONTAIN_URLS.amazon.REs,
+    },
+  };
 
   async initialize() {
     try {
@@ -580,5 +580,3 @@ class Management {
     this.addons[extension.id].version = extension.version;
   }
 }
-
-export default Management;

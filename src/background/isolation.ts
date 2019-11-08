@@ -1,11 +1,21 @@
-class Isolation {
+import { debug } from './log';
+
+export class Isolation {
+  private background: any;
+  private pref: any;
+  private container: any;
+  private request: any;
+  private mouseclick: any;
+  private mac: any;
+  private management: any;
+  private utils: any;
+
   constructor(background) {
     this.background = background;
   }
 
   initialize() {
     this.pref = this.background.pref;
-    this.storage = this.background.storage;
     this.container = this.background.container;
     this.request = this.background.request;
     this.mouseclick = this.background.mouseclick;
@@ -518,5 +528,3 @@ class Isolation {
     }
   }
 }
-
-export default Isolation;

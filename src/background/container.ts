@@ -1,44 +1,84 @@
-class Container {
-  constructor(background) {
+import { IPermissions, TemporaryContainers } from '../background';
+import { delay, psl } from './lib';
+import { debug } from './log';
+import { IPreferences } from './preferences';
+import { Storage } from './storage';
+import { TabId, Tabs } from './tabs';
+
+export type CookieStoreId = string;
+
+const CONTAINER_COLORS = [
+  'blue', // #37ADFF
+  'turquoise', // #00C79A
+  'green', // #51CD00
+  'yellow', // #FFCB00
+  'orange', // #FF9F00
+  'red', // #FF613D
+  'pink', // #FF4BDA
+  'purple', // #AF51F5
+  'toolbar',
+];
+export type ContainerColor = typeof CONTAINER_COLORS[number];
+
+const CONTAINER_ICONS = [
+  'fingerprint',
+  'briefcase',
+  'dollar',
+  'cart',
+  'circle',
+  'gift',
+  'vacation',
+  'food',
+  'fruit',
+  'pet',
+  'tree',
+  'chill',
+  'fence',
+];
+export type ContainerIcon = typeof CONTAINER_ICONS[number];
+
+export interface IContainerOptions {
+  name: string;
+  color: ContainerColor;
+  icon: ContainerIcon;
+  number: number;
+  clean: boolean;
+  deletesHistory?: boolean;
+}
+
+export class Container {
+  public noContainerTabs: {
+    [key: number]: boolean;
+  } = {};
+
+  private containerColors: ContainerColor[] = CONTAINER_COLORS;
+  private containerIcons: ContainerIcon[] = CONTAINER_ICONS;
+  private urlCreatedContainer: {
+    [key: string]: CookieStoreId;
+  } = {};
+  private requestCreatedTab: {
+    [key: number]: boolean;
+  } = {};
+  private tabCreatedAsMacConfirmPage: {
+    [key: number]: boolean;
+  } = {};
+  private lastCreatedInactiveTab: {
+    [key: number]: TabId;
+  } = {};
+
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private storage!: Storage;
+  private permissions!: IPermissions;
+  private tabs!: Tabs;
+
+  constructor(background: TemporaryContainers) {
     this.background = background;
-    this.containerColors = [
-      'blue', // #37ADFF
-      'turquoise', // #00C79A
-      'green', // #51CD00
-      'yellow', // #FFCB00
-      'orange', // #FF9F00
-      'red', // #FF613D
-      'pink', // #FF4BDA
-      'purple', // #AF51F5
-    ];
-
-    this.containerIcons = [
-      'fingerprint',
-      'briefcase',
-      'dollar',
-      'cart',
-      'circle',
-      'gift',
-      'vacation',
-      'food',
-      'fruit',
-      'pet',
-      'tree',
-      'chill',
-    ];
-
-    this.urlCreatedContainer = {};
-    this.requestCreatedTab = {};
-    this.tabCreatedAsMacConfirmPage = {};
-    this.noContainerTabs = {};
-    this.lastCreatedInactiveTab = {};
   }
 
-  async initialize() {
+  public async initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
-    this.request = this.background.request;
-    this.mouseclick = this.background.mouseclick;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
 
@@ -48,7 +88,7 @@ class Container {
     }
   }
 
-  async createTabInTempContainer({
+  public async createTabInTempContainer({
     tab,
     url,
     active,
@@ -56,6 +96,14 @@ class Container {
     dontPin = true,
     deletesHistory = false,
     macConfirmPage = false,
+  }: {
+    tab?: browser.tabs.Tab;
+    url?: string;
+    active?: boolean;
+    request?: any;
+    dontPin?: boolean;
+    deletesHistory?: boolean;
+    macConfirmPage?: boolean;
   }) {
     if (request && request.requestId) {
       // we saw that request already
@@ -82,17 +130,27 @@ class Container {
       deletesHistory,
     });
 
-    return this.createTab({
-      url,
-      tab,
-      active,
-      dontPin,
-      macConfirmPage,
-      contextualIdentity,
-    });
+    return contextualIdentity
+      ? this.createTab({
+          url,
+          tab,
+          active,
+          dontPin,
+          macConfirmPage,
+          contextualIdentity,
+        })
+      : false;
   }
 
-  async createTempContainer({ url, request, deletesHistory }) {
+  public async createTempContainer({
+    url,
+    request,
+    deletesHistory,
+  }: {
+    url?: string;
+    request?: any;
+    deletesHistory?: boolean;
+  }) {
     const containerOptions = this.generateContainerNameIconColor(
       (request && request.url) || url
     );
@@ -140,18 +198,34 @@ class Container {
     }
   }
 
-  async createTab({
+  public async createTab({
     url,
     tab,
     active,
     dontPin,
     macConfirmPage,
     contextualIdentity,
+  }: {
+    url?: string;
+    tab?: browser.tabs.Tab;
+    active?: boolean;
+    dontPin?: boolean;
+    macConfirmPage?: boolean;
+    contextualIdentity: browser.contextualIdentities.ContextualIdentity;
   }) {
+    interface ITabOptions {
+      cookieStoreId: CookieStoreId;
+      url?: string;
+      active?: boolean;
+      index?: number;
+      pinned?: boolean;
+      openerTabId?: number;
+    }
+
     try {
-      const newTabOptions = {
-        url,
+      const newTabOptions: ITabOptions = {
         cookieStoreId: contextualIdentity.cookieStoreId,
+        url,
       };
       if (tab) {
         newTabOptions.active = tab.active;
@@ -201,8 +275,9 @@ class Container {
       );
       const newTab = await browser.tabs.create(newTabOptions);
       if (tab && !tab.active) {
-        this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] =
-          newTab.id;
+        this.lastCreatedInactiveTab[
+          browser.windows.WINDOW_ID_CURRENT
+        ] = newTab.id!;
       }
       debug(
         '[createTabInTempContainer] new tab in temp container created',
@@ -220,7 +295,7 @@ class Container {
       }
       this.tabs.containerMap.set(newTab.id, contextualIdentity.cookieStoreId);
       if (macConfirmPage) {
-        this.tabCreatedAsMacConfirmPage[newTab.id] = true;
+        this.tabCreatedAsMacConfirmPage[newTab.id!] = true;
       }
       await this.storage.persist();
 
@@ -230,7 +305,7 @@ class Container {
     }
   }
 
-  async reloadTabInTempContainer({
+  public async reloadTabInTempContainer({
     tab,
     url,
     active,
@@ -238,6 +313,14 @@ class Container {
     request,
     macConfirmPage,
     dontPin = true,
+  }: {
+    tab?: browser.tabs.Tab;
+    url?: string;
+    active?: boolean;
+    deletesHistory?: boolean;
+    request?: any;
+    macConfirmPage?: boolean;
+    dontPin?: boolean;
   }) {
     const newTab = await this.createTabInTempContainer({
       tab,
@@ -255,8 +338,8 @@ class Container {
     return newTab;
   }
 
-  generateContainerNameIconColor(url) {
-    let tempContainerNumber = '';
+  public generateContainerNameIconColor(url: string): IContainerOptions {
+    let tempContainerNumber = 0;
     if (this.pref.container.numberMode.startsWith('keep')) {
       this.storage.local.tempContainerCounter++;
       tempContainerNumber = this.storage.local.tempContainerCounter;
@@ -277,14 +360,18 @@ class Container {
         const domain = psl.isValid(parsedUrl.hostname)
           ? psl.get(parsedUrl.hostname)
           : parsedUrl.hostname;
-        containerName = containerName.replace('%domain%', domain);
+        if (domain) {
+          containerName = containerName.replace('%domain%', domain);
+        }
       }
     } else {
       containerName = containerName
         .replace('%fulldomain%', '')
         .replace('%domain%', '');
     }
-    containerName = `${containerName}${tempContainerNumber}`;
+    if (tempContainerNumber) {
+      containerName = `${containerName}${tempContainerNumber}`;
+    }
     if (!containerName) {
       containerName = ' ';
     }
@@ -315,7 +402,7 @@ class Container {
     };
   }
 
-  isPermanent(cookieStoreId) {
+  public isPermanent(cookieStoreId: CookieStoreId) {
     if (
       cookieStoreId !== `${this.background.containerPrefix}-default` &&
       !this.storage.local.tempContainers[cookieStoreId]
@@ -325,21 +412,21 @@ class Container {
     return false;
   }
 
-  isTemporary(cookieStoreId, type) {
+  public isTemporary(cookieStoreId: CookieStoreId, type?: 'deletesHistory') {
     return !!(
       this.storage.local.tempContainers[cookieStoreId] &&
       (!type || this.storage.local.tempContainers[cookieStoreId][type])
     );
   }
 
-  isClean(cookieStoreId) {
+  public isClean(cookieStoreId: CookieStoreId) {
     return (
       this.storage.local.tempContainers[cookieStoreId] &&
       this.storage.local.tempContainers[cookieStoreId].clean
     );
   }
 
-  markUnclean(tabId) {
+  public markUnclean(tabId: TabId) {
     const cookieStoreId = this.tabs.containerMap.get(tabId);
     if (cookieStoreId && this.isClean(cookieStoreId)) {
       debug(
@@ -350,7 +437,7 @@ class Container {
     }
   }
 
-  getReusedContainerNumber() {
+  public getReusedContainerNumber() {
     const tempContainersNumbers = this.storage.local.tempContainersNumbers.sort();
     if (!tempContainersNumbers.length) {
       return 1;
@@ -365,11 +452,13 @@ class Container {
     }
   }
 
-  getAvailableContainerColors() {
+  public getAvailableContainerColors() {
     // even out colors
     let availableColors = [];
     const containersOptions = Object.values(this.storage.local.tempContainers);
-    const assignedColors = {};
+    const assignedColors: {
+      [key: string]: number;
+    } = {};
     let maxColors = 0;
     for (const containerOptions of containersOptions) {
       if (typeof containerOptions !== 'object') {
@@ -405,43 +494,43 @@ class Container {
     return availableColors;
   }
 
-  removeFromStorage(cookieStoreId) {
+  public removeFromStorage(cookieStoreId: CookieStoreId) {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-      number =>
-        this.storage.local.tempContainers[cookieStoreId].number !== number
+      containerNumber =>
+        this.storage.local.tempContainers[cookieStoreId].number !==
+        containerNumber
     );
     delete this.storage.local.tempContainers[cookieStoreId];
     return this.storage.persist();
   }
 
-  getType(cookieStoreId) {
+  public getType(cookieStoreId: CookieStoreId) {
     return this.storage.local.tempContainers[cookieStoreId].deletesHistory
       ? 'deletesHistory'
       : 'regular';
   }
 
-  getRemovalDelay(cookieStoreId) {
+  public getRemovalDelay(cookieStoreId: CookieStoreId) {
     return this.getType(cookieStoreId) === 'deletesHistory'
       ? this.pref.deletesHistory.containerRemoval
       : this.pref.container.removal;
   }
 
-  cleanupNumbers() {
+  public cleanupNumbers() {
     this.storage.local.tempContainersNumbers = Object.values(
       this.storage.local.tempContainers
     ).map(container => container.number);
   }
 
-  cleanupNumber(cookieStoreId) {
+  public cleanupNumber(cookieStoreId: CookieStoreId) {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-      number =>
-        this.storage.local.tempContainers[cookieStoreId].number !== number
+      containerNumber =>
+        this.storage.local.tempContainers[cookieStoreId].number !==
+        containerNumber
     );
   }
 
-  getAllIds() {
+  public getAllIds() {
     return Object.keys(this.storage.local.tempContainers);
   }
 }
-
-export default Container;

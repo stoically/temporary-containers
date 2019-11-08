@@ -67,7 +67,7 @@ const buildWebExtension = async (build = {}) => {
             removeListener: sinon.stub(),
           };
 
-          window.browser._mochaTest = true;
+          window._mochaTest = true;
         },
       },
     },

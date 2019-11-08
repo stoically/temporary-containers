@@ -1,11 +1,19 @@
-class BrowserAction {
-  constructor(background) {
+import { TemporaryContainers } from '../background';
+import { Container } from './container';
+import { IPreferences, ToolbarIconColor } from './preferences';
+import { TabId } from './tabs';
+
+export class BrowserAction {
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private container!: Container;
+
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
-    this.storage = this.background.storage;
     this.container = this.background.container;
 
     if (this.pref.browserActionPopup) {
@@ -19,60 +27,61 @@ class BrowserAction {
     }
   }
 
-  onClicked() {
+  public onClicked() {
     return this.container.createTabInTempContainer({
       deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic',
     });
   }
 
-  setPopup() {
+  public setPopup() {
     browser.browserAction.setPopup({
       popup: 'popup.html',
     });
     browser.browserAction.setTitle({ title: 'Temporary Containers' });
   }
 
-  unsetPopup() {
+  public unsetPopup() {
     browser.browserAction.setPopup({
       popup: null,
     });
     browser.browserAction.setTitle({ title: null });
   }
 
-  setIcon(iconColor) {
+  public setIcon(iconColor: ToolbarIconColor) {
     const iconPath = '../icons';
+    let iconColorFileName: string = iconColor;
     if (iconColor === 'default') {
-      iconColor = 'd';
+      iconColorFileName = 'd';
     }
     const icon = {
       path: {
-        16: `${iconPath}/page-${iconColor}-16.svg`,
-        32: `${iconPath}/page-${iconColor}-32.svg`,
+        16: `${iconPath}/page-${iconColorFileName}-16.svg`,
+        32: `${iconPath}/page-${iconColorFileName}-32.svg`,
       },
     };
     browser.browserAction.setIcon(icon);
   }
 
-  addBadge(tabId) {
+  public addBadge(tabId: TabId) {
     if (!this.pref.isolation.active) {
       return;
     }
 
     browser.browserAction.setTitle({
       title: 'Automatic Mode on navigation active',
-      tabId: tabId,
+      tabId,
     });
     browser.browserAction.setBadgeBackgroundColor({
       color: '#f9f9fa',
-      tabId: tabId,
+      tabId,
     });
     browser.browserAction.setBadgeText({
       text: 'A',
-      tabId: tabId,
+      tabId,
     });
   }
 
-  removeBadge(tabId) {
+  public removeBadge(tabId: TabId) {
     if (!this.pref.isolation.active) {
       return;
     }
@@ -85,11 +94,11 @@ class BrowserAction {
     });
     browser.browserAction.setBadgeText({
       text: null,
-      tabId: tabId,
+      tabId,
     });
   }
 
-  async addIsolationInactiveBadge() {
+  public async addIsolationInactiveBadge() {
     browser.browserAction.setBadgeBackgroundColor({
       color: 'red',
     });
@@ -111,11 +120,9 @@ class BrowserAction {
     });
   }
 
-  removeIsolationInactiveBadge() {
+  public removeIsolationInactiveBadge() {
     browser.browserAction.setBadgeText({
       text: '',
     });
   }
 }
-
-export default BrowserAction;

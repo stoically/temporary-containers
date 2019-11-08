@@ -1,12 +1,20 @@
-class Statistics {
+import { debug } from './log';
+
+export class Statistics {
+  private removedContainerCount = 0;
+  private removedContainerCookiesCount = 0;
+  private removedContainerHistoryCount = 0;
+  private removedContentLength = 0;
+  private requests = {};
+
+  private background: any;
+  private pref: any;
+  private storage: any;
+  private container: any;
+  private cleanup: any;
+
   constructor(background) {
     this.background = background;
-
-    this.removedContainerCount = 0;
-    this.removedContainerCookiesCount = 0;
-    this.removedContainerHistoryCount = 0;
-    this.removedContentLength = 0;
-    this.requests = {};
   }
 
   initialize() {
@@ -53,8 +61,16 @@ class Statistics {
     }
   }
 
-  update(historyClearedCount, cookieCount, cookieStoreId) {
+  async update(historyClearedCount, cookieStoreId) {
     this.removedContainerCount++;
+
+    let cookieCount = 0;
+    try {
+      const cookies = await browser.cookies.getAll({ storeId: cookieStoreId });
+      cookieCount = cookies.length;
+    } catch (error) {
+      debug('[tryToRemove] couldnt get cookies', cookieStoreId, error);
+    }
 
     if (historyClearedCount) {
       this.removedContainerHistoryCount += historyClearedCount;
@@ -120,15 +136,13 @@ class Statistics {
     this.removedContentLength = 0;
   }
 
-  formatBytes(bytes, decimals) {
+  formatBytes(bytes, decimals = 2) {
     // https://stackoverflow.com/a/18650828
     if (bytes == 0) return '0 Bytes';
     const k = 1024,
-      dm = decimals || 2,
+      dm = decimals,
       sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
       i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 }
-
-export default Statistics;

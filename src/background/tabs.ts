@@ -1,18 +1,31 @@
-class Tabs {
+import { delay } from './lib';
+import { debug } from './log';
+
+export type TabId = number;
+export type WindowId = number;
+
+export class Tabs {
+  public creatingInSameContainer = false;
+  public containerMap = new Map();
+
+  private background: any;
+  private pref: any;
+  private container: any;
+  private browseraction: any;
+  private pageaction: any;
+  private mac: any;
+  private history: any;
+  private cleanup: any;
+
   constructor(background) {
     this.background = background;
-
-    this.containerMap = new Map();
-    this.creatingInSameContainer = false;
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
-    this.storage = this.background.storage;
     this.container = this.background.container;
     this.browseraction = this.background.browseraction;
     this.pageaction = this.background.pageaction;
-    this.contextmenu = this.background.contextmenu;
     this.mac = this.background.mac;
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
@@ -31,7 +44,7 @@ class Tabs {
     }
   }
 
-  async onUpdated(tabId, changeInfo, tab) {
+  public async onUpdated(tabId, changeInfo, tab) {
     debug('[onUpdated] tab updated', tab, changeInfo);
     this.maybeCloseRedirectorTab(tabId, tab, changeInfo);
 
@@ -45,14 +58,14 @@ class Tabs {
     }
   }
 
-  async onRemoved(tabId) {
+  public async onRemoved(tabId) {
     debug('[onRemoved]', tabId);
 
     if (this.container.noContainerTabs[tabId]) {
       delete this.container.noContainerTabs[tabId];
     }
     if (this.container.tabCreatedAsMacConfirmPage[tabId]) {
-      delete this.tabCreatedAsMacConfirmPage[tabId];
+      delete this.container.tabCreatedAsMacConfirmPage[tabId];
     }
 
     const cookieStoreId = this.containerMap.get(tabId);
@@ -67,7 +80,7 @@ class Tabs {
     this.containerMap.delete(tabId);
   }
 
-  async onActivated(activeInfo) {
+  public async onActivated(activeInfo) {
     debug('[onActivated]', activeInfo);
     this.container.lastCreatedInactiveTab[
       browser.windows.WINDOW_ID_CURRENT
@@ -185,7 +198,7 @@ class Tabs {
     }
   }
 
-  async maybeMoveTab(tab) {
+  public async maybeMoveTab(tab) {
     if (
       !tab.active &&
       this.container.lastCreatedInactiveTab[
@@ -245,7 +258,7 @@ class Tabs {
     this.creatingInSameContainer = false;
   }
 
-  async remove(tab) {
+  public async remove(tab) {
     try {
       // make sure we dont close the window by removing this tab
       // TODO implement actual queue for removal, race-condition (and with that window-closing) is possible
@@ -274,5 +287,3 @@ class Tabs {
     }
   }
 }
-
-export default Tabs;

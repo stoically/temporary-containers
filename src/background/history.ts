@@ -1,4 +1,9 @@
-class History {
+import { debug } from './log';
+
+export class History {
+  private background: any;
+  private storage: any;
+
   constructor(background) {
     this.background = background;
   }
@@ -48,5 +53,3 @@ class History {
     return count;
   }
 }
-
-export default History;

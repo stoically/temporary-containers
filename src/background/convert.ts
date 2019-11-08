@@ -1,4 +1,8 @@
-class Convert {
+export class Convert {
+  private background: any;
+  private storage: any;
+  private container: any;
+
   constructor(background) {
     this.background = background;
   }
@@ -42,5 +46,3 @@ class Convert {
     await browser.tabs.reload(tabId);
   }
 }
-
-export default Convert;

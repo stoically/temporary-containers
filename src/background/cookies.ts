@@ -1,4 +1,11 @@
-class Cookies {
+import { debug } from './log';
+
+export class Cookies {
+  private background: any;
+  private pref: any;
+  private storage: any;
+  private isolation: any;
+
   constructor(background) {
     this.background = background;
   }
@@ -173,5 +180,3 @@ class Cookies {
     }
   }
 }
-
-export default Cookies;

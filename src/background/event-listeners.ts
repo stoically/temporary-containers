@@ -1,14 +1,14 @@
 // to have persistent listeners we need to register them early+sync
 // and wait for tmp to fully initialize before handling events
+import { debug } from './log';
 
 class EventListeners {
+  private tmpInitializedPromiseResolvers = [];
+  private defaultTimeout = 30; // seconds
+  private _listeners = [];
+
   constructor() {
     debug('[event-listeners] initializing');
-    this.tmpInitializedPromiseResolvers = [];
-    this.tmpInitialized = this.tmpInitialized.bind(this);
-    this.defaultTimeout = 30; // seconds
-    this._listeners = [];
-
     [
       {
         api: ['webRequest', 'onBeforeRequest'],
@@ -93,8 +93,8 @@ class EventListeners {
       const listener = this.wrap(
         api.join('.'),
         function() {
-          return window.tmp[target[0]][target[1]].call(
-            window.tmp[target[0]],
+          return (window as any).tmp[target[0]][target[1]].call(
+            (window as any).tmp[target[0]],
             ...arguments
           );
         },
@@ -114,7 +114,7 @@ class EventListeners {
     const tmpInitializedPromise = this.createTmpInitializedPromise(options);
 
     return async function() {
-      if (!window.tmp || !window.tmp.initialized) {
+      if (!(window as any).tmp || !(window as any).tmp.initialized) {
         try {
           await tmpInitializedPromise;
         } catch (error) {
@@ -143,12 +143,12 @@ class EventListeners {
     });
   }
 
-  tmpInitialized() {
+  tmpInitialized = () => {
     this.tmpInitializedPromiseResolvers.map(resolver => {
       clearTimeout(resolver.timeout);
       resolver.resolve();
     });
-  }
+  };
 
   remove() {
     this._listeners.map(listener => {
@@ -159,4 +159,4 @@ class EventListeners {
   }
 }
 
-export default new EventListeners();
+export const eventListeners = new EventListeners();

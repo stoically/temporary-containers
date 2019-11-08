@@ -1,9 +1,18 @@
-class MultiAccountContainers {
+import { debug } from './log';
+import { delay } from './lib';
+
+export class MultiAccountContainers {
+  private confirmPage = {};
+  private waitingForConfirmPage = {};
+  private containerConfirmed = {};
+
+  private background: any;
+  private pref: any;
+  private storage: any;
+  private container: any;
+
   constructor(background) {
     this.background = background;
-    this.confirmPage = {};
-    this.waitingForConfirmPage = {};
-    this.containerConfirmed = {};
   }
 
   initialize() {
@@ -98,13 +107,16 @@ class MultiAccountContainers {
         );
         return false;
       } else {
-        return this._maybeReopenConfirmPage({
-          targetContainer,
-          request,
-          tab,
-          deletesHistoryContainer,
-          isolation,
-        });
+        return this._maybeReopenConfirmPage(
+          {
+            targetContainer,
+            request,
+            tab,
+            deletesHistoryContainer,
+            isolation,
+          },
+          false
+        );
       }
     } else {
       debug(
@@ -203,5 +215,3 @@ class MultiAccountContainers {
     };
   }
 }
-
-export default MultiAccountContainers;

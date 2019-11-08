@@ -6,12 +6,14 @@
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "clean": "rimraf web-ext-artifacts .web-ext-artifacts .cache dist",
     "build": "npm run lint && npm run test && npm run test:functional && npm run build:parcel && npm run build:cp && npm run build:webext && npm run lint:addon && ncu",
-    "build:parcel": "npm run clean && parcel build src/background.js src/*.html --no-minify --no-source-maps",
+    "build:parcel": "npm run clean && parcel build src/background.ts src/*.html --no-minify --no-source-maps",
     "build:sign": "node build-sign.js && npm run lint && npm run test && npm run test:functional && npm run build:parcel && npm run build:cp && npm run build:webext:sign && git checkout -- src/manifest.json && ncu",
     "build:webext": "web-ext build -s dist",
     "build:webext:sign": "web-ext sign --channel unlisted -s dist",
     "build:cp": "cp README.md LICENSE dist",
-    "lint": "eslint {*,src/**/*,test/**/*}.{js,vue}",
+    "lint": "npm run eslint && npm run tslint && tsc",
+    "lint:eslint": "eslint {*,src/**/*,test/**/*}.{js,vue}",
+    "lint:tslint": "tslint {src, test}/**/*.ts *.ts",
     "lint:addon": "addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "format": "prettier --write '{*,src/**/*,test/**/*}.{html,css,json,yml,md}'",
     "test": "npm run build:parcel && nyc --reporter=html --reporter=text mocha --reporter=progress ./test/setup.js test/*.test.js --timeout 60000",
@@ -19,7 +21,7 @@
     "test:watch:verbose": "mocha ./test/setup.js test/*.test.js -b --reporter=spec --tmp-debug --watch --inspect",
     "test:functional": "npm run build:parcel && mocha ./test/functional/*.test.js --timeout 10000",
     "check:dependencies": "ncu",
-    "watch": "rimraf dist && parcel src/background.js src/*.html --hmr-hostname=localhost"
+    "watch": "rimraf dist && parcel src/background.ts src/*.html --hmr-hostname=localhost"
   },
   "repository": {
     "type": "git",
@@ -34,19 +36,25 @@
   "dependencies": {
     "delay": "4.3.0",
     "p-queue": "6.2.0",
-    "psl": "1.4.0"
+    "psl": "1.4.0",
+    "vue": "^2.6.10"
   },
   "peerDependencies": {
     "jquery": "3.4.1",
     "jquery-address": "1.6.0",
     "semantic-ui": "2.4.2",
     "sortablejs": "1.10.1",
-    "vue": "2.6.10",
     "vuedraggable": "2.23.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
+    "@babel/preset-typescript": "^7.7.2",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
+    "@types/firefox-webext-browser": "^70.0.1",
+    "@types/psl": "^1.1.0",
     "@vue/component-compiler-utils": "^3.0.0",
     "addons-linter": "^1.15.3",
     "babel-eslint": "^10.0.3",
@@ -62,21 +70,24 @@
     "npm-check-updates": "^3.1.26",
     "nyc": "^14.1.1",
     "parcel-bundler": "^1.12.4",
+    "parcel-plugin-babel-typescript": "^1.0.1",
     "parcel-plugin-html-externals": "^0.1.2",
     "parcel-plugin-static-files-copy": "^2.2.1",
     "prettier": "1.19.1",
     "rimraf": "^3.0.0",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.7.2",
     "vue-hot-reload-api": "^2.3.4",
     "vue-template-compiler": "^2.6.10",
     "web-ext": "^3.2.0",
     "webextensions-geckodriver": "^0.6.1",
     "webextensions-jsdom": "^0.18.1"
   },
-  "browserslist": [
-    "Firefox >= 60"
-  ],
+  "browserslist": "Firefox >= 67",
   "staticFiles": {
     "staticPath": [
       "src",
@@ -87,7 +98,7 @@
     ],
     "watcherGlob": "**",
     "excludeGlob": [
-      "background.js",
+      "background.ts",
       "background",
       "background/**",
       "*.html",
@@ -113,11 +124,15 @@
     }
   },
   "lint-staged": {
-    "*.+(js|vue)": [
+    "*.{js,vue}": [
       "eslint --fix",
       "git add"
     ],
-    "*.+(html|css|json|yml|md)": [
+    "*.ts": [
+      "tslint --fix",
+      "git add"
+    ],
+    "*.{html,css,json,yml,md}": [
       "prettier --write",
       "git add"
     ]

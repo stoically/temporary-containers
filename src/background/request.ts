@@ -1,22 +1,33 @@
-class Request {
+import { debug } from './log';
+import { delay } from './lib';
+
+export class Request {
+  private canceledTabs = {};
+  private canceledRequests = {};
+  private requestIdUrlSeen = {};
+  private cleanRequests = {};
+  private lastSeenRequestUrl = {};
+
+  private background: any;
+  private pref: any;
+  private container: any;
+  private mouseclick: any;
+  private browseraction: any;
+  private mac: any;
+  private isolation: any;
+  private management: any;
+  private history: any;
+
   constructor(background) {
     this.background = background;
-    this.canceledTabs = {};
-    this.canceledRequests = {};
-    this.requestIdUrlSeen = {};
-    this.cleanRequests = {};
-    this.lastSeenRequestUrl = {};
   }
 
   async initialize() {
     this.pref = this.background.pref;
-    this.storage = this.background.storage;
     this.container = this.background.container;
     this.mouseclick = this.background.mouseclick;
     this.browseraction = this.background.browseraction;
     this.mac = this.background.mac;
-    this.utils = this.background.utils;
-    this.tabs = this.background.tabs;
     this.isolation = this.background.isolation;
     this.management = this.background.management;
     this.history = this.background.history;
@@ -88,7 +99,7 @@ class Request {
     }
 
     if (this.container.noContainerTabs[request.tabId]) {
-      debug('[handleRequest] no container tab, we ignore that', tab);
+      debug('[handleRequest] no container tab, we ignore that', request);
       return;
     }
 
@@ -418,5 +429,3 @@ class Request {
     }
   }
 }
-
-export default Request;

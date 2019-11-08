@@ -1,14 +1,17 @@
-class ContextMenu {
+export class ContextMenu {
+  private nextMenuInstanceId = 0;
+  private lastMenuInstanceId = 0;
+
+  private background: any;
+  private pref: any;
+  private container: any;
+
   constructor(background) {
     this.background = background;
-
-    this.nextMenuInstanceId = 0;
-    this.lastMenuInstanceId = 0;
   }
 
   initialize() {
     this.pref = this.background.pref;
-    this.storage = this.background.storage;
     this.container = this.background.container;
 
     this.add();
@@ -181,5 +184,3 @@ class ContextMenu {
     this.add();
   }
 }
-
-export default ContextMenu;

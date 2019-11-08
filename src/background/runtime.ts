@@ -1,4 +1,19 @@
-class Runtime {
+import { debug } from './log';
+
+export class Runtime {
+  private background: any;
+  private storage: any;
+  private pref: any;
+  private preferences: any;
+  private container: any;
+  private mouseclick: any;
+  private browseraction: any;
+  private migration: any;
+  private contextmenu: any;
+  private cleanup: any;
+  private convert: any;
+  private utils: any;
+
   constructor(background) {
     this.background = background;
     this.storage = background.storage;
@@ -165,5 +180,3 @@ class Runtime {
     }
   }
 }
-
-export default Runtime;

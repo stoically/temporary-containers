@@ -1,9 +1,23 @@
-class Commands {
-  constructor(background) {
+import { IPermissions, TemporaryContainers } from '../background';
+import { Container } from './container';
+import { debug } from './log';
+import { IPreferences } from './preferences';
+import { Storage } from './storage';
+import { Tabs } from './tabs';
+
+export class Commands {
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private storage!: Storage;
+  private container!: Container;
+  private permissions!: IPermissions;
+  private tabs!: Tabs;
+
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
@@ -12,7 +26,7 @@ class Commands {
     this.pageaction = this.background.pageaction;
   }
 
-  async onCommand(name) {
+  public async onCommand(name: string) {
     switch (name) {
       case 'new_temporary_container_tab':
         if (!this.pref.keyboardShortcuts.AltC) {
@@ -32,7 +46,7 @@ class Commands {
           const tab = await browser.tabs.create({
             url: 'about:blank',
           });
-          this.container.noContainerTabs[tab.id] = true;
+          this.container.noContainerTabs[tab.id!] = true;
           debug(
             '[onCommand] new no container tab created',
             this.container.noContainerTabs
@@ -47,13 +61,13 @@ class Commands {
           return;
         }
         try {
-          const window = await browser.windows.create({
+          const browserWindow = await browser.windows.create({
             url: 'about:blank',
           });
-          this.container.noContainerTabs[window.tabs[0].id] = true;
+          this.container.noContainerTabs[browserWindow.tabs![0].id!] = true;
           debug(
             '[onCommand] new no container tab created in window',
-            window,
+            browserWindow,
             this.container.noContainerTabs
           );
         } catch (error) {
@@ -85,7 +99,7 @@ class Commands {
           currentWindow: true,
           active: true,
         });
-        if (!activeTab || !activeTab.url.startsWith('http')) {
+        if (!activeTab || !activeTab.url!.startsWith('http')) {
           return;
         }
         this.container.createTabInTempContainer({
@@ -113,5 +127,3 @@ class Commands {
     }
   }
 }
-
-export default Commands;

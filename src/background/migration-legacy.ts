@@ -1,5 +1,6 @@
 // this is only needed once for upgrades from <1.0 and should be removed in the next major version
 // we now store the addon version in storage instead of waiting for onInstalled
+import { debug } from './log';
 
 const migrationReadyAbortController = new AbortController();
 let migrationReady;
@@ -24,14 +25,14 @@ const migrationOnInstalledListener = async function() {
   }
 
   await migrationReadyPromise;
-  return window.tmp.migration.onInstalled.call(
-    window.tmp.migration,
+  return (window as any).tmp.migration.onInstalled.call(
+    (window as any).tmp.migration,
     ...arguments
   );
 };
 browser.runtime.onInstalled.addListener(migrationOnInstalledListener);
 
-window.migrationLegacy = async migration => {
+(window as any).migrationLegacy = async migration => {
   try {
     debug(
       '[migration-legacy] no previousVersion found, waiting for onInstalled'

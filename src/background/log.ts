@@ -1,21 +1,21 @@
 /* eslint-disable no-console */
 
 class Log {
-  constructor() {
-    this.DEBUG = false;
-    this.stringify = true;
-    this.checkedLocalStorage = false;
-    this.checkLocalStoragePromise = this.checkLocalStorage();
+  public DEBUG = false;
+  public stringify = true;
+  private checkedLocalStorage = false;
+  private checkLocalStoragePromise = this.checkLocalStorage();
 
+  constructor() {
     this.debug = this.debug.bind(this);
     browser.runtime.onInstalled.addListener(
       this.onInstalledListener.bind(this)
     );
   }
 
-  async debug(...args) {
+  debug = async (...args) => {
     let date;
-    if (!this.checkedLocalStorage && !browser._mochaTest) {
+    if (!this.checkedLocalStorage && !window._mochaTest) {
       date = new Date().toUTCString();
       await this.checkLocalStoragePromise;
     }
@@ -37,13 +37,13 @@ class Log {
       return arg;
     });
 
-    if (this.stringify && !browser._mochaTest) {
+    if (this.stringify && !window._mochaTest) {
       console.log(date, ...args.map(JSON.stringify));
       console.log('------------------------------------------');
     } else {
       console.log(date, ...args.slice(0));
     }
-  }
+  };
 
   checkLocalStorage() {
     if (this.DEBUG) {
@@ -91,6 +91,8 @@ class Log {
   }
 }
 
-window.log = new Log();
-// eslint-disable-next-line
-window.debug = log.debug;
+const log = new Log();
+(window as any).log = log;
+(window as any).debug = log.debug;
+
+export const debug = log.debug;

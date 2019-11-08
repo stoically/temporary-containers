@@ -1,4 +1,7 @@
-class Utils {
+import { debug } from './log';
+import { psl } from './lib';
+
+export class Utils {
   sameDomain(origin, target) {
     return psl.parse(origin).domain === psl.parse(target).domain;
   }
@@ -127,5 +130,3 @@ class Utils {
     return 0;
   }
 }
-
-export default Utils;
