@@ -1,13 +1,15 @@
-<script>
-import General from './components/general';
-import Isolation from './components/isolation';
-import Advanced from './components/advanced';
-import Statistics from './components/statistics';
-import ExportImport from './components/export_import';
-import Message from './components/message';
-import Glossary from './components/glossary';
+<script lang="ts">
+import Vue from 'vue';
 
-export default {
+import General from './components/general.vue';
+import Isolation from './components/isolation/index.vue';
+import Advanced from './components/advanced/index.vue';
+import Statistics from './components/statistics.vue';
+import ExportImport from './components/export_import.vue';
+import Message from './components/message.vue';
+import Glossary from './components/glossary/index.vue';
+
+export default Vue.extend({
   components: {
     General,
     Isolation,
@@ -67,7 +69,7 @@ export default {
       }, 100);
     },
   },
-};
+});
 </script>
 
 <style>

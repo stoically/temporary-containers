@@ -51,10 +51,10 @@ export default {
     formatBytes(bytes, decimals) {
       // https://stackoverflow.com/a/18650828
       if (bytes == 0) return '0 Bytes';
-      let k = 1024,
-        dm = decimals === undefined ? 2 : decimals,
-        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-        i = Math.floor(Math.log(bytes) / Math.log(k));
+      const k = 1024;
+      const dm = decimals === undefined ? 2 : decimals;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
     },
   },
