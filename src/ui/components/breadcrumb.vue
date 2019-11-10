@@ -1,12 +1,5 @@
 <script>
-export default {
-  props: {
-    tab: {
-      type: String,
-      required: true,
-    },
-  },
-};
+export { default } from './breadcrumb.ts';
 </script>
 
 <template>

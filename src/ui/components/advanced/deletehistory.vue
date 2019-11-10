@@ -1,21 +1,5 @@
 <script>
-export default {
-  props: {
-    app: {
-      type: Object,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      preferences: this.app.preferences,
-    };
-  },
-  mounted() {
-    $('#advancedDeletesHistory .ui.checkbox').checkbox();
-    $('#advancedDeletesHistory .ui.dropdown').dropdown();
-  },
-};
+export { default } from './deletehistory.ts';
 </script>
 
 <template>

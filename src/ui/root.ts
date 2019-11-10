@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Root from './root.vue';
+import Root from './components/root.vue';
 
 export default (App: Vue.Component, { popup = false }) => {
   Vue.mixin({

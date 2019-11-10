@@ -1,21 +1,5 @@
 <script>
-import General from './general';
-import Cookies from './cookies';
-import DeleteHistory from './deletehistory';
-
-export default {
-  components: {
-    General,
-    Cookies,
-    DeleteHistory,
-  },
-  props: {
-    app: {
-      type: Object,
-      required: true,
-    },
-  },
-};
+export { default } from './index.ts';
 </script>
 
 <template>

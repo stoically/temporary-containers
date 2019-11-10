@@ -1,5 +1,3 @@
-import App from './options.vue';
-
-import('./root').then(root => {
-  root.default(App, {});
-});
+import App from './components/options.vue';
+import root from './root';
+root(App, {});

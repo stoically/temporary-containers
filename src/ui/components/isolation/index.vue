@@ -1,21 +1,5 @@
 <script>
-import Global from './global';
-import PerDomain from './perdomain';
-import Mac from './mac';
-
-export default {
-  components: {
-    Global,
-    PerDomain,
-    Mac,
-  },
-  props: {
-    app: {
-      type: Object,
-      required: true,
-    },
-  },
-};
+export { default } from './index.ts';
 </script>
 
 <template>

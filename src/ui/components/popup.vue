@@ -1,105 +1,5 @@
 <script>
-import IsolationGlobal from './components/isolation/global';
-import IsolationPerDomain from './components/isolation/perdomain';
-import IsolationMac from './components/isolation/mac';
-import Actions from './components/actions';
-import Statistics from './components/statistics';
-import Message from './components/message';
-import Breadcrumb from './components/breadcrumb';
-import Glossary from './components/glossary';
-
-export default {
-  components: {
-    IsolationGlobal,
-    IsolationPerDomain,
-    IsolationMac,
-    Actions,
-    Statistics,
-    Message,
-    Breadcrumb,
-    Glossary,
-  },
-  props: {
-    app: {
-      type: Object,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      initialized: false,
-      show: false,
-    };
-  },
-  watch: {
-    app(app) {
-      if (!app.initialized) {
-        return;
-      }
-
-      this.initialized = true;
-      this.$nextTick(() => {
-        $('.ui.accordion').accordion({
-          animateChildren: false,
-          duration: 0,
-        });
-
-        $('.ui.sidebar').sidebar({
-          transition: 'overlay',
-        });
-
-        this.show = true;
-        $.tab('change tab', this.app.preferences.ui.popupDefaultTab);
-      });
-    },
-  },
-  methods: {
-    changeTab(tab) {
-      $('.ui.sidebar').sidebar('hide');
-      $.tab('change tab', tab);
-    },
-    toggleSidebar() {
-      $('.ui.sidebar').sidebar('toggle');
-    },
-    createTmp() {
-      browser.runtime.sendMessage({
-        method: 'createTabInTempContainer',
-      });
-      window.close();
-    },
-    createDeletesHistoryTmp() {
-      browser.runtime.sendMessage({
-        method: 'createTabInTempContainer',
-        payload: {
-          deletesHistory: true,
-        },
-      });
-      window.close();
-    },
-    async openPreferences() {
-      const tabs = await browser.tabs.query({
-        url: browser.runtime.getURL('options.html'),
-      });
-      if (tabs.length) {
-        const tab = tabs[0];
-        await browser.tabs.update(tab.id, { active: true });
-        await browser.tabs.reload(tab.id);
-        if (tab.windowId !== browser.windows.WINDOW_ID_CURRENT) {
-          await browser.windows.update(tab.windowId, { focused: true });
-        }
-      } else {
-        await browser.tabs.create({
-          url: browser.runtime.getURL('options.html'),
-        });
-      }
-      window.close();
-    },
-    toggleIsolation() {
-      this.app.preferences.isolation.active = !this.app.preferences.isolation
-        .active;
-    },
-  },
-};
+export { default } from './popup.ts';
 </script>
 
 <style>
@@ -187,7 +87,7 @@ export default {
                 >
                   <svg width="16" height="16">
                     <image
-                      xlink:href="../icons/page-w-16.svg"
+                      xlink:href="../../icons/page-w-16.svg"
                       x="0"
                       y="0"
                       width="100%"

@@ -1,4 +1,3 @@
-<script lang="ts">
 import Vue from 'vue';
 
 export default Vue.extend({
@@ -237,8 +236,3 @@ export default Vue.extend({
     },
   },
 });
-</script>
-
-<template>
-  <component :is="App" :app="app" />
-</template>

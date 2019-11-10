@@ -4,6 +4,7 @@ import { Container, CookieStoreId } from './container';
 import { debug } from './log';
 import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
+import { formatBytes } from '../shared';
 
 export class Statistics {
   private removedContainerCount = 0;
@@ -131,7 +132,7 @@ export class Statistics {
         notificationMessage += `\nand ${this.removedContainerCookiesCount} Cookies`;
       }
       if (this.removedContentLength) {
-        notificationMessage += `\nand ~${this.formatBytes(
+        notificationMessage += `\nand ~${formatBytes(
           this.removedContentLength
         )} Cache`;
       }
@@ -145,17 +146,5 @@ export class Statistics {
     this.removedContainerCookiesCount = 0;
     this.removedContainerHistoryCount = 0;
     this.removedContentLength = 0;
-  }
-
-  public formatBytes(bytes: number, decimals = 2) {
-    // https://stackoverflow.com/a/18650828
-    if (bytes === 0) {
-      return '0 Bytes';
-    }
-    const k = 1024;
-    const dm = decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 }

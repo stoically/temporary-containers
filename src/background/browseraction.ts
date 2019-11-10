@@ -48,7 +48,7 @@ export class BrowserAction {
   }
 
   public setIcon(iconColor: ToolbarIconColor) {
-    const iconPath = '../icons';
+    const iconPath = '../../icons';
     let iconColorFileName: string = iconColor;
     if (iconColor === 'default') {
       iconColorFileName = 'd';
