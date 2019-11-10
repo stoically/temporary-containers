@@ -92,7 +92,7 @@ module.exports = {
           break;
       }
 
-      let clickEvent = {};
+      const clickEvent = {};
       switch (clickType) {
         case 'middle':
           clickEvent.button = 1;

@@ -1,20 +1,20 @@
-import { IPermissions, TemporaryContainers } from '../background';
+import { Permissions, TemporaryContainers } from '../background';
 import { Container, CookieStoreId } from './container';
 import { History } from './history';
 import { delay, PQueue } from './lib';
 import { debug } from './log';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { Statistics } from './statistics';
 import { Storage } from './storage';
 
 export class Cleanup {
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private storage!: Storage;
   private container!: Container;
   private history!: History;
   private statistics!: Statistics;
-  private permissions!: IPermissions;
+  private permissions!: Permissions;
 
   private queued = new Set();
   private queue = new PQueue({ concurrency: 1 });
@@ -28,7 +28,7 @@ export class Cleanup {
     }, 600000);
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
@@ -40,7 +40,7 @@ export class Cleanup {
   public async addToRemoveQueue(
     cookieStoreId: CookieStoreId,
     skipDelay = false
-  ) {
+  ): Promise<void> {
     if (this.queued.has(cookieStoreId)) {
       debug('[addToRemoveQueue] container already in queue', cookieStoreId);
       return;
@@ -83,7 +83,7 @@ export class Cleanup {
       });
   }
 
-  public async tryToRemove(cookieStoreId: CookieStoreId) {
+  public async tryToRemove(cookieStoreId: CookieStoreId): Promise<boolean> {
     try {
       const tempTabs = await browser.tabs.query({
         cookieStoreId,
@@ -114,7 +114,7 @@ export class Cleanup {
     return true;
   }
 
-  public async removeContainer(cookieStoreId: CookieStoreId) {
+  public async removeContainer(cookieStoreId: CookieStoreId): Promise<boolean> {
     try {
       const contextualIdentity = await browser.contextualIdentities.remove(
         cookieStoreId
@@ -139,7 +139,7 @@ export class Cleanup {
     }
   }
 
-  public async cleanup(skipDelay = false) {
+  public async cleanup(skipDelay = false): Promise<void> {
     const containers = this.container.getAllIds();
     if (!containers.length) {
       debug('[cleanup] canceling, no containers at all');
@@ -157,7 +157,7 @@ export class Cleanup {
     );
   }
 
-  public async onlySessionRestoreOrNoTabs() {
+  public async onlySessionRestoreOrNoTabs(): Promise<boolean> {
     // don't do a cleanup if there are no tabs or a sessionrestore tab
     try {
       const tabs = await browser.tabs.query({});
@@ -173,7 +173,7 @@ export class Cleanup {
     return false;
   }
 
-  public maybeShowNotification(message: string) {
+  public maybeShowNotification(message: string): void {
     if (!this.pref.notifications || !this.permissions.notifications) {
       return;
     }

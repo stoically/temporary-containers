@@ -1,12 +1,12 @@
 import { TemporaryContainers } from '../background';
 import { Isolation } from './isolation';
 import { debug } from './log';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 
 export class Cookies {
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private storage!: Storage;
   private isolation!: Isolation;
 

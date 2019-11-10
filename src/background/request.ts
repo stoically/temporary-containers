@@ -8,7 +8,7 @@ import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 
 export class Request {
   public lastSeenRequestUrl: {
@@ -36,7 +36,7 @@ export class Request {
   } = {};
 
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private container!: Container;
   private mouseclick!: MouseClick;
   private browseraction!: BrowserAction;
@@ -74,7 +74,13 @@ export class Request {
 
     this.mouseclick.beforeHandleRequest(request);
 
-    let returnVal;
+    let returnVal:
+      | false
+      | {
+          clean?: boolean;
+          cancel?: boolean;
+        }
+      | undefined = false;
     try {
       returnVal = await this.handleRequest(request);
     } catch (error) {
@@ -115,7 +121,7 @@ export class Request {
         '[handleRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?',
         request
       );
-      return;
+      return false;
     }
 
     this.browseraction.removeBadge(request.tabId);
@@ -127,7 +133,7 @@ export class Request {
 
     if (this.container.noContainerTabs[request.tabId]) {
       debug('[handleRequest] no container tab, we ignore that', request);
-      return;
+      return false;
     }
 
     let tab;
@@ -163,14 +169,14 @@ export class Request {
     if (macAssignment) {
       if (macAssignment.neverAsk) {
         debug('[handleRequest] mac neverask assigned', macAssignment);
-        return;
+        return false;
       } else {
         debug('[handleRequest] mac assigned', macAssignment);
       }
     }
 
     if (await this.externalAddonHasPrecedence({ request, tab, openerTab })) {
-      return;
+      return false;
     }
 
     this.history.maybeAddHistory(tab, request.url);
@@ -185,7 +191,7 @@ export class Request {
         '[handleRequest] request url is on the ignoreRequests list',
         request
       );
-      return;
+      return false;
     }
 
     if (tab && this.container.isClean(tab.cookieStoreId!)) {
@@ -225,7 +231,7 @@ export class Request {
     }
 
     if (!this.pref.automaticMode.active || !tab) {
-      return;
+      return false;
     }
 
     if (
@@ -242,7 +248,7 @@ export class Request {
           '[handleRequest] request didnt came from about/moz-extension page',
           openerTab
         );
-        return;
+        return false;
       }
     }
 
@@ -255,7 +261,7 @@ export class Request {
         tab,
         request
       );
-      return;
+      return false;
     }
 
     if (macAssignment) {
@@ -408,7 +414,7 @@ export class Request {
     }
 
     if (
-      this.management.addons.get('block_outside_container@jspenguin.org')
+      this.management.addons.get('block_outside_container@jspengun.org')
         ?.enabled
     ) {
       try {

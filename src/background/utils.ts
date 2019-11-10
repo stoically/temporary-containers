@@ -3,25 +3,30 @@ import { debug } from './log';
 
 export class Utils {
   public sameDomain(origin: string, target: string) {
-    return psl.parse(origin).domain === psl.parse(target).domain;
+    const parsedOrigin = psl.parse(origin);
+    const parsedTarget = psl.parse(target);
+    if (parsedOrigin.error || parsedTarget.error) {
+      return false;
+    }
+    return parsedOrigin.domain === parsedTarget.domain;
   }
 
   public addMissingKeys({ defaults, source }: { defaults: any; source: any }) {
     let addedMissing = false;
-    const addKeys = (_default: any, _source: any) => {
-      Object.keys(_default).map(key => {
-        if (_source[key] === undefined) {
+    const addKeys = (defaultsNode: any, sourceNode: any) => {
+      Object.keys(defaultsNode).map(key => {
+        if (sourceNode[key] === undefined) {
           debug(
             '[addMissingKeys] key not found, setting default',
             key,
-            _default[key]
+            defaultsNode[key]
           );
-          _source[key] = _default[key];
+          sourceNode[key] = defaultsNode[key];
           addedMissing = true;
-        } else if (Array.isArray(_source[key])) {
+        } else if (Array.isArray(sourceNode[key])) {
           return;
-        } else if (typeof _source[key] === 'object') {
-          addKeys(_default[key], _source[key]);
+        } else if (typeof sourceNode[key] === 'object') {
+          addKeys(defaultsNode[key], sourceNode[key]);
         }
       });
     };

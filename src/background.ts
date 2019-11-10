@@ -16,7 +16,7 @@ import { Migration } from './background/migration';
 import './background/migration-legacy';
 import { MouseClick } from './background/mouseclick';
 import { PageAction } from './background/pageaction';
-import { IPreferences, Preferences } from './background/preferences';
+import { Preferences, PreferencesSchema } from './background/preferences';
 import { Request } from './background/request';
 import { Runtime } from './background/runtime';
 import { Statistics } from './background/statistics';
@@ -24,7 +24,7 @@ import { Storage } from './background/storage';
 import { Tabs } from './background/tabs';
 import { Utils } from './background/utils';
 
-export interface IPermissions {
+export interface Permissions {
   history?: true | false;
   bookmarks?: true | false;
   notifications?: true | false;
@@ -56,9 +56,9 @@ export class TemporaryContainers {
 
   public version!: string;
   public browserVersion!: number;
-  public containerPrefix: string = 'firefox';
-  public permissions!: IPermissions;
-  public pref!: IPreferences;
+  public containerPrefix = 'firefox';
+  public permissions!: Permissions;
+  public pref!: PreferencesSchema;
 
   public async initialize() {
     debug('[tmp] initializing');
@@ -79,9 +79,9 @@ export class TemporaryContainers {
 
     this.pref = (new Proxy(this.storage, {
       get(target, key) {
-        return target.local.preferences[key];
+        return (target.local.preferences as any)[key];
       },
-    }) as unknown) as IPreferences;
+    }) as unknown) as PreferencesSchema;
 
     if (!this.storage.local.containerPrefix) {
       const browserInfo = await browser.runtime.getBrowserInfo();

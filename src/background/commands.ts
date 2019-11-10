@@ -1,16 +1,16 @@
-import { IPermissions, TemporaryContainers } from '../background';
+import { Permissions, TemporaryContainers } from '../background';
 import { Container } from './container';
 import { debug } from './log';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
 
 export class Commands {
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private storage!: Storage;
   private container!: Container;
-  private permissions!: IPermissions;
+  private permissions!: Permissions;
   private tabs!: Tabs;
 
   constructor(background: TemporaryContainers) {

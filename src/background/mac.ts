@@ -1,24 +1,24 @@
 import { TemporaryContainers } from '../background';
-import { Container, CookieStoreId, IContainerOptions } from './container';
+import { Container, CookieStoreId, ContainerOptions } from './container';
 import { delay } from './lib';
 import { debug } from './log';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 
-export interface IMacAssignment {
+export interface MacAssignment {
   userContextId: string;
   cookieStoreId: string;
   neverAsk: boolean;
 }
 
-interface IConfirmPage {
+interface ConfirmPage {
   tab: browser.tabs.Tab;
   targetURL: string;
   targetContainer: CookieStoreId;
   currentContainer: false | CookieStoreId;
 }
 
-interface IWaitingForConfirmPage {
+interface WaitingForConfirmPage {
   targetContainer: CookieStoreId;
   request: any;
   tab?: browser.tabs.Tab;
@@ -31,14 +31,14 @@ export class MultiAccountContainers {
   } = {};
 
   private confirmPage: {
-    [key: string]: IConfirmPage;
+    [key: string]: ConfirmPage;
   } = {};
   private waitingForConfirmPage: {
-    [key: string]: IWaitingForConfirmPage;
+    [key: string]: WaitingForConfirmPage;
   } = {};
 
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private storage!: Storage;
   private container!: Container;
 
@@ -72,7 +72,7 @@ export class MultiAccountContainers {
         .split('&')
         .map(param => param.split('='));
 
-      const confirmPage: IConfirmPage = {
+      const confirmPage: ConfirmPage = {
         tab,
         targetURL: decodeURIComponent(queryParams[0][1]),
         targetContainer: queryParams[1][1],
@@ -104,7 +104,7 @@ export class MultiAccountContainers {
   }
 
   public async maybeReopenConfirmPage(
-    macAssignment: IMacAssignment,
+    macAssignment: MacAssignment,
     request: any,
     tab: browser.tabs.Tab | undefined,
     isolation = false
@@ -130,7 +130,7 @@ export class MultiAccountContainers {
         tab,
         request
       );
-      return;
+      return false;
     }
     const targetContainer = `${this.background.containerPrefix}-container-${macAssignment.userContextId}`;
     if (this.confirmPage[targetContainer]) {
@@ -183,9 +183,9 @@ export class MultiAccountContainers {
       request,
       tab,
       deletesHistoryContainer,
-    }: IWaitingForConfirmPage,
+    }: WaitingForConfirmPage,
     isolation: boolean,
-    confirmPage: false | IConfirmPage
+    confirmPage: false | ConfirmPage
   ) {
     debug(
       '[_maybeReopenConfirmPage]',
@@ -237,10 +237,9 @@ export class MultiAccountContainers {
       request,
       macConfirmPage: true,
     });
-    return true;
   }
 
-  public async getAssignment(url: string): Promise<IMacAssignment> {
+  public async getAssignment(url: string): Promise<MacAssignment> {
     const assignment = await browser.runtime.sendMessage(
       '@testpilot-containers',
       {

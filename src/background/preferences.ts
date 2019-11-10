@@ -22,7 +22,7 @@ export type IsolationAction =
   | 'always'
   | 'global';
 
-export interface IIsolationGlobal {
+export interface IsolationGlobal {
   navigation: {
     action: IsolationAction;
   };
@@ -48,7 +48,7 @@ export interface IIsolationGlobal {
   };
 }
 
-export interface IIsolationDomain extends IIsolationGlobal {
+export interface IsolationDomain extends IsolationGlobal {
   pattern: string;
   always: {
     action: 'enabled' | 'disabled';
@@ -57,7 +57,7 @@ export interface IIsolationDomain extends IIsolationGlobal {
   };
 }
 
-export interface ICookie {
+export interface Cookie {
   domain: string;
   expirationDate: string;
   firstPartyDomain: string;
@@ -77,7 +77,7 @@ export type ToolbarIconColor =
   | 'red-simple'
   | 'white-simple';
 
-export interface IPreferences {
+export interface PreferencesSchema {
   automaticMode: {
     active: boolean;
     newTab: 'created' | 'navigation';
@@ -97,8 +97,8 @@ export interface IPreferences {
   iconColor: ToolbarIconColor;
   isolation: {
     active: boolean;
-    global: IIsolationGlobal;
-    domain: IIsolationDomain[];
+    global: IsolationGlobal;
+    domain: IsolationDomain[];
     mac: {
       action: 'enabled' | 'disabled';
     };
@@ -125,7 +125,7 @@ export interface IPreferences {
   ignoreRequests: IgnoredDomain[];
   cookies: {
     domain: {
-      [key: string]: ICookie[];
+      [key: string]: Cookie[];
     };
   };
   deletesHistory: {
@@ -152,7 +152,7 @@ export interface IPreferences {
 }
 
 export class Preferences {
-  public defaults: IPreferences = {
+  public defaults: PreferencesSchema = {
     automaticMode: {
       active: false,
       newTab: 'created',
@@ -260,8 +260,8 @@ export class Preferences {
     oldPreferences,
     newPreferences,
   }: {
-    oldPreferences: IPreferences;
-    newPreferences: IPreferences;
+    oldPreferences: PreferencesSchema;
+    newPreferences: PreferencesSchema;
   }) {
     if (oldPreferences.iconColor !== newPreferences.iconColor) {
       this.browseraction.setIcon(newPreferences.iconColor);

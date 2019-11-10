@@ -18,7 +18,7 @@ document.body.addEventListener(
 
     // check for a element with href
     const aElement = event.target.closest('a');
-    if (aElement === null || typeof aElement !== 'object' || !aElement.href) {
+    if (!aElement || typeof aElement !== 'object' || !aElement.href) {
       return;
     }
 

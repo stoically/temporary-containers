@@ -2,12 +2,12 @@ import { TemporaryContainers } from '../background';
 import { Isolation } from './isolation';
 import { delay } from './lib';
 import { debug } from './log';
-import { IPreferences, IsolationAction } from './preferences';
+import { PreferencesSchema, IsolationAction } from './preferences';
 import { Utils } from './utils';
 
 type ClickType = 'middle' | 'left' | 'ctrlleft';
 
-interface IClickMessage {
+interface ClickMessage {
   href: string;
   event: { button: number; ctrlKey: boolean; metaKey: boolean };
 }
@@ -23,7 +23,7 @@ export class MouseClick {
   } = {};
 
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private utils!: Utils;
   private isolation!: Isolation;
 
@@ -39,7 +39,7 @@ export class MouseClick {
   }
 
   public linkClicked(
-    message: IClickMessage,
+    message: ClickMessage,
     sender: browser.runtime.MessageSender
   ) {
     let clickType: ClickType | false = false;
@@ -163,7 +163,7 @@ export class MouseClick {
 
   public checkClick(
     type: ClickType,
-    message: IClickMessage,
+    message: ClickMessage,
     sender: browser.runtime.MessageSender
   ) {
     const parsedSenderTabURL = new URL(sender.tab!.url!);

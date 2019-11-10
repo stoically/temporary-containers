@@ -1,6 +1,6 @@
 import { TemporaryContainers } from '../background';
 import { Container } from './container';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { WindowId } from './tabs';
 
 export class ContextMenu {
@@ -8,7 +8,7 @@ export class ContextMenu {
   private lastMenuInstanceId = 0;
 
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private container!: Container;
 
   constructor(background: TemporaryContainers) {

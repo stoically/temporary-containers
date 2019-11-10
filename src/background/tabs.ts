@@ -7,7 +7,7 @@ import { delay } from './lib';
 import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { PageAction } from './pageaction';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 
 export type TabId = number;
 export type WindowId = number;
@@ -17,7 +17,7 @@ export class Tabs {
   public containerMap = new Map();
 
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private container!: Container;
   private browseraction!: BrowserAction;
   private pageaction!: PageAction;

@@ -1,7 +1,7 @@
-import { IPermissions, TemporaryContainers } from '../background';
+import { Permissions, TemporaryContainers } from '../background';
 import { delay, psl } from './lib';
 import { debug } from './log';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 import { TabId, Tabs } from './tabs';
 
@@ -37,7 +37,7 @@ const CONTAINER_ICONS = [
 ];
 export type ContainerIcon = typeof CONTAINER_ICONS[number];
 
-export interface IContainerOptions {
+export interface ContainerOptions {
   name: string;
   color: ContainerColor;
   icon: ContainerIcon;
@@ -47,6 +47,15 @@ export interface IContainerOptions {
   history?: {
     [key: string]: { tabId: TabId };
   };
+}
+
+interface TabOptions {
+  cookieStoreId: CookieStoreId;
+  url?: string;
+  active?: boolean;
+  index?: number;
+  pinned?: boolean;
+  openerTabId?: number;
 }
 
 export class Container {
@@ -70,9 +79,9 @@ export class Container {
   } = {};
 
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private storage!: Storage;
-  private permissions!: IPermissions;
+  private permissions!: Permissions;
   private tabs!: Tabs;
 
   constructor(background: TemporaryContainers) {
@@ -216,17 +225,8 @@ export class Container {
     macConfirmPage?: boolean;
     contextualIdentity: browser.contextualIdentities.ContextualIdentity;
   }) {
-    interface ITabOptions {
-      cookieStoreId: CookieStoreId;
-      url?: string;
-      active?: boolean;
-      index?: number;
-      pinned?: boolean;
-      openerTabId?: number;
-    }
-
     try {
-      const newTabOptions: ITabOptions = {
+      const newTabOptions: TabOptions = {
         cookieStoreId: contextualIdentity.cookieStoreId,
         url,
       };
@@ -341,7 +341,7 @@ export class Container {
     return newTab;
   }
 
-  public generateContainerNameIconColor(url?: string): IContainerOptions {
+  public generateContainerNameIconColor(url?: string): ContainerOptions {
     let tempContainerNumber = 0;
     if (this.pref.container.numberMode.startsWith('keep')) {
       this.storage.local.tempContainerCounter++;
@@ -445,7 +445,7 @@ export class Container {
     if (!tempContainersNumbers.length) {
       return 1;
     } else {
-      const maxContainerNumber = Math.max.apply(Math, tempContainersNumbers);
+      const maxContainerNumber = Math.max(...tempContainersNumbers);
       for (let i = 1; i < maxContainerNumber; i++) {
         if (!tempContainersNumbers.includes(i)) {
           return i;

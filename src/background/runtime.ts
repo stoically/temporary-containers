@@ -7,14 +7,14 @@ import { Convert } from './convert';
 import { debug } from './log';
 import { Migration } from './migration';
 import { MouseClick } from './mouseclick';
-import { IPreferences, Preferences } from './preferences';
+import { Preferences, PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 import { Utils } from './utils';
 
 export class Runtime {
   private background: TemporaryContainers;
   private storage: Storage;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private preferences!: Preferences;
   private container!: Container;
   private mouseclick!: MouseClick;

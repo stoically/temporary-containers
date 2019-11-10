@@ -1,10 +1,10 @@
 import { TemporaryContainers } from '../background';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 
 export class PageAction {
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private storage!: Storage;
 
   constructor(background: TemporaryContainers) {

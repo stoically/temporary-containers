@@ -1,13 +1,13 @@
 import { TemporaryContainers } from '../background';
-import { IContainerOptions } from './container';
+import { ContainerOptions } from './container';
 import { debug } from './log';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 
-export interface IStorageLocal {
+export interface StorageLocal {
   containerPrefix: string | false;
   tempContainerCounter: number;
   tempContainers: {
-    [key: string]: IContainerOptions;
+    [key: string]: ContainerOptions;
   };
   tempContainersNumbers: number[];
   statistics: {
@@ -21,15 +21,15 @@ export interface IStorageLocal {
       urlsDeleted: number;
     };
   };
-  preferences: IPreferences;
+  preferences: PreferencesSchema;
   lastFileExport: false;
   version: false | string;
 }
 
 export class Storage {
-  public local!: IStorageLocal;
+  public local!: StorageLocal;
   public installed: boolean;
-  public defaults: IStorageLocal;
+  public defaults: StorageLocal;
 
   private background: TemporaryContainers;
 
@@ -60,7 +60,7 @@ export class Storage {
   }
 
   public async initialize() {
-    this.local = (await browser.storage.local.get()) as IStorageLocal;
+    this.local = (await browser.storage.local.get()) as StorageLocal;
 
     // empty storage *should* mean new install
     if (!this.local || !Object.keys(this.local).length) {

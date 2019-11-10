@@ -2,7 +2,7 @@ import { TemporaryContainers } from '../background';
 import { Cleanup } from './cleanup';
 import { Container, CookieStoreId } from './container';
 import { debug } from './log';
-import { IPreferences } from './preferences';
+import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 
 export class Statistics {
@@ -15,7 +15,7 @@ export class Statistics {
   } = {};
 
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private storage!: Storage;
   private container!: Container;
   private cleanup!: Cleanup;

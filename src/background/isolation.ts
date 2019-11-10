@@ -1,16 +1,16 @@
 import { TemporaryContainers } from '../background';
 import { Container } from './container';
 import { debug } from './log';
-import { IMacAssignment, MultiAccountContainers } from './mac';
+import { MacAssignment, MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { IPreferences, IsolationAction } from './preferences';
+import { PreferencesSchema, IsolationAction } from './preferences';
 import { Request } from './request';
 import { Utils } from './utils';
 
 export class Isolation {
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private container!: Container;
   private request!: Request;
   private mouseclick!: MouseClick;
@@ -41,11 +41,11 @@ export class Isolation {
     tab?: browser.tabs.Tab;
     request: any;
     openerTab?: browser.tabs.Tab;
-    macAssignment?: IMacAssignment;
+    macAssignment?: MacAssignment;
   }) {
     if (!this.pref.isolation.active) {
       debug('[maybeIsolate] isolation is disabled');
-      return;
+      return false;
     }
     if (
       tab &&
@@ -55,7 +55,7 @@ export class Isolation {
     ) {
       debug('[maybeIsolate] we are coming from a mac confirm page');
       this.mac.containerConfirmed[tab.id!] = tab.cookieStoreId!;
-      return;
+      return false;
     }
 
     if (
@@ -69,7 +69,7 @@ export class Isolation {
         request,
         tab
       );
-      return;
+      return false;
     }
 
     if (
@@ -117,7 +117,7 @@ export class Isolation {
         this.mac.containerConfirmed,
         macAssignment
       );
-      return;
+      return false;
     }
 
     debug('[maybeIsolate] isolating', tab, request);
@@ -191,7 +191,7 @@ export class Isolation {
     tab?: browser.tabs.Tab;
     request: any;
     openerTab?: browser.tabs.Tab;
-    macAssignment?: IMacAssignment;
+    macAssignment?: MacAssignment;
   }) {
     debug('[shouldIsolate]', tab, request);
 
@@ -507,7 +507,7 @@ export class Isolation {
     macAssignment,
   }: {
     tab?: browser.tabs.Tab;
-    macAssignment?: IMacAssignment;
+    macAssignment?: MacAssignment;
   }) {
     if (this.pref.isolation.mac.action === 'disabled') {
       debug('[shouldIsolateMac] mac isolation disabled');

@@ -1,18 +1,17 @@
 {
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
   "env": {
     "browser": true,
     "webextensions": true,
-    "es6": true,
     "node": true
   },
+  "plugins": ["@typescript-eslint"],
   "extends": [
-    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:vue/recommended",
     "plugin:prettier/recommended",
     "prettier/vue"
-  ],
-  "parserOptions": {
-    "parser": "babel-eslint",
-    "ecmaVersion": 2018
-  }
+  ]
 }

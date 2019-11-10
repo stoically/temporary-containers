@@ -1,11 +1,11 @@
 import { TemporaryContainers } from '../background';
 import { Container } from './container';
-import { IPreferences, ToolbarIconColor } from './preferences';
+import { PreferencesSchema, ToolbarIconColor } from './preferences';
 import { TabId } from './tabs';
 
 export class BrowserAction {
   private background: TemporaryContainers;
-  private pref!: IPreferences;
+  private pref!: PreferencesSchema;
   private container!: Container;
 
   constructor(background: TemporaryContainers) {
