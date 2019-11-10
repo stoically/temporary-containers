@@ -1,25 +1,36 @@
+import { TemporaryContainers } from '../background';
+import { BrowserAction } from './browseraction';
+import { Cleanup } from './cleanup';
+import { Container } from './container';
+import { ContextMenu } from './contextmenu';
+import { Convert } from './convert';
 import { debug } from './log';
+import { Migration } from './migration';
+import { MouseClick } from './mouseclick';
+import { IPreferences, Preferences } from './preferences';
+import { Storage } from './storage';
+import { Utils } from './utils';
 
 export class Runtime {
-  private background: any;
-  private storage: any;
-  private pref: any;
-  private preferences: any;
-  private container: any;
-  private mouseclick: any;
-  private browseraction: any;
-  private migration: any;
-  private contextmenu: any;
-  private cleanup: any;
-  private convert: any;
-  private utils: any;
+  private background: TemporaryContainers;
+  private storage: Storage;
+  private pref!: IPreferences;
+  private preferences!: Preferences;
+  private container!: Container;
+  private mouseclick!: MouseClick;
+  private browseraction!: BrowserAction;
+  private migration!: Migration;
+  private contextmenu!: ContextMenu;
+  private cleanup!: Cleanup;
+  private convert!: Convert;
+  private utils!: Utils;
 
-  constructor(background) {
+  constructor(background: TemporaryContainers) {
     this.background = background;
     this.storage = background.storage;
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
     this.preferences = this.background.preferences;
     this.container = this.background.container;
@@ -32,7 +43,7 @@ export class Runtime {
     this.utils = this.background.utils;
   }
 
-  async onMessage(message, sender) {
+  public async onMessage(message: any, sender: browser.runtime.MessageSender) {
     debug('[onMessage] message received', message, sender);
     if (typeof message !== 'object') {
       return;
@@ -124,21 +135,18 @@ export class Runtime {
           cookieStoreId: message.payload.cookieStoreId,
           tabId: message.payload.tabId,
           name: message.payload.name,
-          url: message.payload.url,
         });
 
       case 'convertTempContainerToRegular':
         return this.convert.convertTempContainerToRegular({
           cookieStoreId: message.payload.cookieStoreId,
           tabId: message.payload.tabId,
-          url: message.payload.url,
         });
 
       case 'convertPermanentToTempContainer':
         return this.convert.convertPermanentToTempContainer({
           cookieStoreId: message.payload.cookieStoreId,
           tabId: message.payload.tabId,
-          url: message.payload.url,
         });
 
       case 'lastFileExport':
@@ -150,7 +158,10 @@ export class Runtime {
     }
   }
 
-  async onMessageExternal(message, sender) {
+  public async onMessageExternal(
+    message: any,
+    sender: browser.runtime.MessageSender
+  ) {
     debug('[onMessageExternal] got external message', message, sender);
     switch (message.method) {
       case 'createTabInTempContainer':
@@ -171,7 +182,7 @@ export class Runtime {
     }
   }
 
-  async onStartup() {
+  public async onStartup() {
     this.cleanup.cleanup(true);
 
     if (this.pref.container.numberMode === 'keepuntilrestart') {

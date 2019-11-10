@@ -1,18 +1,22 @@
-export class PageAction {
-  private background: any;
-  private pref: any;
-  private storage: any;
+import { TemporaryContainers } from '../background';
+import { IPreferences } from './preferences';
+import { Storage } from './storage';
 
-  constructor(background) {
+export class PageAction {
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private storage!: Storage;
+
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
   }
 
-  async showOrHide(activatedTab) {
+  public async showOrHide(activatedTab?: browser.tabs.Tab) {
     if (!activatedTab) {
       const [activeTab] = await browser.tabs.query({
         currentWindow: true,
@@ -30,14 +34,14 @@ export class PageAction {
     ) {
       color = 'gray';
     } else if (
-      this.storage.local.tempContainers[activatedTab.cookieStoreId] &&
-      this.storage.local.tempContainers[activatedTab.cookieStoreId].color
+      this.storage.local.tempContainers[activatedTab.cookieStoreId!] &&
+      this.storage.local.tempContainers[activatedTab.cookieStoreId!].color
     ) {
-      color = this.storage.local.tempContainers[activatedTab.cookieStoreId]
+      color = this.storage.local.tempContainers[activatedTab.cookieStoreId!]
         .color;
     } else {
       const container = await browser.contextualIdentities.get(
-        activatedTab.cookieStoreId
+        activatedTab.cookieStoreId!
       );
       color = container.color;
     }
@@ -46,12 +50,12 @@ export class PageAction {
         '19': `icons/pageaction-${color}-19.svg`,
         '38': `icons/pageaction-${color}-38.svg`,
       },
-      tabId: activatedTab.id,
+      tabId: activatedTab.id!,
     });
     if (!this.pref.pageAction) {
-      browser.pageAction.hide(activatedTab.id);
+      browser.pageAction.hide(activatedTab.id!);
     } else {
-      browser.pageAction.show(activatedTab.id);
+      browser.pageAction.show(activatedTab.id!);
     }
   }
 }

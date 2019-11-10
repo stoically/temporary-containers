@@ -1,30 +1,37 @@
+import { TemporaryContainers } from '../background';
+import { Cleanup } from './cleanup';
+import { Container, CookieStoreId } from './container';
 import { debug } from './log';
+import { IPreferences } from './preferences';
+import { Storage } from './storage';
 
 export class Statistics {
   private removedContainerCount = 0;
   private removedContainerCookiesCount = 0;
   private removedContainerHistoryCount = 0;
   private removedContentLength = 0;
-  private requests = {};
+  private requests: {
+    [key: string]: { contentLength: number };
+  } = {};
 
-  private background: any;
-  private pref: any;
-  private storage: any;
-  private container: any;
-  private cleanup: any;
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private storage!: Storage;
+  private container!: Container;
+  private cleanup!: Cleanup;
 
-  constructor(background) {
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.cleanup = this.background.cleanup;
   }
 
-  async collect(request) {
+  public async collect(request: any) {
     if (!this.pref.statistics && !this.pref.deletesHistory.statistics) {
       return;
     }
@@ -40,28 +47,32 @@ export class Statistics {
       return;
     }
 
-    if (!this.container.isTemporary(tab.cookieStoreId)) {
+    if (!this.container.isTemporary(tab.cookieStoreId!)) {
       return;
     }
 
-    if (!this.requests[tab.cookieStoreId]) {
-      this.requests[tab.cookieStoreId] = {
+    if (!this.requests[tab.cookieStoreId!]) {
+      this.requests[tab.cookieStoreId!] = {
         contentLength: 0,
       };
     }
     if (!request.fromCache) {
       const contentLength = request.responseHeaders.find(
-        header => header.name === 'content-length'
+        (header: any) => header.name === 'content-length'
       );
       if (contentLength) {
-        this.requests[tab.cookieStoreId].contentLength += parseInt(
-          contentLength.value
+        this.requests[tab.cookieStoreId!].contentLength += parseInt(
+          contentLength.value,
+          10
         );
       }
     }
   }
 
-  async update(historyClearedCount, cookieStoreId) {
+  public async update(
+    historyClearedCount: number,
+    cookieStoreId: CookieStoreId
+  ) {
     this.removedContainerCount++;
 
     let cookieCount = 0;
@@ -113,7 +124,7 @@ export class Statistics {
     delete this.requests[cookieStoreId];
   }
 
-  finish() {
+  public finish() {
     if (this.removedContainerCount) {
       let notificationMessage = `Deleted Temporary Containers: ${this.removedContainerCount}`;
       if (this.removedContainerCookiesCount) {
@@ -136,13 +147,15 @@ export class Statistics {
     this.removedContentLength = 0;
   }
 
-  formatBytes(bytes, decimals = 2) {
+  public formatBytes(bytes: number, decimals = 2) {
     // https://stackoverflow.com/a/18650828
-    if (bytes == 0) return '0 Bytes';
-    const k = 1024,
-      dm = decimals,
-      sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-      i = Math.floor(Math.log(bytes) / Math.log(k));
+    if (bytes === 0) {
+      return '0 Bytes';
+    }
+    const k = 1024;
+    const dm = decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 }

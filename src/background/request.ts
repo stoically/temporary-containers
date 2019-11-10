@@ -1,28 +1,55 @@
-import { debug } from './log';
+import { TemporaryContainers } from '../background';
+import { BrowserAction } from './browseraction';
+import { Container } from './container';
+import { History } from './history';
+import { Isolation } from './isolation';
 import { delay } from './lib';
+import { debug } from './log';
+import { MultiAccountContainers } from './mac';
+import { Management } from './management';
+import { MouseClick } from './mouseclick';
+import { IPreferences } from './preferences';
 
 export class Request {
-  private canceledTabs = {};
-  private canceledRequests = {};
-  private requestIdUrlSeen = {};
-  private cleanRequests = {};
-  private lastSeenRequestUrl = {};
+  public lastSeenRequestUrl: {
+    [key: number]: string;
+  } = {};
 
-  private background: any;
-  private pref: any;
-  private container: any;
-  private mouseclick: any;
-  private browseraction: any;
-  private mac: any;
-  private isolation: any;
-  private management: any;
-  private history: any;
+  private canceledTabs: {
+    [key: number]: {
+      requestIds: {
+        [key: number]: true;
+      };
+      urls: {
+        [key: string]: true;
+      };
+    };
+  } = {};
+  private canceledRequests: {
+    [key: string]: boolean;
+  } = {};
+  private requestIdUrlSeen: {
+    [key: string]: boolean;
+  } = {};
+  private cleanRequests: {
+    [key: string]: boolean;
+  } = {};
 
-  constructor(background) {
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private container!: Container;
+  private mouseclick!: MouseClick;
+  private browseraction!: BrowserAction;
+  private mac!: MultiAccountContainers;
+  private isolation!: Isolation;
+  private management!: Management;
+  private history!: History;
+
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  async initialize() {
+  public async initialize() {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.mouseclick = this.background.mouseclick;
@@ -33,7 +60,7 @@ export class Request {
     this.history = this.background.history;
   }
 
-  async webRequestOnBeforeRequest(request) {
+  public async webRequestOnBeforeRequest(request: any) {
     debug('[webRequestOnBeforeRequest] incoming request', request);
     const requestIdUrl = `${request.requestId}+${request.url}`;
     if (requestIdUrl in this.requestIdUrlSeen) {
@@ -82,7 +109,7 @@ export class Request {
     return;
   }
 
-  async handleRequest(request) {
+  public async handleRequest(request: any) {
     if (request.tabId === -1) {
       debug(
         '[handleRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?',
@@ -103,7 +130,8 @@ export class Request {
       return;
     }
 
-    let tab, openerTab;
+    let tab;
+    let openerTab;
     try {
       tab = await browser.tabs.get(request.tabId);
       if (tab && tab.openerTabId) {
@@ -122,7 +150,7 @@ export class Request {
     }
 
     let macAssignment;
-    if (this.management.addons['@testpilot-containers'].enabled) {
+    if (this.management.addons.get('@testpilot-containers')?.enabled) {
       try {
         macAssignment = await this.mac.getAssignment(request.url);
       } catch (error) {
@@ -160,7 +188,7 @@ export class Request {
       return;
     }
 
-    if (tab && this.container.isClean(tab.cookieStoreId)) {
+    if (tab && this.container.isClean(tab.cookieStoreId!)) {
       // removing this clean check can result in endless loops
       debug(
         '[handleRequest] not isolating because the tmp container is still clean'
@@ -207,8 +235,8 @@ export class Request {
     ) {
       debug('[handleRequest] default container and openerTab', openerTab);
       if (
-        !openerTab.url.startsWith('about:') &&
-        !openerTab.url.startsWith('moz-extension:')
+        !openerTab.url!.startsWith('about:') &&
+        !openerTab.url!.startsWith('moz-extension:')
       ) {
         debug(
           '[handleRequest] request didnt came from about/moz-extension page',
@@ -257,7 +285,7 @@ export class Request {
     return { cancel: true };
   }
 
-  cancelRequest(request) {
+  public cancelRequest(request: any) {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
@@ -311,7 +339,7 @@ export class Request {
     }
   }
 
-  shouldCancelRequest(request) {
+  public shouldCancelRequest(request: any) {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
@@ -332,16 +360,24 @@ export class Request {
     return false;
   }
 
-  cleanupCanceled(request) {
+  public cleanupCanceled(request: any) {
     if (this.canceledTabs[request.tabId]) {
       delete this.canceledTabs[request.tabId];
     }
   }
 
-  async externalAddonHasPrecedence({ request, tab, openerTab }) {
+  public async externalAddonHasPrecedence({
+    request,
+    tab,
+    openerTab,
+  }: {
+    request: any;
+    tab?: browser.tabs.Tab;
+    openerTab?: browser.tabs.Tab;
+  }) {
     const parsedUrl = new URL(request.url);
 
-    if (this.management.addons['containerise@kinte.sh'].enabled) {
+    if (this.management.addons.get('containerise@kinte.sh')?.enabled) {
       try {
         const hostmap = await browser.runtime.sendMessage(
           'containerise@kinte.sh',
@@ -372,10 +408,11 @@ export class Request {
     }
 
     if (
-      this.management.addons['block_outside_container@jspenguin.org'].enabled
+      this.management.addons.get('block_outside_container@jspenguin.org')
+        ?.enabled
     ) {
       try {
-        let response = await browser.runtime.sendMessage(
+        const response = await browser.runtime.sendMessage(
           'block_outside_container@jspenguin.org',
           {
             action: 'rule_exists',
@@ -398,9 +435,9 @@ export class Request {
       }
     }
 
-    const parsedTabUrl = tab && /^https?:/.test(tab.url) && new URL(tab.url);
+    const parsedTabUrl = tab && /^https?:/.test(tab.url!) && new URL(tab.url!);
     const parsedOpenerTabUrl =
-      openerTab && /^https?:/.test(openerTab.url) && new URL(openerTab.url);
+      openerTab && /^https?:/.test(openerTab.url!) && new URL(openerTab.url!);
     for (const containWhat of [
       '@contain-facebook',
       '@contain-google',
@@ -408,10 +445,11 @@ export class Request {
       '@contain-youtube',
       '@contain-amazon',
     ]) {
-      if (!this.management.addons[containWhat].enabled) {
+      const addon = this.management.addons.get(containWhat);
+      if (!addon || !addon.enabled || !addon.REs) {
         continue;
       }
-      for (const RE of this.management.addons[containWhat].REs) {
+      for (const RE of addon.REs) {
         if (
           RE.test(parsedUrl.hostname) ||
           (parsedTabUrl && RE.test(parsedTabUrl.hostname)) ||

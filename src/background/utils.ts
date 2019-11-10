@@ -1,14 +1,14 @@
-import { debug } from './log';
 import { psl } from './lib';
+import { debug } from './log';
 
 export class Utils {
-  sameDomain(origin, target) {
+  public sameDomain(origin: string, target: string) {
     return psl.parse(origin).domain === psl.parse(target).domain;
   }
 
-  addMissingKeys({ defaults, source }) {
+  public addMissingKeys({ defaults, source }: { defaults: any; source: any }) {
     let addedMissing = false;
-    const addKeys = (_default, _source) => {
+    const addKeys = (_default: any, _source: any) => {
       Object.keys(_default).map(key => {
         if (_source[key] === undefined) {
           debug(
@@ -30,11 +30,11 @@ export class Utils {
     return addedMissing;
   }
 
-  clone(input) {
+  public clone(input: any) {
     return JSON.parse(JSON.stringify(input));
   }
 
-  globToRegexp(glob) {
+  public globToRegexp(glob: string) {
     // --------------------------------------------------------------------------------
     // modified and simplified version of https://github.com/fitzgen/glob-to-regexp
     // version 0.4.0
@@ -55,16 +55,16 @@ export class Utils {
       throw new TypeError('Expected a string');
     }
 
-    var str = String(glob);
+    const str = String(glob);
 
     // The regexp we are building, as a string.
-    var reStr = '';
+    let reStr = '';
 
     // RegExp flags (eg "i" ) to pass in to RegExp constructor.
-    var flags = 'i';
+    const flags = 'i';
 
-    var c;
-    for (var i = 0, len = str.length; i < len; i++) {
+    let c;
+    for (let i = 0, len = str.length; i < len; i++) {
       c = str[i];
 
       switch (c) {
@@ -94,7 +94,7 @@ export class Utils {
     return new RegExp('^' + reStr + '$', flags);
   }
 
-  versionCompare(a, b) {
+  public versionCompare(a: string, b: string) {
     // https://github.com/substack/semver-compare
     // https://github.com/substack/semver-compare/pull/4
 
@@ -117,15 +117,23 @@ export class Utils {
     // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-    var pa = a.split('.');
-    var pb = b.split('.');
-    for (var i = 0; i < Math.min(pa.length, pb.length); i++) {
-      var na = Number(pa[i]);
-      var nb = Number(pb[i]);
-      if (na > nb) return 1;
-      if (nb > na) return -1;
-      if (!isNaN(na) && isNaN(nb)) return 1;
-      if (isNaN(na) && !isNaN(nb)) return -1;
+    const pa = a.split('.');
+    const pb = b.split('.');
+    for (let i = 0; i < Math.min(pa.length, pb.length); i++) {
+      const na = Number(pa[i]);
+      const nb = Number(pb[i]);
+      if (na > nb) {
+        return 1;
+      }
+      if (nb > na) {
+        return -1;
+      }
+      if (!isNaN(na) && isNaN(nb)) {
+        return 1;
+      }
+      if (isNaN(na) && !isNaN(nb)) {
+        return -1;
+      }
     }
     return 0;
   }

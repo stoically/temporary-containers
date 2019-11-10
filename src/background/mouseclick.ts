@@ -1,27 +1,48 @@
-import { debug } from './log';
+import { TemporaryContainers } from '../background';
+import { Isolation } from './isolation';
 import { delay } from './lib';
+import { debug } from './log';
+import { IPreferences, IsolationAction } from './preferences';
+import { Utils } from './utils';
+
+type ClickType = 'middle' | 'left' | 'ctrlleft';
+
+interface IClickMessage {
+  href: string;
+  event: { button: number; ctrlKey: boolean; metaKey: boolean };
+}
 
 export class MouseClick {
-  private isolated = {};
+  public isolated: {
+    [key: string]: {
+      clickType: ClickType;
+      tab: browser.tabs.Tab;
+      count: number;
+      abortController: AbortController;
+    };
+  } = {};
 
-  private background: any;
-  private pref: any;
-  private utils: any;
-  private isolation: any;
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private utils!: Utils;
+  private isolation!: Isolation;
 
-  constructor(background) {
+  constructor(background: TemporaryContainers) {
     this.background = background;
     this.isolated = {};
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
     this.utils = this.background.utils;
     this.isolation = this.background.isolation;
   }
 
-  linkClicked(message, sender) {
-    let clickType;
+  public linkClicked(
+    message: IClickMessage,
+    sender: browser.runtime.MessageSender
+  ) {
+    let clickType: ClickType | false = false;
     const url = message.href;
     if (message.event.button === 1) {
       clickType = 'middle';
@@ -37,6 +58,11 @@ export class MouseClick {
     ) {
       clickType = 'ctrlleft';
     }
+
+    if (!clickType || !sender.tab) {
+      return;
+    }
+
     if (!this.checkClick(clickType, message, sender)) {
       return;
     }
@@ -65,10 +91,10 @@ export class MouseClick {
       .catch(debug);
   }
 
-  checkClickPreferences = (
-    preferences,
-    parsedClickedURL,
-    parsedSenderTabURL
+  public checkClickPreferences = (
+    preferences: { action: IsolationAction },
+    parsedClickedURL: { hostname: string },
+    parsedSenderTabURL: { hostname: string }
   ) => {
     if (preferences.action === 'always') {
       debug(
@@ -135,14 +161,18 @@ export class MouseClick {
     return false;
   };
 
-  checkClick(type, message, sender) {
-    const parsedSenderTabURL = new URL(sender.tab.url);
+  public checkClick(
+    type: ClickType,
+    message: IClickMessage,
+    sender: browser.runtime.MessageSender
+  ) {
+    const parsedSenderTabURL = new URL(sender.tab!.url!);
     const parsedClickedURL = new URL(message.href);
     debug('[checkClick] checking click', type, message, sender);
 
     for (const domainPatternPreferences of this.pref.isolation.domain) {
       const domainPattern = domainPatternPreferences.pattern;
-      if (!this.isolation.matchDomainPattern(sender.tab.url, domainPattern)) {
+      if (!this.isolation.matchDomainPattern(sender.tab!.url!, domainPattern)) {
         continue;
       }
       if (!domainPatternPreferences.mouseClick[type]) {
@@ -168,7 +198,7 @@ export class MouseClick {
     );
   }
 
-  beforeHandleRequest(request) {
+  public beforeHandleRequest(request: any) {
     if (!this.isolated[request.url]) {
       return;
     }
@@ -179,7 +209,7 @@ export class MouseClick {
     this.isolated[request.url].abortController.abort();
   }
 
-  afterHandleRequest(request) {
+  public afterHandleRequest(request: any) {
     if (!this.isolated[request.url]) {
       return;
     }

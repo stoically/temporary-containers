@@ -3,7 +3,7 @@
 import { debug } from './log';
 
 const migrationReadyAbortController = new AbortController();
-let migrationReady;
+let migrationReady: () => void;
 const migrationReadyPromise = new Promise((resolve, reject) => {
   migrationReady = resolve;
 
@@ -15,7 +15,7 @@ const migrationReadyTimeout = window.setTimeout(() => {
   migrationReadyAbortController.abort();
 }, 10000);
 
-const migrationOnInstalledListener = async function() {
+const migrationOnInstalledListener = async (...args: any[]) => {
   browser.runtime.onInstalled.removeListener(migrationOnInstalledListener);
   const { version } = await browser.storage.local.get('version');
   if (version) {
@@ -27,17 +27,17 @@ const migrationOnInstalledListener = async function() {
   await migrationReadyPromise;
   return (window as any).tmp.migration.onInstalled.call(
     (window as any).tmp.migration,
-    ...arguments
+    ...args
   );
 };
 browser.runtime.onInstalled.addListener(migrationOnInstalledListener);
 
-(window as any).migrationLegacy = async migration => {
+(window as any).migrationLegacy = async (migration: any) => {
   try {
     debug(
       '[migration-legacy] no previousVersion found, waiting for onInstalled'
     );
-    const updateDetails = await new Promise((resolve, reject) => {
+    const updateDetails: any = await new Promise((resolve, reject) => {
       migration.onInstalled = resolve;
       window.setTimeout(() => {
         // onInstalled didnt fire, again.

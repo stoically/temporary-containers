@@ -44,26 +44,29 @@ export interface IContainerOptions {
   number: number;
   clean: boolean;
   deletesHistory?: boolean;
+  history?: {
+    [key: string]: { tabId: TabId };
+  };
 }
 
 export class Container {
   public noContainerTabs: {
     [key: number]: boolean;
   } = {};
+  public urlCreatedContainer: {
+    [key: string]: CookieStoreId;
+  } = {};
+  public tabCreatedAsMacConfirmPage: {
+    [key: number]: boolean;
+  } = {};
+  public lastCreatedInactiveTab: {
+    [key: number]: TabId;
+  } = {};
 
   private containerColors: ContainerColor[] = CONTAINER_COLORS;
   private containerIcons: ContainerIcon[] = CONTAINER_ICONS;
-  private urlCreatedContainer: {
-    [key: string]: CookieStoreId;
-  } = {};
   private requestCreatedTab: {
     [key: number]: boolean;
-  } = {};
-  private tabCreatedAsMacConfirmPage: {
-    [key: number]: boolean;
-  } = {};
-  private lastCreatedInactiveTab: {
-    [key: number]: TabId;
   } = {};
 
   private background: TemporaryContainers;
@@ -338,7 +341,7 @@ export class Container {
     return newTab;
   }
 
-  public generateContainerNameIconColor(url: string): IContainerOptions {
+  public generateContainerNameIconColor(url?: string): IContainerOptions {
     let tempContainerNumber = 0;
     if (this.pref.container.numberMode.startsWith('keep')) {
       this.storage.local.tempContainerCounter++;

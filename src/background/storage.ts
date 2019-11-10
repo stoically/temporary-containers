@@ -3,8 +3,8 @@ import { IContainerOptions } from './container';
 import { debug } from './log';
 import { IPreferences } from './preferences';
 
-interface IStorageLocal {
-  containerPrefix: boolean;
+export interface IStorageLocal {
+  containerPrefix: string | false;
   tempContainerCounter: number;
   tempContainers: {
     [key: string]: IContainerOptions;
@@ -29,8 +29,8 @@ interface IStorageLocal {
 export class Storage {
   public local!: IStorageLocal;
   public installed: boolean;
+  public defaults: IStorageLocal;
 
-  private defaults: IStorageLocal;
   private background: TemporaryContainers;
 
   constructor(background: TemporaryContainers) {
@@ -90,7 +90,7 @@ export class Storage {
     }
 
     // migrate if currently running version is different from version in storage
-    if (this.background.version !== this.local.version) {
+    if (this.local.version && this.background.version !== this.local.version) {
       try {
         await this.background.migration.migrate({
           preferences: this.local.preferences,

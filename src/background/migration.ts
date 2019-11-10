@@ -1,18 +1,27 @@
-/* istanbul ignore next */
+/* istanbul ignore */
+import { TemporaryContainers } from '../background';
 import { debug } from './log';
+import { Storage } from './storage';
+import { Utils } from './utils';
 
 export class Migration {
-  private background: any;
-  private storage: any;
-  private utils: any;
-  private previousVersion: string;
-  private previousVersionBeta: boolean;
+  private background: TemporaryContainers;
+  private storage!: Storage;
+  private utils!: Utils;
+  private previousVersion!: string;
+  private previousVersionBeta!: boolean;
 
-  constructor(background) {
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  async migrate({ preferences, previousVersion }) {
+  public async migrate({
+    preferences,
+    previousVersion,
+  }: {
+    preferences: any;
+    previousVersion: string;
+  }) {
     this.storage = this.background.storage;
     this.utils = this.background.utils;
     this.previousVersion = previousVersion;
@@ -47,12 +56,12 @@ export class Migration {
 
       if (preferences.ignoreRequestsToAMO === false) {
         preferences.ignoreRequests = preferences.ignoreRequests.filter(
-          ignoredPattern => ignoredPattern !== 'addons.mozilla.org'
+          (ignoredPattern: string) => ignoredPattern !== 'addons.mozilla.org'
         );
       }
       if (preferences.ignoreRequestsToPocket === false) {
         preferences.ignoreRequests = preferences.ignoreRequests.filter(
-          ignoredPattern => ignoredPattern !== 'getpocket.com'
+          (ignoredPattern: string) => ignoredPattern !== 'getpocket.com'
         );
       }
       delete preferences.ignoreRequestsToAMO;
@@ -63,7 +72,7 @@ export class Migration {
       debug(
         'updated from version <= 0.103, migrate per domain isolation to array'
       );
-      const perDomainIsolation = [];
+      const perDomainIsolation: any[] = [];
       Object.keys(preferences.isolation.domain).map(domainPattern => {
         perDomainIsolation.push(
           Object.assign(
@@ -134,7 +143,10 @@ export class Migration {
     await this.storage.persist();
   }
 
-  updatedFromVersionEqualToOrLessThan(compareVersion, compareBetaVersion = '') {
+  public updatedFromVersionEqualToOrLessThan(
+    compareVersion: string,
+    compareBetaVersion = ''
+  ) {
     if (compareBetaVersion && this.previousVersionBeta) {
       compareVersion = compareBetaVersion;
     }

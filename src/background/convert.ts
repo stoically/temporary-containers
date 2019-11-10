@@ -1,18 +1,31 @@
-export class Convert {
-  private background: any;
-  private storage: any;
-  private container: any;
+import { TemporaryContainers } from '../background';
+import { Container, CookieStoreId } from './container';
+import { Storage } from './storage';
+import { TabId } from './tabs';
 
-  constructor(background) {
+export class Convert {
+  private background: TemporaryContainers;
+  private storage!: Storage;
+  private container!: Container;
+
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  initialize() {
+  public initialize() {
     this.storage = this.background.storage;
     this.container = this.background.container;
   }
 
-  async convertTempContainerToPermanent({ cookieStoreId, tabId, name }) {
+  public async convertTempContainerToPermanent({
+    cookieStoreId,
+    tabId,
+    name,
+  }: {
+    cookieStoreId: CookieStoreId;
+    tabId: TabId;
+    name: string;
+  }) {
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();
     await browser.contextualIdentities.update(cookieStoreId, {
@@ -22,7 +35,13 @@ export class Convert {
     await browser.tabs.reload(tabId);
   }
 
-  async convertTempContainerToRegular({ cookieStoreId, tabId }) {
+  public async convertTempContainerToRegular({
+    cookieStoreId,
+    tabId,
+  }: {
+    cookieStoreId: CookieStoreId;
+    tabId: TabId;
+  }) {
     this.storage.local.tempContainers[cookieStoreId].deletesHistory = false;
     delete this.storage.local.tempContainers[cookieStoreId].history;
     await this.storage.persist();
@@ -34,7 +53,13 @@ export class Convert {
     await browser.tabs.reload(tabId);
   }
 
-  async convertPermanentToTempContainer({ cookieStoreId, tabId }) {
+  public async convertPermanentToTempContainer({
+    cookieStoreId,
+    tabId,
+  }: {
+    cookieStoreId: CookieStoreId;
+    tabId: TabId;
+  }) {
     const containerOptions = this.container.generateContainerNameIconColor();
     await browser.contextualIdentities.update(cookieStoreId, {
       name: containerOptions.name,

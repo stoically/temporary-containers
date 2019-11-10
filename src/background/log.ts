@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+// tslint:disable: no-console
 
 class Log {
   public DEBUG = false;
@@ -13,9 +13,9 @@ class Log {
     );
   }
 
-  debug = async (...args) => {
+  public debug = async (...args: any[]) => {
     let date;
-    if (!this.checkedLocalStorage && !window._mochaTest) {
+    if (!this.checkedLocalStorage && !(window as any)._mochaTest) {
       date = new Date().toUTCString();
       await this.checkLocalStoragePromise;
     }
@@ -37,15 +37,15 @@ class Log {
       return arg;
     });
 
-    if (this.stringify && !window._mochaTest) {
-      console.log(date, ...args.map(JSON.stringify));
+    if (this.stringify && !(window as any)._mochaTest) {
+      console.log(date, ...args.map(value => JSON.stringify(value)));
       console.log('------------------------------------------');
     } else {
       console.log(date, ...args.slice(0));
     }
   };
 
-  checkLocalStorage() {
+  public checkLocalStorage() {
     if (this.DEBUG) {
       return;
     }
@@ -70,7 +70,7 @@ class Log {
     );
   }
 
-  onInstalledListener(details) {
+  public onInstalledListener(details: any) {
     browser.runtime.onInstalled.removeListener(this.onInstalledListener);
 
     if (!this.DEBUG && details.temporary) {

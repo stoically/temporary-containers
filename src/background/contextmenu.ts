@@ -1,23 +1,31 @@
+import { TemporaryContainers } from '../background';
+import { Container } from './container';
+import { IPreferences } from './preferences';
+import { WindowId } from './tabs';
+
 export class ContextMenu {
   private nextMenuInstanceId = 0;
   private lastMenuInstanceId = 0;
 
-  private background: any;
-  private pref: any;
-  private container: any;
+  private background: TemporaryContainers;
+  private pref!: IPreferences;
+  private container!: Container;
 
-  constructor(background) {
+  constructor(background: TemporaryContainers) {
     this.background = background;
   }
 
-  initialize() {
+  public initialize() {
     this.pref = this.background.pref;
     this.container = this.background.container;
 
     this.add();
   }
 
-  async onClicked(info, tab) {
+  public async onClicked(
+    info: browser.menus.OnClickData,
+    tab: browser.tabs.Tab
+  ) {
     switch (info.menuItemId) {
       case 'open-link-in-new-temporary-container-tab':
         this.container.createTabInTempContainer({
@@ -67,7 +75,7 @@ export class ContextMenu {
     }
   }
 
-  async onShown(info) {
+  public async onShown(info: { bookmarkId: string }) {
     if (!info.bookmarkId) {
       return;
     }
@@ -89,7 +97,7 @@ export class ContextMenu {
     this.toggleBookmarks(true);
   }
 
-  async toggleBookmarks(visible) {
+  public async toggleBookmarks(visible: boolean) {
     if (
       this.pref.contextMenuBookmarks &&
       this.background.permissions.bookmarks
@@ -115,7 +123,7 @@ export class ContextMenu {
     }
   }
 
-  async add() {
+  public async add() {
     if (this.pref.contextMenu) {
       browser.contextMenus.create({
         id: 'open-link-in-new-temporary-container-tab',
@@ -172,11 +180,11 @@ export class ContextMenu {
     }
   }
 
-  remove() {
+  public remove() {
     return browser.contextMenus.removeAll();
   }
 
-  async windowsOnFocusChanged(windowId) {
+  public async windowsOnFocusChanged(windowId: WindowId) {
     if (windowId === browser.windows.WINDOW_ID_NONE) {
       return;
     }

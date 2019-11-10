@@ -59,13 +59,13 @@ export interface IIsolationDomain extends IIsolationGlobal {
 
 export interface ICookie {
   domain: string;
-  expirationDate: number;
+  expirationDate: string;
   firstPartyDomain: string;
-  httpOnly: boolean;
+  httpOnly: '' | 'true' | 'false';
   name: string;
   path: string;
-  sameSite: string;
-  secure: boolean;
+  sameSite: '' | 'no_restriction' | 'lax' | 'strict';
+  secure: '' | 'true' | 'false';
   url: string;
   value: string;
 }
@@ -125,7 +125,7 @@ export interface IPreferences {
   ignoreRequests: IgnoredDomain[];
   cookies: {
     domain: {
-      [key: string]: ICookie;
+      [key: string]: ICookie[];
     };
   };
   deletesHistory: {
