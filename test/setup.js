@@ -84,7 +84,10 @@ const buildWebExtension = async (build = {}) => {
     permissions: [],
   });
   if (!build.apiFake) {
-    webExtension.background.browser.tabs.query.resolves([{}, {}]);
+    webExtension.background.browser.tabs.query.resolves([
+      { id: 1, url: 'fake' },
+      { id: 2, url: 'fake' },
+    ]);
     webExtension.background.browser.storage.local.get.resolves({});
     webExtension.background.browser.contextualIdentities.get.resolves({});
     webExtension.background.browser.cookies.getAll.resolves([]);
@@ -120,7 +123,6 @@ global.loadBackground = async (preferences = {}) => {
   global.webExtension = webExtension;
   global.browser = webExtension.background.browser;
   global.background = global.webExtension.background.window.tmp;
-  // console.log(global.webExtension.background.window)
 
   await background.initialize();
   if (preferences) {

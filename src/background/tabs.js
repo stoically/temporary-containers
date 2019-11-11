@@ -17,15 +17,15 @@ class Tabs {
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
 
-    return this.maybeReopenAlreadyOpen();
+    return this.handleAlreadyOpen();
   }
 
+  // onUpdated sometimes (often) fires before onCreated
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
   async onCreated(tab) {
-    // onUpdated sometimes fires before onCreated
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
     debug('[onCreated] tab created', tab);
     this.containerMap.set(tab.id, tab.cookieStoreId);
-    const reopened = await this.maybeReloadInTempContainer(tab);
+    const reopened = await this.maybeReopenInTmpContainer(tab);
     if (!reopened) {
       this.maybeMoveTab(tab);
     }
@@ -38,14 +38,9 @@ class Tabs {
     if (changeInfo.url) {
       debug('[onUpdated] url changed', changeInfo);
       this.history.maybeAddHistory(tab, changeInfo.url);
-      this.pageaction.showOrHide(tab);
-
-      if (changeInfo.url.startsWith('moz-extension://')) {
-        debug(
-          '[maybeReloadInTempContainer] moz-extension:// tab, check for mac confirm page',
-          changeInfo
-        );
-        await this.mac.handleConfirmPage(tab);
+      const reopened = await this.maybeReopenInTmpContainer(tab);
+      if (!reopened) {
+        this.pageaction.showOrHide(tab);
       }
     }
   }
@@ -79,6 +74,91 @@ class Tabs {
     ] = false;
     const activatedTab = await browser.tabs.get(activeInfo.tabId);
     this.pageaction.showOrHide(activatedTab);
+  }
+
+  async handleAlreadyOpen() {
+    const tabs = await browser.tabs.query({});
+    return Promise.all(tabs.map(tab => this.maybeReopenInTmpContainer(tab)));
+  }
+
+  async maybeReopenInTmpContainer(tab) {
+    if (this.creatingInSameContainer) {
+      debug(
+        '[maybeReopenInTmpContainer] we are in the process of creating a tab in same container, ignore',
+        tab
+      );
+      return;
+    }
+
+    if (this.container.noContainerTabs[tab.id]) {
+      debug('[maybeReopenInTmpContainer] nocontainer tab, ignore', tab);
+      return;
+    }
+
+    if (tab.url.startsWith('moz-extension://')) {
+      debug('[maybeReopenInTmpContainer] moz-extension url', tab);
+      await this.mac.handleConfirmPage(tab);
+      return;
+    }
+
+    if (!this.pref.automaticMode.active) {
+      debug(
+        '[maybeReopenInTmpContainer] automatic mode not active, we ignore that',
+        tab
+      );
+      return;
+    }
+
+    if (tab.url !== 'about:home' && tab.url !== 'about:newtab') {
+      debug(
+        '[maybeReopenInTmpContainer] not a home/new tab, we dont handle that',
+        tab
+      );
+      return;
+    }
+
+    const deletesHistory =
+      this.pref.deletesHistory.automaticMode === 'automatic';
+
+    if (tab.cookieStoreId === `${this.background.containerPrefix}-default`) {
+      if (this.pref.automaticMode.newTab === 'navigation' && !deletesHistory) {
+        debug(
+          '[maybeReopenInTmpContainer] automatic mode on navigation, setting icon badge',
+          tab
+        );
+        this.browseraction.addBadge(tab.id);
+        return;
+      }
+
+      if (this.pref.automaticMode.newTab === 'created' || deletesHistory) {
+        debug(
+          '[maybeReopenInTmpContainer] about:home/new tab in firefox-default container, reload in temp container',
+          tab
+        );
+        await this.container.reloadTabInTempContainer({
+          tab,
+          deletesHistory,
+        });
+        return true;
+      }
+    }
+
+    if (
+      tab.url === 'about:home' &&
+      this.container.isTemporary(tab.cookieStoreId) &&
+      this.pref.automaticMode.newTab === 'navigation'
+    ) {
+      debug(
+        '[maybeReopenInTmpContainer] about:home and automatic mode on navigation but already in tmp container, open in default container',
+        tab
+      );
+      await browser.tabs.create({
+        cookieStoreId: `${this.background.containerPrefix}-default`,
+      });
+      await this.remove(tab);
+      this.browseraction.addBadge(tab.id);
+      return true;
+    }
   }
 
   maybeCloseRedirectorTab(tabId, tab, changeInfo) {
@@ -132,90 +212,6 @@ class Tabs {
         debug('[onCreated] getting lastCreatedInactiveTab failed', error);
       }
     }
-  }
-
-  async maybeReopenAlreadyOpen() {
-    const tabs = await browser.tabs.query({});
-    return Promise.all(tabs.map(tab => this.maybeReloadInTempContainer(tab)));
-  }
-
-  async maybeReloadInTempContainer(tab) {
-    if (this.container.creatingInSameContainer) {
-      debug(
-        '[maybeReloadInTempContainer] we are in the process of creating a tab in same container, ignore'
-      );
-      return;
-    }
-
-    if (this.container.noContainerTabs[tab.id]) {
-      debug('[maybeReloadInTempContainer] nocontainer tab, ignore');
-      return;
-    }
-
-    if (!this.pref.automaticMode.active) {
-      debug(
-        '[maybeReloadInTempContainer] automatic mode not active and not a moz page, we ignore that',
-        tab
-      );
-      return;
-    }
-
-    const deletesHistoryContainer =
-      this.pref.deletesHistory.automaticMode === 'automatic';
-
-    if (
-      !deletesHistoryContainer &&
-      this.pref.automaticMode.newTab === 'navigation' &&
-      tab.cookieStoreId === `${this.background.containerPrefix}-default` &&
-      (tab.url === 'about:home' || tab.url === 'about:newtab')
-    ) {
-      debug(
-        '[maybeReloadInTempContainer] automatic mode on navigation, setting icon badge',
-        tab
-      );
-      this.browseraction.addBadge(tab.id);
-      return;
-    }
-
-    if (
-      tab.url === 'about:home' &&
-      this.container.isTemporary(tab.cookieStoreId) &&
-      this.pref.automaticMode.newTab === 'navigation'
-    ) {
-      debug(
-        '[maybeReloadInTempContainer] about:home and automatic mode on navigation but already in tmp container, open in default container',
-        tab
-      );
-      await browser.tabs.create({
-        cookieStoreId: `${this.background.containerPrefix}-default`,
-      });
-      await this.remove(tab);
-      this.browseraction.addBadge(tab.id);
-      return true;
-    }
-
-    if (
-      (this.pref.automaticMode.newTab === 'created' ||
-        deletesHistoryContainer) &&
-      tab.cookieStoreId === `${this.background.containerPrefix}-default` &&
-      (tab.url === 'about:home' || tab.url === 'about:newtab')
-    ) {
-      debug(
-        '[maybeReloadInTempContainer] about:home/new tab in firefox-default container, reload in temp container',
-        tab
-      );
-
-      await this.container.reloadTabInTempContainer({
-        tab,
-        deletesHistory: deletesHistoryContainer,
-      });
-      return true;
-    }
-
-    debug(
-      '[maybeReloadInTempContainer] not a home/new tab, we dont handle that',
-      tab
-    );
   }
 
   async createInSameContainer() {

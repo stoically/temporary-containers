@@ -157,18 +157,9 @@ preferencesTestSet.map(preferences => {
 
         browser.contextualIdentities.create.should.not.have.been.called;
       });
-
-      it('two open tabs should not reopen in temporary container', async () => {
-        const background = await loadBareBackground(preferences);
-        browser.tabs.query.resolves([1, 2]);
-        await background.initialize();
-        await nextTick();
-
-        browser.contextualIdentities.create.should.not.have.been.called;
-      });
     });
 
-    describe('tabs loading about:home, about:newtab or about:blank in the default container', () => {
+    describe('tabs loading about:home or about:newtab in the default container', () => {
       if (
         !preferences.automaticMode.active ||
         preferences.automaticMode.newTab === 'navigation'
@@ -495,13 +486,17 @@ preferencesTestSet.map(preferences => {
         await background.cleanup.cleanup(true);
         await new Promise(process.nextTick);
         await browser.tabs._create({ url: 'about:newtab' });
-        (await browser.contextualIdentities.get(
-          (await browser.tabs.create.lastCall.returnValue).cookieStoreId
-        )).name.should.equal('tmp1');
+        (
+          await browser.contextualIdentities.get(
+            (await browser.tabs.create.lastCall.returnValue).cookieStoreId
+          )
+        ).name.should.equal('tmp1');
         await browser.tabs._create({ url: 'about:newtab' });
-        (await browser.contextualIdentities.get(
-          (await browser.tabs.create.lastCall.returnValue).cookieStoreId
-        )).name.should.equal('tmp6');
+        (
+          await browser.contextualIdentities.get(
+            (await browser.tabs.create.lastCall.returnValue).cookieStoreId
+          )
+        ).name.should.equal('tmp6');
       });
     });
   });
