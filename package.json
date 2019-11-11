@@ -64,7 +64,7 @@
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-html-externals": "^0.1.2",
     "parcel-plugin-static-files-copy": "^2.2.1",
-    "prettier": "^1.18.2",
+    "prettier": "1.18.2",
     "rimraf": "^3.0.0",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
