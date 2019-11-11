@@ -8,7 +8,7 @@ export default Vue.extend({
     },
     tooltip: {
       type: Object,
-      default: () => ({
+      default: (): { hidden: boolean; position: string } => ({
         hidden: false,
         position: 'bottom left',
       }),
@@ -31,7 +31,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    domainPattern(newDomainPattern) {
+    domainPattern(newDomainPattern): void {
       this.$emit('update:domainPattern', newDomainPattern);
     },
   },

@@ -125,7 +125,6 @@ export default Vue.extend({
           },
         });
       });
-      this.initialized = false;
     },
     show(target) {
       if (this.history.length - 1 > this.historyPosition) {

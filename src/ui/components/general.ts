@@ -1,11 +1,12 @@
-import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import { mixin } from '../mixin';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   props: {
     app: {
       type: Object,

@@ -1,9 +1,10 @@
 import Vue from 'vue';
+import { Popup } from '../root';
 
 export default Vue.extend({
   props: {
     app: {
-      type: Object,
+      type: Object as () => Popup,
       required: true,
     },
   },
@@ -16,7 +17,7 @@ export default Vue.extend({
     };
   },
   methods: {
-    openInTmp() {
+    openInTmp(): void {
       browser.runtime.sendMessage({
         method: 'createTabInTempContainer',
         payload: {
@@ -25,7 +26,7 @@ export default Vue.extend({
       });
       window.close();
     },
-    openInDeletesHistoryTmp() {
+    openInDeletesHistoryTmp(): void {
       browser.runtime.sendMessage({
         method: 'createTabInTempContainer',
         payload: {
@@ -35,7 +36,7 @@ export default Vue.extend({
       });
       window.close();
     },
-    convertToRegular() {
+    convertToRegular(): void {
       browser.runtime.sendMessage({
         method: 'convertTempContainerToRegular',
         payload: {
@@ -46,7 +47,7 @@ export default Vue.extend({
       });
       window.close();
     },
-    convertToPermanent() {
+    convertToPermanent(): void {
       browser.runtime.sendMessage({
         method: 'convertTempContainerToPermanent',
         payload: {
@@ -58,7 +59,7 @@ export default Vue.extend({
       });
       window.close();
     },
-    convertToTemporary() {
+    convertToTemporary(): void {
       browser.runtime.sendMessage({
         method: 'convertPermanentToTempContainer',
         payload: {

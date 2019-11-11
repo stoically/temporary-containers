@@ -1,13 +1,42 @@
-import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import { PreferencesSchema } from '~/background/preferences';
+import { Permissions } from '~/shared';
+import { App } from '../root';
+import { mixin } from '../mixin';
 
-export default Vue.extend({
+interface Data {
+  preferences: PreferencesSchema;
+  permissions: Permissions;
+  lastSyncExport:
+    | false
+    | {
+        date: number;
+        version: string;
+      };
+  lastFileExport:
+    | false
+    | {
+        date: number;
+        version: string;
+      };
+  download: false | { id: number; date: number; version: string };
+  addonVersion: string;
+}
+
+interface ExportedPreferences {
+  version: string;
+  date: number;
+  preferences: PreferencesSchema;
+}
+
+export default mixins(mixin).extend({
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },
-  data() {
+  data(): Data {
     return {
       preferences: this.app.preferences,
       permissions: this.app.permissions,
@@ -49,20 +78,18 @@ export default Vue.extend({
     }
   },
   methods: {
-    getPreferences() {
+    getPreferences(): ExportedPreferences {
       const preferences = this.clone(this.preferences);
       preferences.isolation.global.excludedContainers = [];
 
-      const exportedPreferences = {
+      return {
         version: browser.runtime.getManifest().version,
         date: Date.now(),
         preferences,
       };
-
-      return exportedPreferences;
     },
 
-    async exportPreferences() {
+    async exportPreferences(): Promise<void> {
       if (!this.permissions.downloads) {
         this.permissions.downloads = await browser.permissions.request({
           permissions: ['downloads'],
@@ -111,7 +138,7 @@ export default Vue.extend({
       }
     },
 
-    async exportPreferencesSync() {
+    async exportPreferencesSync(): Promise<void> {
       try {
         const { export: importPreferences } = await browser.storage.sync.get(
           'export'
@@ -142,7 +169,7 @@ export default Vue.extend({
       }
     },
 
-    async importPreferencesSync() {
+    async importPreferencesSync(): Promise<void> {
       try {
         const { export: importPreferences } = await browser.storage.sync.get(
           'export'
@@ -166,7 +193,11 @@ export default Vue.extend({
       }
     },
 
-    confirmedImportPreferences(importPreferences, fileName) {
+    confirmedImportPreferences(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      importPreferences: any,
+      fileName?: string
+    ): boolean {
       return window.confirm(`
         ${
           fileName
@@ -179,8 +210,12 @@ export default Vue.extend({
       `);
     },
 
-    async importPreferences(event) {
-      const file = event.target.files[0];
+    async importPreferences({
+      target,
+    }: {
+      target: HTMLInputElement;
+    }): Promise<void> {
+      const [file] = target.files as FileList;
       if (!file) {
         return;
       }
@@ -188,8 +223,11 @@ export default Vue.extend({
       const importPreferences = await new Promise(resolve => {
         const reader = new FileReader();
         reader.readAsText(file, 'UTF-8');
-        reader.onload = async event => {
+        reader.onload = async (event): Promise<void> => {
           try {
+            if (!event.target || typeof event.target.result !== 'string') {
+              throw new Error('invalid input');
+            }
             resolve(JSON.parse(event.target.result));
           } catch (error) {
             // eslint-disable-next-line no-console
@@ -204,7 +242,8 @@ export default Vue.extend({
       }
     },
 
-    async saveImportedPreferences(importedPreferences) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async saveImportedPreferences(importedPreferences: any): Promise<void> {
       // TODO file firefox bug, we're in a input handler, so requesting permissions should work
       if (!this.permissions.notifications) {
         importedPreferences.preferences.notifications = false;
@@ -228,7 +267,7 @@ export default Vue.extend({
       this.$root.$emit('initialize', { showMessage: 'Preferences imported.' });
     },
 
-    async wipePreferencesSync() {
+    async wipePreferencesSync(): Promise<void> {
       if (
         !window.confirm(`
         Wipe Firefox sync export?\n
@@ -253,28 +292,28 @@ export default Vue.extend({
       }
     },
 
-    addDownloadListener() {
+    addDownloadListener(): void {
       browser.downloads.onChanged.addListener(async downloadDelta => {
-        if (!this.download) {
+        console.log('downloadDelta', downloadDelta);
+        if (
+          !this.download ||
+          this.download.id !== downloadDelta.id ||
+          !downloadDelta.state ||
+          downloadDelta.state.current !== 'complete'
+        ) {
           return;
         }
-        if (
-          this.download.id === downloadDelta.id &&
-          downloadDelta.state.current === 'complete'
-        ) {
-          URL.revokeObjectURL(downloadDelta.url);
-          const lastFileExport = {
-            date: this.download.date,
-            version: this.download.version,
-          };
-          this.lastFileExport = lastFileExport;
-          this.download = false;
+        const lastFileExport = {
+          date: this.download.date,
+          version: this.download.version,
+        };
+        this.lastFileExport = lastFileExport;
+        this.download = false;
 
-          browser.runtime.sendMessage({
-            method: 'lastFileExport',
-            payload: { lastFileExport },
-          });
-        }
+        browser.runtime.sendMessage({
+          method: 'lastFileExport',
+          payload: { lastFileExport },
+        });
       });
     },
   },

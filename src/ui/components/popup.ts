@@ -8,6 +8,7 @@ import Statistics from './statistics.vue';
 import Message from './message.vue';
 import Breadcrumb from './breadcrumb.vue';
 import Glossary from './glossary/index.vue';
+import { App } from '../root';
 
 export default Vue.extend({
   components: {
@@ -22,7 +23,7 @@ export default Vue.extend({
   },
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },
@@ -33,7 +34,7 @@ export default Vue.extend({
     };
   },
   watch: {
-    app(app) {
+    app(app: App): void {
       if (!app.initialized) {
         return;
       }
@@ -50,25 +51,25 @@ export default Vue.extend({
         });
 
         this.show = true;
-        $.tab('change tab', this.app.preferences.ui.popupDefaultTab);
+        $(document).tab('change tab', this.app.preferences.ui.popupDefaultTab);
       });
     },
   },
   methods: {
-    changeTab(tab) {
+    changeTab(tab: string): void {
       $('.ui.sidebar').sidebar('hide');
-      $.tab('change tab', tab);
+      $(document).tab('change tab', tab);
     },
-    toggleSidebar() {
+    toggleSidebar(): void {
       $('.ui.sidebar').sidebar('toggle');
     },
-    createTmp() {
+    createTmp(): void {
       browser.runtime.sendMessage({
         method: 'createTabInTempContainer',
       });
       window.close();
     },
-    createDeletesHistoryTmp() {
+    createDeletesHistoryTmp(): void {
       browser.runtime.sendMessage({
         method: 'createTabInTempContainer',
         payload: {
@@ -77,12 +78,11 @@ export default Vue.extend({
       });
       window.close();
     },
-    async openPreferences() {
-      const tabs = await browser.tabs.query({
+    async openPreferences(): Promise<void> {
+      const [tab] = await browser.tabs.query({
         url: browser.runtime.getURL('options.html'),
       });
-      if (tabs.length) {
-        const tab = tabs[0];
+      if (tab && tab.id && tab.windowId) {
         await browser.tabs.update(tab.id, { active: true });
         await browser.tabs.reload(tab.id);
         if (tab.windowId !== browser.windows.WINDOW_ID_CURRENT) {
@@ -95,7 +95,7 @@ export default Vue.extend({
       }
       window.close();
     },
-    toggleIsolation() {
+    toggleIsolation(): void {
       this.app.preferences.isolation.active = !this.app.preferences.isolation
         .active;
     },

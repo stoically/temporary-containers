@@ -1,4 +1,5 @@
-import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import { mixin } from '../mixin';
 
 import General from './general.vue';
 import Isolation from './isolation/index.vue';
@@ -8,7 +9,7 @@ import ExportImport from './export-import.vue';
 import Message from './message.vue';
 import Glossary from './glossary/index.vue';
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   components: {
     General,
     Isolation,
@@ -50,7 +51,7 @@ export default Vue.extend({
     });
   },
   methods: {
-    initTabs() {
+    initTabs(): void {
       $('.menu .item').tab({
         history: true,
         historyType: 'hash',
