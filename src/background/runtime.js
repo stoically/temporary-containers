@@ -39,9 +39,11 @@ class Runtime {
         await this.storage.persist();
 
         if (
-          (await browser.tabs.query({
-            url: browser.runtime.getURL('options.html'),
-          })).length
+          (
+            await browser.tabs.query({
+              url: browser.runtime.getURL('options.html'),
+            })
+          ).length
         ) {
           browser.runtime.sendMessage({
             info: 'preferencesUpdated',
