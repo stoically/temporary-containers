@@ -1,0 +1,165 @@
+import {
+  CONTAINER_COLORS,
+  CONTAINER_ICONS,
+  TOOLBAR_ICON_COLORS,
+  IGNORED_DOMAINS,
+  REDIRECTOR_DOMAINS,
+} from './shared';
+
+export type Milliseconds = number;
+export type IgnoredDomain = typeof IGNORED_DOMAINS[number] | string;
+export type RedirectorDomain = typeof REDIRECTOR_DOMAINS[number] | string;
+
+export type IsolationAction =
+  | 'never'
+  | 'notsamedomain'
+  | 'notsamedomainexact'
+  | 'always'
+  | 'global';
+
+export interface IsolationGlobal {
+  navigation: {
+    action: IsolationAction;
+  };
+  mouseClick: {
+    middle: {
+      action: IsolationAction;
+      container: 'default' | 'deleteshistory';
+    };
+    ctrlleft: {
+      action: IsolationAction;
+      container: 'default' | 'deleteshistory';
+    };
+    left: {
+      action: IsolationAction;
+      container: 'default' | 'deleteshistory';
+    };
+  };
+  excluded: {
+    [key: string]: object;
+  };
+  excludedContainers: {
+    [key: string]: object;
+  };
+}
+
+export interface IsolationDomain extends IsolationGlobal {
+  pattern: string;
+  always: {
+    action: 'enabled' | 'disabled';
+    allowedInPermanent: boolean;
+    allowedInTemporary: boolean;
+  };
+}
+
+export interface Cookie {
+  [key: string]: string;
+  domain: string;
+  expirationDate: string;
+  firstPartyDomain: string;
+  httpOnly: '' | 'true' | 'false';
+  name: string;
+  path: string;
+  sameSite: '' | 'no_restriction' | 'lax' | 'strict';
+  secure: '' | 'true' | 'false';
+  url: string;
+  value: string;
+}
+
+export type ToolbarIconColor =
+  | 'default'
+  | 'black-simple'
+  | 'blue-simple'
+  | 'red-simple'
+  | 'white-simple';
+
+export interface PreferencesSchema {
+  automaticMode: {
+    active: boolean;
+    newTab: 'created' | 'navigation';
+  };
+  notifications: boolean;
+  container: {
+    namePrefix: string;
+    color: ContainerColor;
+    colorRandom: boolean;
+    colorRandomExcluded: ContainerColor[];
+    icon: ContainerIcon;
+    iconRandom: boolean;
+    iconRandomExcluded: ContainerIcon[];
+    numberMode: 'keep' | 'keepuntilrestart' | 'reuse' | 'hide';
+    removal: Milliseconds;
+  };
+  iconColor: ToolbarIconColor;
+  isolation: {
+    active: boolean;
+    global: IsolationGlobal;
+    domain: IsolationDomain[];
+    mac: {
+      action: 'enabled' | 'disabled';
+    };
+  };
+  browserActionPopup: boolean;
+  pageAction: boolean;
+  contextMenu: boolean;
+  contextMenuBookmarks: boolean;
+  keyboardShortcuts: {
+    AltC: boolean;
+    AltP: boolean;
+    AltN: boolean;
+    AltShiftC: boolean;
+    AltX: boolean;
+    AltO: boolean;
+    AltI: boolean;
+  };
+  replaceTabs: boolean;
+  closeRedirectorTabs: {
+    active: boolean;
+    delay: number;
+    domains: RedirectorDomain[];
+  };
+  ignoreRequests: IgnoredDomain[];
+  cookies: {
+    domain: {
+      [key: string]: Cookie[];
+    };
+  };
+  deletesHistory: {
+    active: boolean;
+    automaticMode: 'never' | 'automatic';
+    contextMenu: boolean;
+    contextMenuBookmarks: boolean;
+    containerAlwaysPerDomain: 'never' | 'automatic';
+    containerIsolation: 'never' | 'automatic';
+    containerRemoval: Milliseconds;
+    containerMouseClicks: 'never' | 'automatic';
+    statistics: boolean;
+  };
+  statistics: boolean;
+  ui: {
+    expandPreferences: boolean;
+    popupDefaultTab:
+      | 'isolation-global'
+      | 'isolation-per-domain'
+      | 'isolation-mac'
+      | 'actions'
+      | 'statistics';
+  };
+}
+
+export interface Tab extends browser.tabs.Tab {
+  id: number;
+  url: string;
+  windowId: number;
+}
+
+export interface Permissions {
+  bookmarks: boolean;
+  downloads: boolean;
+  history: boolean;
+  notifications: boolean;
+}
+
+export type ContainerColor = typeof CONTAINER_COLORS[number];
+export type ContainerIcon = typeof CONTAINER_ICONS[number];
+export type ToolbarIconColors = typeof TOOLBAR_ICON_COLORS[number];

@@ -1,8 +1,7 @@
 import mixins from 'vue-typed-mixins';
-import { PreferencesSchema } from '~/background/preferences';
-import { Permissions } from '~/shared';
 import { App } from '../root';
 import { mixin } from '../mixin';
+import { Permissions, PreferencesSchema } from '~/types';
 
 interface Data {
   preferences: PreferencesSchema;

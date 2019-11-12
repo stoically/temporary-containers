@@ -1,13 +1,21 @@
 import Vue from 'vue';
 
+interface Data {
+  message: false | string;
+  error: boolean;
+  initializeLoader: boolean;
+  initializeError: boolean;
+  initializeErrorMessage: null | string;
+}
+
 export default Vue.extend({
-  data() {
+  data(): Data {
     return {
       message: false,
       error: false,
       initializeLoader: false,
       initializeError: false,
-      initializeErrorMessage: false,
+      initializeErrorMessage: null,
     };
   },
   mounted() {
@@ -18,29 +26,35 @@ export default Vue.extend({
       this.initializeErrorMessage = searchParams.get('error');
     }
 
-    this.$root.$on('showMessage', (message, options = { close: true }) => {
-      this.error = false;
-      this.message = message;
+    this.$root.$on(
+      'showMessage',
+      (message: string, options: { close: boolean } = { close: true }) => {
+        this.error = false;
+        this.message = message;
 
-      if (options.close) {
-        setTimeout(() => {
-          this.message = false;
-        }, 3000);
+        if (options.close) {
+          setTimeout(() => {
+            this.message = false;
+          }, 3000);
+        }
       }
-    });
+    );
     this.$root.$on('hideMessage', () => {
       this.message = false;
     });
-    this.$root.$on('showError', (message, options = { close: false }) => {
-      this.error = true;
-      this.message = message;
+    this.$root.$on(
+      'showError',
+      (message: string, options: { close: boolean } = { close: false }) => {
+        this.error = true;
+        this.message = message;
 
-      if (options.close) {
-        setTimeout(() => {
-          this.message = false;
-        }, 5000);
+        if (options.close) {
+          setTimeout(() => {
+            this.message = false;
+          }, 5000);
+        }
       }
-    });
+    );
     this.$root.$on('showInitializeLoader', () => {
       this.initializeLoader = true;
     });
@@ -52,10 +66,10 @@ export default Vue.extend({
     });
   },
   methods: {
-    reload() {
+    reload(): void {
       browser.runtime.reload();
     },
-    async uninstall() {
+    async uninstall(): Promise<void> {
       if (
         !window.confirm(`
         Uninstall?
@@ -69,7 +83,7 @@ export default Vue.extend({
       });
       browser.management.uninstallSelf();
     },
-    debug() {
+    debug(): void {
       browser.tabs.create({
         url: 'https://github.com/stoically/temporary-containers/issues',
       });

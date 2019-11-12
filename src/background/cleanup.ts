@@ -3,9 +3,9 @@ import { Container, CookieStoreId } from './container';
 import { History } from './history';
 import { delay, PQueue } from './lib';
 import { debug } from './log';
-import { PreferencesSchema } from './preferences';
 import { Statistics } from './statistics';
 import { Storage } from './storage';
+import { PreferencesSchema } from '~/types';
 
 export class Cleanup {
   private background: TemporaryContainers;

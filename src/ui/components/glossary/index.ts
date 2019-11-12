@@ -2,13 +2,25 @@ import Vue from 'vue';
 
 import GlossaryLink from './link.vue';
 
-const glossaryDefaults = () => ({
+interface GlossaryDefaults {
+  origin: string;
+  active: string;
+  section: string;
+  history: string[];
+  historyPosition: number;
+}
+
+const glossaryDefaults = (): GlossaryDefaults => ({
   origin: '',
   active: '',
   section: '',
   history: [],
   historyPosition: 0,
 });
+
+interface Data extends GlossaryDefaults {
+  createdElements: HTMLSpanElement[];
+}
 
 export default Vue.extend({
   components: {
@@ -20,14 +32,14 @@ export default Vue.extend({
       required: true,
     },
   },
-  data() {
+  data(): Data {
     return {
       createdElements: [],
       ...glossaryDefaults(),
     };
   },
   watch: {
-    app(newApp) {
+    app(newApp): void {
       if (!newApp.initialized) {
         this.cleanup();
         return;
@@ -41,12 +53,12 @@ export default Vue.extend({
     },
   },
   mounted() {
-    this.$root.$on('show', target => {
+    this.$root.$on('show', (target: string) => {
       this.show(target);
     });
   },
   methods: {
-    initialize() {
+    initialize(): void {
       $('[data-glossary]').each((idx, element) => {
         if (element.dataset.glossaryLabel !== '' && element.dataset.glossary) {
           const infoText = document.createElement('span');
@@ -91,18 +103,26 @@ export default Vue.extend({
             if (!iconHovered) {
               return false;
             }
-            this.origin = this.active = popupElement.dataset.glossary;
 
+            const glossary = ((popupElement as unknown) as HTMLElement).dataset
+              .glossary;
+            if (!glossary) {
+              return;
+            }
+            this.origin = this.active = glossary;
+
+            const glossaryRef = this.$refs.glossary as HTMLElement;
+            const glossaryContainer = this.$refs.glossary as HTMLElement;
             if (['Automatic Mode', 'Toolbar Popup'].includes(this.origin)) {
-              this.$refs.glossary.style.minHeight = 'unset';
-              this.$refs.glossary.style.maxHeight = 'unset';
-              this.$refs.glossaryContainer.style.minWidth = '450px';
-              this.$refs.glossaryContainer.style.maxWidth = '450px';
+              glossaryRef.style.minHeight = 'unset';
+              glossaryRef.style.maxHeight = 'unset';
+              glossaryContainer.style.minWidth = '450px';
+              glossaryContainer.style.maxWidth = '450px';
             } else {
-              this.$refs.glossary.style.minHeight = '';
-              this.$refs.glossary.style.maxHeight = '';
-              this.$refs.glossaryContainer.style.minWidth = '';
-              this.$refs.glossaryContainer.style.maxWidth = '';
+              glossaryRef.style.minHeight = '';
+              glossaryRef.style.maxHeight = '';
+              glossaryContainer.style.minWidth = '';
+              glossaryContainer.style.maxWidth = '';
             }
           },
 
@@ -126,7 +146,7 @@ export default Vue.extend({
         });
       });
     },
-    show(target) {
+    show(target: string): void {
       if (this.history.length - 1 > this.historyPosition) {
         this.history.splice(this.historyPosition + 1);
       }
@@ -135,22 +155,22 @@ export default Vue.extend({
 
       this.active = target;
     },
-    historyBack() {
+    historyBack(): void {
       this.active = this.history[--this.historyPosition];
     },
-    historyForward() {
+    historyForward(): void {
       this.active = this.history[++this.historyPosition];
     },
-    external(url) {
+    external(url: string): void {
       browser.tabs.create({
         url,
       });
     },
-    stop() {
+    stop(event: Event): void {
       event.stopPropagation();
       event.preventDefault();
     },
-    cleanup() {
+    cleanup(): void {
       this.createdElements.map(created => {
         created.remove();
       });

@@ -1,8 +1,8 @@
 import { TemporaryContainers } from '../background';
 import { Isolation } from './isolation';
 import { debug } from './log';
-import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
+import { PreferencesSchema } from '~/types';
 
 export class Cookies {
   private background: TemporaryContainers;

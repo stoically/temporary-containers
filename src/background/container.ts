@@ -1,15 +1,10 @@
 import { Permissions, TemporaryContainers } from '../background';
 import { delay, psl } from './lib';
 import { debug } from './log';
-import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 import { TabId, Tabs } from './tabs';
-import {
-  ContainerColor,
-  ContainerIcon,
-  CONTAINER_COLORS,
-  CONTAINER_ICONS,
-} from '~/shared';
+import { CONTAINER_COLORS, CONTAINER_ICONS } from '~/shared';
+import { ContainerColor, ContainerIcon, PreferencesSchema } from '~/types';
 
 export type CookieStoreId = string;
 

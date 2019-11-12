@@ -1,8 +1,8 @@
 import Vue, { VNode } from 'vue';
 import { ExtendedVue } from 'vue/types/vue';
 import { StorageLocal } from '~/background/storage';
-import { PreferencesSchema } from '~/background/preferences';
-import { Permissions, getPermissions, Tab } from '~/shared';
+import { getPermissions } from '~/shared';
+import { Tab, Permissions, PreferencesSchema } from '~/types';
 
 interface Data {
   app: App | UninitializedApp;
@@ -41,10 +41,19 @@ declare global {
   interface String {
     capitalize: () => string;
   }
+  interface Array<T> {
+    move: (from: number, to: number) => void;
+  }
 }
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+Array.prototype.move = function(from, to) {
+  this.splice(to, 0, this.splice(from, 1)[0]);
 };
 
 export default (

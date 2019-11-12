@@ -3,6 +3,7 @@ import Vue from 'vue';
 import Global from './global.vue';
 import PerDomain from './perdomain.vue';
 import Mac from './mac.vue';
+import { App } from '~/ui/root';
 
 export default Vue.extend({
   components: {
@@ -12,7 +13,7 @@ export default Vue.extend({
   },
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },

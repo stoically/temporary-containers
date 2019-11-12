@@ -1,6 +1,6 @@
 import { TemporaryContainers } from '../background';
-import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
+import { PreferencesSchema } from '~/types';
 
 export class PageAction {
   private background: TemporaryContainers;

@@ -1,15 +1,4 @@
-export interface Tab extends browser.tabs.Tab {
-  id: number;
-  url: string;
-  windowId: number;
-}
-
-export interface Permissions {
-  bookmarks: boolean;
-  downloads: boolean;
-  history: boolean;
-  notifications: boolean;
-}
+import { Permissions } from './types';
 
 export const getPermissions = async (): Promise<Permissions> => {
   const { permissions } = await browser.permissions.getAll();
@@ -35,7 +24,6 @@ export const CONTAINER_COLORS = [
   'purple', // #AF51F5
   'toolbar',
 ];
-export type ContainerColor = typeof CONTAINER_COLORS[number];
 
 export const CONTAINER_ICONS = [
   'fingerprint',
@@ -52,7 +40,6 @@ export const CONTAINER_ICONS = [
   'chill',
   'fence',
 ];
-export type ContainerIcon = typeof CONTAINER_ICONS[number];
 
 export const TOOLBAR_ICON_COLORS = [
   'default',
@@ -61,7 +48,14 @@ export const TOOLBAR_ICON_COLORS = [
   'red-simple',
   'white-simple',
 ];
-export type ToolbarIconColors = typeof TOOLBAR_ICON_COLORS[number];
+
+export const IGNORED_DOMAINS = ['getpocket.com', 'addons.mozilla.org'];
+
+export const REDIRECTOR_DOMAINS = [
+  't.co',
+  'outgoing.prod.mozaws.net',
+  'slack-redir.net',
+];
 
 export const formatBytes = (bytes: number, decimals = 2): string => {
   // https://stackoverflow.com/a/18650828

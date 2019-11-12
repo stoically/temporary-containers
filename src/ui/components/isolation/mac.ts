@@ -1,9 +1,10 @@
 import Vue from 'vue';
+import { App } from '~/ui/root';
 
 export default Vue.extend({
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },

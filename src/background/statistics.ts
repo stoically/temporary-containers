@@ -2,9 +2,9 @@ import { TemporaryContainers } from '../background';
 import { Cleanup } from './cleanup';
 import { Container, CookieStoreId } from './container';
 import { debug } from './log';
-import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 import { formatBytes } from '../shared';
+import { PreferencesSchema } from '~/types';
 
 export class Statistics {
   private removedContainerCount = 0;

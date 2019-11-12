@@ -1,11 +1,9 @@
-import Vue from 'vue';
 import DomainPattern from '../domainpattern.vue';
 import Settings from './settings.vue';
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-Array.prototype.move = function(from, to) {
-  this.splice(to, 0, this.splice(from, 1)[0]);
-};
+import { App } from '~/ui/root';
+import mixins from 'vue-typed-mixins';
+import { mixin } from '~/ui/mixin';
+import { IsolationDomain } from '~/types';
 
 const domainDefaults = {
   pattern: '',
@@ -31,14 +29,18 @@ const domainDefaults = {
   excluded: {},
 };
 
-export default Vue.extend({
+interface UIIsolationDomain extends IsolationDomain {
+  _index: number;
+}
+
+export default mixins(mixin).extend({
   components: {
     DomainPattern,
     Settings,
   },
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },
@@ -53,17 +55,17 @@ export default Vue.extend({
       show: false,
       saved: false,
       empty: true,
+      editClicked: false,
     };
   },
   computed: {
-    isolationDomains() {
+    isolationDomains(): UIIsolationDomain[] {
       return this.preferences.isolation.domain.reduce(
-        (accumulator, isolated, index) => {
-          isolated._index = index;
+        (accumulator: UIIsolationDomain[], isolated, index) => {
           if (!isolated.pattern.includes(this.isolationDomainFilter)) {
             return accumulator;
           }
-          accumulator.push(isolated);
+          accumulator.push({ ...isolated, _index: index });
           return accumulator;
         },
         []
@@ -72,7 +74,7 @@ export default Vue.extend({
   },
   watch: {
     domain: {
-      handler(domain) {
+      handler(domain): void {
         if (this.editing && !domain.pattern.trim()) {
           this.editing = false;
           this.domain = this.clone(domain);
@@ -120,7 +122,7 @@ export default Vue.extend({
       this.show = true;
     });
 
-    $.fn.form.settings.rules.domainPattern = value => {
+    $.fn.form.settings.rules!.domainPattern = (value: string): boolean => {
       if (this.editing) {
         this.reset();
         return true;
@@ -175,11 +177,11 @@ export default Vue.extend({
     });
 
     if (this.popup) {
-      if (!this.app.activeTab.url.startsWith('http')) {
+      if (!this.app.activeTab?.url.startsWith('http')) {
         return;
       }
       const isolationDomainIndex = this.preferences.isolation.domain.findIndex(
-        domain => domain.pattern === this.app.activeTab.parsedUrl.hostname
+        domain => domain.pattern === this.app.activeTab?.parsedUrl.hostname
       );
       if (isolationDomainIndex >= 0) {
         this.edit(isolationDomainIndex);
@@ -189,7 +191,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    reset() {
+    reset(): void {
       this.domain = this.clone(domainDefaults);
       this.domain.pattern = '';
       this.$nextTick(() => {
@@ -204,49 +206,42 @@ export default Vue.extend({
       }
       this.resetDropdowns();
     },
-    resetDropdowns() {
+    resetDropdowns(): void {
       $('#isolationDomain .ui.dropdown').dropdown('destroy');
       this.$nextTick(() => {
         $('#isolationDomain .ui.dropdown').dropdown();
       });
     },
-    edit(index) {
+    edit(index: number): void {
       this.editClicked = true;
       this.editing = true;
       this.domain = this.preferences.isolation.domain[index];
       this.resetDropdowns();
 
       if (!this.preferences.ui.expandPreferences) {
-        $('#isolationPerDomainAccordion').accordion(
-          this.domain.always.action === domainDefaults.always.action
-            ? 'close'
-            : 'open',
-          0
-        );
-        $('#isolationPerDomainAccordion').accordion(
-          this.domain.navigation.action === domainDefaults.navigation.action
-            ? 'close'
-            : 'open',
-          1
-        );
-        $('#isolationPerDomainAccordion').accordion(
-          this.domain.mouseClick.middle.action ===
-            domainDefaults.mouseClick.middle.action &&
-            this.domain.mouseClick.ctrlleft.action ===
-              domainDefaults.mouseClick.ctrlleft.action &&
-            this.domain.mouseClick.left.action ===
-              domainDefaults.mouseClick.left.action
-            ? 'close'
-            : 'open',
-          2
-        );
-        $('#isolationPerDomainAccordion').accordion(
-          !Object.keys(this.domain.excluded).length ? 'close' : 'open',
-          3
-        );
+        this.domain.always.action === domainDefaults.always.action
+          ? $('#isolationPerDomainAccordion').accordion('close', 0)
+          : $('#isolationPerDomainAccordion').accordion('open', 0);
+
+        this.domain.navigation.action === domainDefaults.navigation.action
+          ? $('#isolationPerDomainAccordion').accordion('close', 1)
+          : $('#isolationPerDomainAccordion').accordion('open', 1);
+
+        this.domain.mouseClick.middle.action ===
+          domainDefaults.mouseClick.middle.action &&
+        this.domain.mouseClick.ctrlleft.action ===
+          domainDefaults.mouseClick.ctrlleft.action &&
+        this.domain.mouseClick.left.action ===
+          domainDefaults.mouseClick.left.action
+          ? $('#isolationPerDomainAccordion').accordion('close', 2)
+          : $('#isolationPerDomainAccordion').accordion('open', 2);
+
+        !Object.keys(this.domain.excluded).length
+          ? $('#isolationPerDomainAccordion').accordion('close', 3)
+          : $('#isolationPerDomainAccordion').accordion('open', 3);
       }
     },
-    remove(index, pattern) {
+    remove(index: number, pattern: string): void {
       if (
         window.confirm(`
         Remove ${pattern}?
@@ -259,10 +254,10 @@ export default Vue.extend({
         }
       }
     },
-    removeExcludedDomain(excludedDomainPattern) {
+    removeExcludedDomain(excludedDomainPattern: string): void {
       this.$delete(this.domain.excluded, excludedDomainPattern);
     },
-    expandIsolationDomainFilter() {
+    expandIsolationDomainFilter(): void {
       if (!this.popup) {
         return;
       }
@@ -271,7 +266,7 @@ export default Vue.extend({
         $('#isolationDomainsAccordion').accordion('open', 0);
       }, 200);
     },
-    move(event) {
+    move(event: { moved: { oldIndex: number; newIndex: number } }): void {
       if (event.moved) {
         this.preferences.isolation.domain.move(
           this.isolationDomains[event.moved.oldIndex]._index,
@@ -279,8 +274,8 @@ export default Vue.extend({
         );
       }
     },
-    focusIsolationDomainFilter() {
-      this.$refs.isolationDomainFilter.focus();
+    focusIsolationDomainFilter(): void {
+      (this.$refs.isolationDomainFilter as HTMLElement).focus();
     },
   },
 });

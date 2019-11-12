@@ -2,6 +2,7 @@ import Vue from 'vue';
 
 import DomainPattern from '../domainpattern.vue';
 import Settings from './settings.vue';
+import { App } from '~/ui/root';
 
 export default Vue.extend({
   components: {
@@ -10,7 +11,7 @@ export default Vue.extend({
   },
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },
@@ -62,7 +63,11 @@ export default Vue.extend({
       this.show = true;
     });
 
-    const excludeContainers = [];
+    const excludeContainers: {
+      name: string;
+      value: string;
+      selected: boolean;
+    }[] = [];
     const containers = await browser.contextualIdentities.query({});
     containers.map(container => {
       if (this.storage.tempContainers[container.cookieStoreId]) {
@@ -96,8 +101,7 @@ export default Vue.extend({
       onRemove: removedContainer => {
         this.$delete(
           this.preferences.isolation.global.excludedContainers,
-          removedContainer,
-          {}
+          removedContainer
         );
       },
     });
@@ -118,7 +122,7 @@ export default Vue.extend({
     });
   },
   methods: {
-    removeExcludedDomain(excludedDomainPattern) {
+    removeExcludedDomain(excludedDomainPattern: string): void {
       this.$delete(
         this.preferences.isolation.global.excluded,
         excludedDomainPattern

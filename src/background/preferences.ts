@@ -1,155 +1,9 @@
 import { TemporaryContainers } from '../background';
 import { BrowserAction } from './browseraction';
-import { ContainerColor, ContainerIcon } from '~/shared';
 import { ContextMenu } from './contextmenu';
 import { PageAction } from './pageaction';
-
-const IGNORED_DOMAINS = ['getpocket.com', 'addons.mozilla.org'];
-const REDIRECTOR_DOMAINS = [
-  't.co',
-  'outgoing.prod.mozaws.net',
-  'slack-redir.net',
-];
-
-export type Milliseconds = number;
-export type IgnoredDomain = typeof IGNORED_DOMAINS[number] | string;
-export type RedirectorDomain = typeof REDIRECTOR_DOMAINS[number] | string;
-
-export type IsolationAction =
-  | 'never'
-  | 'notsamedomain'
-  | 'notsamedomainexact'
-  | 'always'
-  | 'global';
-
-export interface IsolationGlobal {
-  navigation: {
-    action: IsolationAction;
-  };
-  mouseClick: {
-    middle: {
-      action: IsolationAction;
-      container: 'default' | 'deleteshistory';
-    };
-    ctrlleft: {
-      action: IsolationAction;
-      container: 'default' | 'deleteshistory';
-    };
-    left: {
-      action: IsolationAction;
-      container: 'default' | 'deleteshistory';
-    };
-  };
-  excluded: {
-    [key: string]: object;
-  };
-  excludedContainers: {
-    [key: string]: object;
-  };
-}
-
-export interface IsolationDomain extends IsolationGlobal {
-  pattern: string;
-  always: {
-    action: 'enabled' | 'disabled';
-    allowedInPermanent: boolean;
-    allowedInTemporary: boolean;
-  };
-}
-
-export interface Cookie {
-  domain: string;
-  expirationDate: string;
-  firstPartyDomain: string;
-  httpOnly: '' | 'true' | 'false';
-  name: string;
-  path: string;
-  sameSite: '' | 'no_restriction' | 'lax' | 'strict';
-  secure: '' | 'true' | 'false';
-  url: string;
-  value: string;
-}
-
-export type ToolbarIconColor =
-  | 'default'
-  | 'black-simple'
-  | 'blue-simple'
-  | 'red-simple'
-  | 'white-simple';
-
-export interface PreferencesSchema {
-  automaticMode: {
-    active: boolean;
-    newTab: 'created' | 'navigation';
-  };
-  notifications: boolean;
-  container: {
-    namePrefix: string;
-    color: ContainerColor;
-    colorRandom: boolean;
-    colorRandomExcluded: ContainerColor[];
-    icon: ContainerIcon;
-    iconRandom: boolean;
-    iconRandomExcluded: ContainerIcon[];
-    numberMode: 'keep' | 'keepuntilrestart' | 'reuse' | 'hide';
-    removal: Milliseconds;
-  };
-  iconColor: ToolbarIconColor;
-  isolation: {
-    active: boolean;
-    global: IsolationGlobal;
-    domain: IsolationDomain[];
-    mac: {
-      action: 'enabled' | 'disabled';
-    };
-  };
-  browserActionPopup: boolean;
-  pageAction: boolean;
-  contextMenu: boolean;
-  contextMenuBookmarks: boolean;
-  keyboardShortcuts: {
-    AltC: boolean;
-    AltP: boolean;
-    AltN: boolean;
-    AltShiftC: boolean;
-    AltX: boolean;
-    AltO: boolean;
-    AltI: boolean;
-  };
-  replaceTabs: boolean;
-  closeRedirectorTabs: {
-    active: boolean;
-    delay: number;
-    domains: RedirectorDomain[];
-  };
-  ignoreRequests: IgnoredDomain[];
-  cookies: {
-    domain: {
-      [key: string]: Cookie[];
-    };
-  };
-  deletesHistory: {
-    active: boolean;
-    automaticMode: 'never' | 'automatic';
-    contextMenu: boolean;
-    contextMenuBookmarks: boolean;
-    containerAlwaysPerDomain: 'never' | 'automatic';
-    containerIsolation: 'never' | 'automatic';
-    containerRemoval: Milliseconds;
-    containerMouseClicks: 'never' | 'automatic';
-    statistics: boolean;
-  };
-  statistics: boolean;
-  ui: {
-    expandPreferences: boolean;
-    popupDefaultTab:
-      | 'isolation-global'
-      | 'isolation-per-domain'
-      | 'isolation-mac'
-      | 'actions'
-      | 'statistics';
-  };
-}
+import { PreferencesSchema } from '~/types';
+import { REDIRECTOR_DOMAINS, IGNORED_DOMAINS } from '~/shared';
 
 export class Preferences {
   public defaults: PreferencesSchema = {
@@ -249,7 +103,7 @@ export class Preferences {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.permissions = this.background.permissions;
     this.contextmenu = this.background.contextmenu;
     this.browseraction = this.background.browseraction;
@@ -262,7 +116,7 @@ export class Preferences {
   }: {
     oldPreferences: PreferencesSchema;
     newPreferences: PreferencesSchema;
-  }) {
+  }): Promise<void> {
     if (oldPreferences.iconColor !== newPreferences.iconColor) {
       this.browseraction.setIcon(newPreferences.iconColor);
     }

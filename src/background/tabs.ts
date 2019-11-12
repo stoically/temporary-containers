@@ -7,7 +7,7 @@ import { delay } from './lib';
 import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { PageAction } from './pageaction';
-import { PreferencesSchema } from './preferences';
+import { PreferencesSchema } from '~/types';
 
 export type TabId = number;
 export type WindowId = number;

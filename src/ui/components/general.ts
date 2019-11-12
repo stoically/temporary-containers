@@ -5,7 +5,7 @@ import {
   CONTAINER_ICONS,
   TOOLBAR_ICON_COLORS,
 } from '~/shared';
-import { App } from '../root';
+import { App } from '~/ui/root';
 
 export default mixins(mixin).extend({
   props: {

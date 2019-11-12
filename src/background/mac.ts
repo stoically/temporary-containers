@@ -2,8 +2,8 @@ import { TemporaryContainers } from '../background';
 import { Container, CookieStoreId, ContainerOptions } from './container';
 import { delay } from './lib';
 import { debug } from './log';
-import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
+import { PreferencesSchema } from '~/types';
 
 export interface MacAssignment {
   userContextId: string;

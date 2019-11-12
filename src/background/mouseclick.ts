@@ -2,8 +2,8 @@ import { TemporaryContainers } from '../background';
 import { Isolation } from './isolation';
 import { delay } from './lib';
 import { debug } from './log';
-import { PreferencesSchema, IsolationAction } from './preferences';
 import { Utils } from './utils';
+import { PreferencesSchema, IsolationAction } from '~/types';
 
 type ClickType = 'middle' | 'left' | 'ctrlleft';
 

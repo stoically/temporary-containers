@@ -1,7 +1,7 @@
 import { TemporaryContainers } from '../background';
 import { Container } from './container';
-import { PreferencesSchema } from './preferences';
 import { WindowId } from './tabs';
+import { PreferencesSchema } from '~/types';
 
 export class ContextMenu {
   private nextMenuInstanceId = 0;

@@ -51,14 +51,14 @@ export default Vue.extend({
         });
 
         this.show = true;
-        $(document).tab('change tab', this.app.preferences.ui.popupDefaultTab);
+        $.fn.tab('change tab', this.app.preferences.ui.popupDefaultTab);
       });
     },
   },
   methods: {
     changeTab(tab: string): void {
       $('.ui.sidebar').sidebar('hide');
-      $(document).tab('change tab', tab);
+      $.fn.tab('change tab', tab);
     },
     toggleSidebar(): void {
       $('.ui.sidebar').sidebar('toggle');

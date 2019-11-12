@@ -1,7 +1,7 @@
 import { TemporaryContainers } from '../background';
 import { ContainerOptions } from './container';
 import { debug } from './log';
-import { PreferencesSchema } from './preferences';
+import { PreferencesSchema } from '~/types';
 
 export interface StorageLocal {
   containerPrefix: string | false;

@@ -4,9 +4,9 @@ import { debug } from './log';
 import { MacAssignment, MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { PreferencesSchema, IsolationAction } from './preferences';
 import { Request } from './request';
 import { Utils } from './utils';
+import { PreferencesSchema, IsolationAction } from '~/types';
 
 export class Isolation {
   private background: TemporaryContainers;

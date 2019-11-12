@@ -1,6 +1,7 @@
 import Vue from 'vue';
 
 import DomainPattern from '../domainpattern.vue';
+import { App } from '~/ui/root';
 
 export default Vue.extend({
   components: {
@@ -8,7 +9,7 @@ export default Vue.extend({
   },
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },
@@ -40,7 +41,7 @@ export default Vue.extend({
     });
   },
   methods: {
-    async resetStorage() {
+    async resetStorage(): Promise<void> {
       if (
         !window.confirm(`
         Wipe storage and reset it to default?\n
@@ -75,7 +76,7 @@ export default Vue.extend({
         });
       }
     },
-    removeIgnoredDomain(ignoredPattern) {
+    removeIgnoredDomain(ignoredPattern: string): void {
       this.preferences.ignoreRequests = this.preferences.ignoreRequests.filter(
         _ignoredPattern => ignoredPattern !== _ignoredPattern
       );

@@ -24,7 +24,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    action(newAction) {
+    action(newAction): void {
       this.$emit('update:action', newAction);
     },
   },

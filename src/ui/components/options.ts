@@ -8,6 +8,7 @@ import Statistics from './statistics.vue';
 import ExportImport from './export-import.vue';
 import Message from './message.vue';
 import Glossary from './glossary/index.vue';
+import { App } from '../root';
 
 export default mixins(mixin).extend({
   components: {
@@ -21,7 +22,7 @@ export default mixins(mixin).extend({
   },
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },

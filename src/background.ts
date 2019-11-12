@@ -16,13 +16,14 @@ import { Migration } from './background/migration';
 import './background/migration-legacy';
 import { MouseClick } from './background/mouseclick';
 import { PageAction } from './background/pageaction';
-import { Preferences, PreferencesSchema } from './background/preferences';
+import { Preferences } from './background/preferences';
 import { Request } from './background/request';
 import { Runtime } from './background/runtime';
 import { Statistics } from './background/statistics';
 import { Storage } from './background/storage';
 import { Tabs } from './background/tabs';
 import { Utils } from './background/utils';
+import { PreferencesSchema } from './types';
 
 export interface Permissions {
   history?: true | false;

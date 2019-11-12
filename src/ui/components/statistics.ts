@@ -1,10 +1,11 @@
 import Vue from 'vue';
-import { formatBytes } from '../../shared';
+import { formatBytes } from '~/shared';
+import { App } from '../root';
 
 export default Vue.extend({
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },
@@ -34,7 +35,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    async resetStatistics() {
+    async resetStatistics(): Promise<void> {
       if (
         !window.confirm(`
         Reset statistics?

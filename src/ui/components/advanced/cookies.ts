@@ -1,6 +1,14 @@
 import Vue from 'vue';
 
 import DomainPattern from '../domainpattern.vue';
+import { App } from '~/ui/root';
+import { PreferencesSchema, Cookie } from '~/types';
+
+interface Data {
+  preferences: PreferencesSchema;
+  domainPattern: string;
+  cookie: Cookie;
+}
 
 export default Vue.extend({
   components: {
@@ -8,11 +16,11 @@ export default Vue.extend({
   },
   props: {
     app: {
-      type: Object,
+      type: Object as () => App,
       required: true,
     },
   },
-  data() {
+  data(): Data {
     return {
       preferences: this.app.preferences,
       domainPattern: '',
@@ -45,27 +53,29 @@ export default Vue.extend({
     $('#cookieForm .ui.checkbox').checkbox();
   },
   methods: {
-    addCookie() {
+    addCookie(): void {
       const domain = this.preferences.cookies.domain;
       if (!domain[this.domainPattern]) {
         this.$set(domain, this.domainPattern, []);
       }
       domain[this.domainPattern].unshift({ ...this.cookie });
     },
-    removeCookie(cookiesDomainPattern, index) {
+    removeCookie(cookiesDomainPattern: string, index: number): void {
       this.preferences.cookies.domain[cookiesDomainPattern].splice(index, 1);
       if (!this.preferences.cookies.domain[cookiesDomainPattern].length) {
         this.$delete(this.preferences.cookies.domain, cookiesDomainPattern);
       }
     },
-    cookieKeys(domainCookie) {
-      return Object.keys(this.cookie).filter(key => domainCookie[key]);
+    cookieKeys(domainCookie: Cookie): string[] {
+      return Object.keys(this.cookie).filter(
+        (key: string) => domainCookie[key]
+      );
     },
-    cookieMouseEnter(event) {
-      event.target.classList.add('red');
+    cookieMouseEnter(event: Event): void {
+      (event.target as HTMLElement).classList.add('red');
     },
-    cookieMouseLeave(event) {
-      event.target.classList.remove('red');
+    cookieMouseLeave(event: Event): void {
+      (event.target as HTMLElement).classList.remove('red');
     },
   },
 });

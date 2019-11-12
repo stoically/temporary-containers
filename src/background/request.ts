@@ -8,7 +8,7 @@ import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { PreferencesSchema } from './preferences';
+import { PreferencesSchema } from '~/types';
 
 export class Request {
   public lastSeenRequestUrl: {

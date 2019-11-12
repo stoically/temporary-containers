@@ -1,9 +1,9 @@
 import { Permissions, TemporaryContainers } from '../background';
 import { Container } from './container';
 import { debug } from './log';
-import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
+import { PreferencesSchema } from '~/types';
 
 export class Commands {
   private background: TemporaryContainers;

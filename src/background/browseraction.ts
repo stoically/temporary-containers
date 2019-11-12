@@ -1,7 +1,7 @@
 import { TemporaryContainers } from '../background';
 import { Container } from './container';
-import { PreferencesSchema, ToolbarIconColor } from './preferences';
 import { TabId } from './tabs';
+import { PreferencesSchema, ToolbarIconColor } from '~/types';
 
 export class BrowserAction {
   private background: TemporaryContainers;
