@@ -3,7 +3,7 @@ export { default } from './general.ts';
 </script>
 
 <template>
-  <div v-if="initialized" v-show="show" id="general">
+  <div v-show="show" id="general">
     <div class="ui form">
       <div id="automaticModeField" class="field">
         <div class="ui checkbox">

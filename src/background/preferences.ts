@@ -1,6 +1,6 @@
 import { TemporaryContainers } from '../background';
 import { BrowserAction } from './browseraction';
-import { ContainerColor, ContainerIcon } from './container';
+import { ContainerColor, ContainerIcon } from '~/shared';
 import { ContextMenu } from './contextmenu';
 import { PageAction } from './pageaction';
 

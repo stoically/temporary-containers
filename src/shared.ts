@@ -24,6 +24,45 @@ export const getPermissions = async (): Promise<Permissions> => {
   };
 };
 
+export const CONTAINER_COLORS = [
+  'blue', // #37ADFF
+  'turquoise', // #00C79A
+  'green', // #51CD00
+  'yellow', // #FFCB00
+  'orange', // #FF9F00
+  'red', // #FF613D
+  'pink', // #FF4BDA
+  'purple', // #AF51F5
+  'toolbar',
+];
+export type ContainerColor = typeof CONTAINER_COLORS[number];
+
+export const CONTAINER_ICONS = [
+  'fingerprint',
+  'briefcase',
+  'dollar',
+  'cart',
+  'circle',
+  'gift',
+  'vacation',
+  'food',
+  'fruit',
+  'pet',
+  'tree',
+  'chill',
+  'fence',
+];
+export type ContainerIcon = typeof CONTAINER_ICONS[number];
+
+export const TOOLBAR_ICON_COLORS = [
+  'default',
+  'black-simple',
+  'blue-simple',
+  'red-simple',
+  'white-simple',
+];
+export type ToolbarIconColors = typeof TOOLBAR_ICON_COLORS[number];
+
 export const formatBytes = (bytes: number, decimals = 2): string => {
   // https://stackoverflow.com/a/18650828
   if (bytes == 0) {

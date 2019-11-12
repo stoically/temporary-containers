@@ -4,38 +4,14 @@ import { debug } from './log';
 import { PreferencesSchema } from './preferences';
 import { Storage } from './storage';
 import { TabId, Tabs } from './tabs';
+import {
+  ContainerColor,
+  ContainerIcon,
+  CONTAINER_COLORS,
+  CONTAINER_ICONS,
+} from '~/shared';
 
 export type CookieStoreId = string;
-
-const CONTAINER_COLORS = [
-  'blue', // #37ADFF
-  'turquoise', // #00C79A
-  'green', // #51CD00
-  'yellow', // #FFCB00
-  'orange', // #FF9F00
-  'red', // #FF613D
-  'pink', // #FF4BDA
-  'purple', // #AF51F5
-  'toolbar',
-];
-export type ContainerColor = typeof CONTAINER_COLORS[number];
-
-const CONTAINER_ICONS = [
-  'fingerprint',
-  'briefcase',
-  'dollar',
-  'cart',
-  'circle',
-  'gift',
-  'vacation',
-  'food',
-  'fruit',
-  'pet',
-  'tree',
-  'chill',
-  'fence',
-];
-export type ContainerIcon = typeof CONTAINER_ICONS[number];
 
 export interface ContainerOptions {
   name: string;

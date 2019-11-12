@@ -37,6 +37,16 @@ export interface InitializeOptions {
   showError?: string;
 }
 
+declare global {
+  interface String {
+    capitalize: () => string;
+  }
+}
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
 export default (
   App: ExtendedVue<Vue, unknown, unknown, unknown, unknown>,
   { popup = false }
