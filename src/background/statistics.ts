@@ -32,7 +32,9 @@ export class Statistics {
     this.cleanup = this.background.cleanup;
   }
 
-  public async collect(request: any): Promise<void> {
+  public async collect(
+    request: browser.webRequest.WebRequestOnCompletedDetails
+  ): Promise<void> {
     if (!this.pref.statistics && !this.pref.deletesHistory.statistics) {
       return;
     }
@@ -57,11 +59,11 @@ export class Statistics {
         contentLength: 0,
       };
     }
-    if (!request.fromCache) {
+    if (!request.fromCache && request.responseHeaders) {
       const contentLength = request.responseHeaders.find(
-        (header: any) => header.name === 'content-length'
+        header => header.name === 'content-length'
       );
-      if (contentLength) {
+      if (contentLength && contentLength.value) {
         this.requests[tab.cookieStoreId].contentLength += parseInt(
           contentLength.value,
           10

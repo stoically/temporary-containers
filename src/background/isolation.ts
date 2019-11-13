@@ -44,7 +44,7 @@ export class Isolation {
     macAssignment,
   }: {
     tab?: Tab;
-    request: any;
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
     macAssignment?: MacAssignment;
   }): Promise<boolean | { cancel: true }> {
@@ -194,7 +194,7 @@ export class Isolation {
     macAssignment,
   }: {
     tab?: Tab;
-    request: any;
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
     macAssignment?: MacAssignment;
   }): Promise<boolean> {
@@ -241,7 +241,7 @@ export class Isolation {
     openerTab,
   }: {
     tab?: Tab;
-    request: any;
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
   }): boolean {
     if (!this.mouseclick.isolated[request.url]) {
@@ -302,7 +302,7 @@ export class Isolation {
     openerTab,
   }: {
     tab?: Tab;
-    request: any;
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
   }): Promise<boolean> {
     if (!tab || !tab.url) {
@@ -425,7 +425,7 @@ export class Isolation {
     openerTab,
   }: {
     tab?: Tab;
-    request: any;
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
   }): Promise<boolean> {
     if (!tab || !tab.url) {

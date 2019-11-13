@@ -3,7 +3,7 @@ import { BrowserAction } from './browseraction';
 import { ContextMenu } from './contextmenu';
 import { PageAction } from './pageaction';
 import { PreferencesSchema, Permissions } from '~/types';
-import { REDIRECTOR_DOMAINS, IGNORED_DOMAINS } from '~/shared';
+import { REDIRECTOR_DOMAINS_DEFAULT, IGNORED_DOMAINS_DEFAULT } from '~/shared';
 
 export class Preferences {
   public defaults: PreferencesSchema = {
@@ -69,9 +69,9 @@ export class Preferences {
     closeRedirectorTabs: {
       active: false,
       delay: 2000,
-      domains: REDIRECTOR_DOMAINS,
+      domains: REDIRECTOR_DOMAINS_DEFAULT,
     },
-    ignoreRequests: IGNORED_DOMAINS,
+    ignoreRequests: IGNORED_DOMAINS_DEFAULT,
     cookies: {
       domain: {},
     },

@@ -77,7 +77,9 @@ export class TemporaryContainers {
     await this.storage.initialize();
 
     this.pref = (new Proxy(this.storage, {
-      get(target, key) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      get(target, key): any {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (target.local.preferences as any)[key];
       },
     }) as unknown) as PreferencesSchema;
@@ -117,13 +119,11 @@ export class TemporaryContainers {
 }
 
 browser.browserAction.disable();
-console.log('1');
 export const tmp = new TemporaryContainers();
-(window as any).TemporaryContainers = TemporaryContainers;
-(window as any).tmp = tmp;
+window.tmp = tmp;
 
 (async (): Promise<void> => {
-  if ((window as any)._mochaTest) {
+  if (window._mochaTest) {
     return;
   }
 

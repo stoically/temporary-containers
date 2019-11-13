@@ -49,9 +49,9 @@ export const TOOLBAR_ICON_COLORS = [
   'white-simple',
 ];
 
-export const IGNORED_DOMAINS = ['getpocket.com', 'addons.mozilla.org'];
+export const IGNORED_DOMAINS_DEFAULT = ['getpocket.com', 'addons.mozilla.org'];
 
-export const REDIRECTOR_DOMAINS = [
+export const REDIRECTOR_DOMAINS_DEFAULT = [
   't.co',
   'outgoing.prod.mozaws.net',
   'slack-redir.net',

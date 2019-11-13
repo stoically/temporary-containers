@@ -199,7 +199,9 @@ export class MouseClick {
     );
   }
 
-  public beforeHandleRequest(request: any): void {
+  public beforeHandleRequest(
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+  ): void {
     if (!this.isolated[request.url]) {
       return;
     }
@@ -210,7 +212,9 @@ export class MouseClick {
     this.isolated[request.url].abortController.abort();
   }
 
-  public afterHandleRequest(request: any): void {
+  public afterHandleRequest(
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+  ): void {
     if (!this.isolated[request.url]) {
       return;
     }

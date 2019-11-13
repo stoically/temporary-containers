@@ -41,7 +41,7 @@ export class Container {
   private containerColors: ContainerColor[] = CONTAINER_COLORS;
   private containerIcons: ContainerIcon[] = CONTAINER_ICONS;
   private requestCreatedTab: {
-    [key: number]: boolean;
+    [key: string]: boolean;
   } = {};
 
   private background: TemporaryContainers;
@@ -78,7 +78,7 @@ export class Container {
     tab?: Tab;
     url?: string;
     active?: boolean;
-    request?: any;
+    request?: false | browser.webRequest.WebRequestOnBeforeRequestDetails;
     dontPin?: boolean;
     deletesHistory?: boolean;
     macConfirmPage?: boolean;
@@ -126,7 +126,7 @@ export class Container {
     deletesHistory,
   }: {
     url?: string;
-    request?: any;
+    request?: false | browser.webRequest.WebRequestOnBeforeRequestDetails;
     deletesHistory?: boolean;
   }): Promise<browser.contextualIdentities.ContextualIdentity> {
     const containerOptions = this.generateContainerNameIconColor(
@@ -288,7 +288,7 @@ export class Container {
     url?: string;
     active?: boolean;
     deletesHistory?: boolean;
-    request?: any;
+    request?: browser.webRequest.WebRequestOnBeforeRequestDetails;
     macConfirmPage?: boolean;
     dontPin?: boolean;
   }): Promise<false | Tab> {

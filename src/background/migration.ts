@@ -12,6 +12,10 @@ export class Migration {
   private previousVersion!: string;
   private previousVersionBeta!: boolean;
 
+  // migration-legacy
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public onInstalled: (...args: any) => void = () => {};
+
   constructor(background: TemporaryContainers) {
     this.background = background;
   }
@@ -29,8 +33,7 @@ export class Migration {
     this.previousVersion = previousVersion;
 
     if (!this.previousVersion) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (window as any).migrationLegacy(this);
+      await window.migrationLegacy(this);
     }
 
     debug('[migrate] previousVersion', this.previousVersion);

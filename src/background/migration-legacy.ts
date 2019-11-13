@@ -26,14 +26,11 @@ const migrationOnInstalledListener = async (...args: any[]): Promise<any> => {
   }
 
   await migrationReadyPromise;
-  return (window as any).tmp.migration.onInstalled.call(
-    (window as any).tmp.migration,
-    ...args
-  );
+  return window.tmp?.migration.onInstalled.call(window.tmp.migration, ...args);
 };
 browser.runtime.onInstalled.addListener(migrationOnInstalledListener);
 
-(window as any).migrationLegacy = async (migration: any): Promise<any> => {
+window.migrationLegacy = async (migration: any): Promise<any> => {
   try {
     debug(
       '[migration-legacy] no previousVersion found, waiting for onInstalled'

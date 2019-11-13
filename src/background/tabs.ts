@@ -51,7 +51,7 @@ export class Tabs {
 
   public async onUpdated(
     tabId: number,
-    changeInfo: any,
+    changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo,
     tab: Tab
   ): Promise<void> {
     debug('[onUpdated] tab updated', tab, changeInfo);
@@ -89,7 +89,9 @@ export class Tabs {
     this.containerMap.delete(tabId);
   }
 
-  public async onActivated(activeInfo: any): Promise<void> {
+  public async onActivated(
+    activeInfo: browser.tabs.onActivatedActiveInfo
+  ): Promise<void> {
     debug('[onActivated]', activeInfo);
     delete this.container.lastCreatedInactiveTab[
       browser.windows.WINDOW_ID_CURRENT
@@ -183,7 +185,10 @@ export class Tabs {
     }
   }
 
-  public maybeCloseRedirectorTab(tab: Tab, changeInfo: any): void {
+  public maybeCloseRedirectorTab(
+    tab: Tab,
+    changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo
+  ): void {
     if (
       this.pref.closeRedirectorTabs.active &&
       changeInfo.status &&
@@ -268,7 +273,7 @@ export class Tabs {
       });
       if (tabs.length > 1) {
         try {
-          await browser.tabs.remove(tab.id!);
+          await browser.tabs.remove(tab.id);
           debug('[removeTab] removed old tab', tab.id);
         } catch (error) {
           debug('[removeTab] error while removing old tab', tab, error);

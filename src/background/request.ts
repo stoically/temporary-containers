@@ -17,13 +17,13 @@ type OnBeforeRequestResult =
 
 export class Request {
   public lastSeenRequestUrl: {
-    [key: number]: string;
+    [key: string]: string;
   } = {};
 
   private canceledTabs: {
     [key: number]: {
       requestIds: {
-        [key: number]: true;
+        [key: string]: true;
       };
       urls: {
         [key: string]: true;
@@ -66,7 +66,7 @@ export class Request {
   }
 
   public async webRequestOnBeforeRequest(
-    request: any
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
     debug('[webRequestOnBeforeRequest] incoming request', request);
     const requestIdUrl = `${request.requestId}+${request.url}`;
@@ -119,7 +119,9 @@ export class Request {
     return;
   }
 
-  public async handleRequest(request: any): Promise<OnBeforeRequestResult> {
+  public async handleRequest(
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+  ): Promise<OnBeforeRequestResult> {
     if (request.tabId === -1) {
       debug(
         '[handleRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?',
@@ -295,7 +297,9 @@ export class Request {
     return { cancel: true };
   }
 
-  public cancelRequest(request: any): boolean {
+  public cancelRequest(
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+  ): boolean {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
@@ -349,7 +353,9 @@ export class Request {
     }
   }
 
-  public shouldCancelRequest(request: any): boolean {
+  public shouldCancelRequest(
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+  ): boolean {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
@@ -370,7 +376,9 @@ export class Request {
     return false;
   }
 
-  public cleanupCanceled(request: any): void {
+  public cleanupCanceled(
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+  ): void {
     if (this.canceledTabs[request.tabId]) {
       delete this.canceledTabs[request.tabId];
     }
@@ -381,7 +389,7 @@ export class Request {
     tab,
     openerTab,
   }: {
-    request: any;
+    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
     tab?: Tab;
     openerTab?: Tab;
   }): Promise<boolean> {

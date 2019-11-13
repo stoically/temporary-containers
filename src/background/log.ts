@@ -1,6 +1,6 @@
-// tslint:disable: no-console
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-class Log {
+export class Log {
   public DEBUG = false;
   public stringify = true;
   private checkedLocalStorage = false;
@@ -15,7 +15,7 @@ class Log {
 
   public debug = async (...args: any[]): Promise<void> => {
     let date;
-    if (!this.checkedLocalStorage && !(window as any)._mochaTest) {
+    if (!this.checkedLocalStorage && !window._mochaTest) {
       date = new Date().toUTCString();
       await this.checkLocalStoragePromise;
     }
@@ -37,7 +37,7 @@ class Log {
       return arg;
     });
 
-    if (this.stringify && !(window as any)._mochaTest) {
+    if (this.stringify && !window._mochaTest) {
       console.log(date, ...args.map(value => JSON.stringify(value)));
       console.log('------------------------------------------');
     } else {
@@ -91,8 +91,8 @@ class Log {
   }
 }
 
-const log = new Log();
-(window as any).log = log;
-(window as any).debug = log.debug;
-
+export const log = new Log();
 export const debug = log.debug;
+
+window.log = log;
+window.debug = log.debug;

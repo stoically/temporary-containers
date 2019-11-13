@@ -2,16 +2,18 @@ import {
   CONTAINER_COLORS,
   CONTAINER_ICONS,
   TOOLBAR_ICON_COLORS,
-  IGNORED_DOMAINS,
-  REDIRECTOR_DOMAINS,
+  IGNORED_DOMAINS_DEFAULT,
+  REDIRECTOR_DOMAINS_DEFAULT,
 } from './shared';
 
 export type TabId = number;
 export type WindowId = number;
 
 export type Milliseconds = number;
-export type IgnoredDomain = typeof IGNORED_DOMAINS[number] | string;
-export type RedirectorDomain = typeof REDIRECTOR_DOMAINS[number] | string;
+export type IgnoredDomain = typeof IGNORED_DOMAINS_DEFAULT[number] | string;
+export type RedirectorDomain =
+  | typeof REDIRECTOR_DOMAINS_DEFAULT[number]
+  | string;
 
 export type CookieStoreId = string;
 

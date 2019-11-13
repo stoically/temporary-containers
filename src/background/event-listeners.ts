@@ -117,7 +117,7 @@ class EventListeners {
     const tmpInitializedPromise = this.createTmpInitializedPromise(options);
 
     const listener = async (...listenerArgs: any): Promise<any> => {
-      if (!(window as any).tmp || !(window as any).tmp.initialized) {
+      if (!window.tmp?.initialized) {
         try {
           await tmpInitializedPromise;
         } catch (error) {

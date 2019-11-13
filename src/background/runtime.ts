@@ -47,6 +47,7 @@ export class Runtime {
   public async onMessage(
     message: {
       method: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       payload: any;
     },
     sender: browser.runtime.MessageSender

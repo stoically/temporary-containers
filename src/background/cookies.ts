@@ -20,7 +20,9 @@ export class Cookies {
     this.isolation = this.background.isolation;
   }
 
-  public async maybeSetAndAddToHeader(request: any): Promise<void> {
+  public async maybeSetAndAddToHeader(
+    request: browser.webRequest.WebRequestOnBeforeSendHeadersDetails
+  ): Promise<void | browser.webRequest.WebRequestOnBeforeSendHeadersDetails> {
     if (request.tabId < 0 || !Object.keys(this.pref.cookies.domain).length) {
       return;
     }
@@ -46,10 +48,10 @@ export class Cookies {
             return;
           }
 
-          cookieHeader = request.requestHeaders.find(
-            (element: any) => element.name.toLowerCase() === 'cookie'
+          cookieHeader = request.requestHeaders?.find(
+            (element): boolean => element.name.toLowerCase() === 'cookie'
           );
-          if (cookieHeader) {
+          if (cookieHeader && cookieHeader.value) {
             cookiesHeader = cookieHeader.value
               .split('; ')
               .reduce(
@@ -165,7 +167,7 @@ export class Cookies {
         if (cookieHeader) {
           cookieHeader.value = changedCookieHeaderValue;
         } else {
-          request.requestHeaders.push({
+          request.requestHeaders?.push({
             name: 'Cookie',
             value: changedCookieHeaderValue,
           });
