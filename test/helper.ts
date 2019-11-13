@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   browser: {
     async openNewTmpTab({
       tabId = 1,

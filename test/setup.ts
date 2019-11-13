@@ -1,4 +1,16 @@
-global.preferencesTestSet = [
+if (!process.listenerCount('unhandledRejection')) {
+  process.on('unhandledRejection', r => {
+    console.log('unhandledRejection', r);
+  });
+}
+import path from 'path';
+import webExtensionsJSDOM from 'webextensions-jsdom';
+import chai from 'chai';
+import sinonChai from 'sinon-chai';
+import sinon from 'sinon';
+import helper from './helper';
+
+const preferencesTestSet = [
   {
     automaticMode: {
       active: false,
@@ -25,33 +37,28 @@ global.preferencesTestSet = [
   },
 ];
 
-if (!process.listenerCount('unhandledRejection')) {
-  process.on('unhandledRejection', r => {
-    console.log('unhandledRejection', r);
-  });
-}
-const path = require('path');
-const webExtensionsJSDOM = require('webextensions-jsdom');
+chai.should();
+chai.use(sinonChai);
+
 const manifestPath = path.resolve(
   path.join(__dirname, '../dist/manifest.json')
 );
-const chai = require('chai');
-const sinonChai = require('sinon-chai');
-global.sinon = require('sinon');
-global.expect = chai.expect;
-chai.should();
-chai.use(sinonChai);
-global.nextTick = () => {
+const expect = chai.expect;
+const nextTick = (): Promise<void> => {
   return new Promise(resolve => {
     process.nextTick(resolve);
   });
 };
 
-global.URL = require('url').URL;
-global.helper = require('./helper');
+let webExtension;
+let browser;
+let background;
+let clock;
 
-const buildWebExtension = async (build = {}) => {
-  global.clock = sinon.useFakeTimers({
+const buildWebExtension = async (
+  build: { apiFake?: false } = { apiFake: false }
+) => {
+  clock = sinon.useFakeTimers({
     toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
   });
   const webExtension = await webExtensionsJSDOM.fromManifest(manifestPath, {
@@ -106,22 +113,18 @@ const buildWebExtension = async (build = {}) => {
   return webExtension;
 };
 
-global.loadBareBackground = async (preferences = {}, build = {}) => {
-  const webExtension = await buildWebExtension(build);
-  global.webExtension = webExtension;
-  global.browser = webExtension.background.browser;
-  global.background = global.webExtension.background.window.tmp;
-  const background = global.background;
+const loadBareBackground = async (preferences = {}, build = {}) => {
+  webExtension = await buildWebExtension(build);
+  browser = webExtension.background.browser;
+  background = webExtension.background.window.tmp;
   Object.assign(background.preferences.defaults, preferences);
   return background;
 };
 
-global.loadBackground = async (preferences = {}) => {
+const loadBackground = async (preferences = {}) => {
   const webExtension = await buildWebExtension();
-
-  global.webExtension = webExtension;
-  global.browser = webExtension.background.browser;
-  global.background = global.webExtension.background.window.tmp;
+  browser = webExtension.background.browser;
+  background = webExtension.background.window.tmp;
 
   await background.initialize();
   if (preferences) {
@@ -136,36 +139,47 @@ global.loadBackground = async (preferences = {}) => {
   return background;
 };
 
-global.loadUninstalledBackground = async () => {
+const loadUninstalledBackground = async () => {
   const webExtension = await buildWebExtension();
+  browser = webExtension.background.browser;
+  background = webExtension.background.window.tmp;
 
-  global.webExtension = webExtension;
-  global.browser = webExtension.background.browser;
-  global.background = global.webExtension.background.window.tmp;
-
-  const background = global.background;
   return background;
 };
 
 afterEach(() => {
   sinon.restore();
-  if (global.webExtension && global.webExtension.background) {
-    global.webExtension.background.destroy();
-    delete global.webExtension;
+  if (webExtension && webExtension.background) {
+    webExtension.background.destroy();
+    webExtension = null;
   }
-  if (global.background) {
-    delete global.background;
+  if (background) {
+    background = null;
   }
-  if (global.browser) {
-    delete global.browser;
+  if (browser) {
+    browser = null;
   }
-  if (global.clock) {
+  if (clock) {
     clock.restore();
+    clock = null;
   }
 });
 
 // TODO: since parceljs writes multiple times into dist, we need an
 // arbitrary delay here. a parcel plugin could maybe solve that?
+// or get rid of jsdom for now and run tests directly against src/?
 if (run) {
   setTimeout(run, 500);
 }
+
+export {
+  preferencesTestSet,
+  sinon,
+  expect,
+  nextTick,
+  helper,
+  loadBareBackground,
+  loadBackground,
+  browser,
+  background,
+};
