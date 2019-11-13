@@ -1,3 +1,11 @@
+import {
+  expect,
+  preferencesTestSet,
+  loadBackground,
+  helper,
+  nextTick,
+} from './setup';
+
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('addons that do redirects in automatic mode', () => {

@@ -1,3 +1,11 @@
+import {
+  expect,
+  preferencesTestSet,
+  loadBackground,
+  helper,
+  nextTick,
+} from './setup';
+
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('Multi-Account Containers Confirm Page reopening', () => {
@@ -44,7 +52,7 @@ preferencesTestSet.map(preferences => {
                     macWasFaster,
                     resetHistory: true,
                   };
-                  let promises = [];
+                  const promises = [];
                   switch (confirmPage) {
                     case 'first':
                       await helper.browser.openMacConfirmPage(
@@ -175,7 +183,7 @@ preferencesTestSet.map(preferences => {
                     macWasFaster,
                     resetHistory: true,
                   };
-                  let promises = [];
+                  const promises = [];
                   switch (confirmPage) {
                     case 'first':
                       await helper.browser.openMacConfirmPage(
@@ -224,7 +232,7 @@ preferencesTestSet.map(preferences => {
               });
 
               describe('and opening a not mac assigned website', () => {
-                let newTmpTabId = 2;
+                const newTmpTabId = 2;
                 beforeEach(async () => {
                   await helper.browser.request({
                     requestId: 1,
@@ -314,7 +322,7 @@ preferencesTestSet.map(preferences => {
                           targetContainer: 'firefox-container-1',
                           url: 'http://notexample.com',
                         };
-                        let promises = [];
+                        const promises = [];
                         switch (confirmPage) {
                           case 'first':
                             await helper.browser.openMacConfirmPage(

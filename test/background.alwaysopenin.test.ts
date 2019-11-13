@@ -1,3 +1,5 @@
+import { preferencesTestSet, loadBackground, helper } from './setup';
+
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('Always Open In', () => {

@@ -1,6 +1,8 @@
+import { expect, loadBackground, loadUninstalledBackground } from './setup';
+
 describe('storage', () => {
   it('should initialize storage and version', async () => {
-    const background = await loadBackground(false);
+    const { background, browser } = await loadBackground(false);
     expect(background.storage.local.preferences).to.deep.equal(
       background.preferences.defaults
     );
@@ -8,7 +10,7 @@ describe('storage', () => {
   });
 
   it('should add missing preferences', async () => {
-    const background = await loadUninstalledBackground();
+    const { background, browser } = await loadUninstalledBackground();
     browser.storage.local.get.resolves({
       ...background.storage.defaults,
       preferences: {

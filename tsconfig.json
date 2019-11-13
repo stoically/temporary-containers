@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ESNEXT",
+    "target": "es2018",
     "module": "commonjs",
     "noEmit": true,
     "strict": true,
@@ -11,5 +11,5 @@
       "~/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.vue"]
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }

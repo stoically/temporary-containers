@@ -1,8 +1,16 @@
+import {
+  preferencesTestSet,
+  loadBackground,
+  helper,
+  nextTick,
+  clock,
+} from './setup';
+
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('Container Cleanup', () => {
       it('should remove the container after the given timeout', async () => {
-        const background = await loadBackground(preferences);
+        const { background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.container.removal = 150000;
         await helper.browser.openNewTmpTab({
           createsTabId: 2,
@@ -29,7 +37,7 @@ preferencesTestSet.map(preferences => {
 
       describe('when no timeout is given', () => {
         it('should remove the container instantly', async () => {
-          const background = await loadBackground(preferences);
+          const { background, browser } = await loadBackground(preferences);
           background.storage.local.preferences.container.removal = 0;
           await helper.browser.openNewTmpTab({
             createsTabId: 2,

@@ -1,5 +1,5 @@
-import { TemporaryContainers } from '~/background';
-import { Log } from './log';
+import { TemporaryContainers } from './background';
+import { Log } from './background/log';
 
 declare global {
   interface Window {

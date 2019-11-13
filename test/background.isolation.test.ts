@@ -1,3 +1,5 @@
+import { preferencesTestSet, loadBareBackground } from './setup';
+
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     let background, tab;

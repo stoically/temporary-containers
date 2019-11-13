@@ -1,8 +1,16 @@
+import {
+  expect,
+  preferencesTestSet,
+  loadBackground,
+  helper,
+  loadBareBackground,
+} from './setup';
+
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('Set Cookies', () => {
       it('should set the cookie and add it to the header if allowed', async () => {
-        const background = await loadBackground(preferences);
+        const { background, browser } = await loadBackground(preferences);
         await helper.browser.openNewTmpTab({
           createsContainer: 'firefox-tmp1',
         });
@@ -51,7 +59,7 @@ preferencesTestSet.map(preferences => {
       });
 
       it('should set the cookie and not add it to the header if not allowed', async () => {
-        const background = await loadBackground(preferences);
+        const { background, browser } = await loadBackground(preferences);
         await helper.browser.openNewTmpTab({
           createsContainer: 'firefox-tmp1',
         });
@@ -82,7 +90,7 @@ preferencesTestSet.map(preferences => {
       });
 
       it('should do nothing if its not a temporary container', async () => {
-        const background = await loadBareBackground(preferences);
+        const { background, browser } = await loadBareBackground(preferences);
         browser.tabs.get.resolves({
           cookieStoreId: 'firefox-default',
         });

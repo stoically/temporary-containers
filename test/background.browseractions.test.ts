@@ -1,8 +1,15 @@
+import {
+  expect,
+  preferencesTestSet,
+  loadBareBackground,
+  nextTick,
+} from './setup';
+
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('when triggering browseraction', () => {
       it('should open a new tab in a new temporary container', async () => {
-        const background = await loadBareBackground(preferences);
+        const { background, browser } = await loadBareBackground(preferences);
         browser.tabs.create.resolves({
           id: 1,
         });
@@ -29,7 +36,7 @@ preferencesTestSet.map(preferences => {
       });
 
       it('should open a new tab in a new temporary container with custom settings', async () => {
-        const background = await loadBareBackground(preferences);
+        const { background, browser } = await loadBareBackground(preferences);
         browser.tabs.create.resolves({
           id: 1,
         });
