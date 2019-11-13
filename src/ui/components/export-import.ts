@@ -229,7 +229,6 @@ export default mixins(mixin).extend({
             }
             resolve(JSON.parse(event.target.result));
           } catch (error) {
-            // eslint-disable-next-line no-console
             console.error('error while importing preferences', error);
             this.$root.$emit('showError', 'Error while importing preferences!');
           }

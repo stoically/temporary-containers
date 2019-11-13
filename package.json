@@ -50,7 +50,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
-    "@types/firefox-webext-browser": "^70.0.1",
+    "@types/firefox-webext-browser": "github:stoically/DefinitelyTyped#firefox-webext-browser-dist",
     "@types/jquery": "^3.3.31",
     "@types/jquery.address": "^1.5.29",
     "@types/psl": "^1.1.0",

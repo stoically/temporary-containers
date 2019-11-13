@@ -45,13 +45,11 @@ declare global {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-String.prototype.capitalize = function() {
+String.prototype.capitalize = function(): string {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-Array.prototype.move = function(from, to) {
+Array.prototype.move = function(from, to): void {
   this.splice(to, 0, this.splice(from, 1)[0]);
 };
 
@@ -92,7 +90,6 @@ export default (
               },
             });
           } catch (error) {
-            // eslint-disable-next-line no-console
             console.error('error while saving preferences', error);
             this.$root.$emit(
               'showError',

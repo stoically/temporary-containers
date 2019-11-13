@@ -58,7 +58,6 @@ export default Vue.extend({
           method: 'resetStorage',
         });
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('[resetStorage] failed', error);
         resetError = error;
       }
