@@ -2,7 +2,7 @@ import { TemporaryContainers } from '../background';
 import { BrowserAction } from './browseraction';
 import { ContextMenu } from './contextmenu';
 import { PageAction } from './pageaction';
-import { PreferencesSchema } from '~/types';
+import { PreferencesSchema, Permissions } from '~/types';
 import { REDIRECTOR_DOMAINS, IGNORED_DOMAINS } from '~/shared';
 
 export class Preferences {
@@ -94,7 +94,7 @@ export class Preferences {
   };
 
   private background: TemporaryContainers;
-  private permissions: any;
+  private permissions!: Permissions;
   private contextmenu!: ContextMenu;
   private browseraction!: BrowserAction;
   private pageaction!: PageAction;

@@ -10,7 +10,7 @@ import { MouseClick } from './mouseclick';
 import { Preferences } from './preferences';
 import { Storage } from './storage';
 import { Utils } from './utils';
-import { PreferencesSchema } from '~/types';
+import { PreferencesSchema, Tab } from '~/types';
 
 export class Runtime {
   private background: TemporaryContainers;
@@ -31,7 +31,7 @@ export class Runtime {
     this.storage = background.storage;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.preferences = this.background.preferences;
     this.container = this.background.container;
@@ -44,7 +44,13 @@ export class Runtime {
     this.utils = this.background.utils;
   }
 
-  public async onMessage(message: any, sender: browser.runtime.MessageSender) {
+  public async onMessage(
+    message: {
+      method: string;
+      payload: any;
+    },
+    sender: browser.runtime.MessageSender
+  ): Promise<void | boolean | Tab | 'pong'> {
     debug('[onMessage] message received', message, sender);
     if (typeof message !== 'object') {
       return;
@@ -160,14 +166,19 @@ export class Runtime {
   }
 
   public async onMessageExternal(
-    message: any,
+    message: {
+      method: string;
+      url?: string;
+      active?: boolean;
+      cookieStoreId?: string;
+    },
     sender: browser.runtime.MessageSender
-  ) {
+  ): Promise<boolean | Tab> {
     debug('[onMessageExternal] got external message', message, sender);
     switch (message.method) {
       case 'createTabInTempContainer':
         return this.container.createTabInTempContainer({
-          url: message.url || null,
+          url: message.url || undefined,
           active: message.active,
           deletesHistory:
             this.pref.deletesHistory.automaticMode === 'automatic'
@@ -175,7 +186,8 @@ export class Runtime {
               : false,
         });
       case 'isTempContainer':
-        return this.storage.local.tempContainers[message.cookieStoreId]
+        return message.cookieStoreId &&
+          this.storage.local.tempContainers[message.cookieStoreId]
           ? true
           : false;
       default:
@@ -183,7 +195,7 @@ export class Runtime {
     }
   }
 
-  public async onStartup() {
+  public async onStartup(): Promise<void> {
     this.cleanup.cleanup(true);
 
     if (this.pref.container.numberMode === 'keepuntilrestart') {

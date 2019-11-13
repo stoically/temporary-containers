@@ -1,11 +1,11 @@
-import { Permissions, TemporaryContainers } from '../background';
-import { Container, CookieStoreId } from './container';
+import { TemporaryContainers } from '../background';
+import { Container } from './container';
 import { History } from './history';
 import { delay, PQueue } from './lib';
 import { debug } from './log';
 import { Statistics } from './statistics';
 import { Storage } from './storage';
-import { PreferencesSchema } from '~/types';
+import { PreferencesSchema, CookieStoreId, Permissions } from '~/types';
 
 export class Cleanup {
   private background: TemporaryContainers;

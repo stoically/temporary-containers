@@ -13,7 +13,7 @@ class Log {
     );
   }
 
-  public debug = async (...args: any[]) => {
+  public debug = async (...args: any[]): Promise<void> => {
     let date;
     if (!this.checkedLocalStorage && !(window as any)._mochaTest) {
       date = new Date().toUTCString();
@@ -45,7 +45,7 @@ class Log {
     }
   };
 
-  public checkLocalStorage() {
+  public checkLocalStorage(): void | Promise<void> {
     if (this.DEBUG) {
       return;
     }
@@ -70,7 +70,7 @@ class Log {
     );
   }
 
-  public onInstalledListener(details: any) {
+  public onInstalledListener(details: any): void {
     browser.runtime.onInstalled.removeListener(this.onInstalledListener);
 
     if (!this.DEBUG && details.temporary) {

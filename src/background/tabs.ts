@@ -7,10 +7,7 @@ import { delay } from './lib';
 import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { PageAction } from './pageaction';
-import { PreferencesSchema } from '~/types';
-
-export type TabId = number;
-export type WindowId = number;
+import { PreferencesSchema, Tab } from '~/types';
 
 export class Tabs {
   public creatingInSameContainer = false;
@@ -30,7 +27,7 @@ export class Tabs {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.browseraction = this.background.browseraction;
@@ -39,13 +36,11 @@ export class Tabs {
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
     this.tabs = this.background.tabs;
-
-    return this.handleAlreadyOpen();
   }
 
   // onUpdated sometimes (often) fires before onCreated
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
-  public async onCreated(tab: browser.tabs.Tab) {
+  public async onCreated(tab: Tab): Promise<void> {
     debug('[onCreated] tab created', tab);
     this.containerMap.set(tab.id, tab.cookieStoreId);
     const reopened = await this.maybeReopenInTmpContainer(tab);
@@ -57,8 +52,8 @@ export class Tabs {
   public async onUpdated(
     tabId: number,
     changeInfo: any,
-    tab: browser.tabs.Tab
-  ) {
+    tab: Tab
+  ): Promise<void> {
     debug('[onUpdated] tab updated', tab, changeInfo);
     this.maybeCloseRedirectorTab(tab, changeInfo);
 
@@ -72,7 +67,7 @@ export class Tabs {
     }
   }
 
-  public async onRemoved(tabId: number) {
+  public async onRemoved(tabId: number): Promise<void> {
     debug('[onRemoved]', tabId);
 
     if (this.container.noContainerTabs[tabId]) {
@@ -94,21 +89,21 @@ export class Tabs {
     this.containerMap.delete(tabId);
   }
 
-  public async onActivated(activeInfo: any) {
+  public async onActivated(activeInfo: any): Promise<void> {
     debug('[onActivated]', activeInfo);
     delete this.container.lastCreatedInactiveTab[
       browser.windows.WINDOW_ID_CURRENT
     ];
-    const activatedTab = await browser.tabs.get(activeInfo.tabId);
+    const activatedTab = (await browser.tabs.get(activeInfo.tabId)) as Tab;
     this.pageaction.showOrHide(activatedTab);
   }
 
-  async handleAlreadyOpen() {
-    const tabs = await browser.tabs.query({});
+  async handleAlreadyOpen(): Promise<(void | boolean)[]> {
+    const tabs = (await browser.tabs.query({})) as Tab[];
     return Promise.all(tabs.map(tab => this.maybeReopenInTmpContainer(tab)));
   }
 
-  async maybeReopenInTmpContainer(tab: browser.tabs.Tab) {
+  async maybeReopenInTmpContainer(tab: Tab): Promise<void | boolean> {
     if (this.creatingInSameContainer) {
       debug(
         '[maybeReopenInTmpContainer] we are in the process of creating a tab in same container, ignore',
@@ -117,12 +112,12 @@ export class Tabs {
       return;
     }
 
-    if (this.container.noContainerTabs[tab.id!]) {
+    if (this.container.noContainerTabs[tab.id]) {
       debug('[maybeReopenInTmpContainer] nocontainer tab, ignore', tab);
       return;
     }
 
-    if (tab.url!.startsWith('moz-extension://')) {
+    if (tab.url.startsWith('moz-extension://')) {
       debug('[maybeReopenInTmpContainer] moz-extension url', tab);
       await this.mac.handleConfirmPage(tab);
       return;
@@ -153,7 +148,7 @@ export class Tabs {
           '[maybeReopenInTmpContainer] automatic mode on navigation, setting icon badge',
           tab
         );
-        this.browseraction.addBadge(tab.id!);
+        this.browseraction.addBadge(tab.id);
         return;
       }
 
@@ -172,7 +167,7 @@ export class Tabs {
 
     if (
       tab.url === 'about:home' &&
-      this.container.isTemporary(tab.cookieStoreId!) &&
+      this.container.isTemporary(tab.cookieStoreId) &&
       this.pref.automaticMode.newTab === 'navigation'
     ) {
       debug(
@@ -183,18 +178,18 @@ export class Tabs {
         cookieStoreId: `${this.background.containerPrefix}-default`,
       });
       await this.remove(tab);
-      this.browseraction.addBadge(tab.id!);
+      this.browseraction.addBadge(tab.id);
       return true;
     }
   }
 
-  public maybeCloseRedirectorTab(tab: browser.tabs.Tab, changeInfo: any) {
+  public maybeCloseRedirectorTab(tab: Tab, changeInfo: any): void {
     if (
       this.pref.closeRedirectorTabs.active &&
       changeInfo.status &&
       changeInfo.status === 'complete'
     ) {
-      const url = new URL(tab.url!);
+      const url = new URL(tab.url);
       if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
         delay(this.pref.closeRedirectorTabs.delay).then(async () => {
           debug('[onUpdated] removing redirector tab', changeInfo, tab);
@@ -204,7 +199,7 @@ export class Tabs {
     }
   }
 
-  public async maybeMoveTab(tab: browser.tabs.Tab) {
+  public async maybeMoveTab(tab: Tab): Promise<void> {
     if (
       !tab.active &&
       this.container.lastCreatedInactiveTab[
@@ -222,10 +217,10 @@ export class Tabs {
         );
         if (lastCreatedInactiveTab.index > tab.index) {
           debug('[onCreated] moving tab', lastCreatedInactiveTab, tab);
-          browser.tabs.move(tab.id!, { index: lastCreatedInactiveTab.index });
+          browser.tabs.move(tab.id, { index: lastCreatedInactiveTab.index });
           this.container.lastCreatedInactiveTab[
             browser.windows.WINDOW_ID_CURRENT
-          ] = tab.id!;
+          ] = tab.id;
         }
       } catch (error) {
         debug('[onCreated] getting lastCreatedInactiveTab failed', error);
@@ -233,7 +228,7 @@ export class Tabs {
     }
   }
 
-  async createInSameContainer() {
+  async createInSameContainer(): Promise<void> {
     this.creatingInSameContainer = true;
     try {
       const tabs = await browser.tabs.query({
@@ -264,7 +259,7 @@ export class Tabs {
     this.creatingInSameContainer = false;
   }
 
-  public async remove(tab: browser.tabs.Tab) {
+  public async remove(tab: Tab): Promise<void> {
     try {
       // make sure we dont close the window by removing this tab
       // TODO implement actual queue for removal, race-condition (and with that window-closing) is possible

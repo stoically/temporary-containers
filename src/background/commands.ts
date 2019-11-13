@@ -1,9 +1,9 @@
-import { Permissions, TemporaryContainers } from '../background';
+import { TemporaryContainers } from '../background';
 import { Container } from './container';
 import { debug } from './log';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
-import { PreferencesSchema } from '~/types';
+import { PreferencesSchema, Tab, Permissions } from '~/types';
 
 export class Commands {
   private background: TemporaryContainers;
@@ -17,7 +17,7 @@ export class Commands {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
@@ -26,7 +26,7 @@ export class Commands {
     this.pageaction = this.background.pageaction;
   }
 
-  public async onCommand(name: string) {
+  public async onCommand(name: string): Promise<void> {
     switch (name) {
       case 'new_temporary_container_tab':
         if (!this.pref.keyboardShortcuts.AltC) {
@@ -43,10 +43,10 @@ export class Commands {
           return;
         }
         try {
-          const tab = await browser.tabs.create({
+          const tab = (await browser.tabs.create({
             url: 'about:blank',
-          });
-          this.container.noContainerTabs[tab.id!] = true;
+          })) as Tab;
+          this.container.noContainerTabs[tab.id] = true;
           debug(
             '[onCommand] new no container tab created',
             this.container.noContainerTabs
@@ -64,7 +64,11 @@ export class Commands {
           const browserWindow = await browser.windows.create({
             url: 'about:blank',
           });
-          this.container.noContainerTabs[browserWindow.tabs![0].id!] = true;
+          if (!browserWindow.tabs) {
+            return;
+          }
+          const [tab] = browserWindow.tabs as Tab[];
+          this.container.noContainerTabs[tab.id] = true;
           debug(
             '[onCommand] new no container tab created in window',
             browserWindow,
@@ -95,11 +99,11 @@ export class Commands {
         if (!this.pref.keyboardShortcuts.AltO) {
           return;
         }
-        const [activeTab] = await browser.tabs.query({
+        const [activeTab] = (await browser.tabs.query({
           currentWindow: true,
           active: true,
-        });
-        if (!activeTab || !activeTab.url!.startsWith('http')) {
+        })) as Tab[];
+        if (!activeTab || !activeTab.url.startsWith('http')) {
           return;
         }
         this.container.createTabInTempContainer({

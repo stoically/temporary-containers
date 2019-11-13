@@ -3,6 +3,7 @@ import { TemporaryContainers } from '../background';
 import { debug } from './log';
 import { Storage } from './storage';
 import { Utils } from './utils';
+import { IsolationDomain } from '~/types';
 
 export class Migration {
   private background: TemporaryContainers;
@@ -19,14 +20,16 @@ export class Migration {
     preferences,
     previousVersion,
   }: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     preferences: any;
     previousVersion: string;
-  }) {
+  }): Promise<void> {
     this.storage = this.background.storage;
     this.utils = this.background.utils;
     this.previousVersion = previousVersion;
 
     if (!this.previousVersion) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (window as any).migrationLegacy(this);
     }
 
@@ -72,7 +75,7 @@ export class Migration {
       debug(
         'updated from version <= 0.103, migrate per domain isolation to array'
       );
-      const perDomainIsolation: any[] = [];
+      const perDomainIsolation: IsolationDomain[] = [];
       Object.keys(preferences.isolation.domain).map(domainPattern => {
         perDomainIsolation.push(
           Object.assign(
@@ -146,7 +149,7 @@ export class Migration {
   public updatedFromVersionEqualToOrLessThan(
     compareVersion: string,
     compareBetaVersion = ''
-  ) {
+  ): boolean {
     if (compareBetaVersion && this.previousVersionBeta) {
       compareVersion = compareBetaVersion;
     }

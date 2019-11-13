@@ -1,30 +1,6 @@
 import { TemporaryContainers } from '../background';
-import { ContainerOptions } from './container';
 import { debug } from './log';
-import { PreferencesSchema } from '~/types';
-
-export interface StorageLocal {
-  containerPrefix: string | false;
-  tempContainerCounter: number;
-  tempContainers: {
-    [key: string]: ContainerOptions;
-  };
-  tempContainersNumbers: number[];
-  statistics: {
-    startTime: Date;
-    containersDeleted: number;
-    cookiesDeleted: number;
-    cacheDeleted: number;
-    deletesHistory: {
-      containersDeleted: number;
-      cookiesDeleted: number;
-      urlsDeleted: number;
-    };
-  };
-  preferences: PreferencesSchema;
-  lastFileExport: false;
-  version: false | string;
-}
+import { StorageLocal } from '~/types';
 
 export class Storage {
   public local!: StorageLocal;
@@ -59,7 +35,7 @@ export class Storage {
     };
   }
 
-  public async initialize() {
+  public async initialize(): Promise<boolean> {
     this.local = (await browser.storage.local.get()) as StorageLocal;
 
     // empty storage *should* mean new install
@@ -104,7 +80,7 @@ export class Storage {
     return true;
   }
 
-  public async persist() {
+  public async persist(): Promise<boolean> {
     try {
       if (!this.local || !Object.keys(this.local).length) {
         debug('[persist] tried to persist corrupt storage', this.local);
@@ -122,7 +98,7 @@ export class Storage {
     }
   }
 
-  public async install() {
+  public async install(): Promise<boolean> {
     debug('[install] installing storage');
 
     this.local = this.background.utils.clone(this.defaults);

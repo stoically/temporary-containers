@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // to have persistent listeners we need to register them early+sync
 // and wait for tmp to fully initialize before handling events
 import { debug } from './log';
@@ -76,6 +77,9 @@ class EventListeners {
     browser.management.onEnabled.addListener(
       this.wrap(browser.management.onEnabled, ['management', 'enable'])
     );
+    browser.management.onInstalled.addListener(
+      this.wrap(browser.management.onUninstalled, ['management', 'enable'])
+    );
     browser.commands.onCommand.addListener(
       this.wrap(browser.commands.onCommand, ['commands', 'onCommand'])
     );
@@ -108,11 +112,11 @@ class EventListeners {
   public wrap(
     api: any,
     target: string[],
-    options: any = { timeout: this.defaultTimeout }
-  ) {
+    options: { timeout: number } = { timeout: this.defaultTimeout }
+  ): (...listenerArgs: any) => Promise<any> {
     const tmpInitializedPromise = this.createTmpInitializedPromise(options);
 
-    const listener = async (...wrapArgs: any) => {
+    const listener = async (...listenerArgs: any): Promise<any> => {
       if (!(window as any).tmp || !(window as any).tmp.initialized) {
         try {
           await tmpInitializedPromise;
@@ -126,19 +130,19 @@ class EventListeners {
         }
       }
 
-      return ((...listenerArgs: any[]) => {
-        return (window as any).tmp[target[0]][target[1]].call(
-          (window as any).tmp[target[0]],
-          ...listenerArgs
-        );
-      })(...wrapArgs);
+      return (window as any).tmp[target[0]][target[1]].call(
+        (window as any).tmp[target[0]],
+        ...listenerArgs
+      );
     };
 
     this.listeners.push({ listener, api });
     return listener;
   }
 
-  public createTmpInitializedPromise(options: any) {
+  public createTmpInitializedPromise(options: {
+    timeout: number;
+  }): Promise<void> {
     const abortController = new AbortController();
     const timeout = window.setTimeout(() => {
       abortController.abort();
@@ -153,14 +157,14 @@ class EventListeners {
     });
   }
 
-  public tmpInitialized = () => {
+  public tmpInitialized = (): void => {
     this.tmpInitializedPromiseResolvers.map(resolver => {
       clearTimeout(resolver.timeout);
       resolver.resolve();
     });
   };
 
-  public remove() {
+  public remove(): void {
     this.listeners.map(listener => {
       listener.api.removeListener(listener.listener);
     });

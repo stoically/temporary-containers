@@ -1,7 +1,6 @@
 import { TemporaryContainers } from '../background';
 import { Container } from './container';
-import { TabId } from './tabs';
-import { PreferencesSchema, ToolbarIconColor } from '~/types';
+import { PreferencesSchema, ToolbarIconColor, Tab, TabId } from '~/types';
 
 export class BrowserAction {
   private background: TemporaryContainers;
@@ -12,7 +11,7 @@ export class BrowserAction {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
 
@@ -27,27 +26,27 @@ export class BrowserAction {
     }
   }
 
-  public onClicked() {
+  public onClicked(): Promise<false | Tab | undefined> {
     return this.container.createTabInTempContainer({
       deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic',
     });
   }
 
-  public setPopup() {
+  public setPopup(): void {
     browser.browserAction.setPopup({
       popup: 'popup.html',
     });
     browser.browserAction.setTitle({ title: 'Temporary Containers' });
   }
 
-  public unsetPopup() {
+  public unsetPopup(): void {
     browser.browserAction.setPopup({
       popup: null,
     });
     browser.browserAction.setTitle({ title: null });
   }
 
-  public setIcon(iconColor: ToolbarIconColor) {
+  public setIcon(iconColor: ToolbarIconColor): void {
     const iconPath = '../../icons';
     let iconColorFileName: string = iconColor;
     if (iconColor === 'default') {
@@ -62,7 +61,7 @@ export class BrowserAction {
     browser.browserAction.setIcon(icon);
   }
 
-  public addBadge(tabId: TabId) {
+  public addBadge(tabId: TabId): void {
     if (!this.pref.isolation.active) {
       return;
     }
@@ -81,7 +80,7 @@ export class BrowserAction {
     });
   }
 
-  public removeBadge(tabId: TabId) {
+  public removeBadge(tabId: TabId): void {
     if (!this.pref.isolation.active) {
       return;
     }
@@ -98,7 +97,7 @@ export class BrowserAction {
     });
   }
 
-  public async addIsolationInactiveBadge() {
+  public async addIsolationInactiveBadge(): Promise<void> {
     browser.browserAction.setBadgeBackgroundColor({
       color: 'red',
     });
@@ -120,7 +119,7 @@ export class BrowserAction {
     });
   }
 
-  public removeIsolationInactiveBadge() {
+  public removeIsolationInactiveBadge(): void {
     browser.browserAction.setBadgeText({
       text: '',
     });

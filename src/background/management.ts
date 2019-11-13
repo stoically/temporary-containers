@@ -4,7 +4,7 @@ import { addons } from './external-addons';
 export class Management {
   public addons = addons;
 
-  public async initialize() {
+  public async initialize(): Promise<void> {
     try {
       const extensions = await browser.management.getAll();
       extensions.map(extension => {
@@ -20,7 +20,7 @@ export class Management {
     }
   }
 
-  public disable(extension: browser.management.ExtensionInfo) {
+  public disable(extension: browser.management.ExtensionInfo): void {
     const addon = this.addons.get(extension.id);
     if (addon) {
       addon.enabled = false;
@@ -28,9 +28,9 @@ export class Management {
     }
   }
 
-  public enable(extension: browser.management.ExtensionInfo) {
+  public enable(extension: browser.management.ExtensionInfo): void {
     const addon = this.addons.get(extension.id);
-    if (addon) {
+    if (addon && extension.enabled) {
       addon.enabled = true;
       addon.version = extension.version;
     }

@@ -1,7 +1,7 @@
 import { TemporaryContainers } from '../background';
-import { CookieStoreId } from './container';
 import { debug } from './log';
 import { Storage } from './storage';
+import { Tab, CookieStoreId } from '~/types';
 
 export class History {
   private background: TemporaryContainers;
@@ -11,40 +11,39 @@ export class History {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.storage = this.background.storage;
   }
 
-  public async maybeAddHistory(tab: browser.tabs.Tab | undefined, url: string) {
+  public async maybeAddHistory(
+    tab: Tab | undefined,
+    url: string
+  ): Promise<void> {
     if (!tab || url === 'about:blank' || url === 'about:newtab') {
       return;
     }
-    const cookieStoreId = tab.cookieStoreId!;
+    const cookieStoreId = tab.cookieStoreId;
+    const container = this.storage.local.tempContainers[cookieStoreId];
     if (
       cookieStoreId !== `${this.background.containerPrefix}-default` &&
-      this.storage.local.tempContainers[cookieStoreId] &&
-      this.storage.local.tempContainers[cookieStoreId].deletesHistory
+      container &&
+      container.deletesHistory
     ) {
-      if (!this.storage.local.tempContainers[cookieStoreId].history) {
-        this.storage.local.tempContainers[cookieStoreId].history = {};
+      if (!container.history) {
+        container.history = {};
       }
-      this.storage.local.tempContainers[cookieStoreId].history![url] = {
-        tabId: tab.id!,
+      container.history[url] = {
+        tabId: tab.id,
       };
       await this.storage.persist();
     }
   }
 
-  public maybeClearHistory(cookieStoreId: CookieStoreId) {
+  public maybeClearHistory(cookieStoreId: CookieStoreId): number {
     let count = 0;
-    if (
-      this.storage.local.tempContainers[cookieStoreId] &&
-      this.storage.local.tempContainers[cookieStoreId].deletesHistory &&
-      this.storage.local.tempContainers[cookieStoreId].history
-    ) {
-      const urls = Object.keys(
-        this.storage.local.tempContainers[cookieStoreId].history!
-      );
+    const container = this.storage.local.tempContainers[cookieStoreId];
+    if (container && container.deletesHistory && container.history) {
+      const urls = Object.keys(container.history);
       count = urls.length;
       urls.map(url => {
         if (!url) {

@@ -1,7 +1,7 @@
 import { TemporaryContainers } from '../background';
-import { Container, CookieStoreId } from './container';
+import { Container } from './container';
 import { Storage } from './storage';
-import { TabId } from './tabs';
+import { CookieStoreId, TabId } from '~/types';
 
 export class Convert {
   private background: TemporaryContainers;
@@ -12,7 +12,7 @@ export class Convert {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.storage = this.background.storage;
     this.container = this.background.container;
   }
@@ -25,7 +25,7 @@ export class Convert {
     cookieStoreId: CookieStoreId;
     tabId: TabId;
     name: string;
-  }) {
+  }): Promise<void> {
     delete this.storage.local.tempContainers[cookieStoreId];
     await this.storage.persist();
     await browser.contextualIdentities.update(cookieStoreId, {
@@ -41,7 +41,7 @@ export class Convert {
   }: {
     cookieStoreId: CookieStoreId;
     tabId: TabId;
-  }) {
+  }): Promise<void> {
     this.storage.local.tempContainers[cookieStoreId].deletesHistory = false;
     delete this.storage.local.tempContainers[cookieStoreId].history;
     await this.storage.persist();
@@ -59,7 +59,7 @@ export class Convert {
   }: {
     cookieStoreId: CookieStoreId;
     tabId: TabId;
-  }) {
+  }): Promise<void> {
     const containerOptions = this.container.generateContainerNameIconColor();
     await browser.contextualIdentities.update(cookieStoreId, {
       name: containerOptions.name,

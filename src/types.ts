@@ -6,9 +6,26 @@ import {
   REDIRECTOR_DOMAINS,
 } from './shared';
 
+export type TabId = number;
+export type WindowId = number;
+
 export type Milliseconds = number;
 export type IgnoredDomain = typeof IGNORED_DOMAINS[number] | string;
 export type RedirectorDomain = typeof REDIRECTOR_DOMAINS[number] | string;
+
+export type CookieStoreId = string;
+
+export interface ContainerOptions {
+  name: string;
+  color: ContainerColor;
+  icon: ContainerIcon;
+  number: number;
+  clean: boolean;
+  deletesHistory?: boolean;
+  history?: {
+    [key: string]: { tabId: TabId };
+  };
+}
 
 export type IsolationAction =
   | 'never'
@@ -72,6 +89,29 @@ export type ToolbarIconColor =
   | 'blue-simple'
   | 'red-simple'
   | 'white-simple';
+
+export interface StorageLocal {
+  containerPrefix: string | false;
+  tempContainerCounter: number;
+  tempContainers: {
+    [key: string]: ContainerOptions;
+  };
+  tempContainersNumbers: number[];
+  statistics: {
+    startTime: Date;
+    containersDeleted: number;
+    cookiesDeleted: number;
+    cacheDeleted: number;
+    deletesHistory: {
+      containersDeleted: number;
+      cookiesDeleted: number;
+      urlsDeleted: number;
+    };
+  };
+  preferences: PreferencesSchema;
+  lastFileExport: false;
+  version: false | string;
+}
 
 export interface PreferencesSchema {
   automaticMode: {
@@ -151,6 +191,7 @@ export interface Tab extends browser.tabs.Tab {
   id: number;
   url: string;
   windowId: number;
+  cookieStoreId: string;
 }
 
 export interface Permissions {
@@ -163,3 +204,9 @@ export interface Permissions {
 export type ContainerColor = typeof CONTAINER_COLORS[number];
 export type ContainerIcon = typeof CONTAINER_ICONS[number];
 export type ToolbarIconColors = typeof TOOLBAR_ICON_COLORS[number];
+
+export interface MacAssignment {
+  userContextId: string;
+  cookieStoreId: string;
+  neverAsk: boolean;
+}

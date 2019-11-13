@@ -1,18 +1,12 @@
 import { TemporaryContainers } from '../background';
-import { Container, CookieStoreId, ContainerOptions } from './container';
+import { Container } from './container';
 import { delay } from './lib';
 import { debug } from './log';
 import { Storage } from './storage';
-import { PreferencesSchema } from '~/types';
-
-export interface MacAssignment {
-  userContextId: string;
-  cookieStoreId: string;
-  neverAsk: boolean;
-}
+import { PreferencesSchema, CookieStoreId, MacAssignment, Tab } from '~/types';
 
 interface ConfirmPage {
-  tab: browser.tabs.Tab;
+  tab: Tab;
   targetURL: string;
   targetContainer: CookieStoreId;
   currentContainer: false | CookieStoreId;
@@ -21,7 +15,7 @@ interface ConfirmPage {
 interface WaitingForConfirmPage {
   targetContainer: CookieStoreId;
   request: any;
-  tab?: browser.tabs.Tab;
+  tab?: Tab;
   deletesHistoryContainer: boolean;
 }
 
@@ -46,17 +40,17 @@ export class MultiAccountContainers {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
   }
 
-  public isConfirmPage(url: string) {
-    return url.match(/moz-extension:\/\/[^/]*\/confirm-page.html\?url=/);
+  public isConfirmPage(url: string): boolean {
+    return !!url.match(/moz-extension:\/\/[^/]*\/confirm-page.html\?url=/);
   }
 
-  public handleConfirmPage(tab: browser.tabs.Tab) {
+  public handleConfirmPage(tab: Tab): void {
     if (tab && tab.id && this.container.tabCreatedAsMacConfirmPage[tab.id]) {
       debug(
         '[handleConfirmPage] we reopened a confirmpage in that tab already',
@@ -64,10 +58,10 @@ export class MultiAccountContainers {
       );
       return;
     }
-    const multiAccountMatch = this.isConfirmPage(tab.url!);
+    const multiAccountMatch = this.isConfirmPage(tab.url);
     if (multiAccountMatch) {
       debug('[handleConfirmPage] is intervening', tab, multiAccountMatch);
-      const parsedURL = new URL(tab.url!);
+      const parsedURL = new URL(tab.url);
       const queryParams = parsedURL.search
         .split('&')
         .map(param => param.split('='));
@@ -106,9 +100,9 @@ export class MultiAccountContainers {
   public async maybeReopenConfirmPage(
     macAssignment: MacAssignment,
     request: any,
-    tab: browser.tabs.Tab | undefined,
+    tab: Tab | undefined,
     isolation = false
-  ) {
+  ): Promise<boolean | { clean: true }> {
     const deletesHistoryContainer =
       this.pref.deletesHistory.automaticMode === 'automatic';
     debug(
@@ -186,7 +180,7 @@ export class MultiAccountContainers {
     }: WaitingForConfirmPage,
     isolation: boolean,
     confirmPage: false | ConfirmPage
-  ) {
+  ): Promise<boolean | { clean: true }> {
     debug(
       '[_maybeReopenConfirmPage]',
       targetContainer,
@@ -237,6 +231,7 @@ export class MultiAccountContainers {
       request,
       macConfirmPage: true,
     });
+    return true;
   }
 
   public async getAssignment(url: string): Promise<MacAssignment> {

@@ -1,24 +1,19 @@
-import { Permissions, TemporaryContainers } from '../background';
+import { TemporaryContainers } from '../background';
 import { delay, psl } from './lib';
 import { debug } from './log';
 import { Storage } from './storage';
-import { TabId, Tabs } from './tabs';
+import { Tabs } from './tabs';
 import { CONTAINER_COLORS, CONTAINER_ICONS } from '~/shared';
-import { ContainerColor, ContainerIcon, PreferencesSchema } from '~/types';
-
-export type CookieStoreId = string;
-
-export interface ContainerOptions {
-  name: string;
-  color: ContainerColor;
-  icon: ContainerIcon;
-  number: number;
-  clean: boolean;
-  deletesHistory?: boolean;
-  history?: {
-    [key: string]: { tabId: TabId };
-  };
-}
+import {
+  ContainerColor,
+  ContainerIcon,
+  PreferencesSchema,
+  CookieStoreId,
+  TabId,
+  ContainerOptions,
+  Tab,
+  Permissions,
+} from '~/types';
 
 interface TabOptions {
   cookieStoreId: CookieStoreId;
@@ -59,7 +54,7 @@ export class Container {
     this.background = background;
   }
 
-  public async initialize() {
+  public async initialize(): Promise<void> {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.permissions = this.background.permissions;
@@ -80,14 +75,14 @@ export class Container {
     deletesHistory = false,
     macConfirmPage = false,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     url?: string;
     active?: boolean;
     request?: any;
     dontPin?: boolean;
     deletesHistory?: boolean;
     macConfirmPage?: boolean;
-  }) {
+  }): Promise<false | Tab> {
     if (request && request.requestId) {
       // we saw that request already
       if (this.requestCreatedTab[request.requestId]) {
@@ -96,7 +91,7 @@ export class Container {
           tab,
           request
         );
-        return;
+        return false;
       }
       this.requestCreatedTab[request.requestId] = true;
       // cleanup tracked requests later
@@ -133,7 +128,7 @@ export class Container {
     url?: string;
     request?: any;
     deletesHistory?: boolean;
-  }) {
+  }): Promise<browser.contextualIdentities.ContextualIdentity> {
     const containerOptions = this.generateContainerNameIconColor(
       (request && request.url) || url
     );
@@ -178,6 +173,7 @@ export class Container {
         containerOptions.name,
         error
       );
+      throw error;
     }
   }
 
@@ -190,12 +186,12 @@ export class Container {
     contextualIdentity,
   }: {
     url?: string;
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     active?: boolean;
     dontPin?: boolean;
     macConfirmPage?: boolean;
     contextualIdentity: browser.contextualIdentities.ContextualIdentity;
-  }) {
+  }): Promise<Tab> {
     try {
       const newTabOptions: TabOptions = {
         cookieStoreId: contextualIdentity.cookieStoreId,
@@ -247,11 +243,10 @@ export class Container {
         '[createTabInTempContainer] creating tab in temporary container',
         newTabOptions
       );
-      const newTab = await browser.tabs.create(newTabOptions);
+      const newTab = (await browser.tabs.create(newTabOptions)) as Tab;
       if (tab && !tab.active) {
-        this.lastCreatedInactiveTab[
-          browser.windows.WINDOW_ID_CURRENT
-        ] = newTab.id!;
+        this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] =
+          newTab.id;
       }
       debug(
         '[createTabInTempContainer] new tab in temp container created',
@@ -269,13 +264,14 @@ export class Container {
       }
       this.tabs.containerMap.set(newTab.id, contextualIdentity.cookieStoreId);
       if (macConfirmPage) {
-        this.tabCreatedAsMacConfirmPage[newTab.id!] = true;
+        this.tabCreatedAsMacConfirmPage[newTab.id] = true;
       }
       await this.storage.persist();
 
       return newTab;
     } catch (error) {
       debug('[createTabInTempContainer] error while creating new tab', error);
+      throw error;
     }
   }
 
@@ -288,14 +284,14 @@ export class Container {
     macConfirmPage,
     dontPin = true,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     url?: string;
     active?: boolean;
     deletesHistory?: boolean;
     request?: any;
     macConfirmPage?: boolean;
     dontPin?: boolean;
-  }) {
+  }): Promise<false | Tab> {
     const newTab = await this.createTabInTempContainer({
       tab,
       url,
@@ -376,7 +372,7 @@ export class Container {
     };
   }
 
-  public isPermanent(cookieStoreId: CookieStoreId) {
+  public isPermanent(cookieStoreId: CookieStoreId): boolean {
     if (
       cookieStoreId !== `${this.background.containerPrefix}-default` &&
       !this.storage.local.tempContainers[cookieStoreId]
@@ -386,21 +382,24 @@ export class Container {
     return false;
   }
 
-  public isTemporary(cookieStoreId: CookieStoreId, type?: 'deletesHistory') {
+  public isTemporary(
+    cookieStoreId: CookieStoreId,
+    type?: 'deletesHistory'
+  ): boolean {
     return !!(
       this.storage.local.tempContainers[cookieStoreId] &&
       (!type || this.storage.local.tempContainers[cookieStoreId][type])
     );
   }
 
-  public isClean(cookieStoreId: CookieStoreId) {
+  public isClean(cookieStoreId: CookieStoreId): boolean {
     return (
       this.storage.local.tempContainers[cookieStoreId] &&
       this.storage.local.tempContainers[cookieStoreId].clean
     );
   }
 
-  public markUnclean(tabId: TabId) {
+  public markUnclean(tabId: TabId): void {
     const cookieStoreId = this.tabs.containerMap.get(tabId);
     if (cookieStoreId && this.isClean(cookieStoreId)) {
       debug(
@@ -411,7 +410,7 @@ export class Container {
     }
   }
 
-  public getReusedContainerNumber() {
+  public getReusedContainerNumber(): number {
     const tempContainersNumbers = this.storage.local.tempContainersNumbers.sort();
     if (!tempContainersNumbers.length) {
       return 1;
@@ -426,7 +425,7 @@ export class Container {
     }
   }
 
-  public getAvailableContainerColors() {
+  public getAvailableContainerColors(): ContainerColor[] {
     // even out colors
     let availableColors = [];
     const containersOptions = Object.values(this.storage.local.tempContainers);
@@ -468,7 +467,7 @@ export class Container {
     return availableColors;
   }
 
-  public removeFromStorage(cookieStoreId: CookieStoreId) {
+  public removeFromStorage(cookieStoreId: CookieStoreId): Promise<boolean> {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
       containerNumber =>
         this.storage.local.tempContainers[cookieStoreId].number !==
@@ -478,25 +477,25 @@ export class Container {
     return this.storage.persist();
   }
 
-  public getType(cookieStoreId: CookieStoreId) {
+  public getType(cookieStoreId: CookieStoreId): string {
     return this.storage.local.tempContainers[cookieStoreId].deletesHistory
       ? 'deletesHistory'
       : 'regular';
   }
 
-  public getRemovalDelay(cookieStoreId: CookieStoreId) {
+  public getRemovalDelay(cookieStoreId: CookieStoreId): number {
     return this.getType(cookieStoreId) === 'deletesHistory'
       ? this.pref.deletesHistory.containerRemoval
       : this.pref.container.removal;
   }
 
-  public cleanupNumbers() {
+  public cleanupNumbers(): void {
     this.storage.local.tempContainersNumbers = Object.values(
       this.storage.local.tempContainers
     ).map(container => container.number);
   }
 
-  public cleanupNumber(cookieStoreId: CookieStoreId) {
+  public cleanupNumber(cookieStoreId: CookieStoreId): void {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
       containerNumber =>
         this.storage.local.tempContainers[cookieStoreId].number !==
@@ -504,7 +503,7 @@ export class Container {
     );
   }
 
-  public getAllIds() {
+  public getAllIds(): CookieStoreId[] {
     return Object.keys(this.storage.local.tempContainers);
   }
 }

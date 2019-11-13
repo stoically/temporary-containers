@@ -8,7 +8,12 @@ import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { PreferencesSchema } from '~/types';
+import { PreferencesSchema, Tab } from '~/types';
+
+type OnBeforeRequestResult =
+  | undefined
+  | boolean
+  | { clean?: boolean; cancel?: boolean };
 
 export class Request {
   public lastSeenRequestUrl: {
@@ -49,7 +54,7 @@ export class Request {
     this.background = background;
   }
 
-  public async initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.mouseclick = this.background.mouseclick;
@@ -60,11 +65,13 @@ export class Request {
     this.history = this.background.history;
   }
 
-  public async webRequestOnBeforeRequest(request: any) {
+  public async webRequestOnBeforeRequest(
+    request: any
+  ): Promise<OnBeforeRequestResult> {
     debug('[webRequestOnBeforeRequest] incoming request', request);
     const requestIdUrl = `${request.requestId}+${request.url}`;
     if (requestIdUrl in this.requestIdUrlSeen) {
-      return;
+      return false;
     } else {
       this.requestIdUrlSeen[requestIdUrl] = true;
       delay(300000).then(() => {
@@ -74,13 +81,7 @@ export class Request {
 
     this.mouseclick.beforeHandleRequest(request);
 
-    let returnVal:
-      | false
-      | {
-          clean?: boolean;
-          cancel?: boolean;
-        }
-      | undefined = false;
+    let returnVal: OnBeforeRequestResult;
     try {
       returnVal = await this.handleRequest(request);
     } catch (error) {
@@ -99,10 +100,13 @@ export class Request {
     }
     this.lastSeenRequestUrl[request.requestId] = request.url;
 
-    if (returnVal && returnVal.cancel) {
+    if (typeof returnVal === 'object' && returnVal.cancel) {
       this.cancelRequest(request);
       return returnVal;
-    } else if (!returnVal || (returnVal && !returnVal.clean)) {
+    } else if (
+      !returnVal ||
+      (typeof returnVal === 'object' && !returnVal.clean)
+    ) {
       this.container.markUnclean(request.tabId);
     }
 
@@ -115,7 +119,7 @@ export class Request {
     return;
   }
 
-  public async handleRequest(request: any) {
+  public async handleRequest(request: any): Promise<OnBeforeRequestResult> {
     if (request.tabId === -1) {
       debug(
         '[handleRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?',
@@ -139,9 +143,9 @@ export class Request {
     let tab;
     let openerTab;
     try {
-      tab = await browser.tabs.get(request.tabId);
+      tab = (await browser.tabs.get(request.tabId)) as Tab;
       if (tab && tab.openerTabId) {
-        openerTab = await browser.tabs.get(tab.openerTabId);
+        openerTab = (await browser.tabs.get(tab.openerTabId)) as Tab;
       }
       debug(
         '[handleRequest] onbeforeRequest requested tab information',
@@ -194,7 +198,7 @@ export class Request {
       return false;
     }
 
-    if (tab && this.container.isClean(tab.cookieStoreId!)) {
+    if (tab && this.container.isClean(tab.cookieStoreId)) {
       // removing this clean check can result in endless loops
       debug(
         '[handleRequest] not isolating because the tmp container is still clean'
@@ -241,8 +245,8 @@ export class Request {
     ) {
       debug('[handleRequest] default container and openerTab', openerTab);
       if (
-        !openerTab.url!.startsWith('about:') &&
-        !openerTab.url!.startsWith('moz-extension:')
+        !openerTab.url.startsWith('about:') &&
+        !openerTab.url.startsWith('moz-extension:')
       ) {
         debug(
           '[handleRequest] request didnt came from about/moz-extension page',
@@ -291,14 +295,14 @@ export class Request {
     return { cancel: true };
   }
 
-  public cancelRequest(request: any) {
+  public cancelRequest(request: any): boolean {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
       typeof request.tabId === 'undefined'
     ) {
       debug('[cancelRequest] invalid request', request);
-      return;
+      return false;
     }
 
     if (!this.canceledRequests[request.requestId]) {
@@ -345,14 +349,14 @@ export class Request {
     }
   }
 
-  public shouldCancelRequest(request: any) {
+  public shouldCancelRequest(request: any): boolean {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
       typeof request.tabId === 'undefined'
     ) {
       debug('[shouldCancelRequest] invalid request', request);
-      return;
+      return false;
     }
 
     if (
@@ -366,7 +370,7 @@ export class Request {
     return false;
   }
 
-  public cleanupCanceled(request: any) {
+  public cleanupCanceled(request: any): void {
     if (this.canceledTabs[request.tabId]) {
       delete this.canceledTabs[request.tabId];
     }
@@ -378,9 +382,9 @@ export class Request {
     openerTab,
   }: {
     request: any;
-    tab?: browser.tabs.Tab;
-    openerTab?: browser.tabs.Tab;
-  }) {
+    tab?: Tab;
+    openerTab?: Tab;
+  }): Promise<boolean> {
     const parsedUrl = new URL(request.url);
 
     if (this.management.addons.get('containerise@kinte.sh')?.enabled) {
@@ -441,9 +445,9 @@ export class Request {
       }
     }
 
-    const parsedTabUrl = tab && /^https?:/.test(tab.url!) && new URL(tab.url!);
+    const parsedTabUrl = tab && /^https?:/.test(tab.url) && new URL(tab.url);
     const parsedOpenerTabUrl =
-      openerTab && /^https?:/.test(openerTab.url!) && new URL(openerTab.url!);
+      openerTab && /^https?:/.test(openerTab.url) && new URL(openerTab.url);
     for (const containWhat of [
       '@contain-facebook',
       '@contain-google',
@@ -471,5 +475,7 @@ export class Request {
         }
       }
     }
+
+    return false;
   }
 }

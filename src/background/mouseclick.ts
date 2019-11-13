@@ -3,7 +3,7 @@ import { Isolation } from './isolation';
 import { delay } from './lib';
 import { debug } from './log';
 import { Utils } from './utils';
-import { PreferencesSchema, IsolationAction } from '~/types';
+import { PreferencesSchema, IsolationAction, Tab } from '~/types';
 
 type ClickType = 'middle' | 'left' | 'ctrlleft';
 
@@ -16,7 +16,7 @@ export class MouseClick {
   public isolated: {
     [key: string]: {
       clickType: ClickType;
-      tab: browser.tabs.Tab;
+      tab: Tab;
       count: number;
       abortController: AbortController;
     };
@@ -32,7 +32,7 @@ export class MouseClick {
     this.isolated = {};
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.utils = this.background.utils;
     this.isolation = this.background.isolation;
@@ -41,7 +41,7 @@ export class MouseClick {
   public linkClicked(
     message: ClickMessage,
     sender: browser.runtime.MessageSender
-  ) {
+  ): void {
     let clickType: ClickType | false = false;
     const url = message.href;
     if (message.event.button === 1) {
@@ -76,7 +76,7 @@ export class MouseClick {
     if (!this.isolated[url]) {
       this.isolated[url] = {
         clickType,
-        tab: sender.tab,
+        tab: sender.tab as Tab,
         abortController,
         count: 0,
       };
@@ -95,7 +95,7 @@ export class MouseClick {
     preferences: { action: IsolationAction },
     parsedClickedURL: { hostname: string },
     parsedSenderTabURL: { hostname: string }
-  ) => {
+  ): boolean => {
     if (preferences.action === 'always') {
       debug(
         '[checkClick] click handled based on preference "always"',
@@ -165,14 +165,15 @@ export class MouseClick {
     type: ClickType,
     message: ClickMessage,
     sender: browser.runtime.MessageSender
-  ) {
-    const parsedSenderTabURL = new URL(sender.tab!.url!);
+  ): boolean {
+    const tab = sender.tab as Tab;
+    const parsedSenderTabURL = new URL(tab.url);
     const parsedClickedURL = new URL(message.href);
     debug('[checkClick] checking click', type, message, sender);
 
     for (const domainPatternPreferences of this.pref.isolation.domain) {
       const domainPattern = domainPatternPreferences.pattern;
-      if (!this.isolation.matchDomainPattern(sender.tab!.url!, domainPattern)) {
+      if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
         continue;
       }
       if (!domainPatternPreferences.mouseClick[type]) {
@@ -198,7 +199,7 @@ export class MouseClick {
     );
   }
 
-  public beforeHandleRequest(request: any) {
+  public beforeHandleRequest(request: any): void {
     if (!this.isolated[request.url]) {
       return;
     }
@@ -209,7 +210,7 @@ export class MouseClick {
     this.isolated[request.url].abortController.abort();
   }
 
-  public afterHandleRequest(request: any) {
+  public afterHandleRequest(request: any): void {
     if (!this.isolated[request.url]) {
       return;
     }

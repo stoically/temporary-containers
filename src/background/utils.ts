@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { psl } from './lib';
 import { debug } from './log';
 
 export class Utils {
-  public sameDomain(origin: string, target: string) {
+  public sameDomain(origin: string, target: string): boolean {
     const parsedOrigin = psl.parse(origin);
     const parsedTarget = psl.parse(target);
     if (parsedOrigin.error || parsedTarget.error) {
@@ -11,9 +12,15 @@ export class Utils {
     return parsedOrigin.domain === parsedTarget.domain;
   }
 
-  public addMissingKeys({ defaults, source }: { defaults: any; source: any }) {
+  public addMissingKeys({
+    defaults,
+    source,
+  }: {
+    defaults: any;
+    source: any;
+  }): boolean {
     let addedMissing = false;
-    const addKeys = (defaultsNode: any, sourceNode: any) => {
+    const addKeys = (defaultsNode: any, sourceNode: any): void => {
       Object.keys(defaultsNode).map(key => {
         if (sourceNode[key] === undefined) {
           debug(
@@ -35,11 +42,11 @@ export class Utils {
     return addedMissing;
   }
 
-  public clone(input: any) {
+  public clone(input: any): any {
     return JSON.parse(JSON.stringify(input));
   }
 
-  public globToRegexp(glob: string) {
+  public globToRegexp(glob: string): RegExp {
     // --------------------------------------------------------------------------------
     // modified and simplified version of https://github.com/fitzgen/glob-to-regexp
     // version 0.4.0
@@ -99,7 +106,7 @@ export class Utils {
     return new RegExp('^' + reStr + '$', flags);
   }
 
-  public versionCompare(a: string, b: string) {
+  public versionCompare(a: string, b: string): 1 | 0 | -1 {
     // https://github.com/substack/semver-compare
     // https://github.com/substack/semver-compare/pull/4
 

@@ -1,10 +1,10 @@
 import { TemporaryContainers } from '../background';
 import { Cleanup } from './cleanup';
-import { Container, CookieStoreId } from './container';
+import { Container } from './container';
 import { debug } from './log';
 import { Storage } from './storage';
 import { formatBytes } from '../shared';
-import { PreferencesSchema } from '~/types';
+import { PreferencesSchema, Tab, CookieStoreId } from '~/types';
 
 export class Statistics {
   private removedContainerCount = 0;
@@ -25,14 +25,14 @@ export class Statistics {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.cleanup = this.background.cleanup;
   }
 
-  public async collect(request: any) {
+  public async collect(request: any): Promise<void> {
     if (!this.pref.statistics && !this.pref.deletesHistory.statistics) {
       return;
     }
@@ -43,17 +43,17 @@ export class Statistics {
 
     let tab;
     try {
-      tab = await browser.tabs.get(request.tabId);
+      tab = (await browser.tabs.get(request.tabId)) as Tab;
     } catch (error) {
       return;
     }
 
-    if (!this.container.isTemporary(tab.cookieStoreId!)) {
+    if (!this.container.isTemporary(tab.cookieStoreId)) {
       return;
     }
 
-    if (!this.requests[tab.cookieStoreId!]) {
-      this.requests[tab.cookieStoreId!] = {
+    if (!this.requests[tab.cookieStoreId]) {
+      this.requests[tab.cookieStoreId] = {
         contentLength: 0,
       };
     }
@@ -62,7 +62,7 @@ export class Statistics {
         (header: any) => header.name === 'content-length'
       );
       if (contentLength) {
-        this.requests[tab.cookieStoreId!].contentLength += parseInt(
+        this.requests[tab.cookieStoreId].contentLength += parseInt(
           contentLength.value,
           10
         );
@@ -73,7 +73,7 @@ export class Statistics {
   public async update(
     historyClearedCount: number,
     cookieStoreId: CookieStoreId
-  ) {
+  ): Promise<void> {
     this.removedContainerCount++;
 
     let cookieCount = 0;
@@ -125,7 +125,7 @@ export class Statistics {
     delete this.requests[cookieStoreId];
   }
 
-  public finish() {
+  public finish(): void {
     if (this.removedContainerCount) {
       let notificationMessage = `Deleted Temporary Containers: ${this.removedContainerCount}`;
       if (this.removedContainerCookiesCount) {

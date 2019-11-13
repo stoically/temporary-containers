@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // this is only needed once for upgrades from <1.0 and should be removed in the next major version
 // we now store the addon version in storage instead of waiting for onInstalled
 import { debug } from './log';
@@ -15,7 +16,7 @@ const migrationReadyTimeout = window.setTimeout(() => {
   migrationReadyAbortController.abort();
 }, 10000);
 
-const migrationOnInstalledListener = async (...args: any[]) => {
+const migrationOnInstalledListener = async (...args: any[]): Promise<any> => {
   browser.runtime.onInstalled.removeListener(migrationOnInstalledListener);
   const { version } = await browser.storage.local.get('version');
   if (version) {
@@ -32,7 +33,7 @@ const migrationOnInstalledListener = async (...args: any[]) => {
 };
 browser.runtime.onInstalled.addListener(migrationOnInstalledListener);
 
-(window as any).migrationLegacy = async (migration: any) => {
+(window as any).migrationLegacy = async (migration: any): Promise<any> => {
   try {
     debug(
       '[migration-legacy] no previousVersion found, waiting for onInstalled'

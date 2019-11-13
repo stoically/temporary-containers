@@ -23,13 +23,7 @@ import { Statistics } from './background/statistics';
 import { Storage } from './background/storage';
 import { Tabs } from './background/tabs';
 import { Utils } from './background/utils';
-import { PreferencesSchema } from './types';
-
-export interface Permissions {
-  history?: true | false;
-  bookmarks?: true | false;
-  notifications?: true | false;
-}
+import { PreferencesSchema, Permissions } from './types';
 
 export class TemporaryContainers {
   public initialized = false;
@@ -61,7 +55,7 @@ export class TemporaryContainers {
   public permissions!: Permissions;
   public pref!: PreferencesSchema;
 
-  public async initialize() {
+  public async initialize(): Promise<void> {
     debug('[tmp] initializing');
     this.version = browser.runtime.getManifest().version;
     this.browserVersion = parseInt(
@@ -69,10 +63,14 @@ export class TemporaryContainers {
       10
     );
     const { permissions } = await browser.permissions.getAll();
+    if (!permissions) {
+      throw new Error('permissions.getAll() failed');
+    }
     this.permissions = {
-      bookmarks: permissions?.includes('bookmarks'),
-      history: permissions?.includes('history'),
-      notifications: permissions?.includes('notifications'),
+      bookmarks: permissions.includes('bookmarks'),
+      history: permissions.includes('history'),
+      notifications: permissions.includes('notifications'),
+      downloads: permissions.includes('downloads'),
     };
 
     this.preferences.initialize();
@@ -106,24 +104,25 @@ export class TemporaryContainers {
     this.history.initialize();
     this.cleanup.initialize();
     this.convert.initialize();
+    this.tabs.initialize();
 
     await this.management.initialize();
-    await this.tabs.initialize();
 
     debug('[tmp] initialized');
     this.initialized = true;
     eventListeners.tmpInitialized();
     browser.browserAction.enable();
+    this.tabs.handleAlreadyOpen();
   }
 }
 
 browser.browserAction.disable();
-
-const tmp = new TemporaryContainers();
+console.log('1');
+export const tmp = new TemporaryContainers();
 (window as any).TemporaryContainers = TemporaryContainers;
 (window as any).tmp = tmp;
 
-(async () => {
+(async (): Promise<void> => {
   if ((window as any)._mochaTest) {
     return;
   }

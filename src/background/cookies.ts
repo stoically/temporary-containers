@@ -2,7 +2,7 @@ import { TemporaryContainers } from '../background';
 import { Isolation } from './isolation';
 import { debug } from './log';
 import { Storage } from './storage';
-import { PreferencesSchema } from '~/types';
+import { PreferencesSchema, Tab } from '~/types';
 
 export class Cookies {
   private background: TemporaryContainers;
@@ -14,14 +14,14 @@ export class Cookies {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.isolation = this.background.isolation;
   }
 
-  public async maybeSetAndAddToHeader(details: any) {
-    if (details.tabId < 0 || !Object.keys(this.pref.cookies.domain).length) {
+  public async maybeSetAndAddToHeader(request: any): Promise<void> {
+    if (request.tabId < 0 || !Object.keys(this.pref.cookies.domain).length) {
       return;
     }
 
@@ -33,12 +33,12 @@ export class Cookies {
       } = {};
       let cookieHeaderChanged = false;
       for (const domainPattern in this.pref.cookies.domain) {
-        if (!this.isolation.matchDomainPattern(details.url, domainPattern)) {
+        if (!this.isolation.matchDomainPattern(request.url, domainPattern)) {
           continue;
         }
         if (!tab) {
-          tab = await browser.tabs.get(details.tabId);
-          if (!this.storage.local.tempContainers[tab.cookieStoreId!]) {
+          tab = (await browser.tabs.get(request.tabId)) as Tab;
+          if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
             debug(
               '[maybeSetAndAddCookiesToHeader] not a temporary container',
               tab
@@ -46,23 +46,26 @@ export class Cookies {
             return;
           }
 
-          cookieHeader = details.requestHeaders.find(
+          cookieHeader = request.requestHeaders.find(
             (element: any) => element.name.toLowerCase() === 'cookie'
           );
           if (cookieHeader) {
             cookiesHeader = cookieHeader.value
               .split('; ')
-              .reduce((accumulator: any, cookie: any) => {
-                const split = cookie.split('=');
-                if (split.length === 2) {
-                  accumulator[split[0]] = split[1];
-                }
-                return accumulator;
-              }, {});
+              .reduce(
+                (accumulator: { [key: string]: string }, cookie: string) => {
+                  const split = cookie.split('=');
+                  if (split.length === 2) {
+                    accumulator[split[0]] = split[1];
+                  }
+                  return accumulator;
+                },
+                {}
+              );
           }
           debug(
             '[maybeAddCookiesToHeader] found temp tab and header',
-            details,
+            request,
             cookieHeader,
             cookiesHeader
           );
@@ -115,7 +118,7 @@ export class Cookies {
           try {
             const cookieAllowed = await browser.cookies.get({
               name: cookie.name,
-              url: details.url,
+              url: request.url,
               storeId: tab.cookieStoreId,
               firstPartyDomain: cookie.firstPartyDomain || undefined,
             });
@@ -162,7 +165,7 @@ export class Cookies {
         if (cookieHeader) {
           cookieHeader.value = changedCookieHeaderValue;
         } else {
-          details.requestHeaders.push({
+          request.requestHeaders.push({
             name: 'Cookie',
             value: changedCookieHeaderValue,
           });
@@ -170,15 +173,15 @@ export class Cookies {
         debug(
           '[maybeAddCookiesToHeader] changed cookieHeader to',
           cookieHeader,
-          details
+          request
         );
-        return details;
+        return request;
       }
     } catch (error) {
       debug(
         '[maybeAddCookiesToHeader] something went wrong while adding cookies to header',
         tab,
-        details.url,
+        request.url,
         error
       );
       return;

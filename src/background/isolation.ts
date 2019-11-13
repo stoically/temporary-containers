@@ -1,12 +1,17 @@
 import { TemporaryContainers } from '../background';
 import { Container } from './container';
 import { debug } from './log';
-import { MacAssignment, MultiAccountContainers } from './mac';
+import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
 import { Request } from './request';
 import { Utils } from './utils';
-import { PreferencesSchema, IsolationAction } from '~/types';
+import {
+  PreferencesSchema,
+  IsolationAction,
+  Tab,
+  MacAssignment,
+} from '~/types';
 
 export class Isolation {
   private background: TemporaryContainers;
@@ -22,7 +27,7 @@ export class Isolation {
     this.background = background;
   }
 
-  public initialize() {
+  public initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.request = this.background.request;
@@ -38,11 +43,11 @@ export class Isolation {
     openerTab,
     macAssignment,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     request: any;
-    openerTab?: browser.tabs.Tab;
+    openerTab?: Tab;
     macAssignment?: MacAssignment;
-  }) {
+  }): Promise<boolean | { cancel: true }> {
     if (!this.pref.isolation.active) {
       debug('[maybeIsolate] isolation is disabled');
       return false;
@@ -54,7 +59,7 @@ export class Isolation {
       this.mac.isConfirmPage(request.originUrl)
     ) {
       debug('[maybeIsolate] we are coming from a mac confirm page');
-      this.mac.containerConfirmed[tab.id!] = tab.cookieStoreId!;
+      this.mac.containerConfirmed[tab.id] = tab.cookieStoreId;
       return false;
     }
 
@@ -99,8 +104,8 @@ export class Isolation {
 
     if (
       tab &&
-      this.container.isPermanent(tab.cookieStoreId!) &&
-      this.pref.isolation.global.excludedContainers[tab.cookieStoreId!]
+      this.container.isPermanent(tab.cookieStoreId) &&
+      this.pref.isolation.global.excludedContainers[tab.cookieStoreId]
     ) {
       debug('[maybeIsolate] container on global excluded containers list', tab);
       return false;
@@ -109,8 +114,8 @@ export class Isolation {
     if (
       macAssignment &&
       tab &&
-      this.mac.containerConfirmed[tab.id!] &&
-      tab.cookieStoreId === this.mac.containerConfirmed[tab.id!]
+      this.mac.containerConfirmed[tab.id] &&
+      tab.cookieStoreId === this.mac.containerConfirmed[tab.id]
     ) {
       debug(
         '[maybeIsolate] mac confirmed container, not isolating',
@@ -161,7 +166,7 @@ export class Isolation {
       if (
         tab &&
         clickType === 'left' &&
-        this.mouseclick.isolated[request.url].tab!.id !== tab.id
+        this.mouseclick.isolated[request.url].tab.id !== tab.id
       ) {
         reload = true;
       }
@@ -188,11 +193,11 @@ export class Isolation {
     openerTab,
     macAssignment,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     request: any;
-    openerTab?: browser.tabs.Tab;
+    openerTab?: Tab;
     macAssignment?: MacAssignment;
-  }) {
+  }): Promise<boolean> {
     debug('[shouldIsolate]', tab, request);
 
     // special-case TST group tabs #264
@@ -235,10 +240,10 @@ export class Isolation {
     tab,
     openerTab,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     request: any;
-    openerTab?: browser.tabs.Tab;
-  }) {
+    openerTab?: Tab;
+  }): boolean {
     if (!this.mouseclick.isolated[request.url]) {
       return false;
     }
@@ -246,7 +251,7 @@ export class Isolation {
     if (
       tab &&
       ![tab.id, tab.openerTabId].includes(
-        this.mouseclick.isolated[request.url].tab!.id
+        this.mouseclick.isolated[request.url].tab.id
       )
     ) {
       debug(
@@ -296,10 +301,10 @@ export class Isolation {
     tab,
     openerTab,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     request: any;
-    openerTab?: browser.tabs.Tab;
-  }) {
+    openerTab?: Tab;
+  }): Promise<boolean> {
     if (!tab || !tab.url) {
       debug(
         '[shouldIsolateNavigation] we cant proceed without tab url information',
@@ -324,7 +329,7 @@ export class Isolation {
     if (
       openerTab &&
       tab.url === 'about:blank' &&
-      this.container.isPermanent(tab.cookieStoreId!) &&
+      this.container.isPermanent(tab.cookieStoreId) &&
       openerTab.cookieStoreId !== tab.cookieStoreId
     ) {
       debug(
@@ -339,7 +344,7 @@ export class Isolation {
         ? this.request.lastSeenRequestUrl[request.requestId]
         : (tab.url === 'about:blank' &&
             openerTab &&
-            openerTab.url!.startsWith('http') &&
+            openerTab.url.startsWith('http') &&
             openerTab.url) ||
           tab.url;
     const parsedURL =
@@ -355,7 +360,7 @@ export class Isolation {
         !this.matchDomainPattern(
           (tab.url === 'about:blank' &&
             openerTab &&
-            openerTab.url!.startsWith('http') &&
+            openerTab.url.startsWith('http') &&
             openerTab.url) ||
             tab.url,
           domainPattern
@@ -419,10 +424,10 @@ export class Isolation {
     tab,
     openerTab,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     request: any;
-    openerTab?: browser.tabs.Tab;
-  }) {
+    openerTab?: Tab;
+  }): Promise<boolean> {
     if (!tab || !tab.url) {
       debug(
         '[shouldIsolateAlways] we cant proceed without tab url information',
@@ -454,7 +459,7 @@ export class Isolation {
 
       if (
         preferences.allowedInPermanent &&
-        this.container.isPermanent(tab.cookieStoreId!)
+        this.container.isPermanent(tab.cookieStoreId)
       ) {
         debug(
           '[shouldIsolateAlways] not isolating because disabled in permanent container'
@@ -462,7 +467,7 @@ export class Isolation {
         continue;
       }
 
-      const isTemporary = this.container.isTemporary(tab.cookieStoreId!);
+      const isTemporary = this.container.isTemporary(tab.cookieStoreId);
       if (!isTemporary) {
         debug('[shouldIsolateAlways] isolating because not in a tmp container');
         return true;
@@ -479,8 +484,8 @@ export class Isolation {
         let openerMatches = false;
         if (
           openerTab &&
-          openerTab.url!.startsWith('http') &&
-          this.matchDomainPattern(openerTab.url!, domainPattern)
+          openerTab.url.startsWith('http') &&
+          this.matchDomainPattern(openerTab.url, domainPattern)
         ) {
           openerMatches = true;
           debug(
@@ -500,20 +505,21 @@ export class Isolation {
         }
       }
     }
+    return false;
   }
 
   public shouldIsolateMac({
     tab,
     macAssignment,
   }: {
-    tab?: browser.tabs.Tab;
+    tab?: Tab;
     macAssignment?: MacAssignment;
-  }) {
+  }): boolean {
     if (this.pref.isolation.mac.action === 'disabled') {
       debug('[shouldIsolateMac] mac isolation disabled');
       return false;
     }
-    if (tab && !this.container.isPermanent(tab.cookieStoreId!)) {
+    if (tab && !this.container.isPermanent(tab.cookieStoreId)) {
       debug('[shouldIsolateMac] we are not in a permanent container');
       return false;
     }
@@ -536,7 +542,7 @@ export class Isolation {
     preference: IsolationAction,
     origin: string,
     target: string
-  ) {
+  ): Promise<boolean> {
     debug('[checkIsolationPreferenceAgainstUrl]', preference, origin, target);
     switch (preference) {
       case 'always':
@@ -552,7 +558,6 @@ export class Isolation {
           );
           return true;
         }
-        return false;
 
       case 'notsamedomain':
         if (!this.utils.sameDomain(origin, target)) {
@@ -561,11 +566,11 @@ export class Isolation {
           );
           return true;
         }
-        return false;
     }
+    return false;
   }
 
-  public matchDomainPattern(url: string, domainPattern: string) {
+  public matchDomainPattern(url: string, domainPattern: string): boolean {
     if (domainPattern.startsWith('/')) {
       const regexp = domainPattern.match(/^\/(.*)\/([gimsuy]+)?$/);
       if (!regexp) {

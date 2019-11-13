@@ -560,7 +560,7 @@ export const addons: Map<
       name: 'Facebook Container',
       enabled: false,
       version: false,
-      REs: CONTAIN_URLS.get('facebook')!.REs,
+      REs: CONTAIN_URLS.get('facebook')?.REs,
     },
   ],
   [
@@ -569,7 +569,7 @@ export const addons: Map<
       name: 'Google Container',
       enabled: false,
       version: false,
-      REs: CONTAIN_URLS.get('google')!.REs,
+      REs: CONTAIN_URLS.get('google')?.REs,
     },
   ],
   [
@@ -578,7 +578,7 @@ export const addons: Map<
       name: 'Twitter Container',
       enabled: false,
       version: false,
-      REs: CONTAIN_URLS.get('twitter')!.REs,
+      REs: CONTAIN_URLS.get('twitter')?.REs,
     },
   ],
   [
@@ -587,7 +587,7 @@ export const addons: Map<
       name: 'YouTube Container',
       enabled: false,
       version: false,
-      REs: CONTAIN_URLS.get('youtube')!.REs,
+      REs: CONTAIN_URLS.get('youtube')?.REs,
     },
   ],
   [
@@ -596,7 +596,7 @@ export const addons: Map<
       name: 'Amazon Container',
       enabled: false,
       version: false,
-      REs: CONTAIN_URLS.get('amazon')!.REs,
+      REs: CONTAIN_URLS.get('amazon')?.REs,
     },
   ],
 ]);

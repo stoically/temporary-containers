@@ -1,8 +1,7 @@
 import Vue, { VNode } from 'vue';
 import { ExtendedVue } from 'vue/types/vue';
-import { StorageLocal } from '~/background/storage';
 import { getPermissions } from '~/shared';
-import { Tab, Permissions, PreferencesSchema } from '~/types';
+import { Tab, Permissions, PreferencesSchema, StorageLocal } from '~/types';
 
 interface Data {
   app: App | UninitializedApp;
