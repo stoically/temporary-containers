@@ -1,6 +1,5 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { delay, psl } from './lib';
-import { debug } from './log';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
 import { CONTAINER_COLORS, CONTAINER_ICONS } from '~/shared';
@@ -13,6 +12,7 @@ import {
   ContainerOptions,
   Tab,
   Permissions,
+  Debug,
 } from '~/types';
 
 interface TabOptions {
@@ -45,6 +45,7 @@ export class Container {
   } = {};
 
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private storage!: Storage;
   private permissions!: Permissions;
@@ -52,6 +53,7 @@ export class Container {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public async initialize(): Promise<void> {
@@ -59,11 +61,6 @@ export class Container {
     this.storage = this.background.storage;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
-
-    if (this.background.browserVersion >= 67) {
-      this.containerColors.push('toolbar');
-      this.containerIcons.push('fence');
-    }
   }
 
   public async createTabInTempContainer({
@@ -82,22 +79,22 @@ export class Container {
     dontPin?: boolean;
     deletesHistory?: boolean;
     macConfirmPage?: boolean;
-  }): Promise<false | Tab> {
+  }): Promise<Tab | undefined> {
     if (request && request.requestId) {
       // we saw that request already
       if (this.requestCreatedTab[request.requestId]) {
-        debug(
+        this.debug(
           '[createTabInTempContainer] we already created a tab for this request, so we stop here, probably redirect',
           tab,
           request
         );
-        return false;
+        return;
       }
       this.requestCreatedTab[request.requestId] = true;
       // cleanup tracked requests later
       // requestIds are unique per session, so we have no pressure to remove them
       delay(300000).then(() => {
-        debug('[createTabInTempContainer] cleanup timeout', request);
+        this.debug('[createTabInTempContainer] cleanup timeout', request);
         delete this.requestCreatedTab[request.requestId];
       });
     }
@@ -108,16 +105,14 @@ export class Container {
       deletesHistory,
     });
 
-    return contextualIdentity
-      ? this.createTab({
-          url,
-          tab,
-          active,
-          dontPin,
-          macConfirmPage,
-          contextualIdentity,
-        })
-      : false;
+    return this.createTab({
+      url,
+      tab,
+      active,
+      dontPin,
+      macConfirmPage,
+      contextualIdentity,
+    });
   }
 
   public async createTempContainer({
@@ -147,7 +142,7 @@ export class Container {
     containerOptions.deletesHistory = deletesHistory;
 
     try {
-      debug(
+      this.debug(
         '[createTabInTempContainer] creating new container',
         containerOptions
       );
@@ -156,7 +151,7 @@ export class Container {
         icon: containerOptions.icon,
         color: containerOptions.color,
       });
-      debug(
+      this.debug(
         '[createTabInTempContainer] contextualIdentity created',
         contextualIdentity
       );
@@ -168,7 +163,7 @@ export class Container {
 
       return contextualIdentity;
     } catch (error) {
-      debug(
+      this.debug(
         '[createTabInTempContainer] error while creating container',
         containerOptions.name,
         error
@@ -204,7 +199,7 @@ export class Container {
             !tab.active &&
             this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
           ) {
-            debug(
+            this.debug(
               '[createTabInTempContainer] lastCreatedInactiveTab id',
               this.lastCreatedInactiveTab
             );
@@ -212,13 +207,13 @@ export class Container {
               const lastCreatedInactiveTab = await browser.tabs.get(
                 this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT]
               );
-              debug(
+              this.debug(
                 '[createTabInTempContainer] lastCreatedInactiveTab',
                 lastCreatedInactiveTab
               );
               newTabOptions.index = lastCreatedInactiveTab.index + 1;
             } catch (error) {
-              debug(
+              this.debug(
                 '[createTabInTempContainer] failed to get lastCreatedInactiveTab',
                 error
               );
@@ -239,7 +234,7 @@ export class Container {
         newTabOptions.active = false;
       }
 
-      debug(
+      this.debug(
         '[createTabInTempContainer] creating tab in temporary container',
         newTabOptions
       );
@@ -248,14 +243,14 @@ export class Container {
         this.lastCreatedInactiveTab[browser.windows.WINDOW_ID_CURRENT] =
           newTab.id;
       }
-      debug(
+      this.debug(
         '[createTabInTempContainer] new tab in temp container created',
         newTab
       );
       if (url) {
         this.urlCreatedContainer[url] = contextualIdentity.cookieStoreId;
         delay(1000).then(() => {
-          debug(
+          this.debug(
             '[createTabInTempContainer] cleaning up urlCreatedContainer',
             url
           );
@@ -270,7 +265,10 @@ export class Container {
 
       return newTab;
     } catch (error) {
-      debug('[createTabInTempContainer] error while creating new tab', error);
+      this.debug(
+        '[createTabInTempContainer] error while creating new tab',
+        error
+      );
       throw error;
     }
   }
@@ -291,7 +289,7 @@ export class Container {
     request?: browser.webRequest.WebRequestOnBeforeRequestDetails;
     macConfirmPage?: boolean;
     dontPin?: boolean;
-  }): Promise<false | Tab> {
+  }): Promise<undefined | Tab> {
     const newTab = await this.createTabInTempContainer({
       tab,
       url,
@@ -402,7 +400,7 @@ export class Container {
   public markUnclean(tabId: TabId): void {
     const cookieStoreId = this.tabs.containerMap.get(tabId);
     if (cookieStoreId && this.isClean(cookieStoreId)) {
-      debug(
+      this.debug(
         '[markUnclean] marking tmp container as not clean anymore',
         cookieStoreId
       );

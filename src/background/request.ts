@@ -1,14 +1,13 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { BrowserAction } from './browseraction';
 import { Container } from './container';
 import { History } from './history';
 import { Isolation } from './isolation';
 import { delay } from './lib';
-import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { PreferencesSchema, Tab } from '~/types';
+import { PreferencesSchema, Tab, Debug } from '~/types';
 
 type OnBeforeRequestResult =
   | undefined
@@ -41,6 +40,7 @@ export class Request {
   } = {};
 
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private container!: Container;
   private mouseclick!: MouseClick;
@@ -52,6 +52,7 @@ export class Request {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public initialize(): void {
@@ -68,7 +69,7 @@ export class Request {
   public async webRequestOnBeforeRequest(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
-    debug('[webRequestOnBeforeRequest] incoming request', request);
+    this.debug('[webRequestOnBeforeRequest] incoming request', request);
     const requestIdUrl = `${request.requestId}+${request.url}`;
     if (requestIdUrl in this.requestIdUrlSeen) {
       return false;
@@ -85,7 +86,7 @@ export class Request {
     try {
       returnVal = await this.handleRequest(request);
     } catch (error) {
-      debug(
+      this.debug(
         '[webRequestOnBeforeRequest] handling request failed',
         error.toString()
       );
@@ -112,7 +113,7 @@ export class Request {
 
     // make sure we shouldnt cancel anyway
     if (this.shouldCancelRequest(request)) {
-      debug('[webRequestOnBeforeRequest] canceling', request);
+      this.debug('[webRequestOnBeforeRequest] canceling', request);
       this.cancelRequest(request);
       return { cancel: true };
     }
@@ -123,7 +124,7 @@ export class Request {
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
     if (request.tabId === -1) {
-      debug(
+      this.debug(
         '[handleRequest] onBeforeRequest request doesnt belong to a tab, why are you main_frame?',
         request
       );
@@ -133,12 +134,12 @@ export class Request {
     this.browseraction.removeBadge(request.tabId);
 
     if (this.shouldCancelRequest(request)) {
-      debug('[handleRequest] canceling', request);
+      this.debug('[handleRequest] canceling', request);
       return { cancel: true };
     }
 
     if (this.container.noContainerTabs[request.tabId]) {
-      debug('[handleRequest] no container tab, we ignore that', request);
+      this.debug('[handleRequest] no container tab, we ignore that', request);
       return false;
     }
 
@@ -149,13 +150,13 @@ export class Request {
       if (tab && tab.openerTabId) {
         openerTab = (await browser.tabs.get(tab.openerTabId)) as Tab;
       }
-      debug(
+      this.debug(
         '[handleRequest] onbeforeRequest requested tab information',
         tab,
         openerTab
       );
     } catch (error) {
-      debug(
+      this.debug(
         '[handleRequest] onbeforeRequest retrieving tab information failed, mac was probably faster',
         error
       );
@@ -166,7 +167,7 @@ export class Request {
       try {
         macAssignment = await this.mac.getAssignment(request.url);
       } catch (error) {
-        debug(
+        this.debug(
           '[handleRequest] contacting mac failed, probably old version',
           error
         );
@@ -174,10 +175,10 @@ export class Request {
     }
     if (macAssignment) {
       if (macAssignment.neverAsk) {
-        debug('[handleRequest] mac neverask assigned', macAssignment);
+        this.debug('[handleRequest] mac neverask assigned', macAssignment);
         return false;
       } else {
-        debug('[handleRequest] mac assigned', macAssignment);
+        this.debug('[handleRequest] mac assigned', macAssignment);
       }
     }
 
@@ -193,7 +194,7 @@ export class Request {
         return this.isolation.matchDomainPattern(request.url, ignorePattern);
       })
     ) {
-      debug(
+      this.debug(
         '[handleRequest] request url is on the ignoreRequests list',
         request
       );
@@ -202,7 +203,7 @@ export class Request {
 
     if (tab && this.container.isClean(tab.cookieStoreId)) {
       // removing this clean check can result in endless loops
-      debug(
+      this.debug(
         '[handleRequest] not isolating because the tmp container is still clean'
       );
       if (!this.cleanRequests[request.requestId]) {
@@ -215,7 +216,7 @@ export class Request {
     }
 
     if (this.cleanRequests[request.requestId]) {
-      debug(
+      this.debug(
         '[handleRequest] not isolating because of clean redirect requests',
         request
       );
@@ -229,7 +230,7 @@ export class Request {
       macAssignment,
     });
     if (isolated) {
-      debug(
+      this.debug(
         '[handleRequest] we decided to isolate and open new tmpcontainer',
         request
       );
@@ -245,12 +246,12 @@ export class Request {
       tab.cookieStoreId === `${this.background.containerPrefix}-default` &&
       openerTab
     ) {
-      debug('[handleRequest] default container and openerTab', openerTab);
+      this.debug('[handleRequest] default container and openerTab', openerTab);
       if (
         !openerTab.url.startsWith('about:') &&
         !openerTab.url.startsWith('moz-extension:')
       ) {
-        debug(
+        this.debug(
           '[handleRequest] request didnt came from about/moz-extension page',
           openerTab
         );
@@ -262,7 +263,7 @@ export class Request {
       tab &&
       tab.cookieStoreId !== `${this.background.containerPrefix}-default`
     ) {
-      debug(
+      this.debug(
         '[handleRequest] onBeforeRequest tab belongs to a non-default container',
         tab,
         request
@@ -271,7 +272,7 @@ export class Request {
     }
 
     if (macAssignment) {
-      debug(
+      this.debug(
         '[handleRequest] decided to reopen but mac assigned, maybe reopen confirmpage',
         request,
         tab,
@@ -280,12 +281,12 @@ export class Request {
       return this.mac.maybeReopenConfirmPage(macAssignment, request, tab);
     }
 
-    debug('[handleRequest] decided to reload in temp tab', tab, request);
+    this.debug('[handleRequest] decided to reload in temp tab', tab, request);
     if (this.cancelRequest(request)) {
       return { cancel: true };
     }
 
-    debug('[handleRequest] reload in temp tab', tab, request);
+    this.debug('[handleRequest] reload in temp tab', tab, request);
     await this.container.reloadTabInTempContainer({
       tab,
       url: request.url,
@@ -305,7 +306,7 @@ export class Request {
       typeof request.requestId === 'undefined' ||
       typeof request.tabId === 'undefined'
     ) {
-      debug('[cancelRequest] invalid request', request);
+      this.debug('[cancelRequest] invalid request', request);
       return false;
     }
 
@@ -313,7 +314,7 @@ export class Request {
       this.canceledRequests[request.requestId] = true;
       // requestIds are unique per session, so we have no pressure to remove them
       setTimeout(() => {
-        debug(
+        this.debug(
           '[webRequestOnBeforeRequest] cleaning up canceledRequests',
           request
         );
@@ -322,7 +323,7 @@ export class Request {
     }
 
     if (!this.canceledTabs[request.tabId]) {
-      debug('[cancelRequest] marked request as canceled', request);
+      this.debug('[cancelRequest] marked request as canceled', request);
       // workaround until https://bugzilla.mozilla.org/show_bug.cgi?id=1437748 is resolved
       this.canceledTabs[request.tabId] = {
         requestIds: {
@@ -334,17 +335,24 @@ export class Request {
       };
       // cleanup canceledTabs later
       setTimeout(() => {
-        debug('[webRequestOnBeforeRequest] cleaning up canceledTabs', request);
+        this.debug(
+          '[webRequestOnBeforeRequest] cleaning up canceledTabs',
+          request
+        );
         delete this.canceledTabs[request.tabId];
       }, 2000);
       return false;
     } else {
-      debug('[cancelRequest] already canceled', request, this.canceledTabs);
+      this.debug(
+        '[cancelRequest] already canceled',
+        request,
+        this.canceledTabs
+      );
       let cancel = false;
       if (this.shouldCancelRequest(request)) {
         // same requestId or url from the same tab, this is a redirect that we have to cancel to prevent opening two tabs
         cancel = true;
-        debug('[cancelRequest] probably redirect, aborting', request);
+        this.debug('[cancelRequest] probably redirect, aborting', request);
       }
       // we decided to cancel the request at this point, register canceled request
       this.canceledTabs[request.tabId].requestIds[request.requestId] = true;
@@ -361,7 +369,7 @@ export class Request {
       typeof request.requestId === 'undefined' ||
       typeof request.tabId === 'undefined'
     ) {
-      debug('[shouldCancelRequest] invalid request', request);
+      this.debug('[shouldCancelRequest] invalid request', request);
       return false;
     }
 
@@ -409,16 +417,16 @@ export class Request {
           hostmap.cookieStoreId &&
           hostmap.enabled
         ) {
-          debug(
+          this.debug(
             '[handleRequest] assigned with containerise we do nothing',
             hostmap
           );
           return true;
         } else {
-          debug('[handleRequest] not assigned with containerise', hostmap);
+          this.debug('[handleRequest] not assigned with containerise', hostmap);
         }
       } catch (error) {
-        debug(
+        this.debug(
           '[handleRequest] contacting containerise failed, probably old version',
           error
         );
@@ -438,15 +446,17 @@ export class Request {
           }
         );
         if (response.rule_exists) {
-          debug(
+          this.debug(
             '[handleRequest] assigned with block_outside_container we do nothing'
           );
           return true;
         } else {
-          debug('[handleRequest] not assigned with block_outside_container');
+          this.debug(
+            '[handleRequest] not assigned with block_outside_container'
+          );
         }
       } catch (error) {
-        debug(
+        this.debug(
           '[handleRequest] contacting block_outside_container failed',
           error
         );
@@ -473,7 +483,7 @@ export class Request {
           (parsedTabUrl && RE.test(parsedTabUrl.hostname)) ||
           (parsedOpenerTabUrl && RE.test(parsedOpenerTabUrl.hostname))
         ) {
-          debug(
+          this.debug(
             '[handleRequest] handled by active container addon, ignoring',
             containWhat,
             RE,

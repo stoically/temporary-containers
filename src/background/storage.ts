@@ -1,6 +1,5 @@
-import { TemporaryContainers } from '../background';
-import { debug } from './log';
-import { StorageLocal } from '~/types';
+import { TemporaryContainers } from './tmp';
+import { StorageLocal, Debug } from '~/types';
 
 export class Storage {
   public local!: StorageLocal;
@@ -8,9 +7,11 @@ export class Storage {
   public defaults: StorageLocal;
 
   private background: TemporaryContainers;
+  private debug: Debug;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
     this.installed = false;
 
     this.defaults = {
@@ -52,10 +53,13 @@ export class Storage {
         await this.persist();
       }
     } catch (error) {
-      debug('[initialize] accessing managed storage failed:', error.toString());
+      this.debug(
+        '[initialize] accessing managed storage failed:',
+        error.toString()
+      );
     }
 
-    debug('[initialize] storage initialized', this.local);
+    this.debug('[initialize] storage initialized', this.local);
     if (
       this.background.utils.addMissingKeys({
         defaults: this.defaults,
@@ -73,7 +77,7 @@ export class Storage {
           previousVersion: this.local.version,
         });
       } catch (error) {
-        debug('[initialize] migration failed', error.toString());
+        this.debug('[initialize] migration failed', error.toString());
       }
     }
 
@@ -83,14 +87,14 @@ export class Storage {
   public async persist(): Promise<boolean> {
     try {
       if (!this.local || !Object.keys(this.local).length) {
-        debug('[persist] tried to persist corrupt storage', this.local);
+        this.debug('[persist] tried to persist corrupt storage', this.local);
         return false;
       }
       await browser.storage.local.set(this.local);
-      debug('[persist] storage persisted');
+      this.debug('[persist] storage persisted');
       return true;
     } catch (error) {
-      debug(
+      this.debug(
         '[persist] something went wrong while trying to persist the storage',
         error
       );
@@ -99,19 +103,15 @@ export class Storage {
   }
 
   public async install(): Promise<boolean> {
-    debug('[install] installing storage');
+    this.debug('[install] installing storage');
 
     this.local = this.background.utils.clone(this.defaults);
     this.local.version = this.background.version;
 
-    if (this.background.browserVersion < 67) {
-      this.local.preferences.container.color = 'red';
-    }
-
     if (!(await this.persist())) {
       throw new Error('[install] something went wrong while installing');
     }
-    debug('[install] storage installed', this.local);
+    this.debug('[install] storage installed', this.local);
     this.installed = true;
     return true;
   }

@@ -1,127 +1,113 @@
 import {
   sinon,
   preferencesTestSet,
-  loadBareBackground,
   expect,
   nextTick,
   loadBackground,
-  clock,
-  WebExtension,
-  tab,
 } from './setup';
-import { TemporaryContainers } from '~/background';
-import { Tab } from '~/types';
+import { Tab, RuntimeMessage } from '~/types';
+import { TemporaryContainers } from '~/background/tmp';
 
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
-    describe('on require', () => {
-      it('should register event listeners', async () => {
-        const { browser, background } = await loadBareBackground(preferences);
-        sinon.stub(background.runtime, 'onStartup');
-        sinon.stub(background.runtime, 'onMessage');
-        sinon.stub(background.commands, 'onCommand');
-        sinon.stub(background.contextmenu, 'onClicked');
-        sinon.stub(background.contextmenu, 'windowsOnFocusChanged');
-        sinon.stub(background.tabs, 'onCreated');
-        sinon.stub(background.tabs, 'onUpdated');
-        sinon.stub(background.tabs, 'onRemoved');
-        sinon.stub(background.tabs, 'onActivated');
-        sinon.stub(background.container, 'createTabInTempContainer');
+    it('should register event listeners', async () => {
+      const { browser, background } = await loadBackground({
+        initialize: false,
+        preferences,
+      });
+      sinon.stub(background.runtime, 'onStartup');
+      sinon.stub(background.runtime, 'onMessage');
+      sinon.stub(background.commands, 'onCommand');
+      sinon.stub(background.contextmenu, 'onClicked');
+      sinon.stub(background.contextmenu, 'windowsOnFocusChanged');
+      sinon.stub(background.tabs, 'onCreated');
+      sinon.stub(background.tabs, 'onUpdated');
+      sinon.stub(background.tabs, 'onRemoved');
+      sinon.stub(background.tabs, 'onActivated');
+      sinon.stub(background.container, 'createTabInTempContainer');
+      sinon.stub(background.request, 'webRequestOnBeforeRequest');
+      await background.initialize();
+
+      browser.browserAction.onClicked.addListener.yield();
+      background.container.createTabInTempContainer.should.have.been.calledOnce;
+
+      browser.contextMenus.onClicked.addListener.yield();
+      background.contextmenu.onClicked.should.have.been.calledOnce;
+
+      browser.commands.onCommand.addListener.yield();
+      background.commands.onCommand.should.have.been.calledOnce;
+
+      browser.runtime.onStartup.addListener.should.have.been.calledOnce;
+      browser.runtime.onMessage.addListener.should.have.been.calledOnce;
+
+      browser.windows.onFocusChanged.addListener.yield();
+      background.contextmenu.windowsOnFocusChanged.should.have.been.calledOnce;
+
+      browser.tabs.onCreated.addListener.yield();
+      background.tabs.onCreated.should.have.been.calledOnce;
+
+      browser.tabs.onUpdated.addListener.yield();
+      background.tabs.onUpdated.should.have.been.calledOnce;
+
+      browser.tabs.onRemoved.addListener.yield();
+      background.tabs.onRemoved.should.have.been.calledOnce;
+
+      browser.tabs.onActivated.addListener.yield();
+      background.tabs.onActivated.should.have.been.calledOnce;
+
+      browser.webRequest.onBeforeRequest.addListener.yield();
+      background.request.webRequestOnBeforeRequest.should.have.been.calledOnce;
+    });
+
+    it('should have registered a container cleanup interval', async () => {
+      const { background, clock } = await loadBackground({
+        initialize: false,
+        preferences,
+      });
+      sinon.stub(background.cleanup, 'cleanup');
+      await background.initialize();
+      clock.tick(600000);
+      background.cleanup.cleanup.should.have.been.calledOnce;
+    });
+
+    describe('should catch early requests', () => {
+      it('wait for tmp to initialize, blocking the request until initialize', async () => {
+        const { background, browser } = await loadBackground({
+          initialize: false,
+          preferences,
+        });
         sinon.stub(background.request, 'webRequestOnBeforeRequest');
+
+        browser.tabs._create({ url: 'https://example.com' });
+        await nextTick();
+        background.request.webRequestOnBeforeRequest.should.not.have.been
+          .called;
+
         await background.initialize();
-
-        browser.browserAction.onClicked.addListener.yield();
-        background.container.createTabInTempContainer.should.have.been
-          .calledOnce;
-
-        browser.contextMenus.onClicked.addListener.yield();
-        background.contextmenu.onClicked.should.have.been.calledOnce;
-
-        browser.commands.onCommand.addListener.yield();
-        background.commands.onCommand.should.have.been.calledOnce;
-
-        browser.runtime.onInstalled.addListener.should.have.been.calledTwice;
-        browser.runtime.onStartup.addListener.should.have.been.calledOnce;
-        browser.runtime.onMessage.addListener.should.have.been.calledOnce;
-
-        browser.windows.onFocusChanged.addListener.yield();
-        background.contextmenu.windowsOnFocusChanged.should.have.been
-          .calledOnce;
-
-        browser.tabs.onCreated.addListener.yield();
-        background.tabs.onCreated.should.have.been.calledOnce;
-
-        browser.tabs.onUpdated.addListener.yield();
-        background.tabs.onUpdated.should.have.been.calledOnce;
-
-        browser.tabs.onRemoved.addListener.yield();
-        background.tabs.onRemoved.should.have.been.calledOnce;
-
-        browser.tabs.onActivated.addListener.yield();
-        background.tabs.onActivated.should.have.been.calledOnce;
-
-        browser.webRequest.onBeforeRequest.addListener.yield();
-        background.request.webRequestOnBeforeRequest.should.have.been
-          .calledOnce;
+        background.request.webRequestOnBeforeRequest.should.have.been.called;
       });
 
-      it('should have registered a container cleanup interval', async () => {
-        const { background } = await loadBareBackground(preferences);
-        sinon.stub(background.cleanup, 'cleanup');
+      it('wait for tmp to initialize, blocking the request until timeout and dont block the next requests anymore', async () => {
+        const { background, browser } = await loadBackground({
+          initialize: false,
+          preferences,
+        });
+
+        const webRequestOnBeforeRequestStub = sinon.stub(
+          background.request,
+          'webRequestOnBeforeRequest'
+        );
+        browser.tabs._create({ url: 'https://example.com' });
+        await nextTick();
+        webRequestOnBeforeRequestStub.should.not.have.been.called;
+
         await background.initialize();
-        clock.tick(600000);
-        background.cleanup.cleanup.should.have.been.calledOnce;
-      });
 
-      describe('should catch early requests', () => {
-        it('wait for tmp to initialize, blocking the request until initialize', async () => {
-          const { background, browser } = await loadBareBackground(preferences);
-          sinon.stub(background.request, 'webRequestOnBeforeRequest');
+        webRequestOnBeforeRequestStub.should.have.been.called;
+        webRequestOnBeforeRequestStub.resetHistory();
 
-          const [
-            promise,
-          ] = browser.webRequest.onBeforeRequest.addListener.yield({
-            requestId: 1,
-          });
-          let promiseFulfilled = false;
-          promise.then(() => (promiseFulfilled = true));
-          clock.tick(500);
-          await new Promise(process.nextTick);
-          expect(promiseFulfilled).to.be.false;
-          await background.initialize();
-          await new Promise(process.nextTick);
-          expect(promiseFulfilled).to.be.true;
-          background.request.webRequestOnBeforeRequest.should.have.been.called;
-        });
-
-        it('wait for tmp to initialize, blocking the request until timeout and dont block the next requests anymore', async () => {
-          const { background, browser } = await loadBareBackground(preferences);
-          sinon.stub(background.request, 'webRequestOnBeforeRequest');
-
-          const [
-            promise,
-          ] = browser.webRequest.onBeforeRequest.addListener.yield({
-            requestId: 1,
-          });
-          let promiseRejected = false;
-          promise.catch(() => (promiseRejected = true));
-          expect(promiseRejected).to.be.false;
-          clock.tick(5001);
-          await new Promise(process.nextTick);
-          expect(promiseRejected).to.be.true;
-          background.request.webRequestOnBeforeRequest.should.not.have.been
-            .called;
-
-          const [
-            promise2,
-          ] = browser.webRequest.onBeforeRequest.addListener.yield({
-            requestId: 1,
-          });
-          return promise2.catch(() => {
-            background.request.webRequestOnBeforeRequest.should.not.have.been
-              .called;
-          });
-        });
+        await browser.tabs._create({ url: 'https://example.com' });
+        webRequestOnBeforeRequestStub.should.have.been.called;
       });
     });
 
@@ -132,42 +118,29 @@ preferencesTestSet.map(preferences => {
       ) {
         return;
       }
-      const fakeContainer = {
-        cookieStoreId: 'fake',
-      };
 
       it('one open about:home should reopen in temporary container', async () => {
-        const { background, browser } = await loadBareBackground(preferences);
-        const fakeAboutHomeTab = {
-          cookieStoreId: 'firefox-default',
-          url: 'about:home',
-        };
+        const { browser } = await loadBackground({
+          preferences,
+          beforeCtor: async (browser): Promise<void> => {
+            await browser.tabs._create({ url: 'about:home' });
+          },
+        });
 
-        browser.tabs.query.resolves([fakeAboutHomeTab]);
-        browser.contextualIdentities.create.resolves(fakeContainer);
-        browser.tabs.create.resolves({ id: 1 });
-        await background.initialize();
-        await nextTick();
-        // eslint-disable-next-line require-atomic-updates
-        background.storage.local.preferences.automaticMode.newTab = 'created';
         browser.contextualIdentities.create.should.have.been.calledOnce;
-        browser.tabs.create.should.have.been.calledOnce;
-
-        browser.tabs.query.resolves([{}, {}]);
-        clock.tick(500);
-        await nextTick();
         browser.tabs.remove.should.have.been.calledOnce;
       });
 
       it('one open tab not in the default container should not reopen in temporary container', async () => {
-        const { background, browser } = await loadBareBackground(preferences);
-        const fakeNotDefaultTab = {
-          cookieStoreId: 'not-default',
-          url: 'about:home',
-        };
-        browser.tabs.query.resolves([fakeNotDefaultTab]);
-        await background.initialize();
-        await nextTick();
+        const { browser } = await loadBackground({
+          preferences,
+          beforeCtor: async (browser): Promise<void> => {
+            await browser.tabs._create({
+              url: 'about:home',
+              cookieStoreId: 'firefox-container-1',
+            });
+          },
+        });
 
         browser.contextualIdentities.create.should.not.have.been.called;
       });
@@ -181,19 +154,13 @@ preferencesTestSet.map(preferences => {
         return;
       }
       it('should reopen about:home in temporary container', async () => {
-        const { background, browser } = await loadBareBackground(preferences, {
-          apiFake: true,
-        });
-        await background.initialize();
+        const { browser } = await loadBackground({ preferences });
         await browser.tabs._create({ url: 'about:home' });
         browser.tabs.create.should.have.been.calledOnce;
       });
 
       it('should reopen about:newtab in temporary container', async () => {
-        const { background, browser } = await loadBareBackground(preferences, {
-          apiFake: true,
-        });
-        await background.initialize();
+        const { browser } = await loadBackground({ preferences });
         await browser.tabs._create({ url: 'about:newtab' });
         browser.tabs.create.should.have.been.calledOnce;
       });
@@ -204,9 +171,8 @@ preferencesTestSet.map(preferences => {
         return;
       }
       beforeEach(async () => {
-        const { background, browser } = await loadBareBackground(preferences);
-        await background.initialize();
-        await browser.tabs.create({ url: 'https://example.com' });
+        const { browser } = await loadBackground({ preferences });
+        await browser.tabs._create({ url: 'https://example.com' });
       });
 
       it('should reopen the Tab in temporary container', async () => {
@@ -217,11 +183,10 @@ preferencesTestSet.map(preferences => {
 
     describe('tabs requesting something in non-default and non-temporary containers', () => {
       it('should not be interrupted', async () => {
-        const { background, browser } = await loadBareBackground(preferences);
-        await background.initialize();
-        await browser.tabs.create({
+        const { browser } = await loadBackground({ preferences });
+        await browser.tabs._create({
           url: 'https://example.com',
-          cookieStoreId: 'firefox-container-permanent',
+          cookieStoreId: 'firefox-container-1',
         });
 
         browser.contextualIdentities.create.should.not.have.been.called;
@@ -235,14 +200,22 @@ preferencesTestSet.map(preferences => {
         return;
       }
 
-      let background: TemporaryContainers, fakeMessage;
+      let tab: Tab | undefined;
+      let background: TemporaryContainers;
+      let fakeMessage: RuntimeMessage;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let browser: any;
       beforeEach(async () => {
-        const webExtension = await loadBackground(preferences);
-        const { browser } = webExtension;
-        const tab = (await browser.tabs.create({
-          cookieStoreId: 'firefox-tmp-container-1',
+        const webExtension = await loadBackground({ preferences });
+        background = webExtension.background;
+        browser = webExtension.browser;
+        background.storage.local.preferences.isolation.global.mouseClick.middle.action =
+          'always';
+
+        tab = await background.container.createTabInTempContainer({
           url: 'https://notexample.com',
-        })) as Tab;
+        });
+        sinon.resetHistory();
 
         // simulate click
         const fakeSender = {
@@ -259,28 +232,28 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        background = webExtension.background;
         await background.runtime.onMessage(fakeMessage, fakeSender);
 
-        await browser.tabs.create({
+        await browser.tabs._create({
           url: 'https://example.com',
-          openerTabId: 1,
-          cookieStoreId: 'firefox-tmp-container-1',
+          openerTabId: tab?.id,
+          cookieStoreId: tab?.cookieStoreId,
         });
       });
 
       it('should open in a new temporary container', async () => {
         browser.contextualIdentities.create.should.have.been.calledOnce;
         browser.tabs.create.should.have.been.calledOnce;
-        browser.tabs.remove.should.not.have.been.calledOnce;
+        browser.tabs.remove.should.have.been.calledOnce;
       });
 
       describe('follow-up request', () => {
         beforeEach(async () => {
-          await browser.tabs.create({
+          sinon.resetHistory();
+          await browser.tabs._create({
             url: 'https://example.com',
-            openerTabId: 1,
-            cookieStoreId: 'firefox-tmp-container-2',
+            openerTabId: tab?.id,
+            cookieStoreId: tab?.cookieStoreId,
           });
         });
 
@@ -293,10 +266,13 @@ preferencesTestSet.map(preferences => {
 
     describe('state for clicked links', async () => {
       it('should be cleaned up', async () => {
-        const webExtension = await loadBackground(preferences);
-        const { background, browser } = webExtension;
-        const tab = (await browser.tabs.create({
-          cookieStoreId: 'firefox-tmp-container-1',
+        const { background, browser, clock } = await loadBackground({
+          preferences,
+        });
+        background.storage.local.preferences.isolation.global.mouseClick.middle.action =
+          'always';
+
+        const tab = (await browser.tabs._create({
           url: 'https://notexample.com',
         })) as Tab;
 
@@ -323,7 +299,7 @@ preferencesTestSet.map(preferences => {
 
     describe('runtime.onMessage savePreferences', () => {
       it('should save the given preferences to storage.local', async () => {
-        const { background, browser } = await loadBackground(preferences);
+        const { background, browser } = await loadBackground({ preferences });
         const fakeMessage = {
           method: 'savePreferences',
           payload: {
@@ -345,13 +321,7 @@ preferencesTestSet.map(preferences => {
     describe('commands', () => {
       describe('New Temporary Container Tab', () => {
         it('should open a new temporary container tab', async () => {
-          const { background, browser } = await loadBareBackground(
-            preferences,
-            {
-              apiFake: true,
-            }
-          );
-          await background.initialize();
+          const { background, browser } = await loadBackground({ preferences });
           browser.commands.onCommand.addListener.yield(
             'new_temporary_container_tab'
           );
@@ -362,13 +332,7 @@ preferencesTestSet.map(preferences => {
 
       describe('New No Container Tab', () => {
         it('should open a new no container tab', async () => {
-          const { background, browser } = await loadBareBackground(
-            preferences,
-            {
-              apiFake: true,
-            }
-          );
-          await background.initialize();
+          const { background, browser } = await loadBackground({ preferences });
           background.storage.local.preferences.keyboardShortcuts.AltN = true;
           browser.commands.onCommand.addListener.yield('new_no_container_tab');
           await nextTick();
@@ -380,13 +344,7 @@ preferencesTestSet.map(preferences => {
 
       describe('New No Container Window Tab', () => {
         it('should open a new no container window', async () => {
-          const { background, browser } = await loadBareBackground(
-            preferences,
-            {
-              apiFake: true,
-            }
-          );
-          await background.initialize();
+          const { background, browser } = await loadBackground({ preferences });
           background.storage.local.preferences.keyboardShortcuts.AltShiftC = true;
           browser.commands.onCommand.addListener.yield(
             'new_no_container_window_tab'
@@ -400,13 +358,7 @@ preferencesTestSet.map(preferences => {
 
       describe('New Deletes History Container Tab', () => {
         it('should open a new deletes history container tab', async () => {
-          const { background, browser } = await loadBareBackground(
-            preferences,
-            {
-              apiFake: true,
-            }
-          );
-          await background.initialize();
+          const { background, browser } = await loadBackground({ preferences });
           background.permissions.history = true;
           browser.commands.onCommand.addListener.yield('new_no_history_tab');
           await nextTick();
@@ -419,13 +371,7 @@ preferencesTestSet.map(preferences => {
 
       describe('New Same Container Tab', () => {
         it('should open a new same container tab', async () => {
-          const { background, browser } = await loadBareBackground(
-            preferences,
-            {
-              apiFake: true,
-            }
-          );
-          await background.initialize();
+          const { background, browser } = await loadBackground({ preferences });
           background.storage.local.preferences.keyboardShortcuts.AltX = true;
           const container = await browser.contextualIdentities.create({});
           await browser.tabs._create({
@@ -451,10 +397,7 @@ preferencesTestSet.map(preferences => {
       }
 
       it('should work when multiple tabs are opened', async () => {
-        const { background, browser } = await loadBareBackground(preferences, {
-          apiFake: true,
-        });
-        await background.initialize();
+        const { background, browser } = await loadBackground({ preferences });
         background.storage.local.preferences.container.numberMode = 'reuse';
         const tabPromises = [];
         for (let i = 0; i < 5; i++) {

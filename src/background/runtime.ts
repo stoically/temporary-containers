@@ -1,19 +1,19 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { BrowserAction } from './browseraction';
 import { Cleanup } from './cleanup';
 import { Container } from './container';
 import { ContextMenu } from './contextmenu';
 import { Convert } from './convert';
-import { debug } from './log';
 import { Migration } from './migration';
 import { MouseClick } from './mouseclick';
 import { Preferences } from './preferences';
 import { Storage } from './storage';
 import { Utils } from './utils';
-import { PreferencesSchema, Tab } from '~/types';
+import { PreferencesSchema, Tab, Debug, RuntimeMessage } from '~/types';
 
 export class Runtime {
   private background: TemporaryContainers;
+  private debug: Debug;
   private storage: Storage;
   private pref!: PreferencesSchema;
   private preferences!: Preferences;
@@ -28,6 +28,7 @@ export class Runtime {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
     this.storage = background.storage;
   }
 
@@ -45,26 +46,22 @@ export class Runtime {
   }
 
   public async onMessage(
-    message: {
-      method: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      payload: any;
-    },
+    message: RuntimeMessage,
     sender: browser.runtime.MessageSender
   ): Promise<void | boolean | Tab | 'pong'> {
-    debug('[onMessage] message received', message, sender);
+    this.debug('[onMessage] message received', message, sender);
     if (typeof message !== 'object') {
       return;
     }
 
     switch (message.method) {
       case 'linkClicked':
-        debug('[onMessage] link clicked');
+        this.debug('[onMessage] link clicked');
         this.mouseclick.linkClicked(message.payload, sender);
         break;
 
       case 'savePreferences':
-        debug('[onMessage] saving preferences');
+        this.debug('[onMessage] saving preferences');
         await this.preferences.handleChanges({
           oldPreferences: this.pref,
           newPreferences: message.payload.preferences,
@@ -108,7 +105,7 @@ export class Runtime {
       }
 
       case 'resetStatistics':
-        debug('[onMessage] resetting statistics');
+        this.debug('[onMessage] resetting statistics');
         this.storage.local.statistics = this.utils.clone(
           this.storage.defaults.statistics
         );
@@ -117,7 +114,7 @@ export class Runtime {
         break;
 
       case 'resetStorage':
-        debug('[onMessage] resetting storage', message, sender);
+        this.debug('[onMessage] resetting storage', message, sender);
         this.browseraction.unsetPopup();
         this.contextmenu.remove();
         this.browseraction.setIcon('default');
@@ -125,7 +122,7 @@ export class Runtime {
         return this.storage.install();
 
       case 'resetContainerNumber':
-        debug('[onMessage] resetting container number', message, sender);
+        this.debug('[onMessage] resetting container number', message, sender);
         this.storage.local.tempContainerCounter = 0;
         await this.storage.persist();
         break;
@@ -174,8 +171,8 @@ export class Runtime {
       cookieStoreId?: string;
     },
     sender: browser.runtime.MessageSender
-  ): Promise<boolean | Tab> {
-    debug('[onMessageExternal] got external message', message, sender);
+  ): Promise<undefined | boolean | Tab> {
+    this.debug('[onMessageExternal] got external message', message, sender);
     switch (message.method) {
       case 'createTabInTempContainer':
         return this.container.createTabInTempContainer({

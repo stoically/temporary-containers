@@ -1,8 +1,14 @@
-import { debug } from './log';
 import { addons } from './external-addons';
+import { TemporaryContainers } from '~/background';
+import { Debug } from '~/types';
 
 export class Management {
   public addons = addons;
+  private debug: Debug;
+
+  constructor(background: TemporaryContainers) {
+    this.debug = background.debug;
+  }
 
   public async initialize(): Promise<void> {
     try {
@@ -15,7 +21,7 @@ export class Management {
         }
       });
     } catch (error) {
-      debug('[management:initialize] couldnt getAll extensions', error);
+      this.debug('[management:initialize] couldnt getAll extensions', error);
       return;
     }
   }

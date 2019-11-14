@@ -1,10 +1,9 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { Cleanup } from './cleanup';
 import { Container } from './container';
-import { debug } from './log';
 import { Storage } from './storage';
 import { formatBytes } from '../shared';
-import { PreferencesSchema, Tab, CookieStoreId } from '~/types';
+import { PreferencesSchema, Tab, CookieStoreId, Debug } from '~/types';
 
 export class Statistics {
   private removedContainerCount = 0;
@@ -16,6 +15,7 @@ export class Statistics {
   } = {};
 
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private storage!: Storage;
   private container!: Container;
@@ -23,6 +23,7 @@ export class Statistics {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public initialize(): void {
@@ -83,7 +84,7 @@ export class Statistics {
       const cookies = await browser.cookies.getAll({ storeId: cookieStoreId });
       cookieCount = cookies.length;
     } catch (error) {
-      debug('[tryToRemove] couldnt get cookies', cookieStoreId, error);
+      this.debug('[tryToRemove] couldnt get cookies', cookieStoreId, error);
     }
 
     if (historyClearedCount) {

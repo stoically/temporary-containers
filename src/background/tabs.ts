@@ -1,19 +1,19 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { BrowserAction } from './browseraction';
 import { Cleanup } from './cleanup';
 import { Container } from './container';
 import { History } from './history';
 import { delay } from './lib';
-import { debug } from './log';
 import { MultiAccountContainers } from './mac';
 import { PageAction } from './pageaction';
-import { PreferencesSchema, Tab } from '~/types';
+import { PreferencesSchema, Tab, Debug } from '~/types';
 
 export class Tabs {
   public creatingInSameContainer = false;
   public containerMap = new Map();
 
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private container!: Container;
   private browseraction!: BrowserAction;
@@ -25,6 +25,7 @@ export class Tabs {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public initialize(): void {
@@ -41,7 +42,7 @@ export class Tabs {
   // onUpdated sometimes (often) fires before onCreated
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
   public async onCreated(tab: Tab): Promise<void> {
-    debug('[onCreated] tab created', tab);
+    this.debug('[onCreated] tab created', tab);
     this.containerMap.set(tab.id, tab.cookieStoreId);
     const reopened = await this.maybeReopenInTmpContainer(tab);
     if (!reopened) {
@@ -54,11 +55,11 @@ export class Tabs {
     changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo,
     tab: Tab
   ): Promise<void> {
-    debug('[onUpdated] tab updated', tab, changeInfo);
+    this.debug('[onUpdated] tab updated', tab, changeInfo);
     this.maybeCloseRedirectorTab(tab, changeInfo);
 
     if (changeInfo.url) {
-      debug('[onUpdated] url changed', changeInfo);
+      this.debug('[onUpdated] url changed', changeInfo);
       this.history.maybeAddHistory(tab, changeInfo.url);
       const reopened = await this.maybeReopenInTmpContainer(tab);
       if (!reopened) {
@@ -68,7 +69,7 @@ export class Tabs {
   }
 
   public async onRemoved(tabId: number): Promise<void> {
-    debug('[onRemoved]', tabId);
+    this.debug('[onRemoved]', tabId);
 
     if (this.container.noContainerTabs[tabId]) {
       delete this.container.noContainerTabs[tabId];
@@ -79,7 +80,7 @@ export class Tabs {
 
     const cookieStoreId = this.containerMap.get(tabId);
     if (cookieStoreId && this.container.isTemporary(cookieStoreId)) {
-      debug(
+      this.debug(
         '[onRemoved] queuing container removal because of tab removal',
         tabId
       );
@@ -92,7 +93,7 @@ export class Tabs {
   public async onActivated(
     activeInfo: browser.tabs.onActivatedActiveInfo
   ): Promise<void> {
-    debug('[onActivated]', activeInfo);
+    this.debug('[onActivated]', activeInfo);
     delete this.container.lastCreatedInactiveTab[
       browser.windows.WINDOW_ID_CURRENT
     ];
@@ -107,7 +108,7 @@ export class Tabs {
 
   async maybeReopenInTmpContainer(tab: Tab): Promise<void | boolean> {
     if (this.creatingInSameContainer) {
-      debug(
+      this.debug(
         '[maybeReopenInTmpContainer] we are in the process of creating a tab in same container, ignore',
         tab
       );
@@ -115,18 +116,18 @@ export class Tabs {
     }
 
     if (this.container.noContainerTabs[tab.id]) {
-      debug('[maybeReopenInTmpContainer] nocontainer tab, ignore', tab);
+      this.debug('[maybeReopenInTmpContainer] nocontainer tab, ignore', tab);
       return;
     }
 
     if (tab.url.startsWith('moz-extension://')) {
-      debug('[maybeReopenInTmpContainer] moz-extension url', tab);
+      this.debug('[maybeReopenInTmpContainer] moz-extension url', tab);
       await this.mac.handleConfirmPage(tab);
       return;
     }
 
     if (!this.pref.automaticMode.active) {
-      debug(
+      this.debug(
         '[maybeReopenInTmpContainer] automatic mode not active, we ignore that',
         tab
       );
@@ -134,7 +135,7 @@ export class Tabs {
     }
 
     if (tab.url !== 'about:home' && tab.url !== 'about:newtab') {
-      debug(
+      this.debug(
         '[maybeReopenInTmpContainer] not a home/new tab, we dont handle that',
         tab
       );
@@ -146,7 +147,7 @@ export class Tabs {
 
     if (tab.cookieStoreId === `${this.background.containerPrefix}-default`) {
       if (this.pref.automaticMode.newTab === 'navigation' && !deletesHistory) {
-        debug(
+        this.debug(
           '[maybeReopenInTmpContainer] automatic mode on navigation, setting icon badge',
           tab
         );
@@ -155,7 +156,7 @@ export class Tabs {
       }
 
       if (this.pref.automaticMode.newTab === 'created' || deletesHistory) {
-        debug(
+        this.debug(
           '[maybeReopenInTmpContainer] about:home/new tab in firefox-default container, reload in temp container',
           tab
         );
@@ -172,7 +173,7 @@ export class Tabs {
       this.container.isTemporary(tab.cookieStoreId) &&
       this.pref.automaticMode.newTab === 'navigation'
     ) {
-      debug(
+      this.debug(
         '[maybeReopenInTmpContainer] about:home and automatic mode on navigation but already in tmp container, open in default container',
         tab
       );
@@ -197,7 +198,7 @@ export class Tabs {
       const url = new URL(tab.url);
       if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
         delay(this.pref.closeRedirectorTabs.delay).then(async () => {
-          debug('[onUpdated] removing redirector tab', changeInfo, tab);
+          this.debug('[onUpdated] removing redirector tab', changeInfo, tab);
           this.tabs.remove(tab);
         });
       }
@@ -221,14 +222,14 @@ export class Tabs {
           ]
         );
         if (lastCreatedInactiveTab.index > tab.index) {
-          debug('[onCreated] moving tab', lastCreatedInactiveTab, tab);
+          this.debug('[onCreated] moving tab', lastCreatedInactiveTab, tab);
           browser.tabs.move(tab.id, { index: lastCreatedInactiveTab.index });
           this.container.lastCreatedInactiveTab[
             browser.windows.WINDOW_ID_CURRENT
           ] = tab.id;
         }
       } catch (error) {
-        debug('[onCreated] getting lastCreatedInactiveTab failed', error);
+        this.debug('[onCreated] getting lastCreatedInactiveTab failed', error);
       }
     }
   }
@@ -242,7 +243,10 @@ export class Tabs {
       });
       const activeTab = tabs[0];
       if (!activeTab) {
-        debug('[createInSameContainer] couldnt find an active tab', activeTab);
+        this.debug(
+          '[createInSameContainer] couldnt find an active tab',
+          activeTab
+        );
         return;
       }
       try {
@@ -250,16 +254,16 @@ export class Tabs {
           index: activeTab.index + 1,
           cookieStoreId: activeTab.cookieStoreId,
         });
-        debug(
+        this.debug(
           '[createInSameContainer] new same container tab created',
           activeTab,
           newTab
         );
       } catch (error) {
-        debug('[createInSameContainer] couldnt create tab', error);
+        this.debug('[createInSameContainer] couldnt create tab', error);
       }
     } catch (error) {
-      debug('[createInSameContainer] couldnt query tabs', error);
+      this.debug('[createInSameContainer] couldnt query tabs', error);
     }
     this.creatingInSameContainer = false;
   }
@@ -274,12 +278,12 @@ export class Tabs {
       if (tabs.length > 1) {
         try {
           await browser.tabs.remove(tab.id);
-          debug('[removeTab] removed old tab', tab.id);
+          this.debug('[removeTab] removed old tab', tab.id);
         } catch (error) {
-          debug('[removeTab] error while removing old tab', tab, error);
+          this.debug('[removeTab] error while removing old tab', tab, error);
         }
       } else {
-        debug(
+        this.debug(
           '[removeTab] queuing removal of tab to prevent closing of window',
           tab,
           tabs
@@ -289,7 +293,7 @@ export class Tabs {
         });
       }
     } catch (error) {
-      debug('[removeTab] couldnt query tabs', tab, error);
+      this.debug('[removeTab] couldnt query tabs', tab, error);
     }
   }
 }

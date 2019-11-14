@@ -1,4 +1,4 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { BrowserAction } from './browseraction';
 import { ContextMenu } from './contextmenu';
 import { PageAction } from './pageaction';

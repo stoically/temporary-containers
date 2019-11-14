@@ -1,17 +1,18 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { Isolation } from './isolation';
-import { debug } from './log';
 import { Storage } from './storage';
-import { PreferencesSchema, Tab } from '~/types';
+import { PreferencesSchema, Tab, Debug } from '~/types';
 
 export class Cookies {
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private storage!: Storage;
   private isolation!: Isolation;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public initialize(): void {
@@ -41,7 +42,7 @@ export class Cookies {
         if (!tab) {
           tab = (await browser.tabs.get(request.tabId)) as Tab;
           if (!this.storage.local.tempContainers[tab.cookieStoreId]) {
-            debug(
+            this.debug(
               '[maybeSetAndAddCookiesToHeader] not a temporary container',
               tab
             );
@@ -65,7 +66,7 @@ export class Cookies {
                 {}
               );
           }
-          debug(
+          this.debug(
             '[maybeAddCookiesToHeader] found temp tab and header',
             request,
             cookieHeader,
@@ -103,12 +104,12 @@ export class Cookies {
             sameSite: cookie.sameSite || undefined,
             storeId: tab.cookieStoreId,
           };
-          debug('[maybeSetCookies] setting cookie', cookie, setCookie);
+          this.debug('[maybeSetCookies] setting cookie', cookie, setCookie);
           const cookieSet = await browser.cookies.set(setCookie);
-          debug('[maybeSetCookies] cookie set', cookieSet);
+          this.debug('[maybeSetCookies] cookie set', cookieSet);
 
           if (cookiesHeader[cookie.name] === cookie.value) {
-            debug(
+            this.debug(
               '[maybeSetCookies] the set cookie is already in the header',
               cookie,
               cookiesHeader
@@ -125,7 +126,7 @@ export class Cookies {
               firstPartyDomain: cookie.firstPartyDomain || undefined,
             });
 
-            debug(
+            this.debug(
               '[maybeAddCookiesToHeader] checked if allowed to add cookie to header',
               cookieAllowed
             );
@@ -134,17 +135,17 @@ export class Cookies {
               cookieHeaderChanged = true;
               // eslint-disable-next-line require-atomic-updates
               cookiesHeader[cookieAllowed.name] = cookieAllowed.value;
-              debug(
+              this.debug(
                 '[maybeAddCookiesToHeader] cookie value changed',
                 cookiesHeader
               );
             }
           } catch (error) {
-            debug('[maybeAddCookiesToHeader] couldnt get cookie', cookie);
+            this.debug('[maybeAddCookiesToHeader] couldnt get cookie', cookie);
           }
         }
       }
-      debug(
+      this.debug(
         '[maybeAddCookiesToHeader] cookieHeaderChanged',
         cookieHeaderChanged,
         cookieHeader,
@@ -160,7 +161,7 @@ export class Cookies {
           );
         });
         const changedCookieHeaderValue = changedCookieHeaderValues.join('; ');
-        debug(
+        this.debug(
           '[maybeAddCookiesToHeader] changedCookieHeaderValue',
           changedCookieHeaderValue
         );
@@ -172,7 +173,7 @@ export class Cookies {
             value: changedCookieHeaderValue,
           });
         }
-        debug(
+        this.debug(
           '[maybeAddCookiesToHeader] changed cookieHeader to',
           cookieHeader,
           request
@@ -180,7 +181,7 @@ export class Cookies {
         return request;
       }
     } catch (error) {
-      debug(
+      this.debug(
         '[maybeAddCookiesToHeader] something went wrong while adding cookies to header',
         tab,
         request.url,

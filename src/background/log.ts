@@ -1,3 +1,5 @@
+import { Debug } from '~/types';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export class Log {
@@ -13,7 +15,7 @@ export class Log {
     );
   }
 
-  public debug = async (...args: any[]): Promise<void> => {
+  public debug: Debug = async (...args: any[]): Promise<void> => {
     let date;
     if (!this.checkedLocalStorage && !window._mochaTest) {
       date = new Date().toUTCString();
@@ -90,9 +92,3 @@ export class Log {
     }
   }
 }
-
-export const log = new Log();
-export const debug = log.debug;
-
-window.log = log;
-window.debug = log.debug;

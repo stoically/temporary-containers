@@ -1,4 +1,4 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { Storage } from './storage';
 import { PreferencesSchema, Tab } from '~/types';
 

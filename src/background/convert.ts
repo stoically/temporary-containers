@@ -1,4 +1,4 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { Container } from './container';
 import { Storage } from './storage';
 import { CookieStoreId, TabId } from '~/types';

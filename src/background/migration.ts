@@ -1,12 +1,12 @@
 /* istanbul ignore */
-import { TemporaryContainers } from '../background';
-import { debug } from './log';
+import { TemporaryContainers } from './tmp';
 import { Storage } from './storage';
 import { Utils } from './utils';
-import { IsolationDomain } from '~/types';
+import { IsolationDomain, Debug } from '~/types';
 
 export class Migration {
   private background: TemporaryContainers;
+  private debug: Debug;
   private storage!: Storage;
   private utils!: Utils;
   private previousVersion!: string;
@@ -18,6 +18,7 @@ export class Migration {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public async migrate({
@@ -36,7 +37,7 @@ export class Migration {
       await window.migrationLegacy(this);
     }
 
-    debug('[migrate] previousVersion', this.previousVersion);
+    this.debug('[migrate] previousVersion', this.previousVersion);
     this.previousVersionBeta = false;
     if (this.previousVersion.includes('beta')) {
       this.previousVersionBeta = true;
@@ -44,7 +45,7 @@ export class Migration {
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('0.91')) {
-      debug(
+      this.debug(
         'updated from version <= 0.91, migrate container numbers into dedicated array'
       );
       Object.values(this.storage.local.tempContainers).map(container => {
@@ -53,7 +54,7 @@ export class Migration {
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('0.103', '1.0.1')) {
-      debug(
+      this.debug(
         'updated from version <= 0.103, migrate deletesHistory.active and ignoreRequestsTo'
       );
       if (this.background.permissions.history) {
@@ -75,7 +76,7 @@ export class Migration {
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('0.103', '1.0.6')) {
-      debug(
+      this.debug(
         'updated from version <= 0.103, migrate per domain isolation to array'
       );
       const perDomainIsolation: IsolationDomain[] = [];
@@ -93,7 +94,7 @@ export class Migration {
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('0.103')) {
-      debug(
+      this.debug(
         '[migrate] updated from version <= 0.103, migrate popup default tab to isolation-per-domain'
       );
       if (preferences.browserActionPopup || preferences.pageAction) {
@@ -102,14 +103,16 @@ export class Migration {
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('1.1')) {
-      debug(
+      this.debug(
         '[migrate] updated from version <= 1.1, migrate redirectorCloseTabs'
       );
       preferences.closeRedirectorTabs.domains.push('slack-redir.net');
     }
 
     if (this.updatedFromVersionEqualToOrLessThan('1.3', '1.4.1')) {
-      debug('[migrate] updated from version <= 1.3, migrate container.removal');
+      this.debug(
+        '[migrate] updated from version <= 1.3, migrate container.removal'
+      );
 
       switch (preferences.container.removal) {
         case 'instant':

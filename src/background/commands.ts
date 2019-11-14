@@ -1,12 +1,12 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { Container } from './container';
-import { debug } from './log';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
-import { PreferencesSchema, Tab, Permissions } from '~/types';
+import { PreferencesSchema, Tab, Permissions, Debug } from '~/types';
 
 export class Commands {
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private storage!: Storage;
   private container!: Container;
@@ -15,6 +15,7 @@ export class Commands {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public initialize(): void {
@@ -47,12 +48,12 @@ export class Commands {
             url: 'about:blank',
           })) as Tab;
           this.container.noContainerTabs[tab.id] = true;
-          debug(
+          this.debug(
             '[onCommand] new no container tab created',
             this.container.noContainerTabs
           );
         } catch (error) {
-          debug('[onCommand] couldnt create tab', error);
+          this.debug('[onCommand] couldnt create tab', error);
         }
         break;
 
@@ -69,13 +70,13 @@ export class Commands {
           }
           const [tab] = browserWindow.tabs as Tab[];
           this.container.noContainerTabs[tab.id] = true;
-          debug(
+          this.debug(
             '[onCommand] new no container tab created in window',
             browserWindow,
             this.container.noContainerTabs
           );
         } catch (error) {
-          debug('[onCommand] couldnt create tab in window', error);
+          this.debug('[onCommand] couldnt create tab in window', error);
         }
         break;
 

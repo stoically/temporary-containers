@@ -1,9 +1,12 @@
+import { TemporaryContainers } from './tmp';
+import { Debug } from '~/types';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // to have persistent listeners we need to register them early+sync
 // and wait for tmp to fully initialize before handling events
-import { debug } from './log';
-
-class EventListeners {
+export class EventListeners {
+  private background: TemporaryContainers;
+  private debug: Debug;
   private tmpInitializedPromiseResolvers: Array<{
     resolve: () => void;
     timeout: number;
@@ -14,28 +17,36 @@ class EventListeners {
     api: any;
   }> = [];
 
-  constructor() {
-    debug('[event-listeners] initializing');
+  constructor(background: TemporaryContainers) {
+    this.background = background;
+    this.debug = background.debug;
+    this.debug('[event-listeners] initializing');
 
     browser.webRequest.onBeforeRequest.addListener(
       this.wrap(
         browser.webRequest.onBeforeRequest,
-        ['request', 'webRequestOnBeforeRequest'],
+        this.background.request,
+        'webRequestOnBeforeRequest',
         { timeout: 5 }
       ),
       { urls: ['<all_urls>'], types: ['main_frame'] },
       ['blocking']
     );
     browser.webRequest.onBeforeSendHeaders.addListener(
-      this.wrap(browser.webRequest.onBeforeSendHeaders, [
-        'cookies',
-        'maybeSetAndAddToHeader',
-      ]),
+      this.wrap(
+        browser.webRequest.onBeforeSendHeaders,
+        this.background.cookies,
+        'maybeSetAndAddToHeader'
+      ),
       { urls: ['<all_urls>'], types: ['main_frame'] },
       ['blocking', 'requestHeaders']
     );
     browser.webRequest.onCompleted.addListener(
-      this.wrap(browser.webRequest.onCompleted, ['statistics', 'collect']),
+      this.wrap(
+        browser.webRequest.onCompleted,
+        this.background.statistics,
+        'collect'
+      ),
       {
         urls: ['<all_urls>'],
         types: ['script', 'font', 'image', 'imageset', 'stylesheet'],
@@ -43,85 +54,125 @@ class EventListeners {
       ['responseHeaders']
     );
     browser.webRequest.onCompleted.addListener(
-      this.wrap(browser.webRequest.onCompleted, ['request', 'cleanupCanceled']),
+      this.wrap(
+        browser.webRequest.onCompleted,
+        this.background.request,
+        'cleanupCanceled'
+      ),
       { urls: ['<all_urls>'], types: ['main_frame'] }
     );
     browser.webRequest.onErrorOccurred.addListener(
-      this.wrap(browser.webRequest.onErrorOccurred, [
-        'request',
-        'cleanupCanceled',
-      ]),
+      this.wrap(
+        browser.webRequest.onErrorOccurred,
+        this.background.request,
+        'cleanupCanceled'
+      ),
       { urls: ['<all_urls>'], types: ['main_frame'] }
     );
     browser.browserAction.onClicked.addListener(
-      this.wrap(browser.browserAction.onClicked, ['browseraction', 'onClicked'])
+      this.wrap(
+        browser.browserAction.onClicked,
+        this.background.browseraction,
+        'onClicked'
+      )
     );
     browser.contextMenus.onClicked.addListener(
-      this.wrap(browser.contextMenus.onClicked, ['contextmenu', 'onClicked'])
+      this.wrap(
+        browser.contextMenus.onClicked,
+        this.background.contextmenu,
+        'onClicked'
+      )
     );
     browser.contextMenus.onShown.addListener(
-      this.wrap(browser.contextMenus.onShown, ['contextmenu', 'onShown'])
+      this.wrap(
+        browser.contextMenus.onShown,
+        this.background.contextmenu,
+        'onShown'
+      )
     );
     browser.windows.onFocusChanged.addListener(
-      this.wrap(browser.windows.onFocusChanged, [
-        'contextmenu',
-        'windowsOnFocusChanged',
-      ])
+      this.wrap(
+        browser.windows.onFocusChanged,
+        this.background.contextmenu,
+        'windowsOnFocusChanged'
+      )
     );
     browser.management.onDisabled.addListener(
-      this.wrap(browser.management.onDisabled, ['management', 'disable'])
+      this.wrap(
+        browser.management.onDisabled,
+        this.background.management,
+        'disable'
+      )
     );
     browser.management.onUninstalled.addListener(
-      this.wrap(browser.management.onUninstalled, ['management', 'disable'])
+      this.wrap(
+        browser.management.onUninstalled,
+        this.background.management,
+        'disable'
+      )
     );
     browser.management.onEnabled.addListener(
-      this.wrap(browser.management.onEnabled, ['management', 'enable'])
+      this.wrap(
+        browser.management.onEnabled,
+        this.background.management,
+        'enable'
+      )
     );
     browser.management.onInstalled.addListener(
-      this.wrap(browser.management.onUninstalled, ['management', 'enable'])
+      this.wrap(
+        browser.management.onUninstalled,
+        this.background.management,
+        'enable'
+      )
     );
     browser.commands.onCommand.addListener(
-      this.wrap(browser.commands.onCommand, ['commands', 'onCommand'])
+      this.wrap(
+        browser.commands.onCommand,
+        this.background.commands,
+        'onCommand'
+      )
     );
     browser.tabs.onActivated.addListener(
-      this.wrap(browser.tabs.onActivated, ['tabs', 'onActivated'])
+      this.wrap(browser.tabs.onActivated, this.background.tabs, 'onActivated')
     );
     browser.tabs.onCreated.addListener(
-      this.wrap(browser.tabs.onCreated, ['tabs', 'onCreated'])
+      this.wrap(browser.tabs.onCreated, this.background.tabs, 'onCreated')
     );
     browser.tabs.onUpdated.addListener(
-      this.wrap(browser.tabs.onUpdated, ['tabs', 'onUpdated'])
+      this.wrap(browser.tabs.onUpdated, this.background.tabs, 'onUpdated')
     );
     browser.tabs.onRemoved.addListener(
-      this.wrap(browser.tabs.onRemoved, ['tabs', 'onRemoved'])
+      this.wrap(browser.tabs.onRemoved, this.background.tabs, 'onRemoved')
     );
     browser.runtime.onMessage.addListener(
-      this.wrap(browser.runtime.onMessage, ['runtime', 'onMessage'])
+      this.wrap(browser.runtime.onMessage, this.background.runtime, 'onMessage')
     );
     browser.runtime.onMessageExternal.addListener(
-      this.wrap(browser.runtime.onMessageExternal, [
-        'runtime',
-        'onMessageExternal',
-      ])
+      this.wrap(
+        browser.runtime.onMessageExternal,
+        this.background.runtime,
+        'onMessageExternal'
+      )
     );
     browser.runtime.onStartup.addListener(
-      this.wrap(browser.runtime.onStartup, ['runtime', 'onStartup'])
+      this.wrap(browser.runtime.onStartup, this.background.runtime, 'onStartup')
     );
   }
 
   public wrap(
     api: any,
-    target: string[],
+    context: any,
+    target: any,
     options: { timeout: number } = { timeout: this.defaultTimeout }
   ): (...listenerArgs: any) => Promise<any> {
     const tmpInitializedPromise = this.createTmpInitializedPromise(options);
 
     const listener = async (...listenerArgs: any): Promise<any> => {
-      if (!window.tmp?.initialized) {
+      if (!this.background.initialized) {
         try {
           await tmpInitializedPromise;
         } catch (error) {
-          debug(
+          this.debug(
             `[event-listeners] call to ${target.join('.')} timed out after ${
               options.timeout
             }s`
@@ -130,10 +181,7 @@ class EventListeners {
         }
       }
 
-      return (window as any).tmp[target[0]][target[1]].call(
-        (window as any).tmp[target[0]],
-        ...listenerArgs
-      );
+      return context[target].call(context, ...listenerArgs);
     };
 
     this.listeners.push({ listener, api });
@@ -159,8 +207,8 @@ class EventListeners {
 
   public tmpInitialized = (): void => {
     this.tmpInitializedPromiseResolvers.map(resolver => {
-      clearTimeout(resolver.timeout);
       resolver.resolve();
+      window.clearTimeout(resolver.timeout);
     });
   };
 
@@ -170,5 +218,3 @@ class EventListeners {
     });
   }
 }
-
-export const eventListeners = new EventListeners();

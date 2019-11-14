@@ -1,8 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { psl } from './lib';
-import { debug } from './log';
+import { TemporaryContainers } from '~/background';
+import { Debug } from '~/types';
 
 export class Utils {
+  private debug: Debug;
+
+  constructor(background: TemporaryContainers) {
+    this.debug = background.debug;
+  }
+
   public sameDomain(origin: string, target: string): boolean {
     const parsedOrigin = psl.parse(origin);
     const parsedTarget = psl.parse(target);
@@ -23,7 +30,7 @@ export class Utils {
     const addKeys = (defaultsNode: any, sourceNode: any): void => {
       Object.keys(defaultsNode).map(key => {
         if (sourceNode[key] === undefined) {
-          debug(
+          this.debug(
             '[addMissingKeys] key not found, setting default',
             key,
             defaultsNode[key]

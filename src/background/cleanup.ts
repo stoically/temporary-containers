@@ -1,14 +1,14 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { Container } from './container';
 import { History } from './history';
 import { delay, PQueue } from './lib';
-import { debug } from './log';
 import { Statistics } from './statistics';
 import { Storage } from './storage';
-import { PreferencesSchema, CookieStoreId, Permissions } from '~/types';
+import { PreferencesSchema, CookieStoreId, Permissions, Debug } from '~/types';
 
 export class Cleanup {
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private storage!: Storage;
   private container!: Container;
@@ -21,9 +21,10 @@ export class Cleanup {
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
 
     setInterval(() => {
-      debug('[interval] container cleanup interval');
+      this.debug('[interval] container cleanup interval');
       this.cleanup();
     }, 600000);
   }
@@ -42,14 +43,17 @@ export class Cleanup {
     skipDelay = false
   ): Promise<void> {
     if (this.queued.has(cookieStoreId)) {
-      debug('[addToRemoveQueue] container already in queue', cookieStoreId);
+      this.debug(
+        '[addToRemoveQueue] container already in queue',
+        cookieStoreId
+      );
       return;
     }
     this.queued.add(cookieStoreId);
 
     const containerRemovalDelay = this.container.getRemovalDelay(cookieStoreId);
     if (containerRemovalDelay && !skipDelay) {
-      debug(
+      this.debug(
         '[addToRemoveQueue] waiting to add container removal to queue',
         containerRemovalDelay,
         cookieStoreId
@@ -57,13 +61,13 @@ export class Cleanup {
       await delay(containerRemovalDelay);
     }
 
-    debug('[addToRemoveQueue] queuing container removal', cookieStoreId);
+    this.debug('[addToRemoveQueue] queuing container removal', cookieStoreId);
 
     this.queue
       .add(async () => {
         const containerRemoved = await this.tryToRemove(cookieStoreId);
         if (containerRemoved) {
-          debug(
+          this.debug(
             '[addToRemoveQueue] container removed, waiting a bit',
             cookieStoreId
           );
@@ -77,7 +81,7 @@ export class Cleanup {
           return;
         }
 
-        debug('[addToRemoveQueue] queue empty');
+        this.debug('[addToRemoveQueue] queue empty');
         this.statistics.finish();
         this.container.cleanupNumbers();
       });
@@ -89,19 +93,19 @@ export class Cleanup {
         cookieStoreId,
       });
       if (tempTabs.length > 0) {
-        debug(
+        this.debug(
           '[tryToRemove] not removing container because it still has tabs',
           cookieStoreId,
           tempTabs.length
         );
         return false;
       }
-      debug(
+      this.debug(
         '[tryToRemove] no tabs in temp container anymore, deleting container',
         cookieStoreId
       );
     } catch (error) {
-      debug('[tryToRemove] failed to query tabs', cookieStoreId, error);
+      this.debug('[tryToRemove] failed to query tabs', cookieStoreId, error);
       return false;
     }
 
@@ -120,17 +124,17 @@ export class Cleanup {
         cookieStoreId
       );
       if (!contextualIdentity) {
-        debug(
+        this.debug(
           '[removeContainer] couldnt find container to remove, probably already removed',
           cookieStoreId
         );
       } else {
-        debug('[removeContainer] container removed', cookieStoreId);
+        this.debug('[removeContainer] container removed', cookieStoreId);
       }
       await this.container.removeFromStorage(cookieStoreId);
       return true;
     } catch (error) {
-      debug(
+      this.debug(
         '[removeContainer] error while removing container',
         cookieStoreId,
         error
@@ -142,11 +146,11 @@ export class Cleanup {
   public async cleanup(skipDelay = false): Promise<void> {
     const containers = this.container.getAllIds();
     if (!containers.length) {
-      debug('[cleanup] canceling, no containers at all');
+      this.debug('[cleanup] canceling, no containers at all');
       return;
     }
     if (await this.onlySessionRestoreOrNoTabs()) {
-      debug('[cleanup] canceling, only sessionrestore or no tabs');
+      this.debug('[cleanup] canceling, only sessionrestore or no tabs');
       return;
     }
 
@@ -168,7 +172,7 @@ export class Cleanup {
         return true;
       }
     } catch (error) {
-      debug('[onlySessionRestoreOrNoTabs] failed to query tabs', error);
+      this.debug('[onlySessionRestoreOrNoTabs] failed to query tabs', error);
     }
     return false;
   }
@@ -178,7 +182,7 @@ export class Cleanup {
       return;
     }
 
-    debug('[maybeShowNotification] showing notification');
+    this.debug('[maybeShowNotification] showing notification');
     browser.notifications.create({
       type: 'basic',
       title: 'Temporary Containers',

@@ -1,16 +1,15 @@
-import { TemporaryContainers } from '../background';
+import { TemporaryContainers } from './tmp';
 import { Isolation } from './isolation';
 import { delay } from './lib';
-import { debug } from './log';
 import { Utils } from './utils';
-import { PreferencesSchema, IsolationAction, Tab } from '~/types';
-
-type ClickType = 'middle' | 'left' | 'ctrlleft';
-
-interface ClickMessage {
-  href: string;
-  event: { button: number; ctrlKey: boolean; metaKey: boolean };
-}
+import {
+  PreferencesSchema,
+  IsolationAction,
+  Tab,
+  Debug,
+  ClickType,
+  ClickMessage,
+} from '~/types';
 
 export class MouseClick {
   public isolated: {
@@ -23,12 +22,14 @@ export class MouseClick {
   } = {};
 
   private background: TemporaryContainers;
+  private debug: Debug;
   private pref!: PreferencesSchema;
   private utils!: Utils;
   private isolation!: Isolation;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
     this.isolated = {};
   }
 
@@ -68,7 +69,7 @@ export class MouseClick {
     }
 
     if (this.isolated[url]) {
-      debug('[linkClicked] aborting isolated cleanup', url);
+      this.debug('[linkClicked] aborting isolated cleanup', url);
       this.isolated[url].abortController.abort();
     }
 
@@ -85,10 +86,10 @@ export class MouseClick {
 
     delay(1500, { signal: abortController.signal })
       .then(() => {
-        debug('[linkClicked] cleaning up isolated', url);
+        this.debug('[linkClicked] cleaning up isolated', url);
         delete this.isolated[url];
       })
-      .catch(debug);
+      .catch(this.debug);
   }
 
   public checkClickPreferences = (
@@ -97,7 +98,7 @@ export class MouseClick {
     parsedSenderTabURL: { hostname: string }
   ): boolean => {
     if (preferences.action === 'always') {
-      debug(
+      this.debug(
         '[checkClick] click handled based on preference "always"',
         preferences
       );
@@ -105,7 +106,7 @@ export class MouseClick {
     }
 
     if (preferences.action === 'never') {
-      debug(
+      this.debug(
         '[checkClickPreferences] click not handled based on preference "never"',
         preferences,
         parsedClickedURL,
@@ -116,7 +117,7 @@ export class MouseClick {
 
     if (preferences.action === 'notsamedomainexact') {
       if (parsedSenderTabURL.hostname !== parsedClickedURL.hostname) {
-        debug(
+        this.debug(
           '[checkClickPreferences] click handled based on preference "notsamedomainexact"',
           preferences,
           parsedClickedURL,
@@ -124,7 +125,7 @@ export class MouseClick {
         );
         return true;
       } else {
-        debug(
+        this.debug(
           '[checkClickPreferences] click not handled based on preference "notsamedomainexact"',
           preferences,
           parsedClickedURL,
@@ -141,14 +142,14 @@ export class MouseClick {
           parsedClickedURL.hostname
         )
       ) {
-        debug(
+        this.debug(
           '[checkClickPreferences] click not handled from preference "notsamedomain"',
           parsedClickedURL,
           parsedSenderTabURL
         );
         return false;
       } else {
-        debug(
+        this.debug(
           '[checkClickPreferences] click handled from preference "notsamedomain"',
           parsedClickedURL,
           parsedSenderTabURL
@@ -157,7 +158,7 @@ export class MouseClick {
       }
     }
 
-    debug('[checkClickPreferences] this should never happen');
+    this.debug('[checkClickPreferences] this should never happen');
     return false;
   };
 
@@ -169,7 +170,7 @@ export class MouseClick {
     const tab = sender.tab as Tab;
     const parsedSenderTabURL = new URL(tab.url);
     const parsedClickedURL = new URL(message.href);
-    debug('[checkClick] checking click', type, message, sender);
+    this.debug('[checkClick] checking click', type, message, sender);
 
     for (const domainPatternPreferences of this.pref.isolation.domain) {
       const domainPattern = domainPatternPreferences.pattern;
@@ -180,9 +181,9 @@ export class MouseClick {
         continue;
       }
       const preferences = domainPatternPreferences.mouseClick[type];
-      debug('[checkClick] per website pattern found');
+      this.debug('[checkClick] per website pattern found');
       if (preferences.action === 'global') {
-        debug('[checkClick] breaking because "global"');
+        this.debug('[checkClick] breaking because "global"');
         break;
       }
       return this.checkClickPreferences(
@@ -191,7 +192,9 @@ export class MouseClick {
         parsedSenderTabURL
       );
     }
-    debug('[checkClick] no website pattern found, checking global preferences');
+    this.debug(
+      '[checkClick] no website pattern found, checking global preferences'
+    );
     return this.checkClickPreferences(
       this.pref.isolation.global.mouseClick[type],
       parsedClickedURL,
@@ -205,7 +208,7 @@ export class MouseClick {
     if (!this.isolated[request.url]) {
       return;
     }
-    debug(
+    this.debug(
       '[beforeHandleRequest] aborting isolated mouseclick cleanup',
       request.url
     );
@@ -221,9 +224,9 @@ export class MouseClick {
     this.isolated[request.url].abortController = new AbortController();
     delay(1500, { signal: this.isolated[request.url].abortController.signal })
       .then(() => {
-        debug('[beforeHandleRequest] cleaning up isolated', request.url);
+        this.debug('[beforeHandleRequest] cleaning up isolated', request.url);
         delete this.isolated[request.url];
       })
-      .catch(debug);
+      .catch(this.debug);
   }
 }

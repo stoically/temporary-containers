@@ -1,14 +1,15 @@
-import { TemporaryContainers } from '../background';
-import { debug } from './log';
+import { TemporaryContainers } from './tmp';
 import { Storage } from './storage';
-import { Tab, CookieStoreId } from '~/types';
+import { Tab, CookieStoreId, Debug } from '~/types';
 
 export class History {
   private background: TemporaryContainers;
+  private debug: Debug;
   private storage!: Storage;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
+    this.debug = background.debug;
   }
 
   public initialize(): void {
@@ -49,7 +50,7 @@ export class History {
         if (!url) {
           return;
         }
-        debug('[maybeClearHistory] removing url from history', url);
+        this.debug('[maybeClearHistory] removing url from history', url);
         browser.history.deleteUrl({ url });
       });
     }

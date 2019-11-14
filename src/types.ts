@@ -212,3 +212,19 @@ export interface MacAssignment {
   cookieStoreId: string;
   neverAsk: boolean;
 }
+
+export type ClickType = 'middle' | 'left' | 'ctrlleft';
+
+export interface ClickMessage {
+  href: string;
+  event: { button: number; ctrlKey: boolean; metaKey: boolean };
+}
+
+export interface RuntimeMessage {
+  method: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload: ClickMessage | any;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Debug = (...args: any[]) => Promise<void>;

@@ -1,13 +1,15 @@
-import { Log } from '~/background/log';
+import jsdom from 'jsdom';
 
 declare global {
+  interface GlobalWindow extends jsdom.DOMWindow {
+    _mochaTest?: boolean;
+    AbortController: any;
+  }
+
   namespace NodeJS {
     interface Global {
-      window: {
-        _mochaTest?: boolean;
-        log?: Log;
-        setTimeout: typeof setTimeout;
-      };
+      document: Document;
+      window: GlobalWindow;
       browser: any;
       AbortController: any;
     }

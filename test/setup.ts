@@ -1,29 +1,3 @@
-if (!process.listenerCount('unhandledRejection')) {
-  process.on('unhandledRejection', r => {
-    console.log('unhandledRejection', r);
-  });
-}
-
-import chai from 'chai';
-import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
-import { Tab } from '~/types';
-import { AbortController } from 'abort-controller';
-import browserFake from 'webextensions-api-fake';
-
-global.window = {
-  _mochaTest: true,
-  setTimeout: setTimeout,
-};
-global.browser = browserFake();
-global.browser.contextMenus = global.browser.menus;
-global.browser.contextMenus.onShown = {
-  addListener: sinon.stub(),
-};
-global.AbortController = AbortController;
-
-import { TemporaryContainers } from '../src/background';
-
 const preferencesTestSet = [
   {
     automaticMode: {
@@ -51,6 +25,72 @@ const preferencesTestSet = [
   },
 ];
 
+if (!process.listenerCount('unhandledRejection')) {
+  process.on('unhandledRejection', r => {
+    console.log('unhandledRejection', r);
+  });
+}
+
+import chai from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import browserFake from 'webextensions-api-fake';
+import jsdom from 'jsdom';
+import { TemporaryContainers } from '~/background/tmp';
+
+const virtualConsole = new jsdom.VirtualConsole();
+virtualConsole.sendTo(console);
+virtualConsole.on('jsdomError', error => {
+  // eslint-disable-next-line no-console
+  console.error(error);
+});
+
+const fakeBrowser = (): { browser: any; clock: sinon.SinonFakeTimers } => {
+  const clock = sinon.useFakeTimers({
+    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
+  });
+  const html = '<!DOCTYPE html><html><head></head><body></body></html>';
+
+  const dom = new jsdom.JSDOM(html, {
+    url: 'https://localhost',
+    virtualConsole,
+  });
+  const window = dom.window as GlobalWindow;
+
+  global.document = window.document;
+  global.window = window;
+  global.AbortController = window.AbortController;
+
+  const browser = browserFake({ sinon });
+  global.window._mochaTest = true;
+  global.browser = browser;
+  // TODO move into webextensions-api-fake
+  global.browser.contextMenus = global.browser.menus;
+  global.browser.contextMenus.onShown = {
+    addListener: sinon.stub(),
+    removeListener: sinon.stub(),
+  };
+  global.browser.runtime.getManifest.returns({
+    version: '0.1',
+  });
+  global.browser.runtime.getBrowserInfo.resolves({
+    name: 'Firefox',
+    version: 67,
+  });
+  global.browser.permissions.getAll.resolves({
+    permissions: [],
+  });
+  global.browser.management.getAll.resolves([
+    {
+      id: '@testpilot-containers',
+      enabled: true,
+      version: '6.0.0',
+    },
+  ]);
+
+  return { browser, clock };
+};
+
 chai.should();
 chai.use(sinonChai);
 
@@ -61,106 +101,62 @@ const nextTick = (): Promise<void> => {
   });
 };
 
-const clock = sinon.useFakeTimers({
-  toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
-});
-
 export interface WebExtension {
   browser: any;
   background: TemporaryContainers;
   window: any;
+  clock: sinon.SinonFakeTimers;
 }
 
-const buildWebExtension = async (
-  build: { apiFake?: false } = { apiFake: false }
-) => {
-  const background = new TemporaryContainers();
-  const webExtension = {
-    browser: browserFake(),
-    background,
-    window,
-  };
+const loadBackground = async ({
+  initialize = true,
+  preferences = false,
+  beforeCtor = false,
+}: {
+  initialize?: boolean;
+  preferences?: any;
+  beforeCtor?:
+    | false
+    | ((browser: any, clock: sinon.SinonFakeTimers) => Promise<void> | void);
+} = {}): Promise<WebExtension> => {
+  const { browser, clock } = fakeBrowser();
 
-  webExtension.browser.runtime.getManifest.returns({
-    version: '0.1',
-  });
-  webExtension.browser.runtime.getBrowserInfo.resolves({
-    name: 'Firefox',
-    version: 67,
-  });
-
-  webExtension.browser.permissions.getAll.resolves({
-    permissions: [],
-  });
-  if (!build.apiFake) {
-    webExtension.browser.tabs.query.resolves([
-      { id: 1, url: 'fake' },
-      { id: 2, url: 'fake' },
-    ]);
-    webExtension.browser.storage.local.get.resolves({});
-    webExtension.browser.contextualIdentities.get.resolves({});
-    webExtension.browser.cookies.getAll.resolves([]);
+  if (beforeCtor) {
+    await beforeCtor(browser, clock);
   }
-  webExtension.browser.management.getAll.resolves([
-    {
-      id: '@testpilot-containers',
-      enabled: true,
-      version: '6.0.0',
-    },
-  ]);
+
+  const background = new TemporaryContainers();
+  window.tmp = background;
+
+  if (preferences) {
+    Object.assign(background.preferences.defaults, preferences);
+  }
 
   if (process.argv.includes('--tmp-debug')) {
-    webExtension.window.log.DEBUG = true;
+    background.log.DEBUG = true;
   }
 
-  return webExtension;
-};
+  // // eslint-disable-next-line require-atomic-updates
+  // background.storage.local.preferences.isolation.global.mouseClick.middle.action =
+  //   'always';
+  // // eslint-disable-next-line require-atomic-updates
+  // background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
+  //   'always';
 
-const loadBareBackground = async (
-  preferences = {},
-  build = {}
-): Promise<WebExtension> => {
-  const webExtension = await buildWebExtension(build);
-  const { background } = webExtension;
-  Object.assign(background.preferences.defaults, preferences);
-  return webExtension;
-};
-
-const loadBackground = async (preferences = {}): Promise<WebExtension> => {
-  const webExtension = await buildWebExtension();
-  const { background } = webExtension;
-
-  await background.initialize();
-  if (preferences) {
-    Object.assign(background.storage.local.preferences, preferences);
-    // eslint-disable-next-line require-atomic-updates
-    background.storage.local.preferences.isolation.global.mouseClick.middle.action =
-      'always';
-    // eslint-disable-next-line require-atomic-updates
-    background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
-      'always';
+  if (initialize) {
+    await background.initialize();
   }
-  return webExtension;
+
+  return {
+    browser,
+    background,
+    window,
+    clock,
+  };
 };
 
-const loadUninstalledBackground = async (): Promise<WebExtension> => {
-  const webExtension = await buildWebExtension();
-
-  return webExtension;
-};
-
-afterEach(() => {
-  sinon.restore();
-  clock.restore();
+afterEach(function() {
+  sinon.resetHistory();
 });
 
-export {
-  preferencesTestSet,
-  sinon,
-  expect,
-  nextTick,
-  loadBareBackground,
-  loadBackground,
-  loadUninstalledBackground,
-  clock,
-};
+export { preferencesTestSet, sinon, expect, nextTick, loadBackground };
