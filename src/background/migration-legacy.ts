@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // this is only needed once for upgrades from <1.0 and should be removed in the next major version
 // we now store the addon version in storage instead of waiting for onInstalled
-import { TemporaryContainers } from '~/background';
+import { TemporaryContainers } from './tmp';
 
 export class MigrationLegacy {
   constructor(background: TemporaryContainers) {

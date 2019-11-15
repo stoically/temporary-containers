@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { psl } from './lib';
-import { TemporaryContainers } from '~/background';
+import { TemporaryContainers } from './tmp';
 import { Debug } from '~/types';
 
 export class Utils {

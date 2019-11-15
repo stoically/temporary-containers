@@ -321,7 +321,7 @@ preferencesTestSet.map(preferences => {
     describe('commands', () => {
       describe('New Temporary Container Tab', () => {
         it('should open a new temporary container tab', async () => {
-          const { background, browser } = await loadBackground({ preferences });
+          const { browser } = await loadBackground({ preferences });
           browser.commands.onCommand.addListener.yield(
             'new_temporary_container_tab'
           );

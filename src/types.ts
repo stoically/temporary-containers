@@ -79,7 +79,7 @@ export interface Cookie {
   httpOnly: '' | 'true' | 'false';
   name: string;
   path: string;
-  sameSite: '' | 'no_restriction' | 'lax' | 'strict';
+  sameSite: '' | browser.cookies.SameSiteStatus;
   secure: '' | 'true' | 'false';
   url: string;
   value: string;

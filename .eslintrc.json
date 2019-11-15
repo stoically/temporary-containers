@@ -1,18 +1,32 @@
 {
-  "parserOptions": {
-    "parser": "@typescript-eslint/parser"
-  },
   "env": {
     "browser": true,
     "webextensions": true,
-    "node": true
+    "node": true,
+    "es6": true
   },
-  "plugins": ["@typescript-eslint"],
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:vue/recommended",
-    "plugin:prettier/recommended",
-    "prettier/vue",
-    "prettier/@typescript-eslint"
+  "overrides": [
+    {
+      "files": ["**/*.{ts,vue}"],
+      "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "ecmaVersion": 2018
+      },
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:vue/recommended",
+        "plugin:prettier/recommended",
+        "prettier/vue",
+        "prettier/@typescript-eslint"
+      ]
+    },
+    {
+      "files": ["**/*.js"],
+      "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+      "parserOptions": {
+        "parser": "espree",
+        "ecmaVersion": 2018
+      }
+    }
   ]
 }

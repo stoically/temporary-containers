@@ -1,4 +1,4 @@
-import { TemporaryContainers } from './background';
+import { TemporaryContainers } from './background/tmp';
 import { Log } from './background/log';
 
 declare global {

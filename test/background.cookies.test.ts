@@ -1,27 +1,20 @@
-import {
-  expect,
-  preferencesTestSet,
-  loadBackground,
-  helper,
-  loadBareBackground,
-} from './setup';
+import { expect, preferencesTestSet, loadBackground } from './setup';
+import { Cookie } from '~/types';
 
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('Set Cookies', () => {
-      it('should set the cookie and add it to the header if allowed', async () => {
-        const { background, browser } = await loadBackground(preferences);
-        await helper.browser.openNewTmpTab({
-          createsContainer: 'firefox-tmp1',
-        });
-        const cookie = {
+      it.only('should set the cookie and add it to the header if allowed', async () => {
+        const { background, browser } = await loadBackground({ preferences });
+
+        const cookie: Cookie = {
           domain: 'domain',
-          expirationDate: 123,
+          expirationDate: '123',
           firstPartyDomain: 'firstPartyDomain',
           httpOnly: 'true',
           name: 'name',
           path: '/foo/bar',
-          sameSite: 'sameSite',
+          sameSite: '',
           secure: 'true',
           url: 'https://example.com',
           value: 'value',
@@ -30,13 +23,16 @@ preferencesTestSet.map(preferences => {
         background.storage.local.preferences.cookies.domain = {
           'example.com': [cookie],
         };
-        const [
-          promise,
-        ] = browser.webRequest.onBeforeSendHeaders.addListener.yield({
-          url: 'https://example.com',
-          requestHeaders: [{ name: 'Cookie', value: 'foo=bar; moo=foo' }],
-        });
-        const result = await promise;
+
+        const tab = await background.container.createTabInTempContainer({});
+        const results = await browser.tabs._navigate(
+          tab?.id,
+          'https://example.com',
+          {
+            requestHeaders: [{ name: 'Cookie', value: 'foo=bar; moo=foo' }],
+          }
+        );
+
         browser.cookies.set.should.have.been.calledWith({
           domain: 'domain',
           expirationDate: 123,
@@ -44,13 +40,14 @@ preferencesTestSet.map(preferences => {
           httpOnly: true,
           name: 'name',
           path: '/foo/bar',
-          sameSite: 'sameSite',
+          sameSite: undefined,
           secure: true,
           url: 'https://example.com',
           value: 'value',
-          storeId: 'firefox-tmp1',
+          storeId: tab?.cookieStoreId,
         });
-        result.should.deep.equal({
+
+        (await results.onBeforeSendHeaders[0]).should.deep.match({
           url: 'https://example.com',
           requestHeaders: [
             { name: 'Cookie', value: 'foo=bar; moo=foo; name=value' },

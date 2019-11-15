@@ -32,6 +32,7 @@ if (!process.listenerCount('unhandledRejection')) {
 }
 
 import chai from 'chai';
+import chaiDeepMatch from 'chai-deep-match';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import browserFake from 'webextensions-api-fake';
@@ -45,7 +46,10 @@ virtualConsole.on('jsdomError', error => {
   console.error(error);
 });
 
-const fakeBrowser = (): { browser: any; clock: sinon.SinonFakeTimers } => {
+const fakeBrowser = (): {
+  browser: browserFake.Browser;
+  clock: sinon.SinonFakeTimers;
+} => {
   const clock = sinon.useFakeTimers({
     toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
   });
@@ -64,8 +68,6 @@ const fakeBrowser = (): { browser: any; clock: sinon.SinonFakeTimers } => {
   const browser = browserFake({ sinon });
   global.window._mochaTest = true;
   global.browser = browser;
-  // TODO move into webextensions-api-fake
-  global.browser.contextMenus = global.browser.menus;
   global.browser.contextMenus.onShown = {
     addListener: sinon.stub(),
     removeListener: sinon.stub(),
@@ -92,6 +94,7 @@ const fakeBrowser = (): { browser: any; clock: sinon.SinonFakeTimers } => {
 };
 
 chai.should();
+chai.use(chaiDeepMatch);
 chai.use(sinonChai);
 
 const { expect } = chai;
@@ -102,9 +105,9 @@ const nextTick = (): Promise<void> => {
 };
 
 export interface WebExtension {
-  browser: any;
+  browser: browserFake.Browser;
   background: TemporaryContainers;
-  window: any;
+  window: object;
   clock: sinon.SinonFakeTimers;
 }
 
@@ -114,10 +117,13 @@ const loadBackground = async ({
   beforeCtor = false,
 }: {
   initialize?: boolean;
-  preferences?: any;
+  preferences?: false | object;
   beforeCtor?:
     | false
-    | ((browser: any, clock: sinon.SinonFakeTimers) => Promise<void> | void);
+    | ((
+        browser: browserFake.Browser,
+        clock: sinon.SinonFakeTimers
+      ) => Promise<void> | void);
 } = {}): Promise<WebExtension> => {
   const { browser, clock } = fakeBrowser();
 

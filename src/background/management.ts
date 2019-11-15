@@ -1,5 +1,5 @@
 import { addons } from './external-addons';
-import { TemporaryContainers } from '~/background';
+import { TemporaryContainers } from './tmp';
 import { Debug } from '~/types';
 
 export class Management {
