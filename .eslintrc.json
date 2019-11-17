@@ -1,4 +1,7 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
   "env": {
     "browser": true,
     "webextensions": true,
@@ -9,8 +12,7 @@
     {
       "files": ["**/*.{ts,vue}"],
       "parserOptions": {
-        "parser": "@typescript-eslint/parser",
-        "ecmaVersion": 2018
+        "parser": "@typescript-eslint/parser"
       },
       "extends": [
         "plugin:@typescript-eslint/recommended",
@@ -22,11 +24,7 @@
     },
     {
       "files": ["**/*.js"],
-      "extends": ["eslint:recommended", "plugin:prettier/recommended"],
-      "parserOptions": {
-        "parser": "espree",
-        "ecmaVersion": 2018
-      }
+      "extends": ["eslint:recommended", "plugin:prettier/recommended"]
     }
   ]
 }

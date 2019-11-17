@@ -1,23 +1,6 @@
 {
   "env": {
     "browser": false,
-    "node": true,
     "mocha": true
-  },
-  "globals": {
-    "reload": false,
-    "sinon": false,
-    "clock": false,
-    "expect": false,
-    "buildBackground": false,
-    "loadBackground": false,
-    "loadBareBackground": false,
-    "loadUninstalledBackground": false,
-    "webExtension": false,
-    "injectBrowser": false,
-    "background": true,
-    "helper": false,
-    "nextTick": false,
-    "preferencesTestSet": false
   }
 }

@@ -1,14 +1,5 @@
 {
   "env": {
-    "browser": true,
     "node": false
-  },
-  "globals": {
-    "tmp": "readonly",
-    "debug": "readonly",
-    "psl": "readonly",
-    "log": "readonly",
-    "delay": "readonly",
-    "PQueue": "readonly"
   }
 }
