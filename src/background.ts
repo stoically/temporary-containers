@@ -1,10 +1,9 @@
 import { TemporaryContainers } from './background/tmp';
 
-new TemporaryContainers()
+window.tmp = new TemporaryContainers();
+window.tmp
   .initialize()
-  .then((tmp: TemporaryContainers) => {
-    window.tmp = tmp;
-
+  .then(tmp => {
     if (tmp.storage.installed) {
       tmp.debug('[bg] fresh install, showing options');
       browser.tabs.create({

@@ -35,9 +35,10 @@ import chai from 'chai';
 import chaiDeepMatch from 'chai-deep-match';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import browserFake from 'webextensions-api-fake';
+import browserFake, { BrowserFake } from 'webextensions-api-fake';
 import jsdom from 'jsdom';
 import { TemporaryContainers } from '~/background/tmp';
+import { TmpTabOptions, Tab } from '~/types';
 
 const virtualConsole = new jsdom.VirtualConsole();
 virtualConsole.sendTo(console);
@@ -47,7 +48,7 @@ virtualConsole.on('jsdomError', error => {
 });
 
 const fakeBrowser = (): {
-  browser: browserFake.Browser;
+  browser: BrowserFake;
   clock: sinon.SinonFakeTimers;
 } => {
   const clock = sinon.useFakeTimers({
@@ -65,13 +66,9 @@ const fakeBrowser = (): {
   global.window = window;
   global.AbortController = window.AbortController;
 
-  const browser = browserFake({ sinon });
+  const browser = browserFake();
   global.window._mochaTest = true;
   global.browser = browser;
-  global.browser.contextMenus.onShown = {
-    addListener: sinon.stub(),
-    removeListener: sinon.stub(),
-  };
   global.browser.runtime.getManifest.returns({
     version: '0.1',
   });
@@ -104,11 +101,17 @@ const nextTick = (): Promise<void> => {
   });
 };
 
+interface Helper {
+  createTmpTab: (options: TmpTabOptions) => Promise<Tab | undefined>;
+  resetHistory: () => void;
+}
+
 export interface WebExtension {
-  browser: browserFake.Browser;
+  browser: BrowserFake;
   background: TemporaryContainers;
   window: object;
   clock: sinon.SinonFakeTimers;
+  helper: Helper;
 }
 
 const loadBackground = async ({
@@ -121,7 +124,7 @@ const loadBackground = async ({
   beforeCtor?:
     | false
     | ((
-        browser: browserFake.Browser,
+        browser: BrowserFake,
         clock: sinon.SinonFakeTimers
       ) => Promise<void> | void);
 } = {}): Promise<WebExtension> => {
@@ -132,7 +135,7 @@ const loadBackground = async ({
   }
 
   const background = new TemporaryContainers();
-  window.tmp = background;
+  global.window.tmp = background;
 
   if (preferences) {
     Object.assign(background.preferences.defaults, preferences);
@@ -153,11 +156,25 @@ const loadBackground = async ({
     await background.initialize();
   }
 
+  const helper: Helper = {
+    async createTmpTab(options: TmpTabOptions): Promise<Tab | undefined> {
+      const tab = await background.container.createTabInTempContainer(options);
+      helper.resetHistory();
+      return tab;
+    },
+    resetHistory(): void {
+      browser.sinonSandbox.resetHistory();
+      background.eventlisteners.remove();
+      background.eventlisteners.register();
+    },
+  };
+
   return {
     browser,
     background,
     window,
     clock,
+    helper,
   };
 };
 

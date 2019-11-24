@@ -4,9 +4,11 @@ import {
   expect,
   nextTick,
   loadBackground,
+  WebExtension,
 } from './setup';
 import { Tab, RuntimeMessage } from '~/types';
 import { TemporaryContainers } from '~/background/tmp';
+import { BrowserFake } from 'webextensions-api-fake/dist';
 
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
@@ -201,21 +203,16 @@ preferencesTestSet.map(preferences => {
       }
 
       let tab: Tab | undefined;
-      let background: TemporaryContainers;
+      let webExtension: WebExtension;
       let fakeMessage: RuntimeMessage;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let browser: any;
       beforeEach(async () => {
-        const webExtension = await loadBackground({ preferences });
-        background = webExtension.background;
-        browser = webExtension.browser;
-        background.storage.local.preferences.isolation.global.mouseClick.middle.action =
+        webExtension = await loadBackground({ preferences });
+        webExtension.background.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'always';
 
-        tab = await background.container.createTabInTempContainer({
+        tab = await webExtension.helper.createTmpTab({
           url: 'https://notexample.com',
         });
-        sinon.resetHistory();
 
         // simulate click
         const fakeSender = {
@@ -232,9 +229,12 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        await background.runtime.onMessage(fakeMessage, fakeSender);
+        await webExtension.background.runtime.onMessage(
+          fakeMessage,
+          fakeSender
+        );
 
-        await browser.tabs._create({
+        await webExtension.browser.tabs._create({
           url: 'https://example.com',
           openerTabId: tab?.id,
           cookieStoreId: tab?.cookieStoreId,
@@ -242,15 +242,16 @@ preferencesTestSet.map(preferences => {
       });
 
       it('should open in a new temporary container', async () => {
-        browser.contextualIdentities.create.should.have.been.calledOnce;
-        browser.tabs.create.should.have.been.calledOnce;
-        browser.tabs.remove.should.have.been.calledOnce;
+        webExtension.browser.contextualIdentities.create.should.have.been
+          .calledOnce;
+        webExtension.browser.tabs.create.should.have.been.calledOnce;
+        webExtension.browser.tabs.remove.should.have.been.calledOnce;
       });
 
       describe('follow-up request', () => {
         beforeEach(async () => {
-          sinon.resetHistory();
-          await browser.tabs._create({
+          webExtension.helper.resetHistory();
+          await webExtension.browser.tabs._create({
             url: 'https://example.com',
             openerTabId: tab?.id,
             cookieStoreId: tab?.cookieStoreId,
@@ -258,8 +259,9 @@ preferencesTestSet.map(preferences => {
         });
 
         it('should not trigger reopening in temporary container', () => {
-          browser.contextualIdentities.create.should.not.have.been.called;
-          browser.tabs.create.should.not.have.been.called;
+          webExtension.browser.contextualIdentities.create.should.not.have.been
+            .called;
+          webExtension.browser.tabs.create.should.not.have.been.called;
         });
       });
     });

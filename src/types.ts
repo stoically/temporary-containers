@@ -29,6 +29,25 @@ export interface ContainerOptions {
   };
 }
 
+export interface CreateTabOptions {
+  cookieStoreId: CookieStoreId;
+  url?: string;
+  active?: boolean;
+  index?: number;
+  pinned?: boolean;
+  openerTabId?: number;
+}
+
+export interface TmpTabOptions {
+  tab?: Tab;
+  url?: string;
+  active?: boolean;
+  request?: false | browser.webRequest.WebRequestOnBeforeRequestDetails;
+  dontPin?: boolean;
+  deletesHistory?: boolean;
+  macConfirmPage?: boolean;
+}
+
 export type IsolationAction =
   | 'never'
   | 'notsamedomain'

@@ -1,4 +1,5 @@
 import jsdom from 'jsdom';
+import { BrowserFake } from 'webextensions-api-fake';
 
 declare global {
   interface GlobalWindow extends jsdom.DOMWindow {
@@ -10,7 +11,7 @@ declare global {
     interface Global {
       document: Document;
       window: GlobalWindow;
-      browser: any;
+      browser: BrowserFake;
       AbortController: any;
     }
   }

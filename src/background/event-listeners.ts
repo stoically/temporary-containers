@@ -20,7 +20,12 @@ export class EventListeners {
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
-    this.debug('[event-listeners] initializing');
+
+    this.register();
+  }
+
+  register(): void {
+    this.debug('[event-listeners] registering');
 
     browser.webRequest.onBeforeRequest.addListener(
       this.wrap(

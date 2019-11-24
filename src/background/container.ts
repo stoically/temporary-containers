@@ -13,16 +13,9 @@ import {
   Tab,
   Permissions,
   Debug,
+  TmpTabOptions,
+  CreateTabOptions,
 } from '~/types';
-
-interface TabOptions {
-  cookieStoreId: CookieStoreId;
-  url?: string;
-  active?: boolean;
-  index?: number;
-  pinned?: boolean;
-  openerTabId?: number;
-}
 
 export class Container {
   public noContainerTabs: {
@@ -71,15 +64,7 @@ export class Container {
     dontPin = true,
     deletesHistory = false,
     macConfirmPage = false,
-  }: {
-    tab?: Tab;
-    url?: string;
-    active?: boolean;
-    request?: false | browser.webRequest.WebRequestOnBeforeRequestDetails;
-    dontPin?: boolean;
-    deletesHistory?: boolean;
-    macConfirmPage?: boolean;
-  }): Promise<Tab | undefined> {
+  }: TmpTabOptions): Promise<Tab | undefined> {
     if (request && request.requestId) {
       // we saw that request already
       if (this.requestCreatedTab[request.requestId]) {
@@ -188,7 +173,7 @@ export class Container {
     contextualIdentity: browser.contextualIdentities.ContextualIdentity;
   }): Promise<Tab> {
     try {
-      const newTabOptions: TabOptions = {
+      const newTabOptions: CreateTabOptions = {
         cookieStoreId: contextualIdentity.cookieStoreId,
         url,
       };
