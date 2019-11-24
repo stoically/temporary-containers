@@ -4,6 +4,8 @@
 
 - If it works with a new profile, it might be an Add-on incompatibility or some unusual Firefox configuration, please include the full troubleshooting information in this case: Navigate to "about:support", click "Copy text to clipboard", paste the text into a new file called "support.txt" and attach the file to the issue
 
+- If the issue only happens after you configured Temporary Containers preferences, then please attach preferences file export (be aware that the list of Per Domain configurations is included in the export)
+
 - Bonus points if you provide a debug log: https://github.com/stoically/temporary-containers/wiki/Debug-Log
 
 - Limitation: If you're in a Private Window or "Firefox will: Never remember history" in the Firefox Preferences/Options under "Privacy & Security > History" is selected (known as Permanent Private Mode), then Temporary Containers will not work since Containers aren't available in Private Windows
