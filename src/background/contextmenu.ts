@@ -14,17 +14,14 @@ export class ContextMenu {
     this.background = background;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
 
     this.add();
   }
 
-  public async onClicked(
-    info: browser.menus.OnClickData,
-    tab: Tab
-  ): Promise<void> {
+  async onClicked(info: browser.menus.OnClickData, tab: Tab): Promise<void> {
     switch (info.menuItemId) {
       case 'open-link-in-new-temporary-container-tab':
         this.container.createTabInTempContainer({
@@ -74,7 +71,7 @@ export class ContextMenu {
     }
   }
 
-  public async onShown(info: { bookmarkId: string }): Promise<void> {
+  async onShown(info: { bookmarkId: string }): Promise<void> {
     if (!info.bookmarkId) {
       return;
     }
@@ -96,7 +93,7 @@ export class ContextMenu {
     this.toggleBookmarks(true);
   }
 
-  public async toggleBookmarks(visible: boolean): Promise<void> {
+  async toggleBookmarks(visible: boolean): Promise<void> {
     if (
       this.pref.contextMenuBookmarks &&
       this.background.permissions.bookmarks
@@ -122,7 +119,7 @@ export class ContextMenu {
     }
   }
 
-  public async add(): Promise<void> {
+  async add(): Promise<void> {
     if (this.pref.contextMenu) {
       browser.contextMenus.create({
         id: 'open-link-in-new-temporary-container-tab',
@@ -179,11 +176,11 @@ export class ContextMenu {
     }
   }
 
-  public remove(): Promise<void> {
+  remove(): Promise<void> {
     return browser.contextMenus.removeAll();
   }
 
-  public async windowsOnFocusChanged(windowId: WindowId): Promise<void> {
+  async windowsOnFocusChanged(windowId: WindowId): Promise<void> {
     if (windowId === browser.windows.WINDOW_ID_NONE) {
       return;
     }

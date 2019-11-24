@@ -28,7 +28,7 @@ export class Tabs {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.browseraction = this.background.browseraction;
@@ -41,7 +41,7 @@ export class Tabs {
 
   // onUpdated sometimes (often) fires before onCreated
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
-  public async onCreated(tab: Tab): Promise<void> {
+  async onCreated(tab: Tab): Promise<void> {
     this.debug('[onCreated] tab created', tab);
     this.containerMap.set(tab.id, tab.cookieStoreId);
     const reopened = await this.maybeReopenInTmpContainer(tab);
@@ -50,7 +50,7 @@ export class Tabs {
     }
   }
 
-  public async onUpdated(
+  async onUpdated(
     tabId: number,
     changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo,
     tab: Tab
@@ -68,7 +68,7 @@ export class Tabs {
     }
   }
 
-  public async onRemoved(tabId: number): Promise<void> {
+  async onRemoved(tabId: number): Promise<void> {
     this.debug('[onRemoved]', tabId);
 
     if (this.container.noContainerTabs[tabId]) {
@@ -90,7 +90,7 @@ export class Tabs {
     this.containerMap.delete(tabId);
   }
 
-  public async onActivated(
+  async onActivated(
     activeInfo: browser.tabs.onActivatedActiveInfo
   ): Promise<void> {
     this.debug('[onActivated]', activeInfo);
@@ -186,7 +186,7 @@ export class Tabs {
     }
   }
 
-  public maybeCloseRedirectorTab(
+  maybeCloseRedirectorTab(
     tab: Tab,
     changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo
   ): void {
@@ -205,7 +205,7 @@ export class Tabs {
     }
   }
 
-  public async maybeMoveTab(tab: Tab): Promise<void> {
+  async maybeMoveTab(tab: Tab): Promise<void> {
     if (
       !tab.active &&
       this.container.lastCreatedInactiveTab[
@@ -268,7 +268,7 @@ export class Tabs {
     this.creatingInSameContainer = false;
   }
 
-  public async remove(tab: Tab): Promise<void> {
+  async remove(tab: Tab): Promise<void> {
     try {
       // make sure we dont close the window by removing this tab
       // TODO implement actual queue for removal, race-condition (and with that window-closing) is possible

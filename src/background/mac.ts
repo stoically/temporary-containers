@@ -47,17 +47,17 @@ export class MultiAccountContainers {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
   }
 
-  public isConfirmPage(url: string): boolean {
+  isConfirmPage(url: string): boolean {
     return !!url.match(/moz-extension:\/\/[^/]*\/confirm-page.html\?url=/);
   }
 
-  public handleConfirmPage(tab: Tab): void {
+  handleConfirmPage(tab: Tab): void {
     if (tab && tab.id && this.container.tabCreatedAsMacConfirmPage[tab.id]) {
       this.debug(
         '[handleConfirmPage] we reopened a confirmpage in that tab already',
@@ -104,7 +104,7 @@ export class MultiAccountContainers {
     }
   }
 
-  public async maybeReopenConfirmPage(
+  async maybeReopenConfirmPage(
     macAssignment: MacAssignment,
     request: browser.webRequest.WebRequestOnBeforeRequestDetails,
     tab: Tab | undefined,
@@ -178,7 +178,7 @@ export class MultiAccountContainers {
     }
   }
 
-  public async _maybeReopenConfirmPage(
+  async _maybeReopenConfirmPage(
     {
       targetContainer,
       request,
@@ -241,7 +241,7 @@ export class MultiAccountContainers {
     return true;
   }
 
-  public async getAssignment(url: string): Promise<MacAssignment> {
+  async getAssignment(url: string): Promise<MacAssignment> {
     const assignment = await browser.runtime.sendMessage(
       '@testpilot-containers',
       {

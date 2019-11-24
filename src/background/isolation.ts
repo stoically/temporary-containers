@@ -29,7 +29,7 @@ export class Isolation {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.request = this.background.request;
@@ -39,7 +39,7 @@ export class Isolation {
     this.utils = this.background.utils;
   }
 
-  public async maybeIsolate({
+  async maybeIsolate({
     tab,
     request,
     openerTab,
@@ -192,7 +192,7 @@ export class Isolation {
     return { cancel: true };
   }
 
-  public async shouldIsolate({
+  async shouldIsolate({
     tab,
     request,
     openerTab,
@@ -240,7 +240,7 @@ export class Isolation {
     );
   }
 
-  public shouldIsolateMouseClick({
+  shouldIsolateMouseClick({
     request,
     tab,
     openerTab,
@@ -301,7 +301,7 @@ export class Isolation {
     return true;
   }
 
-  public async shouldIsolateNavigation({
+  async shouldIsolateNavigation({
     request,
     tab,
     openerTab,
@@ -424,7 +424,7 @@ export class Isolation {
     return false;
   }
 
-  public async shouldIsolateAlways({
+  async shouldIsolateAlways({
     request,
     tab,
     openerTab,
@@ -517,7 +517,7 @@ export class Isolation {
     return false;
   }
 
-  public shouldIsolateMac({
+  shouldIsolateMac({
     tab,
     macAssignment,
   }: {
@@ -547,7 +547,7 @@ export class Isolation {
     return false;
   }
 
-  public async checkIsolationPreferenceAgainstUrl(
+  async checkIsolationPreferenceAgainstUrl(
     preference: IsolationAction,
     origin: string,
     target: string
@@ -584,7 +584,7 @@ export class Isolation {
     return false;
   }
 
-  public matchDomainPattern(url: string, domainPattern: string): boolean {
+  matchDomainPattern(url: string, domainPattern: string): boolean {
     if (domainPattern.startsWith('/')) {
       const regexp = domainPattern.match(/^\/(.*)\/([gimsuy]+)?$/);
       if (!regexp) {

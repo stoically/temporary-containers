@@ -26,14 +26,14 @@ export class Statistics {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
     this.cleanup = this.background.cleanup;
   }
 
-  public async collect(
+  async collect(
     request: browser.webRequest.WebRequestOnCompletedDetails
   ): Promise<void> {
     if (!this.pref.statistics && !this.pref.deletesHistory.statistics) {
@@ -73,7 +73,7 @@ export class Statistics {
     }
   }
 
-  public async update(
+  async update(
     historyClearedCount: number,
     cookieStoreId: CookieStoreId
   ): Promise<void> {
@@ -128,7 +128,7 @@ export class Statistics {
     delete this.requests[cookieStoreId];
   }
 
-  public finish(): void {
+  finish(): void {
     if (this.removedContainerCount) {
       let notificationMessage = `Deleted Temporary Containers: ${this.removedContainerCount}`;
       if (this.removedContainerCookiesCount) {

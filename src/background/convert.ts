@@ -12,12 +12,12 @@ export class Convert {
     this.background = background;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.storage = this.background.storage;
     this.container = this.background.container;
   }
 
-  public async convertTempContainerToPermanent({
+  async convertTempContainerToPermanent({
     cookieStoreId,
     tabId,
     name,
@@ -35,7 +35,7 @@ export class Convert {
     await browser.tabs.reload(tabId);
   }
 
-  public async convertTempContainerToRegular({
+  async convertTempContainerToRegular({
     cookieStoreId,
     tabId,
   }: {
@@ -53,7 +53,7 @@ export class Convert {
     await browser.tabs.reload(tabId);
   }
 
-  public async convertPermanentToTempContainer({
+  async convertPermanentToTempContainer({
     cookieStoreId,
     tabId,
   }: {

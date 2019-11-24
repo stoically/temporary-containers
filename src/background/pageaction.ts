@@ -11,12 +11,12 @@ export class PageAction {
     this.background = background;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
   }
 
-  public async showOrHide(activatedTab?: Tab): Promise<void> {
+  async showOrHide(activatedTab?: Tab): Promise<void> {
     if (!activatedTab) {
       const [activeTab] = (await browser.tabs.query({
         currentWindow: true,

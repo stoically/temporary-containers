@@ -14,14 +14,14 @@ export class Migration {
 
   // migration-legacy
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public onInstalled: (...args: any) => void = () => {};
+  onInstalled: (...args: any) => void = () => {};
 
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
   }
 
-  public async migrate({
+  async migrate({
     preferences,
     previousVersion,
   }: {
@@ -152,7 +152,7 @@ export class Migration {
     await this.storage.persist();
   }
 
-  public updatedFromVersionEqualToOrLessThan(
+  updatedFromVersionEqualToOrLessThan(
     compareVersion: string,
     compareBetaVersion = ''
   ): boolean {

@@ -10,7 +10,7 @@ export class Utils {
     this.debug = background.debug;
   }
 
-  public sameDomain(origin: string, target: string): boolean {
+  sameDomain(origin: string, target: string): boolean {
     const parsedOrigin = psl.parse(origin);
     const parsedTarget = psl.parse(target);
     if (parsedOrigin.error || parsedTarget.error) {
@@ -19,7 +19,7 @@ export class Utils {
     return parsedOrigin.domain === parsedTarget.domain;
   }
 
-  public addMissingKeys({
+  addMissingKeys({
     defaults,
     source,
   }: {
@@ -49,11 +49,11 @@ export class Utils {
     return addedMissing;
   }
 
-  public clone(input: any): any {
+  clone(input: any): any {
     return JSON.parse(JSON.stringify(input));
   }
 
-  public globToRegexp(glob: string): RegExp {
+  globToRegexp(glob: string): RegExp {
     // --------------------------------------------------------------------------------
     // modified and simplified version of https://github.com/fitzgen/glob-to-regexp
     // version 0.4.0
@@ -113,7 +113,7 @@ export class Utils {
     return new RegExp('^' + reStr + '$', flags);
   }
 
-  public versionCompare(a: string, b: string): 1 | 0 | -1 {
+  versionCompare(a: string, b: string): 1 | 0 | -1 {
     // https://github.com/substack/semver-compare
     // https://github.com/substack/semver-compare/pull/4
 

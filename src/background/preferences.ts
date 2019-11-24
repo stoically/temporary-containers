@@ -103,14 +103,14 @@ export class Preferences {
     this.background = background;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.permissions = this.background.permissions;
     this.contextmenu = this.background.contextmenu;
     this.browseraction = this.background.browseraction;
     this.pageaction = this.background.pageaction;
   }
 
-  public async handleChanges({
+  async handleChanges({
     oldPreferences,
     newPreferences,
   }: {

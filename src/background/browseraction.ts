@@ -11,7 +11,7 @@ export class BrowserAction {
     this.background = background;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
 
@@ -26,27 +26,27 @@ export class BrowserAction {
     }
   }
 
-  public onClicked(): Promise<false | Tab | undefined> {
+  onClicked(): Promise<false | Tab | undefined> {
     return this.container.createTabInTempContainer({
       deletesHistory: this.pref.deletesHistory.automaticMode === 'automatic',
     });
   }
 
-  public setPopup(): void {
+  setPopup(): void {
     browser.browserAction.setPopup({
       popup: 'popup.html',
     });
     browser.browserAction.setTitle({ title: 'Temporary Containers' });
   }
 
-  public unsetPopup(): void {
+  unsetPopup(): void {
     browser.browserAction.setPopup({
       popup: null,
     });
     browser.browserAction.setTitle({ title: null });
   }
 
-  public setIcon(iconColor: ToolbarIconColor): void {
+  setIcon(iconColor: ToolbarIconColor): void {
     const iconPath = '../../icons';
     let iconColorFileName: string = iconColor;
     if (iconColor === 'default') {
@@ -61,7 +61,7 @@ export class BrowserAction {
     browser.browserAction.setIcon(icon);
   }
 
-  public addBadge(tabId: TabId): void {
+  addBadge(tabId: TabId): void {
     if (!this.pref.isolation.active) {
       return;
     }
@@ -80,7 +80,7 @@ export class BrowserAction {
     });
   }
 
-  public removeBadge(tabId: TabId): void {
+  removeBadge(tabId: TabId): void {
     if (!this.pref.isolation.active) {
       return;
     }
@@ -97,7 +97,7 @@ export class BrowserAction {
     });
   }
 
-  public async addIsolationInactiveBadge(): Promise<void> {
+  async addIsolationInactiveBadge(): Promise<void> {
     browser.browserAction.setBadgeBackgroundColor({
       color: 'red',
     });
@@ -119,7 +119,7 @@ export class BrowserAction {
     });
   }
 
-  public removeIsolationInactiveBadge(): void {
+  removeIsolationInactiveBadge(): void {
     browser.browserAction.setBadgeText({
       text: '',
     });

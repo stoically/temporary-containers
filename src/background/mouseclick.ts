@@ -33,13 +33,13 @@ export class MouseClick {
     this.isolated = {};
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.utils = this.background.utils;
     this.isolation = this.background.isolation;
   }
 
-  public linkClicked(
+  linkClicked(
     message: ClickMessage,
     sender: browser.runtime.MessageSender
   ): void {
@@ -162,7 +162,7 @@ export class MouseClick {
     return false;
   };
 
-  public checkClick(
+  checkClick(
     type: ClickType,
     message: ClickMessage,
     sender: browser.runtime.MessageSender
@@ -202,7 +202,7 @@ export class MouseClick {
     );
   }
 
-  public beforeHandleRequest(
+  beforeHandleRequest(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): void {
     if (!this.isolated[request.url]) {
@@ -215,7 +215,7 @@ export class MouseClick {
     this.isolated[request.url].abortController.abort();
   }
 
-  public afterHandleRequest(
+  afterHandleRequest(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): void {
     if (!this.isolated[request.url]) {

@@ -36,7 +36,7 @@ export class Storage {
     };
   }
 
-  public async initialize(): Promise<boolean> {
+  async initialize(): Promise<boolean> {
     this.local = (await browser.storage.local.get()) as StorageLocal;
 
     // empty storage *should* mean new install
@@ -84,7 +84,7 @@ export class Storage {
     return true;
   }
 
-  public async persist(): Promise<boolean> {
+  async persist(): Promise<boolean> {
     try {
       if (!this.local || !Object.keys(this.local).length) {
         this.debug('[persist] tried to persist corrupt storage', this.local);
@@ -102,7 +102,7 @@ export class Storage {
     }
   }
 
-  public async install(): Promise<boolean> {
+  async install(): Promise<boolean> {
     this.debug('[install] installing storage');
 
     this.local = this.background.utils.clone(this.defaults);

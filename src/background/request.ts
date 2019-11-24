@@ -55,7 +55,7 @@ export class Request {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.mouseclick = this.background.mouseclick;
@@ -66,7 +66,7 @@ export class Request {
     this.history = this.background.history;
   }
 
-  public async webRequestOnBeforeRequest(
+  async webRequestOnBeforeRequest(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
     this.debug('[webRequestOnBeforeRequest] incoming request', request);
@@ -120,7 +120,7 @@ export class Request {
     return;
   }
 
-  public async handleRequest(
+  async handleRequest(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
     if (request.tabId === -1) {
@@ -298,7 +298,7 @@ export class Request {
     return { cancel: true };
   }
 
-  public cancelRequest(
+  cancelRequest(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): boolean {
     if (
@@ -361,7 +361,7 @@ export class Request {
     }
   }
 
-  public shouldCancelRequest(
+  shouldCancelRequest(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): boolean {
     if (
@@ -384,7 +384,7 @@ export class Request {
     return false;
   }
 
-  public cleanupCanceled(
+  cleanupCanceled(
     request: browser.webRequest.WebRequestOnBeforeRequestDetails
   ): void {
     if (this.canceledTabs[request.tabId]) {
@@ -392,7 +392,7 @@ export class Request {
     }
   }
 
-  public async externalAddonHasPrecedence({
+  async externalAddonHasPrecedence({
     request,
     tab,
     openerTab,

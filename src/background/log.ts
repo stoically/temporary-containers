@@ -47,7 +47,7 @@ export class Log {
     }
   };
 
-  public checkLocalStorage(): void | Promise<void> {
+  checkLocalStorage(): void | Promise<void> {
     if (this.DEBUG) {
       return;
     }
@@ -72,7 +72,7 @@ export class Log {
     );
   }
 
-  public onInstalledListener(details: any): void {
+  onInstalledListener(details: any): void {
     browser.runtime.onInstalled.removeListener(this.onInstalledListener);
 
     if (!this.DEBUG && details.temporary) {

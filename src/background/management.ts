@@ -10,7 +10,7 @@ export class Management {
     this.debug = background.debug;
   }
 
-  public async initialize(): Promise<void> {
+  async initialize(): Promise<void> {
     try {
       const extensions = await browser.management.getAll();
       extensions.map(extension => {
@@ -26,7 +26,7 @@ export class Management {
     }
   }
 
-  public disable(extension: browser.management.ExtensionInfo): void {
+  disable(extension: browser.management.ExtensionInfo): void {
     const addon = this.addons.get(extension.id);
     if (addon) {
       addon.enabled = false;
@@ -34,7 +34,7 @@ export class Management {
     }
   }
 
-  public enable(extension: browser.management.ExtensionInfo): void {
+  enable(extension: browser.management.ExtensionInfo): void {
     const addon = this.addons.get(extension.id);
     if (addon && extension.enabled) {
       addon.enabled = true;

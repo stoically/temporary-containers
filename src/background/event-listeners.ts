@@ -164,7 +164,7 @@ export class EventListeners {
     );
   }
 
-  public wrap(
+  wrap(
     api: any,
     context: any,
     target: any,
@@ -193,9 +193,7 @@ export class EventListeners {
     return listener;
   }
 
-  public createTmpInitializedPromise(options: {
-    timeout: number;
-  }): Promise<void> {
+  createTmpInitializedPromise(options: { timeout: number }): Promise<void> {
     const abortController = new AbortController();
     const timeout = window.setTimeout(() => {
       abortController.abort();
@@ -217,7 +215,7 @@ export class EventListeners {
     });
   };
 
-  public remove(): void {
+  remove(): void {
     this.listeners.map(listener => {
       listener.api.removeListener(listener.listener);
     });

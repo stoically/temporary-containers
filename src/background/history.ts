@@ -12,14 +12,11 @@ export class History {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.storage = this.background.storage;
   }
 
-  public async maybeAddHistory(
-    tab: Tab | undefined,
-    url: string
-  ): Promise<void> {
+  async maybeAddHistory(tab: Tab | undefined, url: string): Promise<void> {
     if (!tab || url === 'about:blank' || url === 'about:newtab') {
       return;
     }
@@ -40,7 +37,7 @@ export class History {
     }
   }
 
-  public maybeClearHistory(cookieStoreId: CookieStoreId): number {
+  maybeClearHistory(cookieStoreId: CookieStoreId): number {
     let count = 0;
     const container = this.storage.local.tempContainers[cookieStoreId];
     if (container && container.deletesHistory && container.history) {

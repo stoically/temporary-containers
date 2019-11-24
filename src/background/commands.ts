@@ -18,7 +18,7 @@ export class Commands {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
@@ -27,7 +27,7 @@ export class Commands {
     this.pageaction = this.background.pageaction;
   }
 
-  public async onCommand(name: string): Promise<void> {
+  async onCommand(name: string): Promise<void> {
     switch (name) {
       case 'new_temporary_container_tab':
         if (!this.pref.keyboardShortcuts.AltC) {

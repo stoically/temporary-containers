@@ -15,13 +15,13 @@ export class Cookies {
     this.debug = background.debug;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.isolation = this.background.isolation;
   }
 
-  public async maybeSetAndAddToHeader(
+  async maybeSetAndAddToHeader(
     request: browser.webRequest.WebRequestOnBeforeSendHeadersDetails
   ): Promise<void | browser.webRequest.WebRequestOnBeforeSendHeadersDetails> {
     if (request.tabId < 0 || !Object.keys(this.pref.cookies.domain).length) {

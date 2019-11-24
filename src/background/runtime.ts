@@ -32,7 +32,7 @@ export class Runtime {
     this.storage = background.storage;
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.preferences = this.background.preferences;
     this.container = this.background.container;
@@ -45,7 +45,7 @@ export class Runtime {
     this.utils = this.background.utils;
   }
 
-  public async onMessage(
+  async onMessage(
     message: RuntimeMessage,
     sender: browser.runtime.MessageSender
   ): Promise<void | boolean | Tab | 'pong'> {
@@ -163,7 +163,7 @@ export class Runtime {
     }
   }
 
-  public async onMessageExternal(
+  async onMessageExternal(
     message: {
       method: string;
       url?: string;
@@ -193,7 +193,7 @@ export class Runtime {
     }
   }
 
-  public async onStartup(): Promise<void> {
+  async onStartup(): Promise<void> {
     this.cleanup.cleanup(true);
 
     if (this.pref.container.numberMode === 'keepuntilrestart') {

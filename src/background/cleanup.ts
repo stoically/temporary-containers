@@ -29,7 +29,7 @@ export class Cleanup {
     }, 600000);
   }
 
-  public initialize(): void {
+  initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.container = this.background.container;
@@ -38,7 +38,7 @@ export class Cleanup {
     this.permissions = this.background.permissions;
   }
 
-  public async addToRemoveQueue(
+  async addToRemoveQueue(
     cookieStoreId: CookieStoreId,
     skipDelay = false
   ): Promise<void> {
@@ -87,7 +87,7 @@ export class Cleanup {
       });
   }
 
-  public async tryToRemove(cookieStoreId: CookieStoreId): Promise<boolean> {
+  async tryToRemove(cookieStoreId: CookieStoreId): Promise<boolean> {
     try {
       const tempTabs = await browser.tabs.query({
         cookieStoreId,
@@ -118,7 +118,7 @@ export class Cleanup {
     return true;
   }
 
-  public async removeContainer(cookieStoreId: CookieStoreId): Promise<boolean> {
+  async removeContainer(cookieStoreId: CookieStoreId): Promise<boolean> {
     try {
       const contextualIdentity = await browser.contextualIdentities.remove(
         cookieStoreId
@@ -143,7 +143,7 @@ export class Cleanup {
     }
   }
 
-  public async cleanup(skipDelay = false): Promise<void> {
+  async cleanup(skipDelay = false): Promise<void> {
     const containers = this.container.getAllIds();
     if (!containers.length) {
       this.debug('[cleanup] canceling, no containers at all');
@@ -161,7 +161,7 @@ export class Cleanup {
     );
   }
 
-  public async onlySessionRestoreOrNoTabs(): Promise<boolean> {
+  async onlySessionRestoreOrNoTabs(): Promise<boolean> {
     // don't do a cleanup if there are no tabs or a sessionrestore tab
     try {
       const tabs = await browser.tabs.query({});
@@ -177,7 +177,7 @@ export class Cleanup {
     return false;
   }
 
-  public maybeShowNotification(message: string): void {
+  maybeShowNotification(message: string): void {
     if (!this.pref.notifications || !this.permissions.notifications) {
       return;
     }

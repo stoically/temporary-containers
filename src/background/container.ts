@@ -49,14 +49,14 @@ export class Container {
     this.debug = background.debug;
   }
 
-  public async initialize(): Promise<void> {
+  async initialize(): Promise<void> {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
   }
 
-  public async createTabInTempContainer({
+  async createTabInTempContainer({
     tab,
     url,
     active,
@@ -100,7 +100,7 @@ export class Container {
     });
   }
 
-  public async createTempContainer({
+  async createTempContainer({
     url,
     request,
     deletesHistory,
@@ -157,7 +157,7 @@ export class Container {
     }
   }
 
-  public async createTab({
+  async createTab({
     url,
     tab,
     active,
@@ -258,7 +258,7 @@ export class Container {
     }
   }
 
-  public async reloadTabInTempContainer({
+  async reloadTabInTempContainer({
     tab,
     url,
     active,
@@ -291,7 +291,7 @@ export class Container {
     return newTab;
   }
 
-  public generateContainerNameIconColor(url?: string): ContainerOptions {
+  generateContainerNameIconColor(url?: string): ContainerOptions {
     let tempContainerNumber = 0;
     if (this.pref.container.numberMode.startsWith('keep')) {
       this.storage.local.tempContainerCounter++;
@@ -355,7 +355,7 @@ export class Container {
     };
   }
 
-  public isPermanent(cookieStoreId: CookieStoreId): boolean {
+  isPermanent(cookieStoreId: CookieStoreId): boolean {
     if (
       cookieStoreId !== `${this.background.containerPrefix}-default` &&
       !this.storage.local.tempContainers[cookieStoreId]
@@ -365,24 +365,21 @@ export class Container {
     return false;
   }
 
-  public isTemporary(
-    cookieStoreId: CookieStoreId,
-    type?: 'deletesHistory'
-  ): boolean {
+  isTemporary(cookieStoreId: CookieStoreId, type?: 'deletesHistory'): boolean {
     return !!(
       this.storage.local.tempContainers[cookieStoreId] &&
       (!type || this.storage.local.tempContainers[cookieStoreId][type])
     );
   }
 
-  public isClean(cookieStoreId: CookieStoreId): boolean {
+  isClean(cookieStoreId: CookieStoreId): boolean {
     return (
       this.storage.local.tempContainers[cookieStoreId] &&
       this.storage.local.tempContainers[cookieStoreId].clean
     );
   }
 
-  public markUnclean(tabId: TabId): void {
+  markUnclean(tabId: TabId): void {
     const cookieStoreId = this.tabs.containerMap.get(tabId);
     if (cookieStoreId && this.isClean(cookieStoreId)) {
       this.debug(
@@ -393,7 +390,7 @@ export class Container {
     }
   }
 
-  public getReusedContainerNumber(): number {
+  getReusedContainerNumber(): number {
     const tempContainersNumbers = this.storage.local.tempContainersNumbers.sort();
     if (!tempContainersNumbers.length) {
       return 1;
@@ -408,7 +405,7 @@ export class Container {
     }
   }
 
-  public getAvailableContainerColors(): ContainerColor[] {
+  getAvailableContainerColors(): ContainerColor[] {
     // even out colors
     let availableColors = [];
     const containersOptions = Object.values(this.storage.local.tempContainers);
@@ -450,7 +447,7 @@ export class Container {
     return availableColors;
   }
 
-  public removeFromStorage(cookieStoreId: CookieStoreId): Promise<boolean> {
+  removeFromStorage(cookieStoreId: CookieStoreId): Promise<boolean> {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
       containerNumber =>
         this.storage.local.tempContainers[cookieStoreId].number !==
@@ -460,25 +457,25 @@ export class Container {
     return this.storage.persist();
   }
 
-  public getType(cookieStoreId: CookieStoreId): string {
+  getType(cookieStoreId: CookieStoreId): string {
     return this.storage.local.tempContainers[cookieStoreId].deletesHistory
       ? 'deletesHistory'
       : 'regular';
   }
 
-  public getRemovalDelay(cookieStoreId: CookieStoreId): number {
+  getRemovalDelay(cookieStoreId: CookieStoreId): number {
     return this.getType(cookieStoreId) === 'deletesHistory'
       ? this.pref.deletesHistory.containerRemoval
       : this.pref.container.removal;
   }
 
-  public cleanupNumbers(): void {
+  cleanupNumbers(): void {
     this.storage.local.tempContainersNumbers = Object.values(
       this.storage.local.tempContainers
     ).map(container => container.number);
   }
 
-  public cleanupNumber(cookieStoreId: CookieStoreId): void {
+  cleanupNumber(cookieStoreId: CookieStoreId): void {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
       containerNumber =>
         this.storage.local.tempContainers[cookieStoreId].number !==
@@ -486,7 +483,7 @@ export class Container {
     );
   }
 
-  public getAllIds(): CookieStoreId[] {
+  getAllIds(): CookieStoreId[] {
     return Object.keys(this.storage.local.tempContainers);
   }
 }

@@ -57,7 +57,7 @@ export class TemporaryContainers {
   public permissions!: Permissions;
   public pref!: PreferencesSchema;
 
-  public async initialize(): Promise<TemporaryContainers> {
+  async initialize(): Promise<TemporaryContainers> {
     if (this.initialized) {
       throw new Error('already initialized');
     }
