@@ -14,10 +14,11 @@ document.body.addEventListener(
     // sometimes websites change links on click
     // so we wait for the next tick and with that increase
     // the chance that we actually see the correct link
-    await new Promise(setTimeout);
+    await new Promise(resolve => setTimeout(resolve));
 
     // check for a element with href
-    const aElement = event.target.closest('a');
+    const target = event?.target as HTMLElement | null;
+    const aElement = target?.closest('a');
     if (!aElement || typeof aElement !== 'object' || !aElement.href) {
       return;
     }
