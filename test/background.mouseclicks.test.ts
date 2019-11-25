@@ -19,7 +19,7 @@ preferencesTestSet.map(preferences => {
             },
           },
         };
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         await background.runtime.onMessage(fakeMessage, fakeSender);
         expect(background.mouseclick.isolated[fakeMessage.payload.href]).to
           .exist;
@@ -42,7 +42,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'notsamedomain';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -67,7 +67,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'notsamedomain';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -92,7 +92,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'notsamedomainexact';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -117,7 +117,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'notsamedomainexact';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -142,7 +142,7 @@ preferencesTestSet.map(preferences => {
             },
           },
         };
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         await background.runtime.onMessage(fakeMessage, fakeSender);
         expect(background.mouseclick.isolated[fakeMessage.payload.href]).not.to
           .be.undefined;
@@ -165,7 +165,7 @@ preferencesTestSet.map(preferences => {
             },
           },
         };
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         await background.runtime.onMessage(fakeMessage, fakeSender);
         expect(background.mouseclick.isolated[fakeMessage.payload.href]).not.to
           .be.undefined;
@@ -189,7 +189,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
           'notsamedomain';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -215,7 +215,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
           'notsamedomain';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -241,7 +241,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
           'notsamedomainexact';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -267,7 +267,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
           'notsamedomainexact';
         await background.runtime.onMessage(fakeMessage, fakeSender);
@@ -294,7 +294,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.domain = [
           {
             pattern: 'example.com',
@@ -327,7 +327,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.domain = [
           {
             pattern: 'example.com',
@@ -360,7 +360,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.domain = [
           {
             pattern: 'example.com',
@@ -393,7 +393,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.domain = [
           {
             pattern: 'example.com',
@@ -426,7 +426,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.domain = [
           {
             pattern: 'example.com',
@@ -459,7 +459,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'never';
         background.storage.local.preferences.isolation.domain = [
@@ -494,7 +494,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'never';
         background.storage.local.preferences.isolation.domain = [
@@ -529,7 +529,7 @@ preferencesTestSet.map(preferences => {
           },
         };
 
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         background.storage.local.preferences.isolation.domain = [
           {
             pattern: '*.example.com',

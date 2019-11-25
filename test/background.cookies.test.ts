@@ -5,7 +5,9 @@ preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('Set Cookies', () => {
       it.only('should set the cookie and add it to the header if allowed', async () => {
-        const { background, browser } = await loadBackground({ preferences });
+        const { tmp: background, browser } = await loadBackground({
+          preferences,
+        });
 
         const cookie: Cookie = {
           domain: 'domain',
@@ -56,7 +58,7 @@ preferencesTestSet.map(preferences => {
       });
 
       it('should set the cookie and not add it to the header if not allowed', async () => {
-        const { background, browser } = await loadBackground(preferences);
+        const { tmp: background, browser } = await loadBackground(preferences);
         await helper.browser.openNewTmpTab({
           createsContainer: 'firefox-tmp1',
         });

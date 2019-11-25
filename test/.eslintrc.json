@@ -2,5 +2,8 @@
   "env": {
     "browser": false,
     "mocha": true
+  },
+  "rules": {
+    "no-restricted-globals": ["error", "browser"]
   }
 }

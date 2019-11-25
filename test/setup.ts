@@ -38,7 +38,7 @@ import sinonChai from 'sinon-chai';
 import browserFake, { BrowserFake } from 'webextensions-api-fake';
 import jsdom from 'jsdom';
 import { TemporaryContainers } from '~/background/tmp';
-import { TmpTabOptions, Tab } from '~/types';
+import { Helper } from './helper';
 
 const virtualConsole = new jsdom.VirtualConsole();
 virtualConsole.sendTo(console);
@@ -101,14 +101,9 @@ const nextTick = (): Promise<void> => {
   });
 };
 
-interface Helper {
-  createTmpTab: (options: TmpTabOptions) => Promise<Tab | undefined>;
-  resetHistory: () => void;
-}
-
-export interface WebExtension {
+export interface Background {
   browser: BrowserFake;
-  background: TemporaryContainers;
+  tmp: TemporaryContainers;
   window: object;
   clock: sinon.SinonFakeTimers;
   helper: Helper;
@@ -127,7 +122,7 @@ const loadBackground = async ({
         browser: BrowserFake,
         clock: sinon.SinonFakeTimers
       ) => Promise<void> | void);
-} = {}): Promise<WebExtension> => {
+} = {}): Promise<Background> => {
   const { browser, clock } = fakeBrowser();
 
   if (beforeCtor) {
@@ -156,30 +151,20 @@ const loadBackground = async ({
     await background.initialize();
   }
 
-  const helper: Helper = {
-    async createTmpTab(options: TmpTabOptions): Promise<Tab | undefined> {
-      const tab = await background.container.createTabInTempContainer(options);
-      helper.resetHistory();
-      return tab;
-    },
-    resetHistory(): void {
-      browser.sinonSandbox.resetHistory();
-      background.eventlisteners.remove();
-      background.eventlisteners.register();
-    },
-  };
-
   return {
     browser,
-    background,
+    tmp: background,
     window,
     clock,
-    helper,
+    helper: new Helper(browser, background),
   };
 };
 
-afterEach(function() {
-  sinon.resetHistory();
-});
-
-export { preferencesTestSet, sinon, expect, nextTick, loadBackground };
+export {
+  preferencesTestSet,
+  sinon,
+  expect,
+  nextTick,
+  loadBackground,
+  BrowserFake,
+};

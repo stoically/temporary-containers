@@ -4,16 +4,14 @@ import {
   expect,
   nextTick,
   loadBackground,
-  WebExtension,
+  Background,
 } from './setup';
-import { Tab, RuntimeMessage } from '~/types';
-import { TemporaryContainers } from '~/background/tmp';
-import { BrowserFake } from 'webextensions-api-fake/dist';
+import { Tab } from '~/types';
 
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     it('should register event listeners', async () => {
-      const { browser, background } = await loadBackground({
+      const { browser, tmp: background } = await loadBackground({
         initialize: false,
         preferences,
       });
@@ -62,7 +60,7 @@ preferencesTestSet.map(preferences => {
     });
 
     it('should have registered a container cleanup interval', async () => {
-      const { background, clock } = await loadBackground({
+      const { tmp: background, clock } = await loadBackground({
         initialize: false,
         preferences,
       });
@@ -74,7 +72,7 @@ preferencesTestSet.map(preferences => {
 
     describe('should catch early requests', () => {
       it('wait for tmp to initialize, blocking the request until initialize', async () => {
-        const { background, browser } = await loadBackground({
+        const { tmp: background, browser } = await loadBackground({
           initialize: false,
           preferences,
         });
@@ -90,7 +88,7 @@ preferencesTestSet.map(preferences => {
       });
 
       it('wait for tmp to initialize, blocking the request until timeout and dont block the next requests anymore', async () => {
-        const { background, browser } = await loadBackground({
+        const { tmp: background, browser } = await loadBackground({
           initialize: false,
           preferences,
         });
@@ -172,14 +170,15 @@ preferencesTestSet.map(preferences => {
       if (!preferences.automaticMode.active) {
         return;
       }
+      let bg: Background;
       beforeEach(async () => {
-        const { browser } = await loadBackground({ preferences });
-        await browser.tabs._create({ url: 'https://example.com' });
+        bg = await loadBackground({ preferences });
+        await bg.browser.tabs._create({ url: 'https://example.com' });
       });
 
       it('should reopen the Tab in temporary container', async () => {
-        browser.contextualIdentities.create.should.have.been.calledOnce;
-        browser.tabs.create.should.have.been.calledOnce;
+        bg.browser.contextualIdentities.create.should.have.been.calledOnce;
+        bg.browser.tabs.create.should.have.been.calledOnce;
       });
     });
 
@@ -203,36 +202,18 @@ preferencesTestSet.map(preferences => {
       }
 
       let tab: Tab | undefined;
-      let webExtension: WebExtension;
-      let fakeMessage: RuntimeMessage;
+      let webExtension: Background;
       beforeEach(async () => {
         webExtension = await loadBackground({ preferences });
-        webExtension.background.storage.local.preferences.isolation.global.mouseClick.middle.action =
+        webExtension.tmp.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'always';
 
-        tab = await webExtension.helper.createTmpTab({
+        tab = (await webExtension.helper.createTmpTab({
           url: 'https://notexample.com',
-        });
+        })) as Tab;
 
-        // simulate click
-        const fakeSender = {
-          tab,
-        };
-        fakeMessage = {
-          method: 'linkClicked',
-          payload: {
-            href: 'https://example.com',
-            event: {
-              button: 1,
-              ctrlKey: false,
-            },
-          },
-        };
-
-        await webExtension.background.runtime.onMessage(
-          fakeMessage,
-          fakeSender
-        );
+        const url = 'https://example.com';
+        await webExtension.helper.clickLink(url, tab);
 
         await webExtension.browser.tabs._create({
           url: 'https://example.com',
@@ -268,40 +249,31 @@ preferencesTestSet.map(preferences => {
 
     describe('state for clicked links', async () => {
       it('should be cleaned up', async () => {
-        const { background, browser, clock } = await loadBackground({
+        const bg = await loadBackground({
           preferences,
         });
-        background.storage.local.preferences.isolation.global.mouseClick.middle.action =
+        bg.tmp.storage.local.preferences.isolation.global.mouseClick.middle.action =
           'always';
 
-        const tab = (await browser.tabs._create({
+        const tab = (await bg.browser.tabs._create({
           url: 'https://notexample.com',
         })) as Tab;
 
-        const fakeSender = { tab };
-        const fakeMessage = {
-          method: 'linkClicked',
-          payload: {
-            href: 'https://example.com',
-            event: {
-              button: 1,
-              ctrlKey: false,
-            },
-          },
-        };
-        await background.runtime.onMessage(fakeMessage, fakeSender);
-        expect(background.mouseclick.isolated[fakeMessage.payload.href]).to
-          .exist;
+        const url = 'https://example.com';
+        await bg.helper.clickLink(url, tab);
+        expect(bg.tmp.mouseclick.isolated[url]).to.exist;
 
-        clock.tick(1500);
+        bg.clock.tick(1500);
         await new Promise(process.nextTick);
-        expect(background.mouseclick.isolated).to.deep.equal({});
+        expect(bg.tmp.mouseclick.isolated).to.deep.equal({});
       });
     });
 
     describe('runtime.onMessage savePreferences', () => {
       it('should save the given preferences to storage.local', async () => {
-        const { background, browser } = await loadBackground({ preferences });
+        const { tmp: background, browser } = await loadBackground({
+          preferences,
+        });
         const fakeMessage = {
           method: 'savePreferences',
           payload: {
@@ -334,7 +306,9 @@ preferencesTestSet.map(preferences => {
 
       describe('New No Container Tab', () => {
         it('should open a new no container tab', async () => {
-          const { background, browser } = await loadBackground({ preferences });
+          const { tmp: background, browser } = await loadBackground({
+            preferences,
+          });
           background.storage.local.preferences.keyboardShortcuts.AltN = true;
           browser.commands.onCommand.addListener.yield('new_no_container_tab');
           await nextTick();
@@ -346,7 +320,9 @@ preferencesTestSet.map(preferences => {
 
       describe('New No Container Window Tab', () => {
         it('should open a new no container window', async () => {
-          const { background, browser } = await loadBackground({ preferences });
+          const { tmp: background, browser } = await loadBackground({
+            preferences,
+          });
           background.storage.local.preferences.keyboardShortcuts.AltShiftC = true;
           browser.commands.onCommand.addListener.yield(
             'new_no_container_window_tab'
@@ -360,7 +336,9 @@ preferencesTestSet.map(preferences => {
 
       describe('New Deletes History Container Tab', () => {
         it('should open a new deletes history container tab', async () => {
-          const { background, browser } = await loadBackground({ preferences });
+          const { tmp: background, browser } = await loadBackground({
+            preferences,
+          });
           background.permissions.history = true;
           browser.commands.onCommand.addListener.yield('new_no_history_tab');
           await nextTick();
@@ -373,7 +351,9 @@ preferencesTestSet.map(preferences => {
 
       describe('New Same Container Tab', () => {
         it('should open a new same container tab', async () => {
-          const { background, browser } = await loadBackground({ preferences });
+          const { tmp: background, browser } = await loadBackground({
+            preferences,
+          });
           background.storage.local.preferences.keyboardShortcuts.AltX = true;
           const container = await browser.contextualIdentities.create({});
           await browser.tabs._create({
@@ -399,7 +379,9 @@ preferencesTestSet.map(preferences => {
       }
 
       it('should work when multiple tabs are opened', async () => {
-        const { background, browser } = await loadBackground({ preferences });
+        const { tmp: background, browser } = await loadBackground({
+          preferences,
+        });
         background.storage.local.preferences.container.numberMode = 'reuse';
         const tabPromises = [];
         for (let i = 0; i < 5; i++) {

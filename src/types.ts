@@ -232,11 +232,21 @@ export interface MacAssignment {
   neverAsk: boolean;
 }
 
+export type OnBeforeRequestResult =
+  | undefined
+  | boolean
+  | { clean?: boolean; cancel?: boolean };
+
 export type ClickType = 'middle' | 'left' | 'ctrlleft';
+export interface ClickEvent {
+  button: number;
+  ctrlKey: boolean;
+  metaKey: boolean;
+}
 
 export interface ClickMessage {
   href: string;
-  event: { button: number; ctrlKey: boolean; metaKey: boolean };
+  event: ClickEvent;
 }
 
 export interface RuntimeMessage {

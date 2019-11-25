@@ -7,12 +7,7 @@ import { delay } from './lib';
 import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { PreferencesSchema, Tab, Debug } from '~/types';
-
-type OnBeforeRequestResult =
-  | undefined
-  | boolean
-  | { clean?: boolean; cancel?: boolean };
+import { PreferencesSchema, Tab, Debug, OnBeforeRequestResult } from '~/types';
 
 export class Request {
   public lastSeenRequestUrl: {

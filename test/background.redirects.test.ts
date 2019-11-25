@@ -2,27 +2,28 @@ import {
   expect,
   preferencesTestSet,
   loadBackground,
-  helper,
   nextTick,
+  Background,
 } from './setup';
 
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('addons that do redirects in automatic mode', () => {
-      let background;
+      if (!preferences.automaticMode.active) {
+        return;
+      }
+
+      let bg: Background;
       beforeEach(async () => {
-        background = await loadBackground(preferences);
+        bg = await loadBackground({ preferences });
       });
 
       describe('https everywhere', () => {
         it('should not open two tabs if redirects happen', async () => {
-          if (!preferences.automaticMode.active) {
-            return;
-          }
           // we get a http request, cancel it and create a new tab with id 2 (the http version)
           // but https everywhere saw it and redirects the request instantly
           // we see the new request, cancel that and create a new tab 3 (the https version)
-          helper.browser.request({
+          bg.helper.request({
             requestId: 1,
             tabId: 1,
             createsTabId: 2,
@@ -30,7 +31,7 @@ preferencesTestSet.map(preferences => {
             url: 'http://example.com',
           });
 
-          await helper.browser.request({
+          await bg.helper.request({
             requestId: 1,
             tabId: 1,
             createsTabId: 3,
@@ -38,20 +39,20 @@ preferencesTestSet.map(preferences => {
             url: 'https://example.com',
           });
           await nextTick();
-          browser.tabs.remove.should.have.been.calledOnce;
-          browser.tabs.remove.should.have.been.calledWith(1);
-          browser.tabs.create.should.have.been.calledOnce;
+          bg.browser.tabs.remove.should.have.been.calledOnce;
+          bg.browser.tabs.remove.should.have.been.calledWith(1);
+          bg.browser.tabs.create.should.have.been.calledOnce;
         });
 
         describe('opening new tmptab and left clicking link with global always setting', () => {
           beforeEach(async () => {
-            background.storage.local.preferences.isolation.global.mouseClick.left.action =
+            bg.tmp.storage.local.preferences.isolation.global.mouseClick.left.action =
               'always';
-            await helper.browser.openNewTmpTab({
+            await bg.helper.openNewTmpTab({
               tabId: 1,
               createsTabId: 2,
             });
-            await helper.browser.mouseClickOnLink({
+            await bg.helper.mouseClickOnLink({
               senderUrl: 'http://example.com',
               targetUrl: 'http://notexample.com',
             });
@@ -59,7 +60,7 @@ preferencesTestSet.map(preferences => {
           });
 
           it('should not keep loading the link in the same tab if redirects happen', async () => {
-            const initialClickRequestPromise = helper.browser.request({
+            const initialClickRequestPromise = bg.helper.request({
               requestId: 1,
               tabId: 1,
               createsTabId: 2,
@@ -67,7 +68,7 @@ preferencesTestSet.map(preferences => {
               url: 'http://notexample.com',
             });
 
-            const redirectRequest = await helper.browser.request({
+            const redirectRequest = await bg.helper.request({
               requestId: 1,
               tabId: 1,
               createsTabId: 3,
@@ -77,16 +78,16 @@ preferencesTestSet.map(preferences => {
             });
             await nextTick();
             expect(redirectRequest).to.deep.equal({ cancel: true });
-            browser.contextualIdentities.create.should.have.been.calledOnce;
-            browser.tabs.create.should.have.been.calledOnce;
-            browser.tabs.remove.should.not.have.been.called;
+            bg.browser.contextualIdentities.create.should.have.been.calledOnce;
+            bg.browser.tabs.create.should.have.been.calledOnce;
+            bg.browser.tabs.remove.should.not.have.been.called;
 
             const initialClickRequest = await initialClickRequestPromise;
             expect(initialClickRequest).to.deep.equal({ cancel: true });
           });
 
           it('should not keep loading the link in the same tab if redirects happen even when in temporary container', async () => {
-            const initialClickRequestPromise = helper.browser.request({
+            const initialClickRequestPromise = bg.helper.request({
               requestId: 1,
               tabId: 1,
               originContainer: 'firefox-tmp123',
@@ -95,7 +96,7 @@ preferencesTestSet.map(preferences => {
               url: 'http://notexample.com',
             });
 
-            const redirectRequest = await helper.browser.request({
+            const redirectRequest = await bg.helper.request({
               requestId: 1,
               tabId: 1,
               originContainer: 'firefox-tmp123',
@@ -106,9 +107,9 @@ preferencesTestSet.map(preferences => {
             });
             await nextTick();
             expect(redirectRequest).to.deep.equal({ cancel: true });
-            browser.contextualIdentities.create.should.have.been.calledOnce;
-            browser.tabs.create.should.have.been.calledOnce;
-            browser.tabs.remove.should.not.have.been.called;
+            bg.browser.contextualIdentities.create.should.have.been.calledOnce;
+            bg.browser.tabs.create.should.have.been.calledOnce;
+            bg.browser.tabs.remove.should.not.have.been.called;
 
             const initialClickRequest = await initialClickRequestPromise;
             expect(initialClickRequest).to.deep.equal({ cancel: true });
@@ -119,13 +120,13 @@ preferencesTestSet.map(preferences => {
       describe('link cleaner', () => {
         describe('opening new tmptab and left clicking link with global always setting', () => {
           beforeEach(async () => {
-            background.storage.local.preferences.isolation.global.mouseClick.left.action =
+            bg.tmp.storage.local.preferences.isolation.global.mouseClick.left.action =
               'always';
-            await helper.browser.openNewTmpTab({
+            await bg.helper.openNewTmpTab({
               tabId: 1,
               createsTabId: 2,
             });
-            await helper.browser.mouseClickOnLink({
+            await bg.helper.mouseClickOnLink({
               senderUrl: 'http://example.com',
               targetUrl: 'http://notexample.com',
             });
@@ -133,7 +134,7 @@ preferencesTestSet.map(preferences => {
           });
 
           it('should not keep loading the link in the same tab if redirects happen', async () => {
-            const initialClickRequestPromise = helper.browser.request({
+            const initialClickRequestPromise = bg.helper.request({
               requestId: 1,
               tabId: 1,
               originContainer: 'firefox-tmp123',
@@ -142,7 +143,7 @@ preferencesTestSet.map(preferences => {
               url: 'http://notexample.com',
             });
 
-            const redirectRequest = await helper.browser.request({
+            const redirectRequest = await bg.helper.request({
               requestId: 1,
               tabId: 1,
               originContainer: 'firefox-tmp123',
@@ -153,9 +154,9 @@ preferencesTestSet.map(preferences => {
             });
             await nextTick();
             expect(redirectRequest).to.deep.equal({ cancel: true });
-            browser.contextualIdentities.create.should.have.been.calledOnce;
-            browser.tabs.create.should.have.been.calledOnce;
-            browser.tabs.remove.should.not.have.been.called;
+            bg.browser.contextualIdentities.create.should.have.been.calledOnce;
+            bg.browser.tabs.create.should.have.been.calledOnce;
+            bg.browser.tabs.remove.should.not.have.been.called;
 
             const initialClickRequest = await initialClickRequestPromise;
             expect(initialClickRequest).to.deep.equal({ cancel: true });
@@ -165,20 +166,20 @@ preferencesTestSet.map(preferences => {
     });
 
     describe('native firefox redirects with global left click always setting', () => {
-      let background;
+      let bg: Background;
       beforeEach(async () => {
-        background = await loadBackground(preferences);
+        bg = await loadBackground({ preferences });
       });
 
       describe('opening new tmptab and left clicking link with global always setting', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.isolation.global.mouseClick.left.action =
+          bg.tmp.storage.local.preferences.isolation.global.mouseClick.left.action =
             'always';
-          await helper.browser.openNewTmpTab({
+          await bg.helper.openNewTmpTab({
             tabId: 1,
             createsTabId: 2,
           });
-          await helper.browser.mouseClickOnLink({
+          await bg.helper.mouseClickOnLink({
             senderUrl: 'http://example.com',
             targetUrl: 'https://notexample.com',
           });
@@ -188,7 +189,7 @@ preferencesTestSet.map(preferences => {
         it('should not open two tabs even when requestId changes midflight', async () => {
           // https://bugzilla.mozilla.org/show_bug.cgi?id=1437748
 
-          const request1 = helper.browser.request({
+          const request1 = bg.helper.request({
             requestId: 1,
             tabId: 1,
             originContainer: 'firefox-default',
@@ -198,7 +199,7 @@ preferencesTestSet.map(preferences => {
             resetHistory: true,
           });
 
-          const request2 = helper.browser.request({
+          const request2 = bg.helper.request({
             requestId: 1,
             tabId: 1,
             originContainer: 'firefox-default',
@@ -207,7 +208,7 @@ preferencesTestSet.map(preferences => {
             url: 'https://www.notexample.com',
           });
 
-          const request3 = helper.browser.request({
+          const request3 = bg.helper.request({
             requestId: 2,
             tabId: 1,
             originContainer: 'firefox-default',
@@ -217,9 +218,9 @@ preferencesTestSet.map(preferences => {
           });
 
           await nextTick();
-          browser.tabs.create.should.have.been.calledOnce;
-          browser.contextualIdentities.create.should.have.been.calledOnce;
-          browser.tabs.remove.should.not.have.been.called;
+          bg.browser.tabs.create.should.have.been.calledOnce;
+          bg.browser.contextualIdentities.create.should.have.been.calledOnce;
+          bg.browser.tabs.remove.should.not.have.been.called;
           expect(await request1).to.deep.equal({ cancel: true });
           expect(await request2).to.deep.equal({ cancel: true });
           expect(await request3).to.deep.equal({ cancel: true });
@@ -228,20 +229,20 @@ preferencesTestSet.map(preferences => {
     });
 
     describe('native firefox redirects with global left click never setting', () => {
-      let background;
+      let bg: Background;
       beforeEach(async () => {
-        background = await loadBackground(preferences);
+        bg = await loadBackground({ preferences });
       });
 
       describe('opening new tmptab and left clicking link', () => {
         beforeEach(async () => {
-          background.storage.local.preferences.isolation.global.mouseClick.left.action =
+          bg.tmp.storage.local.preferences.isolation.global.mouseClick.left.action =
             'never';
-          await helper.browser.openNewTmpTab({
+          await bg.helper.openNewTmpTab({
             tabId: 1,
             createsTabId: 2,
           });
-          await helper.browser.mouseClickOnLink({
+          await bg.helper.mouseClickOnLink({
             senderUrl: 'http://example.com',
             targetUrl: 'http://notexample.com',
           });
@@ -249,7 +250,7 @@ preferencesTestSet.map(preferences => {
         });
 
         it('should not cancel the requests and redirects', async () => {
-          const request1 = await helper.browser.request({
+          const request1 = await bg.helper.request({
             requestId: 1,
             tabId: 1,
             originContainer: 'firefox-tmp123',
@@ -257,14 +258,14 @@ preferencesTestSet.map(preferences => {
             resetHistory: true,
           });
 
-          const request2 = await helper.browser.request({
+          const request2 = await bg.helper.request({
             requestId: 1,
             tabId: 1,
             originContainer: 'firefox-tmp123',
             url: 'https://notexample.com',
           });
 
-          const request3 = await helper.browser.request({
+          const request3 = await bg.helper.request({
             requestId: 1,
             tabId: 1,
             originContainer: 'firefox-tmp123',
@@ -274,9 +275,10 @@ preferencesTestSet.map(preferences => {
           expect(request1).to.be.undefined;
           expect(request2).to.be.undefined;
           expect(request3).to.be.undefined;
-          browser.tabs.create.should.not.have.been.calledOnce;
-          browser.contextualIdentities.create.should.not.have.been.calledOnce;
-          browser.tabs.remove.should.not.have.been.called;
+          bg.browser.tabs.create.should.not.have.been.calledOnce;
+          bg.browser.contextualIdentities.create.should.not.have.been
+            .calledOnce;
+          bg.browser.tabs.remove.should.not.have.been.called;
         });
       });
     });
