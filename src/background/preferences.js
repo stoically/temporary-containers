@@ -115,6 +115,7 @@ class Preferences {
       this.pageaction.showOrHide();
     }
     if (oldPreferences.isolation.active !== newPreferences.isolation.active) {
+      this.pageaction.showOrHide();
       if (newPreferences.isolation.active) {
         this.browseraction.removeIsolationInactiveBadge();
       } else {
