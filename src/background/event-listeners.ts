@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TemporaryContainers } from './tmp';
 import { Debug } from '~/types';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // to have persistent listeners we need to register them early+sync
 // and wait for tmp to fully initialize before handling events
 export class EventListeners {

@@ -10,7 +10,7 @@ addons:
 
 script:
   - if [[ $TRAVIS_TAG == *"beta"* ]]; then
-    npm run build:sign;
+    npm run build:beta;
     else
     unset WEB_EXT_API_KEY;
     unset WEB_EXT_API_SECRET;

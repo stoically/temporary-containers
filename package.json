@@ -5,18 +5,21 @@
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "clean": "rimraf web-ext-artifacts .web-ext-artifacts .cache dist",
-    "build": "npm run lint && npm run test && npm run test:functional && npm run build:parcel && npm run build:contentscript && npm run build:cp && npm run build:webext && npm run lint:addon && ncu",
+    "build": "npm-run-all build:core build:webext lint:addon check:dependencies",
+    "build:core": "npm-run-all lint test test:functional build:parcel build:contentscript build:cp",
     "build:parcel": "npm run clean && parcel build src/background.ts src/*.html --no-minify --no-source-maps",
     "build:contentscript": "tsc -p tsconfig.build.json",
-    "build:sign": "ts-node build-sign.ts && npm run lint && npm run test && npm run test:functional && npm run build:parcel && npm run build:contentscript && npm run build:cp && npm run build:webext:sign && git checkout -- src/manifest.json && ncu",
     "build:webext": "web-ext build -s dist",
-    "build:webext:sign": "web-ext sign --channel unlisted -s dist",
     "build:cp": "copyfiles README.md LICENSE dist",
+    "build:beta": "npm-run-all build:beta:sign build:core build:beta:webext build:beta:checkout",
+    "build:beta:sign": "ts-node build-sign.ts",
+    "build:beta:checkout": "git checkout -- src/manifest.json",
+    "build:beta:webext": "web-ext sign --channel unlisted -s dist",
     "lint": "npm run lint:eslint && tsc",
     "lint:eslint": "eslint *.js src/**/*.{ts,js,vue} test/**/*.ts",
     "lint:addon": "addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "format": "prettier --write '{*,src/**/*,test/**/*}.{html,css,json,yml,md}'",
-    "test": "npm run build:parcel && nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json --reporter=progress test/*.test.ts",
+    "test": "nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json --reporter=progress test/*.test.ts",
     "test:watch": "ts-mocha --paths -p tsconfig.json test/*.test.ts -b --reporter=progress --watch",
     "test:watch:verbose": "ts-mocha --paths -p tsconfig.json test/*.test.ts -b --reporter=spec --tmp-debug --watch",
     "test:functional": "npm run build:parcel && ts-mocha ./test/functional/*.test.ts --timeout 10000",
@@ -37,7 +40,7 @@
     "delay": "4.3.0",
     "p-queue": "6.2.1",
     "psl": "1.4.0",
-    "vue": "^2.6.10"
+    "vue": "2.6.10"
   },
   "peerDependencies": {
     "jquery": "3.4.1",
@@ -65,8 +68,8 @@
     "@types/sinon": "^7.5.1",
     "@types/sinon-chai": "^3.2.3",
     "@types/sinon-chrome": "^2.2.6",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "@typescript-eslint/parser": "^2.8.0",
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
     "@vue/component-compiler-utils": "^3.0.2",
     "addons-linter": "^1.17.0",
     "babel-eslint": "^10.0.3",
@@ -74,7 +77,7 @@
     "chai-deep-match": "^1.2.1",
     "copyfiles": "^2.1.1",
     "coveralls": "^3.0.8",
-    "eslint": "^6.7.0",
+    "eslint": "^6.7.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-vue": "^6.0.1",
@@ -84,6 +87,7 @@
     "lint-staged": "^10.0.0-1",
     "mocha": "^6.2.2",
     "npm-check-updates": "^3.2.2",
+    "npm-run-all": "^4.1.5",
     "nyc": "^14.1.1",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-html-externals": "^0.1.2",
@@ -154,7 +158,6 @@
   "private": true,
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
-    "check-coverage": true,
     "exclude": [
       "test/**/*.ts"
     ]
