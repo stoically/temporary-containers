@@ -9,6 +9,7 @@ class Commands {
     this.container = this.background.container;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
+    this.pageaction = this.background.pageaction;
   }
 
   async onCommand(name) {
@@ -107,6 +108,7 @@ class Commands {
         } else {
           this.background.browseraction.addIsolationInactiveBadge();
         }
+        this.pageaction.showOrHide();
         break;
     }
   }

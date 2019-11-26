@@ -18,7 +18,9 @@ class PageAction {
     }
 
     let color;
-    if (
+    if (!this.pref.isolation.active) {
+      color = 'warning-red';
+    } else if (
       activatedTab.cookieStoreId ===
       `${this.background.containerPrefix}-default`
     ) {
