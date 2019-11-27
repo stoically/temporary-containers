@@ -123,7 +123,9 @@ export default mixins(mixin).extend({
     });
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    $.fn.form.settings.rules!.domainPattern = (value: string): boolean => {
+    $(document).form.settings.rules!.domainPattern = (
+      value: string
+    ): boolean => {
       if (this.editing) {
         this.reset();
         return true;
