@@ -40,14 +40,14 @@
     "delay": "4.3.0",
     "p-queue": "6.2.1",
     "psl": "1.4.0",
-    "vue": "2.6.10"
+    "vue": "2.6.10",
+    "vuedraggable": "2.23.2"
   },
   "peerDependencies": {
     "jquery": "3.4.1",
     "jquery-address": "1.6.0",
     "semantic-ui": "2.4.2",
-    "sortablejs": "1.10.1",
-    "vuedraggable": "2.23.2"
+    "sortablejs": "1.10.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",

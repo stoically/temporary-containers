@@ -268,15 +268,15 @@ export { default } from './perdomain.ts';
                     : undefined
                 "
                 data-position="right center"
-                :style="isolationDomains.length > 1 ? 'cursor: pointer' : ''"
+                :style="isolationDomains.length > 1 ? 'cursor: grab' : ''"
               >
                 <i
                   v-if="isolationDomains.length > 1"
                   class="hand rock icon"
                   style="color: #2185d0; margin-left: 3px; opacity: 0.8"
                 />
-                {{ isolatedDomain.pattern }}
               </span>
+              {{ isolatedDomain.pattern }}
             </div>
           </draggable>
         </div>

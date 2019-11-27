@@ -1,7 +1,8 @@
+import Draggable from 'vuedraggable';
+import mixins from 'vue-typed-mixins';
 import DomainPattern from '../domainpattern.vue';
 import Settings from './settings.vue';
 import { App } from '~/ui/root';
-import mixins from 'vue-typed-mixins';
 import { mixin } from '~/ui/mixin';
 import { IsolationDomain } from '~/types';
 
@@ -37,6 +38,7 @@ export default mixins(mixin).extend({
   components: {
     DomainPattern,
     Settings,
+    Draggable,
   },
   props: {
     app: {
@@ -59,17 +61,22 @@ export default mixins(mixin).extend({
     };
   },
   computed: {
-    isolationDomains(): UIIsolationDomain[] {
-      return this.preferences.isolation.domain.reduce(
-        (accumulator: UIIsolationDomain[], isolated, index) => {
-          if (!isolated.pattern.includes(this.isolationDomainFilter)) {
+    isolationDomains: {
+      get(): UIIsolationDomain[] {
+        return this.preferences.isolation.domain.reduce(
+          (accumulator: UIIsolationDomain[], isolated, index) => {
+            if (!isolated.pattern.includes(this.isolationDomainFilter)) {
+              return accumulator;
+            }
+            accumulator.push({ ...isolated, _index: index });
             return accumulator;
-          }
-          accumulator.push({ ...isolated, _index: index });
-          return accumulator;
-        },
-        []
-      );
+          },
+          []
+        );
+      },
+      set(): void {
+        // suppress warning about missing setter
+      },
     },
   },
   watch: {
