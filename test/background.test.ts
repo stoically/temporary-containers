@@ -382,6 +382,7 @@ preferencesTestSet.map(preferences => {
         const { tmp: background, browser } = await loadBackground({
           preferences,
         });
+        background.storage.local.preferences.container.removal = 0;
         background.storage.local.preferences.container.numberMode = 'reuse';
         const tabPromises = [];
         for (let i = 0; i < 5; i++) {
@@ -401,8 +402,6 @@ preferencesTestSet.map(preferences => {
         }
 
         await browser.tabs.remove(tabs[0].id);
-        await background.cleanup.cleanup(true);
-        await new Promise(process.nextTick);
         await browser.tabs._create({ url: 'about:newtab' });
         (
           await browser.contextualIdentities.get(

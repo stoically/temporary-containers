@@ -6,11 +6,12 @@ import { History } from './history';
 import { delay } from './lib';
 import { MultiAccountContainers } from './mac';
 import { PageAction } from './pageaction';
-import { PreferencesSchema, Tab, Debug } from '~/types';
+import { PreferencesSchema, Tab, Debug, CookieStoreId, TabId } from '~/types';
 
 export class Tabs {
   public creatingInSameContainer = false;
   public containerMap = new Map();
+  public containerTabs: Map<CookieStoreId, Set<TabId>> = new Map();
 
   private background: TemporaryContainers;
   private debug: Debug;
@@ -21,7 +22,6 @@ export class Tabs {
   private mac!: MultiAccountContainers;
   private history!: History;
   private cleanup!: Cleanup;
-  private tabs!: Tabs;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
@@ -36,14 +36,24 @@ export class Tabs {
     this.mac = this.background.mac;
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
-    this.tabs = this.background.tabs;
   }
 
   // onUpdated sometimes (often) fires before onCreated
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
   async onCreated(tab: Tab): Promise<void> {
     this.debug('[onCreated] tab created', tab);
-    this.containerMap.set(tab.id, tab.cookieStoreId);
+
+    if (this.container.isTemporary(tab.cookieStoreId)) {
+      this.containerMap.set(tab.id, tab.cookieStoreId);
+
+      const containerTabs = this.containerTabs.get(tab.cookieStoreId);
+      if (containerTabs) {
+        containerTabs.add(tab.id);
+      } else {
+        this.containerTabs.set(tab.cookieStoreId, new Set([tab.id]));
+      }
+    }
+
     const reopened = await this.maybeReopenInTmpContainer(tab);
     if (!reopened) {
       this.maybeMoveTab(tab);
@@ -78,13 +88,21 @@ export class Tabs {
       delete this.container.tabCreatedAsMacConfirmPage[tabId];
     }
 
-    const cookieStoreId = this.containerMap.get(tabId);
-    if (cookieStoreId && this.container.isTemporary(cookieStoreId)) {
+    const tmpCookieStoreId = this.containerMap.get(tabId);
+    if (tmpCookieStoreId) {
+      const containerTabs = this.containerTabs.get(tmpCookieStoreId);
+      if (containerTabs) {
+        containerTabs.delete(tabId);
+        if (!containerTabs.size) {
+          this.containerTabs.delete(tmpCookieStoreId);
+        }
+      }
+
       this.debug(
         '[onRemoved] queuing container removal because of tab removal',
         tabId
       );
-      delay(2000).then(() => this.cleanup.addToRemoveQueue(cookieStoreId));
+      this.cleanup.addToRemoveQueue(tmpCookieStoreId);
     }
 
     this.containerMap.delete(tabId);
@@ -199,7 +217,7 @@ export class Tabs {
       if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
         delay(this.pref.closeRedirectorTabs.delay).then(async () => {
           this.debug('[onUpdated] removing redirector tab', changeInfo, tab);
-          this.tabs.remove(tab);
+          this.remove(tab);
         });
       }
     }
@@ -270,30 +288,9 @@ export class Tabs {
 
   async remove(tab: Tab): Promise<void> {
     try {
-      // make sure we dont close the window by removing this tab
-      // TODO implement actual queue for removal, race-condition (and with that window-closing) is possible
-      const tabs = await browser.tabs.query({
-        windowId: browser.windows.WINDOW_ID_CURRENT,
-      });
-      if (tabs.length > 1) {
-        try {
-          await browser.tabs.remove(tab.id);
-          this.debug('[removeTab] removed old tab', tab.id);
-        } catch (error) {
-          this.debug('[removeTab] error while removing old tab', tab, error);
-        }
-      } else {
-        this.debug(
-          '[removeTab] queuing removal of tab to prevent closing of window',
-          tab,
-          tabs
-        );
-        delay(500).then(() => {
-          this.remove(tab);
-        });
-      }
+      await browser.tabs.remove(tab.id);
     } catch (error) {
-      this.debug('[removeTab] couldnt query tabs', tab, error);
+      this.debug('[remove] couldnt remove tab', error, tab);
     }
   }
 }
