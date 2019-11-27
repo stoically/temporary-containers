@@ -2,9 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "noEmit": false,
-    "strict": false,
-    "noImplicitUseStrict": true
+    "noEmit": false
   },
   "include": ["src/contentscript.ts"]
 }

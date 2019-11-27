@@ -24,7 +24,7 @@
     "test:watch:verbose": "ts-mocha --paths -p tsconfig.json test/*.test.ts -b --reporter=spec --tmp-debug --watch",
     "test:functional": "npm run build:parcel && ts-mocha ./test/functional/*.test.ts --timeout 10000",
     "check:dependencies": "ncu",
-    "watch": "rimraf dist && parcel src/background.ts src/*.html --hmr-hostname=localhost"
+    "watch": "rimraf dist && npm run build:contentscript && parcel src/background.ts src/*.html --hmr-hostname=localhost"
   },
   "repository": {
     "type": "git",
@@ -120,10 +120,7 @@
     ],
     "watcherGlob": "**",
     "excludeGlob": [
-      "background.ts",
-      "background",
-      "background/**",
-      "*.html",
+      "**/*.ts",
       "ui",
       "ui/**",
       ".*"
