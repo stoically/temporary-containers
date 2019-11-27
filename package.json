@@ -76,7 +76,7 @@
     "chai": "^4.2.0",
     "chai-deep-match": "^1.2.1",
     "copyfiles": "^2.1.1",
-    "coveralls": "^3.0.8",
+    "coveralls": "^3.0.9",
     "eslint": "^6.7.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.1",
@@ -104,7 +104,7 @@
     "vue-template-compiler": "^2.6.10",
     "vue-typed-mixins": "^0.2.0",
     "web-ext": "^3.2.1",
-    "webextensions-api-fake": "^1.0.1",
+    "webextensions-api-fake": "^1.0.3",
     "webextensions-geckodriver": "^0.6.1"
   },
   "browserslist": [
