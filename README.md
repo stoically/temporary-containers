@@ -9,26 +9,25 @@ Detailed information about the Add-on [can be found on AMO](https://addons.mozil
 - Clone the repository
 - `npm install`
 - `npm run watch`
+  - When doing UI dev and Parcel HMR is needed then set `security.csp.enable` to `false` in `about:config` and change back to `true` when you're done
 
 ### Run in Firefox
 
-- `npm install -g web-ext`
-- `web-ext run -s dist`
-  - starts the default system Firefox, loads the Add-on and watches for changes
-  - append `-p profilename` to start Firefox with a different profile
+- `npx web-ext run -s dist`
+  - starts the default system Firefox with a temporary profile, loads the Add-on and watches for changes
+  - append `-p profilename` to start Firefox with a specific profile
 
 or
 
 - Open `about:debugging` and `Load Temporary Add-on` which is located in the `dist` directory
 
-Check `about:debugging` and click `Debug` under Temporary Container to see the console.
+Check `about:debugging` and click `Inspect` to the right of Temporary Containers to see the console.
 
 ### Run the tests
 
 - Once: `npm test`
   - Shows a coverage summary and generates a detailed report in the `coverage` directory
 - Watcher: `npm run test:watch`
-  - Set `security.csp.enable` to `false` in `about:config` if you want working parcel hmr for UI dev and change back to `true` when you're done
 
 ### Release
 
