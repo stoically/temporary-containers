@@ -8,7 +8,7 @@
 ## Building
 
 - `npm install`
-- `npm run build:parcel && npm run build:cp`
+- `npm run build:contentscript && build:parcel && npm run build:cp`
 
 Build result is located in the `dist` directory.
 
@@ -18,7 +18,7 @@ Build result is located in the `dist` directory.
 
   - dist/background/lib.js
     - delay: https://github.com/sindresorhus/delay/blob/v4.3.0/index.js
-    - PQueue: https://github.com/sindresorhus/p-queue/tree/v6.2.0/source
+    - PQueue: https://github.com/sindresorhus/p-queue/tree/v6.2.1/source
     - psl: https://github.com/lupomontero/psl/blob/v1.4.0/dist/psl.js
 
 - Preferences UI
@@ -47,10 +47,10 @@ Build result is located in the `dist` directory.
 
   - VueJS
 
-    - dist/vendor/vue/vue.runtime.min.js
-    - https://github.com/vuejs/vue/blob/v2.6.10/dist/vue.runtime.min.js
+    - node_modules/vue
+    - https://github.com/vuejs/vue/tree/v2.6.10
 
   - Vue.Draggable
 
-    - dist/vendor/vue/vuedraggable.umd.min.js
-    - https://github.com/SortableJS/Vue.Draggable/blob/v2.23.2/dist/vuedraggable.umd.min.js
+    - node_modules/vuedraggable
+    - https://github.com/SortableJS/Vue.Draggable/tree/v2.23.2
