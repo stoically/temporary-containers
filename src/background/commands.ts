@@ -3,6 +3,7 @@ import { Container } from './container';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
 import { PreferencesSchema, Tab, Permissions, Debug } from '~/types';
+import { PageAction } from './pageaction';
 
 export class Commands {
   private background: TemporaryContainers;
@@ -12,6 +13,7 @@ export class Commands {
   private container!: Container;
   private permissions!: Permissions;
   private tabs!: Tabs;
+  private pageaction!: PageAction;
 
   constructor(background: TemporaryContainers) {
     this.background = background;

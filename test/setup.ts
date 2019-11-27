@@ -140,13 +140,6 @@ const loadBackground = async ({
     background.log.DEBUG = true;
   }
 
-  // // eslint-disable-next-line require-atomic-updates
-  // background.storage.local.preferences.isolation.global.mouseClick.middle.action =
-  //   'always';
-  // // eslint-disable-next-line require-atomic-updates
-  // background.storage.local.preferences.isolation.global.mouseClick.ctrlleft.action =
-  //   'always';
-
   if (initialize) {
     await background.initialize();
   }

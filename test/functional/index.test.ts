@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import path from 'path';
 const expect = require('chai').expect;
 import webExtensionsGeckoDriver from 'webextensions-geckodriver';
@@ -9,14 +10,14 @@ const manifestPath = path.resolve(
 );
 
 describe('Temporary Containers', () => {
-  let helper;
-  let geckodriver;
+  let helper: any;
+  let geckodriver: any;
 
   before(async () => {
     const webExtension = await webExtensionsGeckoDriver(manifestPath);
     geckodriver = webExtension.geckodriver;
     helper = {
-      toolbarButton() {
+      toolbarButton(): any {
         return geckodriver.wait(
           until.elementLocated(
             By.id('_c607c8df-14a7-4f28-894f-29e8722976af_-browser-action')

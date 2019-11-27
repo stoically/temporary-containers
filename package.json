@@ -19,7 +19,7 @@
     "lint:eslint": "eslint *.js src/**/*.{ts,js,vue} test/**/*.ts",
     "lint:addon": "addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "format": "prettier --write '{*,src/**/*,test/**/*}.{html,css,json,yml,md}'",
-    "test": "nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json --reporter=progress test/*.test.ts",
+    "test": "nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json -b --reporter=progress test/*.test.ts",
     "test:watch": "ts-mocha --paths -p tsconfig.json test/*.test.ts -b --reporter=progress --watch",
     "test:watch:verbose": "ts-mocha --paths -p tsconfig.json test/*.test.ts -b --reporter=spec --tmp-debug --watch",
     "test:functional": "npm run build:parcel && ts-mocha ./test/functional/*.test.ts --timeout 10000",

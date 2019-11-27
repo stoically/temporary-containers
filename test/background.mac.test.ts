@@ -2,8 +2,8 @@ import {
   expect,
   preferencesTestSet,
   loadBackground,
-  helper,
   nextTick,
+  Background,
 } from './setup';
 
 preferencesTestSet.map(preferences => {
@@ -12,13 +12,14 @@ preferencesTestSet.map(preferences => {
       [false, true].map(macWasFaster => {
         ['first', 'last', 'firstrace', 'lastrace'].map(confirmPage => {
           describe(`variant: macWasFaster ${macWasFaster} / confirmPage ${confirmPage}`, () => {
+            let bg: Background;
             beforeEach(async () => {
-              global.background = await loadBackground(preferences);
+              bg = await loadBackground({ preferences });
             });
 
             describe('opening new tmptab', () => {
               beforeEach(async () => {
-                await helper.browser.openNewTmpTab({
+                await bg.helper.openNewTmpTab({
                   tabId: 1,
                   createsTabId: 2,
                   createsContainer: 'firefox-tmp1',
@@ -32,7 +33,7 @@ preferencesTestSet.map(preferences => {
                   originContainer = 'firefox-default';
                 }
                 beforeEach(async () => {
-                  browser.runtime.sendMessage.resolves({
+                  bg.browser.runtime.sendMessage.resolves({
                     userContextId: '1',
                     neverAsk: false,
                   });
@@ -52,30 +53,27 @@ preferencesTestSet.map(preferences => {
                     macWasFaster,
                     resetHistory: true,
                   };
-                  const promises = [];
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const promises: any[] = [];
                   switch (confirmPage) {
                     case 'first':
-                      await helper.browser.openMacConfirmPage(
-                        confirmPageOptions
-                      );
-                      await helper.browser.request(request);
+                      await bg.helper.openMacConfirmPage(confirmPageOptions);
+                      await bg.helper.request(request);
                       break;
                     case 'last':
-                      await helper.browser.request(request);
-                      await helper.browser.openMacConfirmPage(
-                        confirmPageOptions
-                      );
+                      await bg.helper.request(request);
+                      await bg.helper.openMacConfirmPage(confirmPageOptions);
                       break;
                     case 'firstrace':
                       promises.push(
-                        helper.browser.openMacConfirmPage(confirmPageOptions)
+                        bg.helper.openMacConfirmPage(confirmPageOptions)
                       );
-                      promises.push(helper.browser.request(request));
+                      promises.push(bg.helper.request(request));
                       break;
                     case 'lastrace':
-                      promises.push(helper.browser.request(request));
+                      promises.push(bg.helper.request(request));
                       promises.push(
-                        helper.browser.openMacConfirmPage(confirmPageOptions)
+                        bg.helper.openMacConfirmPage(confirmPageOptions)
                       );
                       break;
                   }
@@ -86,22 +84,23 @@ preferencesTestSet.map(preferences => {
                 it('should sometimes reopen the confirm page once', async () => {
                   // TODO in fact, reopen *should never* be triggered since the tmpcontainer is clean
                   // but if it gets reopened, then it should be reopened at most once
-                  if (browser.tabs.create.callCount) {
-                    browser.tabs.create.should.have.been.calledOnce;
+                  if (bg.browser.tabs.create.callCount) {
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   } else {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   }
-                  if (browser.tabs.remove.callCount) {
-                    browser.tabs.remove.should.have.been.calledOnce;
+                  if (bg.browser.tabs.remove.callCount) {
+                    bg.browser.tabs.remove.should.have.been.calledOnce;
                   } else {
-                    browser.tabs.remove.should.not.have.been.called;
+                    bg.browser.tabs.remove.should.not.have.been.called;
                   }
                 });
 
                 describe('follow up requests', () => {
                   ['current', 'target'].map(macConfirmChoice => {
                     describe(`variant: macConfirmChoice ${macConfirmChoice}`, () => {
-                      let results;
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      let results: any[];
                       beforeEach(async () => {
                         let tabId, originContainer;
                         switch (macConfirmChoice) {
@@ -113,7 +112,7 @@ preferencesTestSet.map(preferences => {
                             tabId = 4;
                             originContainer = 'firefox-container-1';
                         }
-                        const request1 = helper.browser.request({
+                        const request1 = bg.helper.request({
                           requestId: 2,
                           tabId,
                           originContainer,
@@ -121,14 +120,14 @@ preferencesTestSet.map(preferences => {
                           resetHistory: true,
                         });
 
-                        const request2 = helper.browser.request({
+                        const request2 = bg.helper.request({
                           requestId: 2,
                           tabId,
                           originContainer,
                           url: 'https://example.com',
                         });
 
-                        const request3 = helper.browser.request({
+                        const request3 = bg.helper.request({
                           requestId: 3,
                           tabId,
                           originContainer,
@@ -150,8 +149,8 @@ preferencesTestSet.map(preferences => {
                       });
 
                       it('should not trigger reopening', async () => {
-                        browser.tabs.create.should.not.have.been.called;
-                        browser.tabs.remove.should.not.have.been.called;
+                        bg.browser.tabs.create.should.not.have.been.called;
+                        bg.browser.tabs.remove.should.not.have.been.called;
                       });
                     });
                   });
@@ -163,7 +162,7 @@ preferencesTestSet.map(preferences => {
               describe('and opening a mac assigned website with not "remember my choice"', () => {
                 const originContainer = 'firefox-container-1';
                 beforeEach(async () => {
-                  browser.runtime.sendMessage.resolves({
+                  bg.browser.runtime.sendMessage.resolves({
                     userContextId: '2',
                     neverAsk: false,
                   });
@@ -183,30 +182,27 @@ preferencesTestSet.map(preferences => {
                     macWasFaster,
                     resetHistory: true,
                   };
-                  const promises = [];
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const promises: any[] = [];
                   switch (confirmPage) {
                     case 'first':
-                      await helper.browser.openMacConfirmPage(
-                        confirmPageOptions
-                      );
-                      await helper.browser.request(request);
+                      await bg.helper.openMacConfirmPage(confirmPageOptions);
+                      await bg.helper.request(request);
                       break;
                     case 'last':
-                      await helper.browser.request(request);
-                      await helper.browser.openMacConfirmPage(
-                        confirmPageOptions
-                      );
+                      await bg.helper.request(request);
+                      await bg.helper.openMacConfirmPage(confirmPageOptions);
                       break;
                     case 'firstrace':
                       promises.push(
-                        helper.browser.openMacConfirmPage(confirmPageOptions)
+                        bg.helper.openMacConfirmPage(confirmPageOptions)
                       );
-                      promises.push(helper.browser.request(request));
+                      promises.push(bg.helper.request(request));
                       break;
                     case 'lastrace':
-                      promises.push(helper.browser.request(request));
+                      promises.push(bg.helper.request(request));
                       promises.push(
-                        helper.browser.openMacConfirmPage(confirmPageOptions)
+                        bg.helper.openMacConfirmPage(confirmPageOptions)
                       );
                       break;
                   }
@@ -215,15 +211,15 @@ preferencesTestSet.map(preferences => {
                 });
 
                 it('should not reopen the confirm page', async () => {
-                  browser.tabs.create.should.not.have.been.called;
-                  browser.tabs.remove.should.not.have.been.called;
+                  bg.browser.tabs.create.should.not.have.been.called;
+                  bg.browser.tabs.remove.should.not.have.been.called;
                 });
               });
             });
 
             describe('opening new tmptab', () => {
               beforeEach(async () => {
-                await helper.browser.openNewTmpTab({
+                await bg.helper.openNewTmpTab({
                   tabId: 1,
                   createsTabId: 2,
                   createsContainer: 'firefox-tmp1',
@@ -234,7 +230,7 @@ preferencesTestSet.map(preferences => {
               describe('and opening a not mac assigned website', () => {
                 const newTmpTabId = 2;
                 beforeEach(async () => {
-                  await helper.browser.request({
+                  await bg.helper.request({
                     requestId: 1,
                     tabId: newTmpTabId,
                     originContainer: 'firefox-tmp1',
@@ -243,7 +239,12 @@ preferencesTestSet.map(preferences => {
                   });
                 });
 
-                [
+                const clickPreferences: Array<{
+                  click: {
+                    type: 'middle' | 'left' | 'ctrlleft';
+                    action: 'always' | 'never';
+                  };
+                }> = [
                   {
                     click: {
                       type: 'middle',
@@ -280,37 +281,28 @@ preferencesTestSet.map(preferences => {
                       action: 'always',
                     },
                   },
-                ].map(preferences => {
+                ];
+                clickPreferences.map(preferences => {
                   describe(`preferences: ${JSON.stringify(
                     preferences
                   )}`, () => {
                     describe('clicks on links in the loaded website that are mac assigned with not "remember my choice"', () => {
                       beforeEach(async () => {
-                        background.storage.local.preferences.isolation.global.mouseClick[
+                        bg.tmp.storage.local.preferences.isolation.global.mouseClick[
                           preferences.click.type
                         ].action = preferences.click.action;
-                        let tabId;
-                        switch (preferences.click.action) {
-                          case 'middle':
-                          case 'ctrlleft':
-                            tabId = newTmpTabId + 1;
-                            break;
-                          case 'left':
-                            tabId = newTmpTabId;
-                            break;
-                        }
-                        browser.runtime.sendMessage.resolves({
+
+                        bg.browser.runtime.sendMessage.resolves({
                           userContextId: '1',
                           neverAsk: false,
                         });
-                        await helper.browser.mouseClickOnLink({
+                        await bg.helper.mouseClickOnLink({
                           clickType: preferences.click.type,
                           senderUrl: 'http://example.com',
                           targetUrl: 'http://notexample.com',
                         });
                         const request = {
                           requestId: 2,
-                          tabId,
                           originContainer: 'firefox-tmp1',
                           url: 'http://notexample.com',
                           macWasFaster,
@@ -322,34 +314,31 @@ preferencesTestSet.map(preferences => {
                           targetContainer: 'firefox-container-1',
                           url: 'http://notexample.com',
                         };
-                        const promises = [];
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const promises: any[] = [];
                         switch (confirmPage) {
                           case 'first':
-                            await helper.browser.openMacConfirmPage(
+                            await bg.helper.openMacConfirmPage(
                               confirmPageOptions
                             );
-                            await helper.browser.request(request);
+                            await bg.helper.request(request);
                             break;
                           case 'last':
-                            await helper.browser.request(request);
-                            await helper.browser.openMacConfirmPage(
+                            await bg.helper.request(request);
+                            await bg.helper.openMacConfirmPage(
                               confirmPageOptions
                             );
                             break;
                           case 'firstrace':
                             promises.push(
-                              helper.browser.openMacConfirmPage(
-                                confirmPageOptions
-                              )
+                              bg.helper.openMacConfirmPage(confirmPageOptions)
                             );
-                            promises.push(helper.browser.request(request));
+                            promises.push(bg.helper.request(request));
                             break;
                           case 'lastrace':
-                            promises.push(helper.browser.request(request));
+                            promises.push(bg.helper.request(request));
                             promises.push(
-                              helper.browser.openMacConfirmPage(
-                                confirmPageOptions
-                              )
+                              bg.helper.openMacConfirmPage(confirmPageOptions)
                             );
                             break;
                         }
@@ -360,12 +349,12 @@ preferencesTestSet.map(preferences => {
                       it('should do the right thing', async () => {
                         switch (preferences.click.action) {
                           case 'always':
-                            browser.tabs.remove.should.have.been.calledOnce;
-                            browser.tabs.create.should.have.been.calledOnce;
+                            bg.browser.tabs.remove.should.have.been.calledOnce;
+                            bg.browser.tabs.create.should.have.been.calledOnce;
                             break;
                           case 'never':
-                            browser.tabs.remove.should.not.have.been.called;
-                            browser.tabs.create.should.not.have.been.called;
+                            bg.browser.tabs.remove.should.not.have.been.called;
+                            bg.browser.tabs.create.should.not.have.been.called;
                         }
                       });
                     });

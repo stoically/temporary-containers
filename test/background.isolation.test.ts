@@ -1,13 +1,16 @@
-import { preferencesTestSet, loadBareBackground } from './setup';
+import { preferencesTestSet, loadBackground, Background } from './setup';
+import { Tab, IsolationDomain } from '~/types';
 
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
-    let background, tab;
+    let bg: Background, tab: Tab;
 
-    const defaultIsolationDomainPreferences = {
+    const defaultIsolationDomainPreferences: IsolationDomain = {
+      pattern: '',
       always: {
         action: 'disabled',
         allowedInPermanent: false,
+        allowedInTemporary: false,
       },
       navigation: {
         action: 'global',
@@ -15,15 +18,19 @@ preferencesTestSet.map(preferences => {
       mouseClick: {
         middle: {
           action: 'global',
+          container: 'default',
         },
         ctrlleft: {
           action: 'global',
+          container: 'default',
         },
         left: {
           action: 'global',
+          container: 'default',
         },
       },
       excluded: {},
+      excludedContainers: {},
     };
 
     ['tmp', 'permanent'].map(originContainerType => {
@@ -35,19 +42,19 @@ preferencesTestSet.map(preferences => {
           'newtab.perdomain',
         ].map(navigatingIn => {
           describe(`navigatingIn: ${navigatingIn}`, () => {
-            const navigateTo = async url => {
-              background.container.markUnclean(tab.id);
+            const navigateTo = async (url: string): Promise<void> => {
+              bg.tmp.container.markUnclean(tab.id);
 
               switch (navigatingIn) {
                 case 'sametab.global':
                 case 'sametab.perdomain':
-                  return browser.tabs._update(tab.id, {
+                  return bg.browser.tabs._update(tab.id, {
                     url,
                   });
 
                 case 'newtab.global':
                 case 'newtab.perdomain':
-                  return browser.tabs._create({
+                  return bg.browser.tabs._create({
                     cookieStoreId: tab.cookieStoreId,
                     openerTabId: tab.id,
                     url,
@@ -57,22 +64,19 @@ preferencesTestSet.map(preferences => {
 
             describe('Isolation', () => {
               beforeEach(async () => {
-                background = await loadBareBackground(preferences, {
-                  apiFake: true,
-                });
-                await background.initialize();
+                bg = await loadBackground({ preferences });
                 const url = 'https://example.com';
                 if (originContainerType === 'permanent') {
-                  tab = await browser.tabs._create({
+                  tab = await bg.browser.tabs._create({
                     active: true,
                     url,
                     cookieStoreId: 'firefox-container-1',
                   });
                 } else {
-                  tab = await background.container.createTabInTempContainer({
+                  tab = (await bg.tmp.container.createTabInTempContainer({
                     url,
-                  });
-                  browser.tabs.create.resetHistory();
+                  })) as Tab;
+                  bg.browser.tabs.create.resetHistory();
                 }
               });
 
@@ -81,16 +85,16 @@ preferencesTestSet.map(preferences => {
                   switch (navigatingIn) {
                     case 'sametab.global':
                     case 'newtab.global':
-                      background.storage.local.preferences.isolation.global.navigation.action =
+                      bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                         'never';
                       break;
 
                     case 'sametab.perdomain':
                     case 'newtab.perdomain':
-                      background.storage.local.preferences.isolation.domain = [
+                      bg.tmp.storage.local.preferences.isolation.domain = [
                         {
-                          pattern: 'example.com',
                           ...defaultIsolationDomainPreferences,
+                          pattern: 'example.com',
                           navigation: {
                             action: 'never',
                           },
@@ -106,7 +110,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should not open a new Temporary Container', async () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
 
@@ -116,7 +120,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should not open a new Temporary Container', async () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
 
@@ -126,7 +130,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should not open a new Temporary Container', async () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
               });
@@ -136,16 +140,16 @@ preferencesTestSet.map(preferences => {
                   switch (navigatingIn) {
                     case 'sametab.global':
                     case 'newtab.global':
-                      background.storage.local.preferences.isolation.global.navigation.action =
+                      bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                         'always';
                       break;
 
                     case 'sametab.perdomain':
                     case 'newtab.perdomain':
-                      background.storage.local.preferences.isolation.domain = [
+                      bg.tmp.storage.local.preferences.isolation.domain = [
                         {
-                          pattern: 'example.com',
                           ...defaultIsolationDomainPreferences,
+                          pattern: 'example.com',
                           navigation: {
                             action: 'always',
                           },
@@ -161,7 +165,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should open a new Temporary Container', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
 
@@ -171,7 +175,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should open a new Temporary Container', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
 
@@ -181,7 +185,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should open a new Temporary Container', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
 
@@ -190,17 +194,17 @@ preferencesTestSet.map(preferences => {
                     switch (navigatingIn) {
                       case 'sametab.global':
                       case 'newtab.global':
-                        background.storage.local.preferences.isolation.global.excluded[
+                        bg.tmp.storage.local.preferences.isolation.global.excluded[
                           'excluded.com'
                         ] = {};
                         break;
 
                       case 'sametab.perdomain':
                       case 'newtab.perdomain':
-                        background.storage.local.preferences.isolation.domain = [
+                        bg.tmp.storage.local.preferences.isolation.domain = [
                           {
-                            pattern: 'example.com',
                             ...defaultIsolationDomainPreferences,
+                            pattern: 'example.com',
                             excluded: {
                               'excluded.com': {},
                             },
@@ -213,7 +217,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should not open a new Temporary Container', async () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
               });
@@ -223,13 +227,13 @@ preferencesTestSet.map(preferences => {
                   switch (navigatingIn) {
                     case 'sametab.global':
                     case 'newtab.global':
-                      background.storage.local.preferences.isolation.global.navigation.action =
+                      bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                         'notsamedomain';
                       break;
 
                     case 'sametab.perdomain':
                     case 'newtab.perdomain':
-                      background.storage.local.preferences.isolation.domain = [
+                      bg.tmp.storage.local.preferences.isolation.domain = [
                         {
                           ...defaultIsolationDomainPreferences,
                           pattern: 'example.com',
@@ -248,7 +252,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should not open a new Temporary Container', async () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
 
@@ -258,7 +262,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should not open a new Temporary Container', async () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
 
@@ -268,20 +272,21 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should open a new Temporary Container', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
 
                 describe('if its not the same domain after a redirect', () => {
                   beforeEach(async () => {
-                    browser.tabs._registerRedirects('https://out.example.com', [
-                      'https://notexample.com',
-                    ]);
+                    bg.browser.tabs._registerRedirects(
+                      'https://out.example.com',
+                      ['https://notexample.com']
+                    );
                     await navigateTo('https://out.example.com');
                   });
 
                   it('should open a new Temporary Container', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
               });
@@ -291,16 +296,16 @@ preferencesTestSet.map(preferences => {
                   switch (navigatingIn) {
                     case 'sametab.global':
                     case 'newtab.global':
-                      background.storage.local.preferences.isolation.global.navigation.action =
+                      bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                         'notsamedomainexact';
                       break;
 
                     case 'sametab.perdomain':
                     case 'newtab.perdomain':
-                      background.storage.local.preferences.isolation.domain = [
+                      bg.tmp.storage.local.preferences.isolation.domain = [
                         {
-                          pattern: 'example.com',
                           ...defaultIsolationDomainPreferences,
+                          pattern: 'example.com',
                           navigation: {
                             action: 'notsamedomainexact',
                           },
@@ -316,7 +321,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should not open a new Temporary Container', async () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
 
@@ -326,7 +331,7 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should open a new Temporary Container', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
 
@@ -336,20 +341,21 @@ preferencesTestSet.map(preferences => {
                   });
 
                   it('should open a new Temporary Container', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
 
                 describe('follow-up redirects to the exact same domain after isolating', () => {
                   beforeEach(async () => {
-                    browser.tabs._registerRedirects('http://notexample.com', [
-                      'https://notexample.com',
-                    ]);
+                    bg.browser.tabs._registerRedirects(
+                      'http://notexample.com',
+                      ['https://notexample.com']
+                    );
                     await navigateTo('http://notexample.com');
                   });
 
                   it('should not open two Temporary Containers', async () => {
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                   });
                 });
               });
@@ -358,11 +364,8 @@ preferencesTestSet.map(preferences => {
             describe('Multi-Account Containers Isolation', () => {
               describe('navigating in a permanent container', () => {
                 beforeEach(async () => {
-                  background = await loadBareBackground(preferences, {
-                    apiFake: true,
-                  });
-                  await background.initialize();
-                  tab = await browser.tabs._create({
+                  bg = await loadBackground({ preferences });
+                  tab = await bg.browser.tabs._create({
                     active: true,
                     url: 'https://example.com',
                     cookieStoreId: 'firefox-container-1',
@@ -371,12 +374,12 @@ preferencesTestSet.map(preferences => {
 
                 describe('with "enabled"', () => {
                   beforeEach(async () => {
-                    background.storage.local.preferences.isolation.mac.action =
+                    bg.tmp.storage.local.preferences.isolation.mac.action =
                       'enabled';
                   });
                   describe('if the navigation target isnt assigned to the current container', () => {
                     beforeEach(async () => {
-                      browser.runtime.sendMessage.resolves({
+                      bg.browser.runtime.sendMessage.resolves({
                         userContextId: '1',
                         neverAsk: false,
                       });
@@ -384,18 +387,18 @@ preferencesTestSet.map(preferences => {
                     });
 
                     it('should not open a new Temporary Container', () => {
-                      browser.tabs.create.should.not.have.been.called;
+                      bg.browser.tabs.create.should.not.have.been.called;
                     });
                   });
 
                   describe('if the navigation target isnt assigned to the current container', () => {
                     beforeEach(async () => {
-                      browser.runtime.sendMessage.resolves(null);
+                      bg.browser.runtime.sendMessage.resolves(null);
                       await navigateTo('https://notassigned.com');
                     });
 
                     it('should open a new Temporary Container', () => {
-                      browser.tabs.create.should.have.been.calledOnce;
+                      bg.browser.tabs.create.should.have.been.calledOnce;
                     });
                   });
                 });
@@ -403,24 +406,23 @@ preferencesTestSet.map(preferences => {
 
               describe('navigating in a temporary container', () => {
                 beforeEach(async () => {
-                  background = await loadBareBackground(preferences, {
-                    apiFake: true,
-                  });
-                  await background.initialize();
-                  tab = await background.container.createTabInTempContainer({});
-                  browser.tabs.create.resetHistory();
+                  bg = await loadBackground({ preferences });
+                  tab = (await bg.tmp.container.createTabInTempContainer(
+                    {}
+                  )) as Tab;
+                  bg.browser.tabs.create.resetHistory();
                 });
 
                 describe('with "enabled" and target domain not assigned with MAC', () => {
                   beforeEach(async () => {
-                    background.storage.local.preferences.isolation.mac.action =
+                    bg.tmp.storage.local.preferences.isolation.mac.action =
                       'enabled';
-                    browser.runtime.sendMessage.resolves(null);
+                    bg.browser.runtime.sendMessage.resolves(null);
                     await navigateTo('http://example.com');
                   });
 
                   it('should not open a new Temporary Container', () => {
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
               });
@@ -428,37 +430,36 @@ preferencesTestSet.map(preferences => {
 
             describe('Always open in', () => {
               beforeEach(async () => {
-                background = await loadBareBackground(preferences, {
-                  apiFake: true,
-                });
-                await background.initialize();
+                bg = await loadBackground({ preferences });
                 const url = 'https://example.com';
                 if (originContainerType === 'permanent') {
-                  tab = await browser.tabs._create({
+                  tab = await bg.browser.tabs._create({
                     active: true,
                     url,
                     cookieStoreId: 'firefox-container-1',
                   });
                 } else {
-                  tab = await background.container.createTabInTempContainer({
+                  tab = (await bg.tmp.container.createTabInTempContainer({
                     url,
-                  });
-                  browser.tabs.create.resetHistory();
+                  })) as Tab;
+                  bg.browser.tabs.create.resetHistory();
                 }
               });
 
               it('should not open in a new temporary container if the opener tab url belonging to the request matches the pattern', async () => {
-                background.storage.local.preferences.isolation.domain = [
+                bg.tmp.storage.local.preferences.isolation.domain = [
                   {
+                    ...defaultIsolationDomainPreferences,
                     pattern: 'example.com',
                     always: {
                       action: 'enabled',
                       allowedInPermanent: false,
+                      allowedInTemporary: false,
                     },
                   },
                 ];
 
-                await browser.tabs._create({
+                await bg.browser.tabs._create({
                   url: 'https://example.com',
                   openerTabId: tab.id,
                   cookieStoreId: tab.cookieStoreId,
@@ -466,11 +467,11 @@ preferencesTestSet.map(preferences => {
 
                 switch (originContainerType) {
                   case 'tmp':
-                    browser.tabs.create.should.not.have.been.called;
+                    bg.browser.tabs.create.should.not.have.been.called;
                     break;
 
                   case 'permanent':
-                    browser.tabs.create.should.have.been.calledOnce;
+                    bg.browser.tabs.create.should.have.been.calledOnce;
                     break;
                 }
               });

@@ -1,15 +1,14 @@
-import {
-  expect,
-  preferencesTestSet,
-  loadBareBackground,
-  nextTick,
-} from './setup';
+import { expect, preferencesTestSet, nextTick, loadBackground } from './setup';
+import sinon from 'sinon';
 
 preferencesTestSet.map(preferences => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     describe('when triggering browseraction', () => {
       it('should open a new tab in a new temporary container', async () => {
-        const { background, browser } = await loadBareBackground(preferences);
+        const { tmp: background, browser } = await loadBackground({
+          preferences,
+          initialize: false,
+        });
         browser.tabs.create.resolves({
           id: 1,
         });
@@ -36,7 +35,10 @@ preferencesTestSet.map(preferences => {
       });
 
       it('should open a new tab in a new temporary container with custom settings', async () => {
-        const { background, browser } = await loadBareBackground(preferences);
+        const { tmp: background, browser } = await loadBackground({
+          preferences,
+          initialize: false,
+        });
         browser.tabs.create.resolves({
           id: 1,
         });

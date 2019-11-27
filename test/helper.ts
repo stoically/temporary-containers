@@ -42,7 +42,22 @@ export class Helper {
     await this.background.runtime.onMessage(fakeMessage, fakeSender);
   }
 
-  /* ------------------ legacy ------------------*/
+  fakeTab(tab: Partial<Tab>): Tab {
+    return {
+      id: 1,
+      url: 'http://example.com',
+      windowId: 1,
+      cookieStoreId: 'firefox-default',
+      index: 0,
+      highlighted: false,
+      active: true,
+      pinned: false,
+      incognito: false,
+      ...tab,
+    };
+  }
+
+  /* ------------------ legacy ------------------ */
 
   private requestId = 1;
 
@@ -212,7 +227,7 @@ export class Helper {
     tabId = 1,
     originContainer = 'firefox-default',
     url = 'http://example.com',
-    targetContainer = false,
+    targetContainer = '',
     resetHistory = false,
   }): Promise<void> {
     if (resetHistory) {
