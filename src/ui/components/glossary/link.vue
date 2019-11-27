@@ -1,16 +1,5 @@
 <script>
-export default {
-  props: {
-    to: {
-      type: String,
-      required: true,
-    },
-    text: {
-      type: String,
-      default: '',
-    },
-  },
-};
+export { default } from './link.ts';
 </script>
 
 <template>

@@ -1,22 +1,5 @@
 <script>
-export default {
-  props: {
-    app: {
-      type: Object,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      preferences: this.app.preferences,
-      popup: this.app.popup,
-      show: false,
-    };
-  },
-  mounted() {
-    $('#isolationMac.ui.dropdown').dropdown();
-  },
-};
+export { default } from './mac.ts';
 </script>
 
 <template>

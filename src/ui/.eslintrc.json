@@ -3,7 +3,6 @@
     "sourceType": "module"
   },
   "globals": {
-    "$": "readonly",
-    "Vue": "readonly"
+    "$": "readonly"
   }
 }
