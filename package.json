@@ -19,9 +19,9 @@
     "lint:eslint": "eslint *.js src/**/*.{ts,js,vue} test/**/*.ts",
     "lint:addon": "addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "format": "prettier --write '{*,src/**/*,test/**/*}.{html,css,json,yml,md}'",
-    "test": "nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json -b --reporter=progress test/*.test.ts",
-    "test:watch": "ts-mocha --paths -p tsconfig.json test/*.test.ts -b --reporter=progress --watch",
-    "test:watch:verbose": "ts-mocha --paths -p tsconfig.json test/*.test.ts -b --reporter=spec --tmp-debug --watch",
+    "test": "nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json test/*.test.ts",
+    "test:watch": "ts-mocha --paths -p tsconfig.json test/*.test.ts --watch",
+    "test:watch:verbose": "ts-mocha --paths -p tsconfig.json test/*.test.ts --tmp-debug --watch",
     "test:functional": "npm run build:parcel && ts-mocha ./test/functional/*.test.ts --timeout 10000",
     "check:dependencies": "ncu",
     "watch": "rimraf dist && npm run build:contentscript && parcel src/background.ts src/*.html --hmr-hostname=localhost"
