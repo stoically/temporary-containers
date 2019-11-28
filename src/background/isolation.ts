@@ -586,7 +586,7 @@ export class Isolation {
 
   matchDomainPattern(url: string, domainPattern: string): boolean {
     if (domainPattern.startsWith('/')) {
-      const regexp = domainPattern.match(/^\/(.*)\/([gimsuy]+)?$/);
+      const regexp = domainPattern.match(/^\s*\/(.*)\/([gimsuy]+)?\s*$/);
       if (!regexp) {
         return false;
       }
