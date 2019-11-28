@@ -213,30 +213,33 @@ export class Tabs {
     }
   }
 
-  maybeCloseRedirectorTab(
+  async maybeCloseRedirectorTab(
     tab: Tab,
     changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo
-  ): void {
+  ): Promise<void> {
     if (
-      this.pref.closeRedirectorTabs.active &&
-      changeInfo.status &&
-      changeInfo.status === 'complete'
+      !this.pref.closeRedirectorTabs.active ||
+      changeInfo.status !== 'complete'
     ) {
-      const url = new URL(tab.url);
-      if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
-        delay(this.pref.closeRedirectorTabs.delay).then(async () => {
-          // check the tab url again to make sure the tab didn't change its url
-          const redirTab = (await browser.tabs.get(tab.id)) as Tab;
-          const redirUrl = new URL(redirTab.url);
-          if (
-            this.pref.closeRedirectorTabs.domains.includes(redirUrl.hostname)
-          ) {
-            this.debug('[onUpdated] removing redirector tab', changeInfo, tab);
-            this.remove(tab);
-          }
-        });
-      }
+      return;
     }
+
+    const url = new URL(tab.url);
+    if (!this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
+      return;
+    }
+
+    await delay(this.pref.closeRedirectorTabs.delay);
+
+    // check the tab url again to make sure the tab didn't change its url
+    const redirTab = (await browser.tabs.get(tab.id)) as Tab;
+    const redirUrl = new URL(redirTab.url);
+    if (!this.pref.closeRedirectorTabs.domains.includes(redirUrl.hostname)) {
+      return;
+    }
+
+    this.debug('[onUpdated] removing redirector tab', changeInfo, redirTab);
+    this.remove(redirTab);
   }
 
   async maybeMoveTab(tab: Tab): Promise<void> {
