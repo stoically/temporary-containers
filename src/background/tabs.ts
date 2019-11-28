@@ -225,8 +225,15 @@ export class Tabs {
       const url = new URL(tab.url);
       if (this.pref.closeRedirectorTabs.domains.includes(url.hostname)) {
         delay(this.pref.closeRedirectorTabs.delay).then(async () => {
-          this.debug('[onUpdated] removing redirector tab', changeInfo, tab);
-          this.remove(tab);
+          // check the tab url again to make sure the tab didn't change its url
+          const redirTab = (await browser.tabs.get(tab.id)) as Tab;
+          const redirUrl = new URL(redirTab.url);
+          if (
+            this.pref.closeRedirectorTabs.domains.includes(redirUrl.hostname)
+          ) {
+            this.debug('[onUpdated] removing redirector tab', changeInfo, tab);
+            this.remove(tab);
+          }
         });
       }
     }
