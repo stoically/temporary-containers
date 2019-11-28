@@ -109,8 +109,8 @@ export class TemporaryContainers {
     this.history.initialize();
     this.cleanup.initialize();
     this.convert.initialize();
-    this.tabs.initialize();
 
+    await this.tabs.initialize();
     await this.management.initialize();
 
     this.debug('[tmp] initialized');

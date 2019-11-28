@@ -70,14 +70,11 @@ export class Cleanup {
       .add(async () => {
         const containerRemoved = await this.tryToRemove(cookieStoreId);
         if (containerRemoved) {
-          this.debug('[addToRemoveQueue] container removed', cookieStoreId);
-          if (this.queue.size > 0) {
-            this.debug(
-              '[addToRemoveQueue] more containers in queue, waiting 3s',
-              cookieStoreId
-            );
-            await delay(3000);
-          }
+          this.debug(
+            '[addToRemoveQueue] container removed, waiting 2s',
+            cookieStoreId
+          );
+          await delay(2500);
         }
       })
       .finally(() => {

@@ -10,6 +10,7 @@ import { Preferences } from './preferences';
 import { Storage } from './storage';
 import { Utils } from './utils';
 import { PreferencesSchema, Tab, Debug, RuntimeMessage } from '~/types';
+import { delay } from './lib';
 
 export class Runtime {
   private background: TemporaryContainers;
@@ -194,7 +195,7 @@ export class Runtime {
   }
 
   async onStartup(): Promise<void> {
-    this.cleanup.cleanup(true);
+    delay(10000).then(() => this.cleanup.cleanup(true));
 
     if (this.pref.container.numberMode === 'keepuntilrestart') {
       this.storage.local.tempContainerCounter = 0;

@@ -30,7 +30,7 @@ preferencesTestSet.map(preferences => {
           await nextTick();
           clock.tick(150000);
           await nextTick();
-          clock.tick(3000);
+          clock.tick(2500);
           await nextTick();
 
           browser.contextualIdentities.remove.should.have.been.calledOnce;
@@ -117,7 +117,7 @@ preferencesTestSet.map(preferences => {
           );
           bg.browser.contextualIdentities.remove.resetHistory();
 
-          bg.clock.tick(3000);
+          bg.clock.tick(2500);
           await nextTick();
 
           bg.browser.contextualIdentities.remove.should.have.been.calledOnceWith(

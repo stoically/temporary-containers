@@ -28,7 +28,7 @@ export class Tabs {
     this.debug = background.debug;
   }
 
-  initialize(): void {
+  async initialize(): Promise<void> {
     this.pref = this.background.pref;
     this.container = this.background.container;
     this.browseraction = this.background.browseraction;
@@ -36,24 +36,16 @@ export class Tabs {
     this.mac = this.background.mac;
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
+
+    const tabs = (await browser.tabs.query({})) as Tab[];
+    tabs.forEach(tab => this.registerTab(tab));
   }
 
   // onUpdated sometimes (often) fires before onCreated
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1586612
   async onCreated(tab: Tab): Promise<void> {
     this.debug('[onCreated] tab created', tab);
-
-    if (this.container.isTemporary(tab.cookieStoreId)) {
-      this.containerMap.set(tab.id, tab.cookieStoreId);
-
-      const containerTabs = this.containerTabs.get(tab.cookieStoreId);
-      if (containerTabs) {
-        containerTabs.add(tab.id);
-      } else {
-        this.containerTabs.set(tab.cookieStoreId, new Set([tab.id]));
-      }
-    }
-
+    this.registerTab(tab);
     const reopened = await this.maybeReopenInTmpContainer(tab);
     if (!reopened) {
       this.maybeMoveTab(tab);
@@ -90,13 +82,7 @@ export class Tabs {
 
     const tmpCookieStoreId = this.containerMap.get(tabId);
     if (tmpCookieStoreId) {
-      const containerTabs = this.containerTabs.get(tmpCookieStoreId);
-      if (containerTabs) {
-        containerTabs.delete(tabId);
-        if (!containerTabs.size) {
-          this.containerTabs.delete(tmpCookieStoreId);
-        }
-      }
+      this.unregisterTab(tabId, tmpCookieStoreId);
 
       this.debug(
         '[onRemoved] queuing container removal because of tab removal',
@@ -104,8 +90,6 @@ export class Tabs {
       );
       this.cleanup.addToRemoveQueue(tmpCookieStoreId);
     }
-
-    this.containerMap.delete(tabId);
   }
 
   async onActivated(
@@ -117,6 +101,31 @@ export class Tabs {
     ];
     const activatedTab = (await browser.tabs.get(activeInfo.tabId)) as Tab;
     this.pageaction.showOrHide(activatedTab);
+  }
+
+  registerTab(tab: Tab): void {
+    if (!this.container.isTemporary(tab.cookieStoreId)) {
+      return;
+    }
+    this.containerMap.set(tab.id, tab.cookieStoreId);
+
+    const containerTabs = this.containerTabs.get(tab.cookieStoreId);
+    if (containerTabs) {
+      containerTabs.add(tab.id);
+    } else {
+      this.containerTabs.set(tab.cookieStoreId, new Set([tab.id]));
+    }
+  }
+
+  unregisterTab(tabId: TabId, cookieStoreId: CookieStoreId): void {
+    const containerTabs = this.containerTabs.get(cookieStoreId);
+    if (containerTabs) {
+      containerTabs.delete(tabId);
+      if (!containerTabs.size) {
+        this.containerTabs.delete(cookieStoreId);
+      }
+    }
+    this.containerMap.delete(tabId);
   }
 
   async handleAlreadyOpen(): Promise<(void | boolean)[]> {
