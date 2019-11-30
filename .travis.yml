@@ -28,9 +28,9 @@ deploy:
   skip_cleanup: true
   draft: true
   name: $TRAVIS_TAG
-  condition: tag =~ beta
   on:
     tags: true
+    condition: tag =~ beta
 
 after_deploy:
   - if [[ $TRAVIS_TAG == *"beta"* ]]; then
