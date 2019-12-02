@@ -19,7 +19,7 @@ Build result is located in the `dist` directory.
   - dist/background/lib.js
     - delay: https://github.com/sindresorhus/delay/blob/v4.3.0/index.js
     - PQueue: https://github.com/sindresorhus/p-queue/tree/v6.2.1/source
-    - psl: https://github.com/lupomontero/psl/blob/v1.4.0/dist/psl.js
+    - psl: https://github.com/lupomontero/psl/blob/v1.5.0/dist/psl.js
 
 - Preferences UI
 
