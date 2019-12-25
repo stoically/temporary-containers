@@ -54,7 +54,7 @@
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
-    "@istanbuljs/nyc-config-typescript": "^0.1.3",
+    "@istanbuljs/nyc-config-typescript": "^1.0.0",
     "@types/chai": "^4.2.5",
     "@types/firefox-webext-browser": "github:stoically/DefinitelyTyped#firefox-webext-browser-dist",
     "@types/jquery": "^3.3.31",
