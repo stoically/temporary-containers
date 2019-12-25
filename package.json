@@ -103,7 +103,7 @@
     "vue-hot-reload-api": "^2.3.4",
     "vue-template-compiler": "^2.6.10",
     "vue-typed-mixins": "^0.2.0",
-    "web-ext": "^3.2.1",
+    "web-ext": "^4.0.0",
     "webextensions-api-fake": "^1.0.3",
     "webextensions-geckodriver": "^0.6.1"
   },
