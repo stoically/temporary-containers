@@ -39,7 +39,7 @@
   "dependencies": {
     "delay": "4.3.0",
     "p-queue": "6.2.1",
-    "psl": "1.6.0",
+    "psl": "1.7.0",
     "vue": "2.6.10",
     "vuedraggable": "2.23.2"
   },
