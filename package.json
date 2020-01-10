@@ -163,5 +163,10 @@
     "trailingComma": "es5",
     "tabWidth": 2,
     "singleQuote": true
+  },
+  "mocha": {
+    "bail": true,
+    "reporter": "progress",
+    "extension": "ts"
   }
 }
