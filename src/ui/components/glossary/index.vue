@@ -282,7 +282,8 @@ ul {
           <ul>
             <li>Originates from a new tab</li>
             <li>
-              <glossary-link to="Target Domain" /> is different from the
+              <glossary-link to="Target Domain" /> doesn't match Domain Pattern
+              and is different from the
               <glossary-link to="Tab Domain" />
             </li>
             <li>
