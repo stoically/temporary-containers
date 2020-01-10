@@ -19,7 +19,7 @@ Build result is located in the `dist` directory.
   - dist/background/lib.js
     - delay: https://github.com/sindresorhus/delay/blob/v4.3.0/index.js
     - PQueue: https://github.com/sindresorhus/p-queue/tree/v6.2.1/source
-    - psl: https://github.com/lupomontero/psl/blob/v1.6.0/dist/psl.js
+    - psl: https://github.com/lupomontero/psl/blob/v1.7.0/dist/psl.js
 
 - Preferences UI
 
@@ -43,12 +43,12 @@ Build result is located in the `dist` directory.
   - SortableJS
 
     - dist/vendor/sortable/Sortable.min.js
-    - https://github.com/SortableJS/Sortable/blob/1.10.1/Sortable.min.js
+    - https://github.com/SortableJS/Sortable/blob/1.10.2/Sortable.min.js
 
   - VueJS
 
     - node_modules/vue
-    - https://github.com/vuejs/vue/tree/v2.6.10
+    - https://github.com/vuejs/vue/tree/v2.6.11
 
   - Vue.Draggable
 
