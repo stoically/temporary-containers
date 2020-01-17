@@ -16,7 +16,7 @@
     "build:beta:checkout": "git checkout -- src/manifest.json",
     "build:beta:webext": "web-ext sign --channel unlisted -s dist",
     "lint": "npm run lint:eslint && tsc",
-    "lint:eslint": "eslint *.js src/**/*.{ts,js,vue} test/**/*.ts",
+    "lint:eslint": "eslint *.js src/**/*.'{ts,js,vue}' test/**/*.ts",
     "lint:addon": "addons-linter web-ext-artifacts/temporary_containers-*.zip",
     "format": "prettier --write '{*,src/**/*,test/**/*}.{html,css,json,yml,md}'",
     "test": "nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json test/*.test.ts",
