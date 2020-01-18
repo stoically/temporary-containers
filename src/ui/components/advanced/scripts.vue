@@ -39,7 +39,7 @@ export { default } from './scripts.ts';
         :domain-pattern.sync="domainPattern"
       />
       <div class="field">
-        <label>Script</label>
+        <label>code</label>
         <textarea id="scriptCode" v-model="script.code"></textarea>
       </div>
       <div class="field">
