@@ -30,7 +30,7 @@ deploy:
   name: $TRAVIS_TAG
   on:
     tags: true
-    condition: tag =~ beta
+    condition: $TRAVIS_TAG =~ beta
 
 after_deploy:
   - if [[ $TRAVIS_TAG == *"beta"* ]]; then
