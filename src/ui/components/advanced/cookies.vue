@@ -25,8 +25,9 @@ export { default } from './cookies.ts';
           href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/webRequest/onBeforeSendHeaders"
           target="_blank"
           >webRequest.onBeforeSendHeaders</a
-        >. If the request belongs to a Temporary Container and the domain
-        matches the given pattern. Make sure that the cookie name and value are
+        >
+        if the request belongs to a Temporary Container and the domain matches
+        the given pattern. Make sure that the cookie name and value are
         correctly encoded, or you might break the header being sent.
       </div>
       <domain-pattern

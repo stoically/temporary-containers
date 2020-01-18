@@ -1,14 +1,14 @@
 import { TemporaryContainers } from './tmp';
-import { Isolation } from './isolation';
 import { Storage } from './storage';
 import { PreferencesSchema, Tab, Debug } from '~/types';
+import { Utils } from './utils';
 
 export class Cookies {
   private background: TemporaryContainers;
   private debug: Debug;
   private pref!: PreferencesSchema;
   private storage!: Storage;
-  private isolation!: Isolation;
+  private utils!: Utils;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
@@ -18,7 +18,7 @@ export class Cookies {
   initialize(): void {
     this.pref = this.background.pref;
     this.storage = this.background.storage;
-    this.isolation = this.background.isolation;
+    this.utils = this.background.utils;
   }
 
   async maybeSetAndAddToHeader(
@@ -36,7 +36,7 @@ export class Cookies {
       } = {};
       let cookieHeaderChanged = false;
       for (const domainPattern in this.pref.cookies.domain) {
-        if (!this.isolation.matchDomainPattern(request.url, domainPattern)) {
+        if (!this.utils.matchDomainPattern(request.url, domainPattern)) {
           continue;
         }
         if (!tab) {

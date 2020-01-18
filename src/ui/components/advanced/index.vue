@@ -11,6 +11,9 @@ export { default } from './index.ts';
       <a class="item" data-tab="advanced/cookies">
         Cookies
       </a>
+      <a class="item" data-tab="advanced/scripts">
+        Scripts
+      </a>
       <a class="item" data-tab="advanced/deletehistory">
         Delete History
       </a>
@@ -23,6 +26,9 @@ export { default } from './index.ts';
     </div>
     <div class="ui bottom attached tab segment" data-tab="advanced/cookies">
       <cookies v-if="app.initialized" :app="app" />
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="advanced/scripts">
+      <scripts v-if="app.initialized" :app="app" />
     </div>
     <div
       class="ui bottom attached tab segment"

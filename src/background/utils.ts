@@ -19,6 +19,29 @@ export class Utils {
     return parsedOrigin.domain === parsedTarget.domain;
   }
 
+  matchDomainPattern(url: string, domainPattern: string): boolean {
+    if (domainPattern.startsWith('/')) {
+      const regexp = domainPattern.match(/^\s*\/(.*)\/([gimsuy]+)?\s*$/);
+      if (!regexp) {
+        return false;
+      }
+      try {
+        return new RegExp(regexp[1], regexp[2]).test(url);
+      } catch (error) {
+        return false;
+      }
+    } else {
+      const parsedUrl =
+        url.startsWith('about:') || url.startsWith('moz-extension:')
+          ? url
+          : new URL(url).hostname;
+      return (
+        parsedUrl === domainPattern ||
+        this.globToRegexp(domainPattern).test(parsedUrl)
+      );
+    }
+  }
+
   addMissingKeys({
     defaults,
     source,

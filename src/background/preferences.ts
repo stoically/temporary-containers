@@ -75,6 +75,9 @@ export class Preferences {
     cookies: {
       domain: {},
     },
+    scripts: {
+      domain: {},
+    },
     deletesHistory: {
       active: false,
       automaticMode: 'never',

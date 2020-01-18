@@ -18,6 +18,7 @@ import { PageAction } from './pageaction';
 import { Preferences } from './preferences';
 import { Request } from './request';
 import { Runtime } from './runtime';
+import { Scripts } from './scripts';
 import { Statistics } from './statistics';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
@@ -42,6 +43,7 @@ export class TemporaryContainers {
   public pageaction = new PageAction(this);
   public contextmenu = new ContextMenu(this);
   public cookies = new Cookies(this);
+  public scripts = new Scripts(this);
   public isolation = new Isolation(this);
   public history = new History(this);
   public cleanup = new Cleanup(this);
@@ -103,6 +105,7 @@ export class TemporaryContainers {
     this.pageaction.initialize();
     this.contextmenu.initialize();
     this.cookies.initialize();
+    this.scripts.initialize();
     this.statistics.initialize();
     this.mac.initialize();
     this.isolation.initialize();

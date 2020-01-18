@@ -7,6 +7,7 @@ import { delay } from './lib';
 import { MultiAccountContainers } from './mac';
 import { PageAction } from './pageaction';
 import { PreferencesSchema, Tab, Debug, CookieStoreId, TabId } from '~/types';
+import { Scripts } from './scripts';
 
 export class Tabs {
   public creatingInSameContainer = false;
@@ -22,6 +23,7 @@ export class Tabs {
   private mac!: MultiAccountContainers;
   private history!: History;
   private cleanup!: Cleanup;
+  private scripts!: Scripts;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
@@ -36,6 +38,7 @@ export class Tabs {
     this.mac = this.background.mac;
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
+    this.scripts = this.background.scripts;
 
     const tabs = (await browser.tabs.query({})) as Tab[];
     tabs.forEach(tab => this.registerTab(tab));
@@ -66,6 +69,7 @@ export class Tabs {
       const reopened = await this.maybeReopenInTmpContainer(tab);
       if (!reopened) {
         this.pageaction.showOrHide(tab);
+        this.scripts.maybeExecute(tab);
       }
     }
   }

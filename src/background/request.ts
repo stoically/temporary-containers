@@ -8,6 +8,7 @@ import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
 import { PreferencesSchema, Tab, Debug, OnBeforeRequestResult } from '~/types';
+import { Utils } from './utils';
 
 export class Request {
   public lastSeenRequestUrl: {
@@ -44,6 +45,7 @@ export class Request {
   private isolation!: Isolation;
   private management!: Management;
   private history!: History;
+  private utils!: Utils;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
@@ -59,6 +61,7 @@ export class Request {
     this.isolation = this.background.isolation;
     this.management = this.background.management;
     this.history = this.background.history;
+    this.utils = this.background.utils;
   }
 
   async webRequestOnBeforeRequest(
@@ -186,7 +189,7 @@ export class Request {
     if (
       this.pref.ignoreRequests.length &&
       this.pref.ignoreRequests.find(ignorePattern => {
-        return this.isolation.matchDomainPattern(request.url, ignorePattern);
+        return this.utils.matchDomainPattern(request.url, ignorePattern);
       })
     ) {
       this.debug(

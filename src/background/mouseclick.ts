@@ -174,7 +174,7 @@ export class MouseClick {
 
     for (const domainPatternPreferences of this.pref.isolation.domain) {
       const domainPattern = domainPatternPreferences.pattern;
-      if (!this.isolation.matchDomainPattern(tab.url, domainPattern)) {
+      if (!this.utils.matchDomainPattern(tab.url, domainPattern)) {
         continue;
       }
       if (!domainPatternPreferences.mouseClick[type]) {

@@ -104,6 +104,11 @@ export interface Cookie {
   value: string;
 }
 
+export interface Script {
+  code: string;
+  runAt: 'document_start' | 'document_end' | 'document_idle';
+}
+
 export type ToolbarIconColor =
   | 'default'
   | 'black-simple'
@@ -183,6 +188,11 @@ export interface PreferencesSchema {
   cookies: {
     domain: {
       [key: string]: Cookie[];
+    };
+  };
+  scripts: {
+    domain: {
+      [key: string]: Script[];
     };
   };
   deletesHistory: {

@@ -92,7 +92,10 @@ export class Isolation {
     );
     if (excludedDomainPatterns.length) {
       const excluded = excludedDomainPatterns.find(excludedDomainPattern => {
-        return this.matchDomainPattern(request.url, excludedDomainPattern);
+        return this.utils.matchDomainPattern(
+          request.url,
+          excludedDomainPattern
+        );
       });
       if (excluded) {
         this.debug(
@@ -362,7 +365,7 @@ export class Isolation {
       const domainPattern = patternPreferences.pattern;
 
       if (
-        !this.matchDomainPattern(
+        !this.utils.matchDomainPattern(
           (tab.url === 'about:blank' &&
             openerTab &&
             openerTab.url.startsWith('http') &&
@@ -377,7 +380,9 @@ export class Isolation {
         for (const excludedDomainPattern of Object.keys(
           patternPreferences.excluded
         )) {
-          if (!this.matchDomainPattern(request.url, excludedDomainPattern)) {
+          if (
+            !this.utils.matchDomainPattern(request.url, excludedDomainPattern)
+          ) {
             continue;
           }
           this.debug(
@@ -444,7 +449,7 @@ export class Isolation {
 
     for (const patternPreferences of this.pref.isolation.domain) {
       const domainPattern = patternPreferences.pattern;
-      if (!this.matchDomainPattern(request.url, domainPattern)) {
+      if (!this.utils.matchDomainPattern(request.url, domainPattern)) {
         continue;
       }
       if (!patternPreferences.always) {
@@ -489,12 +494,12 @@ export class Isolation {
         return false;
       }
 
-      if (!this.matchDomainPattern(tab.url, domainPattern)) {
+      if (!this.utils.matchDomainPattern(tab.url, domainPattern)) {
         let openerMatches = false;
         if (
           openerTab &&
           openerTab.url.startsWith('http') &&
-          this.matchDomainPattern(openerTab.url, domainPattern)
+          this.utils.matchDomainPattern(openerTab.url, domainPattern)
         ) {
           openerMatches = true;
           this.debug(
@@ -582,28 +587,5 @@ export class Isolation {
         }
     }
     return false;
-  }
-
-  matchDomainPattern(url: string, domainPattern: string): boolean {
-    if (domainPattern.startsWith('/')) {
-      const regexp = domainPattern.match(/^\s*\/(.*)\/([gimsuy]+)?\s*$/);
-      if (!regexp) {
-        return false;
-      }
-      try {
-        return new RegExp(regexp[1], regexp[2]).test(url);
-      } catch (error) {
-        return false;
-      }
-    } else {
-      const parsedUrl =
-        url.startsWith('about:') || url.startsWith('moz-extension:')
-          ? url
-          : new URL(url).hostname;
-      return (
-        parsedUrl === domainPattern ||
-        this.utils.globToRegexp(domainPattern).test(parsedUrl)
-      );
-    }
   }
 }
