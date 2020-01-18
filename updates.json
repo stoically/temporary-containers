@@ -3,8 +3,8 @@
     "{c607c8df-14a7-4f28-894f-29e8722976af}": {
       "updates": [
         {
-          "version": "1.6",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v1.6/temporary_containers-1.6-fx.xpi"
+          "version": "1.8beta1",
+          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v1.8beta1/temporary_containers-1.8beta1-an+fx.xpi"
         }
       ]
     }
