@@ -9,13 +9,13 @@ export { default } from './scripts.ts';
         Configure scripts to execute for certain domains in Temporary Containers
       </h4>
       <div class="ui small negative message">
-        <strong>Warning:</strong> Executing scripts can make you easier
-        fingerprintable. Avoid using scripts if you can. Also keep in mind that
-        Firefox Sync storage is limited to 100KB, so adding huge scripts here
-        will prevent you from exporting preferences to Firefox Sync since the
-        scripts are stored as preferences. The local storage limit is 5MB, so
-        adding scripts exceeding that might prevent the Add-on from working at
-        all.
+        <strong>Warning:</strong> Never add scripts from untrusted sources!
+        Executing scripts can make you easier fingerprintable. Avoid using
+        scripts if you can. Also keep in mind that Firefox Sync storage is
+        limited to 100KB, so adding huge scripts here will prevent you from
+        exporting preferences to Firefox Sync since the scripts are stored as
+        preferences. The local storage limit is 5MB, so adding scripts exceeding
+        that might prevent the Add-on from working at all.
       </div>
       <div class="ui small notice message">
         This will call
@@ -25,7 +25,13 @@ export { default } from './scripts.ts';
           >tabs.executeScript</a
         >
         if the tab url being loaded belongs to a Temporary Container and its
-        domain matches the given pattern.
+        domain matches the given pattern. Pro-tip: You can use
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Mozilla/Tech/Xray_vision#Waiving_Xray_vision"
+          target="_blank"
+          >window.wrappedJSObject</a
+        >
+        to access the original window.
       </div>
       <domain-pattern
         id="scriptDomainPattern"
