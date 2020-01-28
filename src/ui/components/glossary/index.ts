@@ -112,7 +112,9 @@ export default Vue.extend({
             this.origin = this.active = glossary;
 
             const glossaryRef = this.$refs.glossary as HTMLElement;
-            const glossaryContainer = this.$refs.glossary as HTMLElement;
+            const glossaryContainer = this.$refs
+              .glossaryContainer as HTMLElement;
+
             if (['Automatic Mode', 'Toolbar Popup'].includes(this.origin)) {
               glossaryRef.style.minHeight = 'unset';
               glossaryRef.style.maxHeight = 'unset';
