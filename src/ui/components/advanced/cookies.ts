@@ -64,8 +64,12 @@ export default mixins(mixin).extend({
         }
       },
     });
-    $('#cookieForm .ui.dropdown').dropdown();
-    $('#cookieForm .ui.checkbox').checkbox();
+
+    this.$nextTick(() => {
+      $('#cookieForm .ui.accordion').accordion();
+      $('#cookieForm .ui.dropdown').dropdown();
+      $('#cookieForm .ui.checkbox').checkbox();
+    });
   },
 
   methods: {
@@ -139,6 +143,7 @@ export default mixins(mixin).extend({
       this.domainPatternDisabled = false;
       this.cookie = this.clone(cookieDefaults);
       this.resetDropdowns();
+      $('#cookieAccordion').accordion('close', 0);
     },
 
     resetDropdowns(): void {

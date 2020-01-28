@@ -37,77 +37,91 @@ export { default } from './cookies.ts';
         :domain-pattern.sync="domainPattern"
       />
       <div class="field">
-        <label>domain</label>
-        <input v-model="cookie.domain" type="text" />
-      </div>
-      <div class="field">
-        <label>expirationDate</label>
-        <input v-model="cookie.expirationDate" type="text" />
-      </div>
-      <div class="field">
-        <label>firstPartyDomain</label>
-        <input v-model="cookie.firstPartyDomain" type="text" />
-      </div>
-      <div class="field">
-        <label>httpOnly</label>
-        <select v-model="cookie.httpOnly" class="ui fluid dropdown">
-          <option value="">
-            httpOnly
-          </option>
-          <option value="false">
-            false
-          </option>
-          <option value="true">
-            true
-          </option>
-        </select>
-      </div>
-      <div class="field">
         <label>name</label>
         <input id="setCookiesDomainName" v-model="cookie.name" type="text" />
       </div>
       <div class="field">
-        <label>path</label>
-        <input v-model="cookie.path" type="text" />
+        <label>value</label>
+        <input v-model="cookie.value" type="text" />
       </div>
       <div class="field">
-        <label>sameSite</label>
-        <select v-model="cookie.sameSite" class="ui fluid dropdown">
-          <option value="">
-            sameSite
-          </option>
-          <option value="no_restriction">
-            no_restriction
-          </option>
-          <option value="lax">
-            lax
-          </option>
-          <option value="strict">
-            strict
-          </option>
-        </select>
-      </div>
-      <div class="field">
-        <label>secure</label>
-        <select v-model="cookie.secure" class="ui fluid dropdown">
-          <option value="">
-            secure
-          </option>
-          <option value="false">
-            false
-          </option>
-          <option value="true">
-            true
-          </option>
-        </select>
+        <label>domain</label>
+        <input v-model="cookie.domain" type="text" />
       </div>
       <div class="field">
         <label>url</label>
         <input id="cookieUrl" v-model="cookie.url" type="text" />
       </div>
-      <div class="field">
-        <label>value</label>
-        <input v-model="cookie.value" type="text" />
+      <div
+        id="cookieAccordion"
+        style="margin-top: 15px; margin-bottom: 15px"
+        class="ui accordion"
+      >
+        <div class="title">
+          <h4>
+            <i class="dropdown icon" />
+            Advanced
+          </h4>
+        </div>
+        <div class="content">
+          <div class="field">
+            <label>expirationDate</label>
+            <input v-model="cookie.expirationDate" type="text" />
+          </div>
+          <div class="field">
+            <label>firstPartyDomain</label>
+            <input v-model="cookie.firstPartyDomain" type="text" />
+          </div>
+          <div class="field">
+            <label>httpOnly</label>
+            <select v-model="cookie.httpOnly" class="ui fluid dropdown">
+              <option value="">
+                httpOnly
+              </option>
+              <option value="false">
+                false
+              </option>
+              <option value="true">
+                true
+              </option>
+            </select>
+          </div>
+          <div class="field">
+            <label>path</label>
+            <input v-model="cookie.path" type="text" />
+          </div>
+          <div class="field">
+            <label>sameSite</label>
+            <select v-model="cookie.sameSite" class="ui fluid dropdown">
+              <option value="">
+                sameSite
+              </option>
+              <option value="no_restriction">
+                no_restriction
+              </option>
+              <option value="lax">
+                lax
+              </option>
+              <option value="strict">
+                strict
+              </option>
+            </select>
+          </div>
+          <div class="field">
+            <label>secure</label>
+            <select v-model="cookie.secure" class="ui fluid dropdown">
+              <option value="">
+                secure
+              </option>
+              <option value="false">
+                false
+              </option>
+              <option value="true">
+                true
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
       <div class="field">
         <button class="ui button primary">
