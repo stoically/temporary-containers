@@ -40,12 +40,14 @@ export default mixins(mixin).extend({
     Settings,
     Draggable,
   },
+
   props: {
     app: {
       type: Object as () => App,
       required: true,
     },
   },
+
   data() {
     return {
       preferences: this.app.preferences,
@@ -60,6 +62,7 @@ export default mixins(mixin).extend({
       editClicked: false,
     };
   },
+
   computed: {
     isolationDomains: {
       get(): UIIsolationDomain[] {
@@ -79,6 +82,7 @@ export default mixins(mixin).extend({
       },
     },
   },
+
   watch: {
     domain: {
       handler(domain): void {
@@ -111,6 +115,7 @@ export default mixins(mixin).extend({
       deep: true,
     },
   },
+
   async mounted() {
     this.$nextTick(() => {
       $('#isolationDomain .ui.accordion').accordion({
@@ -216,12 +221,14 @@ export default mixins(mixin).extend({
       }
       this.resetDropdowns();
     },
+
     resetDropdowns(): void {
       $('#isolationDomain .ui.dropdown').dropdown('destroy');
       this.$nextTick(() => {
         $('#isolationDomain .ui.dropdown').dropdown();
       });
     },
+
     edit(index: number): void {
       this.editClicked = true;
       this.editing = true;
@@ -251,6 +258,7 @@ export default mixins(mixin).extend({
           : $('#isolationPerDomainAccordion').accordion('open', 3);
       }
     },
+
     remove(index: number, pattern: string): void {
       if (
         window.confirm(`
@@ -264,18 +272,27 @@ export default mixins(mixin).extend({
         }
       }
     },
+
     removeExcludedDomain(excludedDomainPattern: string): void {
       this.$delete(this.domain.excluded, excludedDomainPattern);
     },
-    expandIsolationDomainFilter(): void {
+
+    expandIsolationDomainFilter(event: Event): void {
       if (!this.popup) {
         return;
       }
-
+      event.preventDefault();
+      event.stopPropagation();
+      if (
+        $('#isolationDomainsAccordion > div > div.title').hasClass('active')
+      ) {
+        return;
+      }
       setTimeout(() => {
         $('#isolationDomainsAccordion').accordion('open', 0);
       }, 200);
     },
+
     move(event: { moved: { oldIndex: number; newIndex: number } }): void {
       if (event.moved) {
         this.preferences.isolation.domain.move(
@@ -284,7 +301,10 @@ export default mixins(mixin).extend({
         );
       }
     },
-    focusIsolationDomainFilter(): void {
+
+    focusIsolationDomainFilter(event: Event): void {
+      event.preventDefault();
+      event.stopPropagation();
       (this.$refs.isolationDomainFilter as HTMLElement).focus();
     },
   },
