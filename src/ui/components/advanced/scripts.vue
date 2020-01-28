@@ -9,13 +9,12 @@ export { default } from './scripts.ts';
         Configure scripts to execute for certain domains in Temporary Containers
       </h4>
       <div class="ui small negative message">
-        <strong>Warning:</strong> Never add scripts from untrusted sources!
-        Executing scripts can make you easier fingerprintable. Avoid using
-        scripts if you can. Also keep in mind that Firefox Sync storage is
-        limited to 100KB, so adding huge scripts here will prevent you from
-        exporting preferences to Firefox Sync since the scripts are stored as
-        preferences. The local storage limit is 5MB, so adding scripts exceeding
-        that might prevent the Add-on from working at all.
+        <strong>Warning: Never add scripts from untrusted sources!</strong>
+        Also keep in mind that Firefox Sync storage is limited to 100KB, so
+        adding huge scripts here will prevent you from exporting preferences to
+        Firefox Sync since the scripts are stored as preferences. The local
+        storage limit is 5MB, so adding scripts exceeding that might prevent the
+        Add-on from working at all.
       </div>
       <div class="ui small notice message">
         This will call
@@ -35,6 +34,7 @@ export { default } from './scripts.ts';
       </div>
       <domain-pattern
         id="scriptDomainPattern"
+        :disabled="domainPatternDisabled"
         :glossary="true"
         :domain-pattern.sync="domainPattern"
       />
@@ -58,11 +58,11 @@ export { default } from './scripts.ts';
       </div>
       <div class="field">
         <button class="ui button primary">
-          Add
+          {{ !editing ? 'Add' : 'Save' }}
         </button>
       </div>
     </form>
-    <div style="margin-top: 30px;">
+    <div style="margin-top: 30px;" :class="{ hidden: editing }">
       <h3>Scripts</h3>
       <div>
         <div v-if="!Object.keys(preferences.scripts.domain).length">
@@ -86,6 +86,14 @@ export { default } from './scripts.ts';
               >
                 <div class="item">
                   Script #{{ index }}
+                  <button
+                    class="ui right small primary button"
+                    style="margin-top: 10px; margin-left: 10px;"
+                    @click="editScript(scriptDomainPattern, index)"
+                  >
+                    <i class="icon-pencil" />
+                    Edit
+                  </button>
                   <button
                     class="ui right negative small button"
                     style="margin-top: 10px"

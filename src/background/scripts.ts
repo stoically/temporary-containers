@@ -29,6 +29,7 @@ export class Scripts {
       }
       for (const script of this.pref.scripts.domain[domainPattern]) {
         try {
+          this.debug('[maybeExecute] executing script', tab);
           await browser.tabs.executeScript(tab.id, script);
         } catch (error) {
           this.debug(
