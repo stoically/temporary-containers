@@ -32,6 +32,7 @@ export { default } from './cookies.ts';
       </div>
       <domain-pattern
         id="cookieDomainPattern"
+        :disabled="domainPatternDisabled"
         :glossary="true"
         :domain-pattern.sync="domainPattern"
       />
@@ -110,11 +111,11 @@ export { default } from './cookies.ts';
       </div>
       <div class="field">
         <button class="ui button primary">
-          Add
+          {{ !editing ? 'Add' : 'Save' }}
         </button>
       </div>
     </form>
-    <div style="margin-top: 30px;">
+    <div style="margin-top: 30px;" :class="{ hidden: editing }">
       <h3>Cookies</h3>
       <div>
         <div v-if="!Object.keys(preferences.cookies.domain).length">
@@ -153,12 +154,20 @@ export { default } from './cookies.ts';
                   </div>
                   <div class="item">
                     <button
+                      class="ui right primary small button"
+                      style="margin-top: 10px"
+                      @click="editCookie(cookiesDomainPattern, index)"
+                    >
+                      <i class="icon-pencil" />
+                      Edit
+                    </button>
+                    <button
                       class="ui right negative small button"
                       style="margin-top: 10px"
                       @click="removeCookie(cookiesDomainPattern, index)"
                     >
                       <i class="icon-trash-empty" />
-                      Remove Cookie
+                      Remove
                     </button>
                   </div>
                 </div>
