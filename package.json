@@ -60,7 +60,7 @@
     "@types/jquery": "^3.3.31",
     "@types/jquery.address": "^1.5.29",
     "@types/jsdom-global": "^3.0.1",
-    "@types/mocha": "^5.2.7",
+    "@types/mocha": "^7.0.1",
     "@types/psl": "^1.1.0",
     "@types/semantic-ui": "^2.2.7",
     "@types/semantic-ui-dropdown": "github:stoically/DefinitelyTyped#semantic-ui-dropdown-dist",
