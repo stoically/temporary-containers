@@ -5,6 +5,9 @@ services:
 language: node_js
 node_js: 'lts/*'
 
+cache:
+  npm: false
+
 addons:
   firefox: latest
 
