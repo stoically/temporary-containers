@@ -8,7 +8,7 @@ Detailed information about the Add-on [can be found on AMO](https://addons.mozil
 
 - Clone the repository
 - `npm install`
-- `npm run watch`
+- `npm run dev`
   - When doing UI dev and Parcel HMR is needed then set `security.csp.enable` to `false` in `about:config` and change back to `true` when you're done
 
 ### Run in Firefox
@@ -27,7 +27,7 @@ Check `about:debugging` and click `Inspect` to the right of Temporary Containers
 
 - Once: `npm test`
   - Shows a coverage summary and generates a detailed report in the `coverage` directory
-- Watcher: `npm run test:watch`
+- Watcher: `npm run watch:test`
 
 ### Release
 
