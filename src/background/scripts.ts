@@ -1,5 +1,5 @@
 import { TemporaryContainers } from './tmp';
-import { Debug, PreferencesSchema, Tab } from '~/types';
+import { Debug, PreferencesSchema } from '~/types';
 import { Utils } from './utils';
 
 export class Scripts {
