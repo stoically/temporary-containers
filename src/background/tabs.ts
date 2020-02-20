@@ -290,7 +290,6 @@ export class Tabs {
       }
       try {
         const newTab = await browser.tabs.create({
-          index: activeTab.index + 1,
           cookieStoreId: activeTab.cookieStoreId,
         });
         this.debug(
