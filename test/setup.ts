@@ -60,7 +60,7 @@ const fakeBrowser = (): {
     url: 'https://localhost',
     virtualConsole,
   });
-  const window = dom.window as GlobalWindow;
+  const window = dom.window as jsdom.DOMWindow;
 
   global.document = window.document;
   global.window = window;

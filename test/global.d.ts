@@ -5,7 +5,6 @@ import { BrowserFake } from 'webextensions-api-fake';
 declare global {
   interface GlobalWindow extends jsdom.DOMWindow {
     _mochaTest?: boolean;
-    AbortController: AbortController;
   }
 
   namespace NodeJS {
@@ -13,7 +12,10 @@ declare global {
       document: Document;
       window: GlobalWindow;
       browser: BrowserFake;
-      AbortController: AbortController;
+      AbortController: {
+        new (): AbortController;
+        prototype: AbortController;
+      };
     }
   }
 }
