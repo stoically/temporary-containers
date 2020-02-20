@@ -144,12 +144,10 @@
   },
   "lint-staged": {
     "*.{ts,js,vue}": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ],
     "*.{html,css,json,yml,md}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "private": true,
