@@ -46,6 +46,14 @@ export class EventListeners {
       { urls: ['<all_urls>'], types: ['main_frame'] },
       ['blocking', 'requestHeaders']
     );
+    browser.webRequest.onResponseStarted.addListener(
+      this.wrap(
+        browser.webRequest.onResponseStarted,
+        this.background.scripts,
+        'maybeExecute'
+      ),
+      { urls: ['<all_urls>'], types: ['main_frame'] }
+    );
     browser.webRequest.onCompleted.addListener(
       this.wrap(
         browser.webRequest.onCompleted,

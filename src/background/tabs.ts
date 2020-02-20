@@ -38,7 +38,6 @@ export class Tabs {
     this.mac = this.background.mac;
     this.history = this.background.history;
     this.cleanup = this.background.cleanup;
-    this.scripts = this.background.scripts;
 
     const tabs = (await browser.tabs.query({})) as Tab[];
     tabs.forEach(tab => this.registerTab(tab));
@@ -69,7 +68,6 @@ export class Tabs {
       const reopened = await this.maybeReopenInTmpContainer(tab);
       if (!reopened) {
         this.pageaction.showOrHide(tab);
-        this.scripts.maybeExecute(tab);
       }
     }
   }
