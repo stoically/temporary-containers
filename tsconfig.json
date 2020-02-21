@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2018",
+    "outDir": "./dist",
     "module": "commonjs",
-    "noEmit": true,
+    "noEmit": false,
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -10,6 +11,5 @@
     "paths": {
       "~/*": ["src/*"]
     }
-  },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  }
 }

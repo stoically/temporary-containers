@@ -87,7 +87,7 @@ export { default } from './popup.ts';
                 >
                   <svg width="16" height="16">
                     <image
-                      xlink:href="../../icons/page-w-16.svg"
+                      xlink:href="/icons/page-w-16.svg"
                       x="0"
                       y="0"
                       width="100%"
