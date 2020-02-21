@@ -8,6 +8,5 @@
 /src/core/LICENSE
 /src/.web-extension-id
 /.web-ext-artifacts
-/.cache
 /dist
 /*.todo

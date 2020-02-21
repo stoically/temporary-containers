@@ -64,6 +64,8 @@ module.exports = {
     }),
     new VueLoaderPlugin(),
     new CopyPlugin([
+      'README.md',
+      'LICENSE',
       'src/manifest.json',
       { from: 'src/icons', to: 'icons' },
       { from: 'src/_locales', to: '_locales' },
