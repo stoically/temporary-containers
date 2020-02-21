@@ -1,5 +1,14 @@
-<script>
-export { default } from './breadcrumb.ts';
+<script lang="ts">
+import Vue from 'vue';
+
+export default Vue.extend({
+  props: {
+    tab: {
+      type: String,
+      required: true,
+    },
+  },
+});
 </script>
 
 <template>
