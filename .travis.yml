@@ -12,21 +12,19 @@ addons:
   firefox: latest
 
 script:
-  - if [[ $TRAVIS_TAG == *"beta"* ]]; then
-    npm run lint;
-    npm run test;
-    npm run beta;
-    npm run webext:lint;
-    npm run check:dependencies;
+  - |
+    npm run lint
+    npm run test
+    if [[ $TRAVIS_TAG == *"beta"* ]]; then
+      npm run beta
     else
-    unset WEB_EXT_API_KEY;
-    unset WEB_EXT_API_SECRET;
-    npm run lint;
-    npm run test;
-    npm run build;
-    npm run webext:lint;
-    npm run check:dependencies;
+      unset WEB_EXT_API_KEY
+      unset WEB_EXT_API_SECRET
+      npm run build
     fi
+    npm run test:functional
+    npm run webext:lint
+    npm run check:dependencies
 
 after_success: npm run coverage
 
@@ -44,13 +42,14 @@ deploy:
     condition: $TRAVIS_TAG =~ beta
 
 after_deploy:
-  - if [[ $TRAVIS_TAG == *"beta"* ]]; then
-    git clone https://github.com/stoically/temporary-containers.git;
-    cd temporary-containers;
-    git checkout beta-updates;
-    export BETA_VERSION=$(echo $TRAVIS_TAG | sed "s/^v//");
-    sed -i -e "s/[0-9]\+\.[0-9]\+\(beta[0-9]\+\)\?/$BETA_VERSION/g" updates.json;
-    sed -i -e "s/-fx\\.xpi/-an\\+fx\\.xpi/" updates.json;
-    git commit -am "$TRAVIS_TAG";
-    git push https://$GITHUB_TOKEN:x-oauth-basic@github.com/stoically/temporary-containers.git/ beta-updates;
+  - |
+    if [[ $TRAVIS_TAG == *"beta"* ]]; then
+      git clone https://github.com/stoically/temporary-containers.git
+      cd temporary-containers
+      git checkout beta-updates
+      export BETA_VERSION=$(echo $TRAVIS_TAG | sed "s/^v//")
+      sed -i -e "s/[0-9]\+\.[0-9]\+\(beta[0-9]\+\)\?/$BETA_VERSION/g" updates.json
+      sed -i -e "s/-fx\\.xpi/-an\\+fx\\.xpi/" updates.json
+      git commit -am "$TRAVIS_TAG"
+      git push https://$GITHUB_TOKEN:x-oauth-basic@github.com/stoically/temporary-containers.git/ beta-updates
     fi
