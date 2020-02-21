@@ -12,17 +12,21 @@ addons:
   firefox: latest
 
 script:
-  - npm run lint;
+  - if [[ $TRAVIS_TAG == *"beta"* ]]; then
+    npm run lint;
     npm run test;
-    if [[ $TRAVIS_TAG == *"beta"* ]]; then
     npm run beta;
+    npm run webext:lint;
+    npm run check:dependencies;
     else
     unset WEB_EXT_API_KEY;
     unset WEB_EXT_API_SECRET;
+    npm run lint;
+    npm run test;
     npm run build;
-    fi
     npm run webext:lint;
     npm run check:dependencies;
+    fi
 
 after_success: npm run coverage
 
