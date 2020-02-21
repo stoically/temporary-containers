@@ -9,7 +9,6 @@ Detailed information about the Add-on [can be found on AMO](https://addons.mozil
 - Clone the repository
 - `npm install`
 - `npm run build`
-  - When doing UI dev and Parcel HMR is needed then set `security.csp.enable` to `false` in `about:config` and change back to `true` when you're done
 
 ### Run in Firefox
 

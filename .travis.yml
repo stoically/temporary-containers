@@ -12,8 +12,8 @@ addons:
   firefox: latest
 
 script:
-  - npm run lint
-    npm run test
+  - npm run lint;
+    npm run test;
     if [[ $TRAVIS_TAG == *"beta"* ]]; then
     npm run beta;
     else
@@ -21,8 +21,8 @@ script:
     unset WEB_EXT_API_SECRET;
     npm run build;
     fi
-    npm run webext:lint
-    npm run check:dependencies
+    npm run webext:lint;
+    npm run check:dependencies;
 
 after_success: npm run coverage
 
