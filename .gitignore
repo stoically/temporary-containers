@@ -1,6 +1,5 @@
 /node_modules
 /web-ext-artifacts
-/package-lock.json
 /.nyc_output
 /coverage
 /semantic
