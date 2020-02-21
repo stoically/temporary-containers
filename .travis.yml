@@ -15,11 +15,11 @@ script:
   - npm run lint
     npm run test
     if [[ $TRAVIS_TAG == *"beta"* ]]; then
-    npm run beta
+    npm run beta;
     else
-    unset WEB_EXT_API_KEY
-    unset WEB_EXT_API_SECRET
-    npm run build
+    unset WEB_EXT_API_KEY;
+    unset WEB_EXT_API_SECRET;
+    npm run build;
     fi
     npm run webext:lint
     npm run check:dependencies
