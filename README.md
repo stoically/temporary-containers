@@ -1,6 +1,9 @@
-# Temporary Containers Firefox Add-on [![Build Status](https://travis-ci.com/stoically/temporary-containers.svg?branch=master)](https://travis-ci.com/stoically/temporary-containers)
+# Temporary Containers Firefox Add-on
 
-Detailed information about the Add-on [can be found on AMO](https://addons.mozilla.org/firefox/addon/temporary-containers/). There's also [this long-form article](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21) and the [project wiki](https://github.com/stoically/temporary-containers/wiki).
+[![Build Status](https://travis-ci.com/stoically/temporary-containers.svg?branch=master)](https://travis-ci.com/stoically/temporary-containers)
+[![Temporary Containers Matrix room #tmp:mozilla.org](https://img.shields.io/matrix/temporary-containers:matrix.org.svg?label=%23tmp:mozilla.org&logo=matrix&server_fqdn=matrix.org)](https://matrix.to/#/#tmp:mozilla.org)
+
+Detailed information about the Add-on [can be found in the wiki](https://github.com/stoically/temporary-containers/wiki). There's also [this long-form article](https://medium.com/@stoically/enhance-your-privacy-in-firefox-with-temporary-containers-33925cd6cd21).
 
 ## Development
 
