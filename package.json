@@ -53,7 +53,7 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/chai": "^4.2.9",
     "@types/firefox-webext-browser": "github:stoically/DefinitelyTyped#firefox-webext-browser-dist",
-    "@types/jquery": "^3.3.32",
+    "@types/jquery": "^3.3.33",
     "@types/jquery.address": "^1.5.29",
     "@types/jsdom": "^16.1.0",
     "@types/mocha": "^7.0.1",
