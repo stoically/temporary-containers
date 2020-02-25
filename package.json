@@ -64,7 +64,7 @@
     "@types/sinon": "^7.5.1",
     "@types/sinon-chai": "^3.2.3",
     "@types/sinon-chrome": "^2.2.6",
-    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
     "@typescript-eslint/parser": "^2.20.0",
     "@vue/component-compiler-utils": "^3.1.1",
     "babel-eslint": "^10.0.3",
