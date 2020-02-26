@@ -67,7 +67,7 @@
     "@typescript-eslint/eslint-plugin": "^2.21.0",
     "@typescript-eslint/parser": "^2.21.0",
     "@vue/component-compiler-utils": "^3.1.1",
-    "babel-eslint": "^10.0.3",
+    "babel-eslint": "^10.1.0",
     "chai": "^4.2.0",
     "chai-deep-match": "^1.2.1",
     "copy-webpack-plugin": "^5.1.1",
