@@ -39,7 +39,7 @@ export default mixins(mixin).extend({
 
     this.initTabs();
 
-    browser.runtime.onMessage.addListener(message => {
+    browser.runtime.onMessage.addListener((message) => {
       if (typeof message !== 'object') {
         return;
       }
@@ -89,23 +89,23 @@ export default mixins(mixin).extend({
     <div v-show="app.initialized">
       <div class="ui menu">
         <a class="item" data-tab="general">
-          <i class="icon-cog-alt" style="margin-right: 5px" />
+          <i class="icon-cog-alt" style="margin-right: 5px;" />
           {{ t('optionsNavGeneral') }}</a
         >
         <a class="item" data-tab="isolation">
-          <i class="icon-circle-empty" style="margin-right: 2px" />
+          <i class="icon-circle-empty" style="margin-right: 2px;" />
           {{ t('optionsNavIsolation') }}</a
         >
         <a class="item" data-tab="advanced">
-          <i class="graduation cap icon" style="margin-right: 5px" />
+          <i class="graduation cap icon" style="margin-right: 5px;" />
           {{ t('optionsNavAdvanced') }}</a
         >
         <a class="item" data-tab="statistics">
-          <i class="icon-chart-bar" style="margin-right: 5px" />
+          <i class="icon-chart-bar" style="margin-right: 5px;" />
           {{ t('optionsNavStatistics') }}</a
         >
         <a class="item" data-tab="export-import">
-          <i class="save icon" style="margin-right: 5px" />
+          <i class="save icon" style="margin-right: 5px;" />
           {{ t('optionsNavExportImport') }}
         </a>
       </div>

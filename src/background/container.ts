@@ -338,7 +338,7 @@ export class Container {
     let containerIcon = this.pref.container.icon;
     if (this.pref.container.iconRandom) {
       let containerIcons = this.containerIcons.filter(
-        icon => !this.pref.container.iconRandomExcluded.includes(icon)
+        (icon) => !this.pref.container.iconRandomExcluded.includes(icon)
       );
       if (!containerIcons.length) {
         containerIcons = this.containerIcons;
@@ -437,7 +437,7 @@ export class Container {
 
     if (!availableColors.length) {
       availableColors = this.containerColors.filter(
-        color => !this.pref.container.colorRandomExcluded.includes(color)
+        (color) => !this.pref.container.colorRandomExcluded.includes(color)
       );
       if (!availableColors.length) {
         availableColors = this.containerColors;
@@ -449,7 +449,7 @@ export class Container {
 
   removeFromStorage(cookieStoreId: CookieStoreId): Promise<boolean> {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-      containerNumber =>
+      (containerNumber) =>
         this.storage.local.tempContainers[cookieStoreId].number !==
         containerNumber
     );
@@ -472,12 +472,12 @@ export class Container {
   cleanupNumbers(): void {
     this.storage.local.tempContainersNumbers = Object.values(
       this.storage.local.tempContainers
-    ).map(container => container.number);
+    ).map((container) => container.number);
   }
 
   cleanupNumber(cookieStoreId: CookieStoreId): void {
     this.storage.local.tempContainersNumbers = this.storage.local.tempContainersNumbers.filter(
-      containerNumber =>
+      (containerNumber) =>
         this.storage.local.tempContainers[cookieStoreId].number !==
         containerNumber
     );

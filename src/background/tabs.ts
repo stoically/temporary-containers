@@ -40,7 +40,7 @@ export class Tabs {
     this.cleanup = this.background.cleanup;
 
     const tabs = (await browser.tabs.query({})) as Tab[];
-    tabs.forEach(tab => this.registerTab(tab));
+    tabs.forEach((tab) => this.registerTab(tab));
   }
 
   // onUpdated sometimes (often) fires before onCreated
@@ -132,7 +132,7 @@ export class Tabs {
 
   async handleAlreadyOpen(): Promise<(void | boolean)[]> {
     const tabs = (await browser.tabs.query({})) as Tab[];
-    return Promise.all(tabs.map(tab => this.maybeReopenInTmpContainer(tab)));
+    return Promise.all(tabs.map((tab) => this.maybeReopenInTmpContainer(tab)));
   }
 
   async maybeReopenInTmpContainer(tab: Tab): Promise<void | boolean> {

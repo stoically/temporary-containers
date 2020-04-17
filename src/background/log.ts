@@ -30,7 +30,7 @@ export class Log {
       date = new Date().toUTCString();
     }
 
-    args = args.map(arg => {
+    args = args.map((arg) => {
       if (typeof arg === 'object' && arg.favIconUrl) {
         arg = JSON.parse(JSON.stringify(arg));
         delete arg.favIconUrl;
@@ -40,7 +40,7 @@ export class Log {
     });
 
     if (this.stringify && !window._mochaTest) {
-      console.log(date, ...args.map(value => JSON.stringify(value)));
+      console.log(date, ...args.map((value) => JSON.stringify(value)));
       console.log('------------------------------------------');
     } else {
       console.log(date, ...args.slice(0));
@@ -54,7 +54,7 @@ export class Log {
 
     // let's put this in the js event queue, just to make sure
     // that localstorage doesn't block registering event-listeners at all
-    return new Promise(resolve =>
+    return new Promise((resolve) =>
       setTimeout(() => {
         if (window.localStorage.getItem('debug-dev') === 'true') {
           this.DEBUG = true;

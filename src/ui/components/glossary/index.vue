@@ -88,7 +88,7 @@ export default Vue.extend({
             iconHovered = false;
           }
         );
-        $(infoIcon).click(event => {
+        $(infoIcon).click((event) => {
           event.stopPropagation();
           event.preventDefault();
 
@@ -100,7 +100,7 @@ export default Vue.extend({
           hoverable: true,
           position: 'bottom left',
 
-          onShow: popupElement => {
+          onShow: (popupElement) => {
             if (!iconHovered) {
               return false;
             }
@@ -174,7 +174,7 @@ export default Vue.extend({
       event.preventDefault();
     },
     cleanup(): void {
-      this.createdElements.map(created => {
+      this.createdElements.map((created) => {
         created.remove();
       });
     },
@@ -237,7 +237,7 @@ ul {
     v-if="app.initialized"
     ref="glossary"
     class="ui popup glossary"
-    style="padding: 0"
+    style="padding: 0;"
     @click="stop"
   >
     <div ref="glossaryContainer" class="glossary-container">
@@ -258,7 +258,7 @@ ul {
           <i v-else class="angle right icon glossary-history-btn-inactive" />
         </span>
       </div>
-      <div class="ui divider" style="margin: 0" />
+      <div class="ui divider" style="margin: 0;" />
       <div class="glossary-content">
         <div v-show="active === 'Navigation'">
           Opening <glossary-link to="Target Domain" text="Target Domains" /> in
@@ -292,7 +292,7 @@ ul {
             <li><glossary-link to="Different from Tab Domain" /></li>
             <li><glossary-link to="Always" /></li>
           </ul>
-          <div style="font-size: 12px">
+          <div style="font-size: 12px;">
             Note: With Navigation Isolation configured, you don't need to
             configure Mouse Click additionally. Also, not every Mouse Click can
             get catched, since some websites execute arbitrary logic
@@ -396,7 +396,7 @@ ul {
         <div v-show="active === 'Always'">
           Matches every <glossary-link to="Navigation" /><br />
           <br />
-          <div style="font-size: 12px">
+          <div style="font-size: 12px;">
             Note: Not every on-website navigation is an actual navigation that
             can be detected by the Add-on. This happens if websites load content
             dynamically (with JavaScript), which is done often nowadays.
@@ -530,7 +530,7 @@ ul {
               Open new "Deletes History Temporary Container
             </li>
           </ul>
-          <span style="font-size:13px">
+          <span style="font-size: 13px;">
             Note: You can change the default popup tab in the Advanced
             preferences
           </span>

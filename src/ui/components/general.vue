@@ -21,19 +21,19 @@ export default mixins(mixin).extend({
       permissions: this.app.permissions,
       initialized: false,
       show: false,
-      containerColors: CONTAINER_COLORS.map(containerColor => ({
+      containerColors: CONTAINER_COLORS.map((containerColor) => ({
         id: containerColor,
         text: this.t(
           `optionsGeneralContainerColor${containerColor.capitalize()}`
         ),
       })),
-      containerIcons: CONTAINER_ICONS.map(containerIcon => ({
+      containerIcons: CONTAINER_ICONS.map((containerIcon) => ({
         id: containerIcon,
         text: this.t(
           `optionsGeneralContainerIcon${containerIcon.capitalize()}`
         ),
       })),
-      toolbarIconColors: TOOLBAR_ICON_COLORS.map(toolbarIconColor => ({
+      toolbarIconColors: TOOLBAR_ICON_COLORS.map((toolbarIconColor) => ({
         id: toolbarIconColor,
         text: this.t(
           `optionsGeneralToolbarIconColor${toolbarIconColor
@@ -49,7 +49,7 @@ export default mixins(mixin).extend({
 
     $('#containerColorRandomExcluded').dropdown({
       placeholder: 'Select colors to exclude from random selection',
-      values: this.containerColors.map(color => ({
+      values: this.containerColors.map((color) => ({
         name: color.text,
         value: color.id,
         selected: !!this.preferences.container.colorRandomExcluded.includes(
@@ -57,7 +57,7 @@ export default mixins(mixin).extend({
         ),
       })),
       maxSelections: this.containerColors.length - 2,
-      onAdd: addedColor => {
+      onAdd: (addedColor) => {
         if (
           this.preferences.container.colorRandomExcluded.includes(addedColor)
         ) {
@@ -65,11 +65,11 @@ export default mixins(mixin).extend({
         }
         this.preferences.container.colorRandomExcluded.push(addedColor);
       },
-      onRemove: removedColor => {
+      onRemove: (removedColor) => {
         this.$delete(
           this.preferences.container.colorRandomExcluded,
           this.preferences.container.colorRandomExcluded.findIndex(
-            excludedColor => excludedColor === removedColor
+            (excludedColor) => excludedColor === removedColor
           )
         );
       },
@@ -77,7 +77,7 @@ export default mixins(mixin).extend({
 
     $('#containerIconRandomExcluded').dropdown({
       placeholder: 'Select icons to exclude from random selection',
-      values: this.containerIcons.map(icon => {
+      values: this.containerIcons.map((icon) => {
         return {
           name: icon.text,
           value: icon.id,
@@ -87,17 +87,17 @@ export default mixins(mixin).extend({
         };
       }),
       maxSelections: this.containerIcons.length - 2,
-      onAdd: addedIcon => {
+      onAdd: (addedIcon) => {
         if (this.preferences.container.iconRandomExcluded.includes(addedIcon)) {
           return;
         }
         this.preferences.container.iconRandomExcluded.push(addedIcon);
       },
-      onRemove: removedIcon => {
+      onRemove: (removedIcon) => {
         this.$delete(
           this.preferences.container.iconRandomExcluded,
           this.preferences.container.iconRandomExcluded.findIndex(
-            excludedIcon => excludedIcon === removedIcon
+            (excludedIcon) => excludedIcon === removedIcon
           )
         );
       },
@@ -281,7 +281,7 @@ export default mixins(mixin).extend({
         <div
           v-if="
             preferences.container.numberMode === 'keep' &&
-              app.storage.tempContainerCounter > 0
+            app.storage.tempContainerCounter > 0
           "
         >
           <button class="ui tiny button" @click="resetContainerNumber()">

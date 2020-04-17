@@ -91,7 +91,7 @@ export class Isolation {
       this.pref.isolation.global.excluded
     );
     if (excludedDomainPatterns.length) {
-      const excluded = excludedDomainPatterns.find(excludedDomainPattern => {
+      const excluded = excludedDomainPatterns.find((excludedDomainPattern) => {
         return this.utils.matchDomainPattern(
           request.url,
           excludedDomainPattern

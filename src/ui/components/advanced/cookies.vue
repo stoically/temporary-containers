@@ -56,7 +56,7 @@ export default mixins(mixin).extend({
         cookieDomainPattern: 'empty',
         cookieUrl: 'empty',
       },
-      onSuccess: event => {
+      onSuccess: (event) => {
         event.preventDefault();
         if (!this.editing) {
           this.addCookie();
@@ -209,7 +209,7 @@ export default mixins(mixin).extend({
       </div>
       <div
         id="cookieAccordion"
-        style="margin-top: 15px; margin-bottom: 15px"
+        style="margin-top: 15px; margin-bottom: 15px;"
         class="ui accordion"
       >
         <div class="title">
@@ -312,19 +312,19 @@ export default mixins(mixin).extend({
                   <div
                     v-for="cookieKey in cookieKeys(domainCookie)"
                     :key="cookieKey"
-                    style="padding-bottom: 5px"
+                    style="padding-bottom: 5px;"
                     class="item"
                   >
-                    <div class="ui horizontal label" style="margin-top: 5px">
+                    <div class="ui horizontal label" style="margin-top: 5px;">
                       {{ cookieKey }}
                     </div>
-                    <div v-if="cookieKey == 'value'" style="margin-top: 8px" />
+                    <div v-if="cookieKey == 'value'" style="margin-top: 8px;" />
                     {{ domainCookie[cookieKey] }}
                   </div>
                   <div class="item">
                     <button
                       class="ui right primary small button"
-                      style="margin-top: 10px"
+                      style="margin-top: 10px;"
                       @click="editCookie(cookiesDomainPattern, index)"
                     >
                       <i class="icon-pencil" />
@@ -332,7 +332,7 @@ export default mixins(mixin).extend({
                     </button>
                     <button
                       class="ui right negative small button"
-                      style="margin-top: 10px"
+                      style="margin-top: 10px;"
                       @click="removeCookie(cookiesDomainPattern, index)"
                     >
                       <i class="icon-trash-empty" />

@@ -40,7 +40,7 @@ describe('Temporary Containers', () => {
     const button = await helper.toolbarButton();
 
     // give the extension a chance to fully initialize
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 1500));
 
     button.click();
 

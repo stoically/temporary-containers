@@ -62,7 +62,7 @@ export class Statistics {
     }
     if (!request.fromCache && request.responseHeaders) {
       const contentLength = request.responseHeaders.find(
-        header => header.name === 'content-length'
+        (header) => header.name === 'content-length'
       );
       if (contentLength && contentLength.value) {
         this.requests[tab.cookieStoreId].contentLength += parseInt(

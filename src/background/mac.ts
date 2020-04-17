@@ -71,7 +71,7 @@ export class MultiAccountContainers {
       const parsedURL = new URL(tab.url);
       const queryParams = parsedURL.search
         .split('&')
-        .map(param => param.split('='));
+        .map((param) => param.split('='));
 
       const confirmPage: ConfirmPage = {
         tab,

@@ -507,7 +507,7 @@ export const CONTAIN_URLS: Map<
   ],
 ]);
 
-CONTAIN_URLS.forEach(containWhat => {
+CONTAIN_URLS.forEach((containWhat) => {
   for (const url of containWhat.urls) {
     containWhat.REs.push(new RegExp(`^(.*\\.)?${url}$`));
   }

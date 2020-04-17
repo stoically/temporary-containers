@@ -48,7 +48,7 @@ export default mixins(mixin).extend({
         scriptDomainPattern: 'empty',
         scriptCode: 'empty',
       },
-      onSuccess: event => {
+      onSuccess: (event) => {
         event.preventDefault();
         if (!this.editing) {
           this.addScript();
@@ -222,7 +222,7 @@ export default mixins(mixin).extend({
                   </button>
                   <button
                     class="ui right negative small button"
-                    style="margin-top: 10px"
+                    style="margin-top: 10px;"
                     @click="removeScript(scriptDomainPattern, index)"
                   >
                     <i class="icon-trash-empty" />

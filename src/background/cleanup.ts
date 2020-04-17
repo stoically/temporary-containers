@@ -152,7 +152,7 @@ export class Cleanup {
       return;
     }
 
-    containers.map(cookieStoreId =>
+    containers.map((cookieStoreId) =>
       this.addToRemoveQueue(cookieStoreId, startup)
     );
   }

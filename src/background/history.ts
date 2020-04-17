@@ -43,7 +43,7 @@ export class History {
     if (container && container.deletesHistory && container.history) {
       const urls = Object.keys(container.history);
       count = urls.length;
-      urls.map(url => {
+      urls.map((url) => {
         if (!url) {
           return;
         }

@@ -217,14 +217,14 @@ export class EventListeners {
   }
 
   public tmpInitialized = (): void => {
-    this.tmpInitializedPromiseResolvers.map(resolver => {
+    this.tmpInitializedPromiseResolvers.map((resolver) => {
       resolver.resolve();
       window.clearTimeout(resolver.timeout);
     });
   };
 
   remove(): void {
-    this.listeners.map(listener => {
+    this.listeners.map((listener) => {
       listener.api.removeListener(listener.listener);
     });
   }

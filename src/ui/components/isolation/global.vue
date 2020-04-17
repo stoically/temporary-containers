@@ -70,7 +70,7 @@ export default Vue.extend({
       selected: boolean;
     }[] = [];
     const containers = await browser.contextualIdentities.query({});
-    containers.map(container => {
+    containers.map((container) => {
       if (this.storage.tempContainers[container.cookieStoreId]) {
         return;
       }
@@ -87,7 +87,7 @@ export default Vue.extend({
         ? 'Select Permanent Containers to Exclude from Isolation'
         : 'Permanent Containers to Exclude',
       values: excludeContainers,
-      onAdd: addedContainer => {
+      onAdd: (addedContainer) => {
         if (
           this.preferences.isolation.global.excludedContainers[addedContainer]
         ) {
@@ -99,7 +99,7 @@ export default Vue.extend({
           {}
         );
       },
-      onRemove: removedContainer => {
+      onRemove: (removedContainer) => {
         this.$delete(
           this.preferences.isolation.global.excludedContainers,
           removedContainer
@@ -111,7 +111,7 @@ export default Vue.extend({
       fields: {
         isolationGlobalExcludeDomainPattern: 'empty',
       },
-      onSuccess: event => {
+      onSuccess: (event) => {
         event.preventDefault();
         this.$set(
           this.preferences.isolation.global.excluded,
@@ -247,7 +247,7 @@ export default Vue.extend({
                       .global.excluded"
                     :key="excludedDomainPattern"
                   >
-                    <div style="margin-top: 5px" />
+                    <div style="margin-top: 5px;" />
                     <span
                       :data-tooltip="`Remove ${excludedDomainPattern}`"
                       data-position="right center"

@@ -48,7 +48,7 @@ export class Migration {
       this.debug(
         'updated from version <= 0.91, migrate container numbers into dedicated array'
       );
-      Object.values(this.storage.local.tempContainers).map(container => {
+      Object.values(this.storage.local.tempContainers).map((container) => {
         this.storage.local.tempContainersNumbers.push(container.number);
       });
     }
@@ -80,7 +80,7 @@ export class Migration {
         'updated from version <= 0.103, migrate per domain isolation to array'
       );
       const perDomainIsolation: IsolationDomain[] = [];
-      Object.keys(preferences.isolation.domain).map(domainPattern => {
+      Object.keys(preferences.isolation.domain).map((domainPattern) => {
         perDomainIsolation.push(
           Object.assign(
             {

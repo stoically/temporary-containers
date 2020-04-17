@@ -155,7 +155,7 @@ export class Cookies {
         return;
       } else {
         const changedCookieHeaderValues: string[] = [];
-        Object.keys(cookiesHeader).map(cookieName => {
+        Object.keys(cookiesHeader).map((cookieName) => {
           changedCookieHeaderValues.push(
             `${cookieName}=${cookiesHeader[cookieName]}`
           );

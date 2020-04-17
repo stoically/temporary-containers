@@ -51,7 +51,7 @@ export class Utils {
   }): boolean {
     let addedMissing = false;
     const addKeys = (defaultsNode: any, sourceNode: any): void => {
-      Object.keys(defaultsNode).map(key => {
+      Object.keys(defaultsNode).map((key) => {
         if (sourceNode[key] === undefined) {
           this.debug(
             '[addMissingKeys] key not found, setting default',

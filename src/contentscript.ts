@@ -1,6 +1,6 @@
 document.body.addEventListener(
   'mouseup',
-  async event => {
+  async (event) => {
     // event valid?
     if (typeof event !== 'object' || typeof event.target !== 'object') {
       return;
@@ -14,7 +14,7 @@ document.body.addEventListener(
     // sometimes websites change links on click
     // so we wait for the next tick and with that increase
     // the chance that we actually see the correct link
-    await new Promise(resolve => setTimeout(resolve));
+    await new Promise((resolve) => setTimeout(resolve));
 
     // check for a element with href
     const target = event?.target as HTMLElement | null;

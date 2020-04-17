@@ -188,7 +188,7 @@ export class Request {
 
     if (
       this.pref.ignoreRequests.length &&
-      this.pref.ignoreRequests.find(ignorePattern => {
+      this.pref.ignoreRequests.find((ignorePattern) => {
         return this.utils.matchDomainPattern(request.url, ignorePattern);
       })
     ) {

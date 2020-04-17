@@ -30,7 +30,7 @@ export default Vue.extend({
       fields: {
         advancedIgnoreRequestsPattern: 'empty',
       },
-      onSuccess: event => {
+      onSuccess: (event) => {
         event.preventDefault();
         if (
           !this.preferences.ignoreRequests.includes(this.excludeDomainPattern)
@@ -78,7 +78,7 @@ export default Vue.extend({
     },
     removeIgnoredDomain(ignoredPattern: string): void {
       this.preferences.ignoreRequests = this.preferences.ignoreRequests.filter(
-        _ignoredPattern => ignoredPattern !== _ignoredPattern
+        (_ignoredPattern) => ignoredPattern !== _ignoredPattern
       );
     },
   },
@@ -315,7 +315,7 @@ export default Vue.extend({
           Boolean <strong>true</strong> to unignore <i>addons.mozilla.org</i>,
           since it's deemed a serious security risk by Mozilla.
         </div>
-        <div style="margin-left: 20px">
+        <div style="margin-left: 20px;">
           <div v-if="!preferences.ignoreRequests.length">
             No domains ignored
           </div>
@@ -324,7 +324,7 @@ export default Vue.extend({
               v-for="ignoredPattern in preferences.ignoreRequests"
               :key="ignoredPattern"
             >
-              <div style="margin-top: 5px" />
+              <div style="margin-top: 5px;" />
               <span
                 data-tooltip="Remove"
                 style="color: red; cursor: pointer;"

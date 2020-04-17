@@ -45,11 +45,11 @@ declare global {
   }
 }
 
-String.prototype.capitalize = function(): string {
+String.prototype.capitalize = function (): string {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-Array.prototype.move = function(from, to): void {
+Array.prototype.move = function (from, to): void {
   this.splice(to, 0, this.splice(from, 1)[0]);
 };
 

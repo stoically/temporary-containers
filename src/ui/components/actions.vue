@@ -99,8 +99,8 @@ export default Vue.extend({
       class="ui negative button"
       :disabled="
         !isHttpTab ||
-          activeTab.cookieStoreId === 'firefox-default' ||
-          app.storage.tempContainers[activeTab.cookieStoreId]
+        activeTab.cookieStoreId === 'firefox-default' ||
+        app.storage.tempContainers[activeTab.cookieStoreId]
       "
       @click="convertToTemporary"
     >
@@ -112,8 +112,8 @@ export default Vue.extend({
       class="ui negative button"
       :disabled="
         !isHttpTab ||
-          !app.storage.tempContainers[activeTab.cookieStoreId] ||
-          !app.storage.tempContainers[activeTab.cookieStoreId].deletesHistory
+        !app.storage.tempContainers[activeTab.cookieStoreId] ||
+        !app.storage.tempContainers[activeTab.cookieStoreId].deletesHistory
       "
       @click="convertToRegular"
     >

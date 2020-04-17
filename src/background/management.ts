@@ -13,7 +13,7 @@ export class Management {
   async initialize(): Promise<void> {
     try {
       const extensions = await browser.management.getAll();
-      extensions.map(extension => {
+      extensions.map((extension) => {
         const addon = this.addons.get(extension.id);
         if (addon) {
           addon.enabled = extension.enabled;

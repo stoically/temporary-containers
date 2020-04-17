@@ -220,7 +220,7 @@ export default mixins(mixin).extend({
         return;
       }
 
-      const importPreferences = await new Promise(resolve => {
+      const importPreferences = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsText(file, 'UTF-8');
         reader.onload = async (event): Promise<void> => {
@@ -292,7 +292,7 @@ export default mixins(mixin).extend({
     },
 
     addDownloadListener(): void {
-      browser.downloads.onChanged.addListener(async downloadDelta => {
+      browser.downloads.onChanged.addListener(async (downloadDelta) => {
         console.log('downloadDelta', downloadDelta);
         if (
           !this.download ||
@@ -340,7 +340,7 @@ export default mixins(mixin).extend({
             Export to local file
           </button>
         </div>
-        <div v-if="lastFileExport" class="field" style="margin-bottom: 30px">
+        <div v-if="lastFileExport" class="field" style="margin-bottom: 30px;">
           <h5>Last local file export</h5>
           <div>
             <ul>

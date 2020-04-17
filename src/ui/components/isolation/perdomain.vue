@@ -91,13 +91,13 @@ export default mixins(mixin).extend({
           this.editing = false;
           this.domain = this.clone(domain);
           const domainIndex = this.preferences.isolation.domain.findIndex(
-            isolatedDomain => !isolatedDomain.pattern.trim()
+            (isolatedDomain) => !isolatedDomain.pattern.trim()
           );
           this.$delete(this.preferences.isolation.domain, domainIndex);
         } else if (
           !this.editing &&
           this.preferences.isolation.domain.find(
-            _domain => _domain.pattern === domain.pattern
+            (_domain) => _domain.pattern === domain.pattern
           )
         ) {
           $('#isolationDomainForm').form('validate form');
@@ -144,7 +144,7 @@ export default mixins(mixin).extend({
         return true;
       } else {
         return !this.preferences.isolation.domain.find(
-          domain => domain.pattern === value
+          (domain) => domain.pattern === value
         );
       }
     };
@@ -165,7 +165,7 @@ export default mixins(mixin).extend({
           ],
         },
       },
-      onSuccess: event => {
+      onSuccess: (event) => {
         if (event) {
           event.preventDefault();
         }
@@ -185,7 +185,7 @@ export default mixins(mixin).extend({
       fields: {
         isolationDomainExcludeDomainPattern: 'empty',
       },
-      onSuccess: event => {
+      onSuccess: (event) => {
         event.preventDefault();
         this.$set(this.domain.excluded, this.excludeDomainPattern, {});
         this.excludeDomainPattern = '';
@@ -197,7 +197,7 @@ export default mixins(mixin).extend({
         return;
       }
       const isolationDomainIndex = this.preferences.isolation.domain.findIndex(
-        domain => domain.pattern === this.app.activeTab?.parsedUrl.hostname
+        (domain) => domain.pattern === this.app.activeTab?.parsedUrl.hostname
       );
       if (isolationDomainIndex >= 0) {
         this.edit(isolationDomainIndex);
@@ -335,7 +335,7 @@ export default mixins(mixin).extend({
       </form>
       <div
         id="isolationPerDomainAccordion"
-        style="margin-top: 15px"
+        style="margin-top: 15px;"
         :style="empty ? 'opacity: 0.3; pointer-events: none' : ''"
         class="ui accordion"
       >
@@ -363,7 +363,7 @@ export default mixins(mixin).extend({
               </option>
             </select>
             <div v-show="domain.always.action === 'enabled'">
-              <div class="ui checkbox" style="margin-top: 14px">
+              <div class="ui checkbox" style="margin-top: 14px;">
                 <input
                   v-model="domain.always.allowedInPermanent"
                   type="checkbox"
@@ -377,7 +377,7 @@ export default mixins(mixin).extend({
                 </label>
               </div>
               <div />
-              <div class="ui checkbox" style="margin-top: 14px">
+              <div class="ui checkbox" style="margin-top: 14px;">
                 <input
                   v-model="domain.always.allowedInTemporary"
                   type="checkbox"
@@ -471,7 +471,7 @@ export default mixins(mixin).extend({
                     v-for="(_, excludedDomainPattern) in domain.excluded"
                     :key="excludedDomainPattern"
                   >
-                    <div style="margin-top: 5px" />
+                    <div style="margin-top: 5px;" />
                     <span
                       :data-tooltip="Remove"
                       style="margin-top: 10px; color: red; cursor: pointer;"
@@ -511,7 +511,7 @@ export default mixins(mixin).extend({
     <div id="isolationDomainsAccordion" :class="{ 'ui accordion': popup }">
       <div
         v-if="!Object.keys(isolationDomains).length && !isolationDomainFilter"
-        style="margin-top: 10px"
+        style="margin-top: 10px;"
         :class="{ content: popup }"
       >
         No Isolated Domains added yet
@@ -524,7 +524,7 @@ export default mixins(mixin).extend({
               Object.keys(isolationDomains).length > 1 || isolationDomainFilter
             "
             class="ui icon mini input"
-            style="margin-right: 10px"
+            style="margin-right: 10px;"
           >
             <input
               ref="isolationDomainFilter"
@@ -545,7 +545,7 @@ export default mixins(mixin).extend({
           </span>
         </div>
         <div :class="{ content: popup }">
-          <div style="margin-top: 5px" />
+          <div style="margin-top: 5px;" />
           <draggable
             v-model="isolationDomains"
             group="isolationDomains"
@@ -561,7 +561,7 @@ export default mixins(mixin).extend({
                 data-position="right center"
                 @click="edit(isolatedDomain._index)"
               >
-                <i class="icon-pencil" style="color: #2185d0" />
+                <i class="icon-pencil" style="color: #2185d0;" />
               </span>
               <span
                 :data-tooltip="`Remove ${isolatedDomain.pattern}`"
@@ -583,7 +583,7 @@ export default mixins(mixin).extend({
                 <i
                   v-if="isolationDomains.length > 1"
                   class="hand rock icon"
-                  style="color: #2185d0; margin-left: 3px; opacity: 0.8"
+                  style="color: #2185d0; margin-left: 3px; opacity: 0.8;"
                 />
               </span>
               {{ isolatedDomain.pattern }}

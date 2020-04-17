@@ -15,7 +15,7 @@ export default Vue.extend({
   <div>
     <div
       class="ui breadcrumb"
-      style="font-size: 13px"
+      style="font-size: 13px;"
       :data-glossary="tab"
       data-glossary-label=""
     >
@@ -27,6 +27,6 @@ export default Vue.extend({
         {{ tab }}
       </div>
     </div>
-    <div class="ui divider" style="margin: 5px 0 10px 0" />
+    <div class="ui divider" style="margin: 5px 0 10px 0;" />
   </div>
 </template>

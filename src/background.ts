@@ -3,7 +3,7 @@ import { TemporaryContainers } from './background/tmp';
 window.tmp = new TemporaryContainers();
 window.tmp
   .initialize()
-  .then(tmp => {
+  .then((tmp) => {
     if (tmp.storage.installed) {
       tmp.debug('[bg] fresh install, showing options');
       browser.tabs.create({
@@ -11,7 +11,7 @@ window.tmp
       });
     }
   })
-  .catch(error => {
+  .catch((error) => {
     browser.browserAction.onClicked.addListener(() => {
       browser.tabs.create({
         url: browser.runtime.getURL(`
