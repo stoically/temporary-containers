@@ -1,3 +1,15 @@
+import jQuery from 'jquery';
+declare global {
+  interface Window {
+    $: JQueryStatic;
+    jQuery: JQueryStatic;
+  }
+}
+window.$ = window.jQuery = jQuery;
+
+import 'jquery-address';
+import 'sortablejs';
+import 'fomantic-ui';
 import Vue, { VNode } from 'vue';
 import { ExtendedVue } from 'vue/types/vue';
 import { getPermissions } from '~/shared';

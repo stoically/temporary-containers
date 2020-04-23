@@ -1,5 +1,6 @@
 /* eslint-disable */
 const path = require('path');
+const { IgnorePlugin } = require('webpack');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
@@ -33,6 +34,10 @@ module.exports = {
         test: /\.css$/,
         use: ['vue-style-loader', 'css-loader'],
       },
+      {    
+        test: /\.(woff2)$/,
+        loader: "file-loader",
+      }
     ],
   },
   optimization: {
@@ -53,12 +58,12 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/ui/options.html',
+      template: 'src/ui/ui.html',
       filename: 'options.html',
       chunks: ['options'],
     }),
     new HtmlWebpackPlugin({
-      template: 'src/ui/popup.html',
+      template: 'src/ui/ui.html',
       filename: 'popup.html',
       chunks: ['popup'],
     }),
@@ -71,5 +76,8 @@ module.exports = {
       { from: 'src/_locales', to: '_locales' },
       { from: 'src/ui/vendor', to: 'vendor' },
     ]),
+    new IgnorePlugin({
+      resourceRegExp: /\.(ttf|woff|eot|svg|png)/,
+    })
   ],
 };
