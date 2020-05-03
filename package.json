@@ -17,6 +17,7 @@
     "format": "prettier --write '{*,src/**/*,test/**/*}.{html,css,json,yml,md}'",
     "test": "nyc --reporter=html --reporter=text ts-mocha --paths -p tsconfig.json test/*.test.ts",
     "test:functional": "ts-mocha ./test/functional/*.test.ts --timeout 10000",
+    "dev": "webpack-dev-server --mode development",
     "watch:test": "ts-mocha --paths -p tsconfig.json test/*.test.ts --watch",
     "watch:test:verbose": "ts-mocha --paths -p tsconfig.json test/*.test.ts --tmp-debug --watch",
     "check:dependencies": "ncu",
@@ -104,7 +105,8 @@
     "webextensions-api-fake": "^1.2.0",
     "webextensions-geckodriver": "^0.6.1",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "browserslist": [
     "Firefox >= 67"

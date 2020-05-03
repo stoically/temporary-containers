@@ -75,4 +75,9 @@ module.exports = {
       { from: 'src/ui/vendor', to: 'vendor' },
     ]),
   ],
+  devServer: {
+    hot: false,
+    inline: false,
+    writeToDisk: true,
+  }
 };

@@ -11,7 +11,7 @@ Detailed information about the Add-on [can be found in the wiki](https://github.
 
 - Clone the repository
 - `npm install`
-- `npm run build`
+- `npm run dev`
 
 ### Run in Firefox
 
