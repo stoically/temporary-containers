@@ -74,10 +74,10 @@ export interface IsolationGlobal {
     };
   };
   excluded: {
-    [key: string]: object;
+    [key: string]: Record<string, unknown>;
   };
   excludedContainers: {
-    [key: string]: object;
+    [key: string]: Record<string, unknown>;
   };
 }
 

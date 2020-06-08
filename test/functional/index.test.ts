@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import path from 'path';
-const expect = require('chai').expect;
+import { expect } from 'chai';
 import webExtensionsGeckoDriver from 'webextensions-geckodriver';
 const webdriver = webExtensionsGeckoDriver.webdriver;
 const until = webdriver.until;

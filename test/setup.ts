@@ -26,7 +26,7 @@ const preferencesTestSet = [
 ];
 
 if (!process.listenerCount('unhandledRejection')) {
-  process.on('unhandledRejection', r => {
+  process.on('unhandledRejection', (r) => {
     console.log('unhandledRejection', r);
   });
 }
@@ -42,7 +42,7 @@ import { Helper } from './helper';
 
 const virtualConsole = new jsdom.VirtualConsole();
 virtualConsole.sendTo(console);
-virtualConsole.on('jsdomError', error => {
+virtualConsole.on('jsdomError', (error) => {
   // eslint-disable-next-line no-console
   console.error(error);
 });
@@ -63,11 +63,17 @@ const fakeBrowser = (): {
   const window = dom.window as jsdom.DOMWindow;
 
   global.document = window.document;
+  // FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   global.window = window;
   global.AbortController = window.AbortController;
 
   const browser = browserFake();
   global.window._mochaTest = true;
+  // FIXME
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   global.browser = browser;
   global.browser.runtime.getManifest.returns({
     version: '0.1',
@@ -96,7 +102,7 @@ chai.use(sinonChai);
 
 const { expect } = chai;
 const nextTick = (): Promise<void> => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     process.nextTick(resolve);
   });
 };
@@ -104,7 +110,6 @@ const nextTick = (): Promise<void> => {
 export interface Background {
   browser: BrowserFake;
   tmp: TemporaryContainers;
-  window: object;
   clock: sinon.SinonFakeTimers;
   helper: Helper;
 }
@@ -115,7 +120,7 @@ const loadBackground = async ({
   beforeCtor = false,
 }: {
   initialize?: boolean;
-  preferences?: false | object;
+  preferences?: false | Record<string, unknown>;
   beforeCtor?:
     | false
     | ((
@@ -147,7 +152,6 @@ const loadBackground = async ({
   return {
     browser,
     tmp: background,
-    window,
     clock,
     helper: new Helper(browser, background),
   };
