@@ -41,7 +41,7 @@ module.exports = {
   optimization: {
     minimize: false,
     splitChunks: {
-      chunks: chunk => {
+      chunks: (chunk) => {
         return ['options', 'popup'].includes(chunk.name);
       },
     },
@@ -66,18 +66,20 @@ module.exports = {
       chunks: ['popup'],
     }),
     new VueLoaderPlugin(),
-    new CopyPlugin([
-      'README.md',
-      'LICENSE',
-      'src/manifest.json',
-      { from: 'src/icons', to: 'icons' },
-      { from: 'src/_locales', to: '_locales' },
-      { from: 'src/ui/vendor', to: 'vendor' },
-    ]),
+    new CopyPlugin({
+      patterns: [
+        'README.md',
+        'LICENSE',
+        'src/manifest.json',
+        { from: 'src/icons', to: 'icons' },
+        { from: 'src/_locales', to: '_locales' },
+        { from: 'src/ui/vendor', to: 'vendor' },
+      ],
+    }),
   ],
   devServer: {
     hot: false,
     inline: false,
     writeToDisk: true,
-  }
+  },
 };
