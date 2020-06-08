@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS ip (
+    id          INTEGER PRIMARY KEY NOT NULL,
+    ip          TEXT NOT NULL,
+    family      INTEGER NOT NULL DEFAULT 6
+);

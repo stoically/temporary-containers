@@ -8,6 +8,7 @@ import { ContextMenu } from './contextmenu';
 import { Convert } from './convert';
 import { Cookies } from './cookies';
 import { History } from './history';
+import { IPContext } from './ipcontext';
 import { Isolation } from './isolation';
 import { MultiAccountContainers } from './mac';
 import { Management } from './management';
@@ -44,6 +45,7 @@ export class TemporaryContainers {
   public contextmenu = new ContextMenu(this);
   public cookies = new Cookies(this);
   public scripts = new Scripts(this);
+  public ipcontext = new IPContext(this);
   public isolation = new Isolation(this);
   public history = new History(this);
   public cleanup = new Cleanup(this);

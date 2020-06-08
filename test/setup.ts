@@ -93,6 +93,17 @@ const fakeBrowser = (): {
     },
   ]);
 
+  // FIXME add to webextensions-api-fake
+  global.browser.privacy = {
+    network: {
+      networkPredictionEnabled: {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        set: sinon.stub(),
+      },
+    },
+  };
+
   return { browser, clock };
 };
 

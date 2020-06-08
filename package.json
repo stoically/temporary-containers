@@ -21,7 +21,8 @@
     "watch:test": "ts-mocha --paths -p tsconfig.json test/*.test.ts --watch",
     "watch:test:verbose": "ts-mocha --paths -p tsconfig.json test/*.test.ts --tmp-debug --watch",
     "check:dependencies": "ncu",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "ipcontext:createdb": "echo '.exit' | sqlite3 ipcontext.db -init ipcontext/schema.sql"
   },
   "repository": {
     "type": "git",

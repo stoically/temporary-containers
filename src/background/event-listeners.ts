@@ -164,6 +164,49 @@ export class EventListeners {
     );
 
     this.registerPermissionedListener();
+
+    // -- ipcontext --
+
+    // speculative requests happen before browser extensions had the chance to
+    // potentially "redirect" main_frame requests to the appropriate firefox
+    // container, so we simply disable them altogether
+    browser.privacy.network.networkPredictionEnabled.set({ value: false });
+
+    browser.proxy.onRequest.addListener(
+      this.wrap(
+        browser.proxy.onRequest,
+        this.background.ipcontext,
+        'onProxyRequest'
+      ),
+      {
+        urls: ['<all_urls>'],
+      }
+    );
+    browser.webRequest.onCompleted.addListener(
+      this.wrap(
+        browser.webRequest.onCompleted,
+        this.background.ipcontext,
+        'requestCompleted'
+      ),
+      { urls: ['<all_urls>'], types: ['main_frame'] }
+    );
+    browser.webRequest.onErrorOccurred.addListener(
+      this.wrap(
+        browser.webRequest.onErrorOccurred,
+        this.background.ipcontext,
+        'requestError'
+      ),
+      { urls: ['<all_urls>'], types: ['main_frame'] }
+    );
+    browser.tabs.onCreated.addListener(
+      this.wrap(browser.tabs.onCreated, this.background.ipcontext, 'tabCreated')
+    );
+    browser.tabs.onUpdated.addListener(
+      this.wrap(browser.tabs.onUpdated, this.background.ipcontext, 'tabUpdated')
+    );
+    browser.tabs.onRemoved.addListener(
+      this.wrap(browser.tabs.onRemoved, this.background.ipcontext, 'tabRemoved')
+    );
   }
 
   registerPermissionedListener(permissions?: Permissions): void {
