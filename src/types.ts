@@ -36,6 +36,7 @@ export interface CreateTabOptions {
   index?: number;
   pinned?: boolean;
   openerTabId?: number;
+  windowId?: number;
 }
 
 export interface TmpTabOptions {

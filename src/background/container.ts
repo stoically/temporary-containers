@@ -215,6 +215,9 @@ export class Container {
         if (tab.openerTabId) {
           newTabOptions.openerTabId = tab.openerTabId;
         }
+        if (tab.windowId) {
+          newTabOptions.windowId = tab.windowId;
+        }
       }
       if (active === false) {
         newTabOptions.active = false;
