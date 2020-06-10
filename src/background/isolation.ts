@@ -80,9 +80,13 @@ export class Isolation {
       return false;
     }
 
-    if (
-      !(await this.shouldIsolate({ tab, request, openerTab, macAssignment }))
-    ) {
+    const isolate = await this.shouldIsolate({
+      tab,
+      request,
+      openerTab,
+      macAssignment,
+    });
+    if (!isolate) {
       this.debug('[maybeIsolate] decided to not isolate', tab, request);
       return false;
     }
@@ -163,20 +167,12 @@ export class Isolation {
     };
 
     let reload = false;
-    if (this.mouseclick.isolated[request.url]) {
-      const clickType = this.mouseclick.isolated[request.url].clickType;
-      if (
-        this.pref.isolation.global.mouseClick[clickType].container ===
-        'deleteshistory'
-      ) {
+    if (typeof isolate === 'object') {
+      if (isolate.deletesHistory) {
         params.deletesHistory = true;
       }
 
-      if (
-        tab &&
-        clickType === 'left' &&
-        this.mouseclick.isolated[request.url].tab.id !== tab.id
-      ) {
+      if (isolate.reload) {
         reload = true;
       }
     }
@@ -206,7 +202,7 @@ export class Isolation {
     request: WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
     macAssignment?: MacAssignment;
-  }): Promise<boolean> {
+  }): Promise<boolean | Record<string, unknown>> {
     this.debug('[shouldIsolate]', tab, request);
 
     // special-case TST group tabs #264
@@ -252,7 +248,7 @@ export class Isolation {
     tab?: Tab;
     request: WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
-  }): boolean {
+  }): boolean | Record<string, unknown> {
     if (!this.mouseclick.isolated[request.url]) {
       return false;
     }
@@ -289,6 +285,23 @@ export class Isolation {
       return false;
     }
 
+    const isolate: { deletesHistory?: boolean; reload?: boolean } = {};
+    const clickType = this.mouseclick.isolated[request.url].clickType;
+    if (
+      this.pref.isolation.global.mouseClick[clickType].container ===
+      'deleteshistory'
+    ) {
+      isolate.deletesHistory = true;
+    }
+
+    if (
+      tab &&
+      clickType === 'left' &&
+      this.mouseclick.isolated[request.url].tab.id !== tab.id
+    ) {
+      isolate.reload = true;
+    }
+
     if (!this.mouseclick.isolated[request.url].count) {
       this.debug(
         '[shouldIsolateMouseClick] removing isolated mouseclick because its count is 0',
@@ -302,7 +315,8 @@ export class Isolation {
       '[shouldIsolateMouseClick] decided to isolate mouseclick',
       this.mouseclick.isolated[request.url]
     );
-    return true;
+
+    return isolate;
   }
 
   async shouldIsolateNavigation({
