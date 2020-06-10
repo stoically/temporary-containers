@@ -10,6 +10,7 @@ export const getPermissions = async (): Promise<Permissions> => {
     downloads: permissions.includes('downloads'),
     history: permissions.includes('history'),
     notifications: permissions.includes('notifications'),
+    webNavigation: permissions.includes('webNavigation'),
   };
 };
 

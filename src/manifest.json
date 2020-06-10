@@ -100,7 +100,8 @@
     "bookmarks",
     "downloads",
     "history",
-    "notifications"
+    "notifications",
+    "webNavigation"
   ],
   "content_scripts": [
     {

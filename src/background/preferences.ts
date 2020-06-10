@@ -4,6 +4,7 @@ import { ContextMenu } from './contextmenu';
 import { PageAction } from './pageaction';
 import { PreferencesSchema, Permissions } from '~/types';
 import { REDIRECTOR_DOMAINS_DEFAULT, IGNORED_DOMAINS_DEFAULT } from '~/shared';
+import { EventListeners } from './event-listeners';
 
 export class Preferences {
   public defaults: PreferencesSchema = {
@@ -76,6 +77,7 @@ export class Preferences {
       domain: {},
     },
     scripts: {
+      active: false,
       domain: {},
     },
     deletesHistory: {
@@ -101,6 +103,7 @@ export class Preferences {
   private contextmenu!: ContextMenu;
   private browseraction!: BrowserAction;
   private pageaction!: PageAction;
+  private eventlisteners!: EventListeners;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
@@ -111,6 +114,7 @@ export class Preferences {
     this.contextmenu = this.background.contextmenu;
     this.browseraction = this.background.browseraction;
     this.pageaction = this.background.pageaction;
+    this.eventlisteners = this.background.eventlisteners;
   }
 
   async handleChanges({
@@ -143,10 +147,10 @@ export class Preferences {
         this.browseraction.addIsolationInactiveBadge();
       }
     }
-    if (newPreferences.notifications) {
+    if (!this.permissions.notifications && newPreferences.notifications) {
       this.permissions.notifications = true;
     }
-    if (newPreferences.deletesHistory.active) {
+    if (!this.permissions.history && newPreferences.deletesHistory.active) {
       this.permissions.history = true;
     }
     if (
@@ -154,6 +158,10 @@ export class Preferences {
       newPreferences.deletesHistory.contextMenuBookmarks
     ) {
       this.permissions.bookmarks = true;
+    }
+    if (!this.permissions.webNavigation && newPreferences.scripts.active) {
+      this.permissions.webNavigation = true;
+      this.eventlisteners.registerPermissionedListener(this.permissions);
     }
 
     if (

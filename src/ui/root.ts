@@ -268,6 +268,15 @@ export default (
             }
           );
         }
+
+        if (app.preferences.scripts.active && !app.permissions.webNavigation) {
+          // eslint-disable-next-line require-atomic-updates
+          app.preferences.scripts.active = app.permissions.webNavigation = await browser.permissions.request(
+            {
+              permissions: ['webNavigation'],
+            }
+          );
+        }
       },
       maybeExpandPreferences(app: App): void {
         this.$nextTick(() => {

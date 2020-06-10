@@ -76,6 +76,7 @@ export class TemporaryContainers {
       history: permissions.includes('history'),
       notifications: permissions.includes('notifications'),
       downloads: permissions.includes('downloads'),
+      webNavigation: permissions.includes('webNavigation'),
     };
 
     this.preferences.initialize();

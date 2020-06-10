@@ -191,6 +191,7 @@ export interface PreferencesSchema {
     };
   };
   scripts: {
+    active: boolean;
     domain: {
       [key: string]: Script[];
     };
@@ -230,6 +231,7 @@ export interface Permissions {
   downloads: boolean;
   history: boolean;
   notifications: boolean;
+  webNavigation: boolean;
 }
 
 export type ContainerColor = typeof CONTAINER_COLORS[number];

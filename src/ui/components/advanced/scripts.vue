@@ -141,6 +141,22 @@ export default mixins(mixin).extend({
         Firefox Sync since the scripts are stored as preferences. The local
         storage limit is 5MB, so adding scripts exceeding that might prevent the
         Add-on from working at all.
+        <br /><br />
+        <strong>
+          <div id="scriptsContainerWarningRead" class="ui small checkbox">
+            <input
+              id="scriptsContainerWarningReadCheckbox"
+              v-model="preferences.scripts.active"
+              :disabled="preferences.scripts.active"
+              type="checkbox"
+            />
+            <label>
+              I have read the warning and understand the implications that come
+              with using "Scripts". When ticking the checkbox Firefox will ask
+              you for "Access browser activity" permissions.
+            </label>
+          </div>
+        </strong>
       </div>
       <div class="ui small notice message">
         This will call
@@ -158,76 +174,85 @@ export default mixins(mixin).extend({
         >
         to access the original window.
       </div>
-      <domain-pattern
-        id="scriptDomainPattern"
-        :disabled="domainPatternDisabled"
-        :glossary="true"
-        :domain-pattern.sync="domainPattern"
-      />
-      <div class="field">
-        <label>code</label>
-        <textarea id="scriptCode" v-model="script.code"></textarea>
-      </div>
-      <div class="field">
-        <label>runAt</label>
-        <select v-model="script.runAt" class="ui fluid dropdown">
-          <option value="document_start">
-            document_start
-          </option>
-          <option value="document_end">
-            document_end
-          </option>
-          <option value="document_idle">
-            document_idle
-          </option>
-        </select>
-      </div>
-      <div class="field">
-        <button class="ui button primary">
-          {{ !editing ? 'Add' : 'Save' }}
-        </button>
+      <div
+        :style="
+          !preferences.scripts.active
+            ? 'opacity: 0.3; pointer-events: none'
+            : ''
+        "
+      >
+        <domain-pattern
+          id="scriptDomainPattern"
+          :disabled="domainPatternDisabled"
+          :glossary="true"
+          :domain-pattern.sync="domainPattern"
+        />
+        <div class="field">
+          <label>code</label>
+          <textarea id="scriptCode" v-model="script.code"></textarea>
+        </div>
+        <div class="field">
+          <label>runAt</label>
+          <select v-model="script.runAt" class="ui fluid dropdown">
+            <option value="document_start">document_start</option>
+            <option value="document_end">document_end</option>
+            <option value="document_idle">document_idle</option>
+          </select>
+        </div>
+        <div class="field">
+          <button class="ui button primary">
+            {{ !editing ? 'Add' : 'Save' }}
+          </button>
+        </div>
       </div>
     </form>
-    <div style="margin-top: 30px;" :class="{ hidden: editing }">
-      <h3>Scripts</h3>
-      <div>
-        <div v-if="!Object.keys(preferences.scripts.domain).length">
-          No Scripts added
-        </div>
+    <div
+      :style="
+        !preferences.scripts.active ? 'opacity: 0.3; pointer-events: none' : ''
+      "
+    >
+      <div style="margin-top: 30px;" :class="{ hidden: editing }">
+        <h3>Scripts</h3>
+        <div>
+          <div v-if="!Object.keys(preferences.scripts.domain).length">
+            No Scripts added
+          </div>
 
-        <div v-else>
-          <div
-            v-for="(scripts, scriptDomainPattern) in preferences.scripts.domain"
-            :key="scriptDomainPattern"
-            class="ui segments"
-          >
-            <div class="ui segment">
-              <h5>{{ scriptDomainPattern }}</h5>
-            </div>
-            <div class="ui segments">
-              <div
-                v-for="(domainScript, index) in scripts"
-                :key="index"
-                class="ui segment"
-              >
-                <div class="item">
-                  Script #{{ index }}
-                  <button
-                    class="ui right small primary button"
-                    style="margin-top: 10px; margin-left: 10px;"
-                    @click="editScript(scriptDomainPattern, index)"
-                  >
-                    <i class="icon-pencil" />
-                    Edit
-                  </button>
-                  <button
-                    class="ui right negative small button"
-                    style="margin-top: 10px;"
-                    @click="removeScript(scriptDomainPattern, index)"
-                  >
-                    <i class="icon-trash-empty" />
-                    Remove
-                  </button>
+          <div v-else>
+            <div
+              v-for="(scripts, scriptDomainPattern) in preferences.scripts
+                .domain"
+              :key="scriptDomainPattern"
+              class="ui segments"
+            >
+              <div class="ui segment">
+                <h5>{{ scriptDomainPattern }}</h5>
+              </div>
+              <div class="ui segments">
+                <div
+                  v-for="(domainScript, index) in scripts"
+                  :key="index"
+                  class="ui segment"
+                >
+                  <div class="item">
+                    Script #{{ index }}
+                    <button
+                      class="ui right small primary button"
+                      style="margin-top: 10px; margin-left: 10px;"
+                      @click="editScript(scriptDomainPattern, index)"
+                    >
+                      <i class="icon-pencil" />
+                      Edit
+                    </button>
+                    <button
+                      class="ui right negative small button"
+                      style="margin-top: 10px;"
+                      @click="removeScript(scriptDomainPattern, index)"
+                    >
+                      <i class="icon-trash-empty" />
+                      Remove
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

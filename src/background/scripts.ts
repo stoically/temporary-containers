@@ -1,9 +1,5 @@
 import { TemporaryContainers } from './tmp';
-import {
-  Debug,
-  PreferencesSchema,
-  WebRequestOnBeforeRequestDetails,
-} from '~/types';
+import { Debug, PreferencesSchema, Tab } from '~/types';
 import { Utils } from './utils';
 import { Container } from './container';
 
@@ -25,12 +21,15 @@ export class Scripts {
     this.utils = this.background.utils;
   }
 
-  async maybeExecute(request: WebRequestOnBeforeRequestDetails): Promise<void> {
+  async maybeExecute(
+    request: browser.webNavigation.WebNavigationOnCommittedDetails
+  ): Promise<void> {
     if (!Object.keys(this.pref.scripts.domain).length) {
       return;
     }
 
-    if (!this.container.isTemporary(request.cookieStoreId)) {
+    const tab = (await browser.tabs.get(request.tabId)) as Tab;
+    if (!this.container.isTemporary(tab.cookieStoreId)) {
       return;
     }
 
