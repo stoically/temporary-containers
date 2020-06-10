@@ -11,6 +11,7 @@ import {
   Tab,
   MacAssignment,
   Debug,
+  WebRequestOnBeforeRequestDetails,
 } from '~/types';
 
 export class Isolation {
@@ -46,7 +47,7 @@ export class Isolation {
     macAssignment,
   }: {
     tab?: Tab;
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request: WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
     macAssignment?: MacAssignment;
   }): Promise<boolean | { cancel: true }> {
@@ -202,7 +203,7 @@ export class Isolation {
     macAssignment,
   }: {
     tab?: Tab;
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request: WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
     macAssignment?: MacAssignment;
   }): Promise<boolean> {
@@ -249,7 +250,7 @@ export class Isolation {
     openerTab,
   }: {
     tab?: Tab;
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request: WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
   }): boolean {
     if (!this.mouseclick.isolated[request.url]) {
@@ -310,7 +311,7 @@ export class Isolation {
     openerTab,
   }: {
     tab?: Tab;
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request: WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
   }): Promise<boolean> {
     if (!tab || !tab.url) {
@@ -435,7 +436,7 @@ export class Isolation {
     openerTab,
   }: {
     tab?: Tab;
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request: WebRequestOnBeforeRequestDetails;
     openerTab?: Tab;
   }): Promise<boolean> {
     if (!tab || !tab.url) {

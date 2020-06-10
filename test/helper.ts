@@ -113,7 +113,9 @@ export class Helper {
       this.browser.tabs.create.resetHistory();
       this.browser.contextualIdentities.create.resetHistory();
     }
+
     const fakeRequest: {
+      cookieStoreId: string;
       requestId: string;
       tabId: number;
       url: string;
@@ -122,7 +124,10 @@ export class Helper {
       parentFrameId: number;
       type: browser.webRequest.ResourceType;
       timeStamp: number;
+      thirdParty: boolean;
+      urlClassification: browser.webRequest.UrlClassification;
     } = {
+      cookieStoreId: originContainer,
       requestId: requestId + '',
       tabId,
       url,
@@ -131,6 +136,11 @@ export class Helper {
       parentFrameId: 0,
       type: 'main_frame',
       timeStamp: 0,
+      thirdParty: false,
+      urlClassification: {
+        firstParty: [],
+        thirdParty: [],
+      },
     };
     const fakeTab = {
       id: tabId,

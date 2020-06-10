@@ -8,6 +8,7 @@ import {
   MacAssignment,
   Tab,
   Debug,
+  WebRequestOnBeforeRequestDetails,
 } from '~/types';
 
 interface ConfirmPage {
@@ -19,7 +20,7 @@ interface ConfirmPage {
 
 interface WaitingForConfirmPage {
   targetContainer: CookieStoreId;
-  request: browser.webRequest.WebRequestOnBeforeRequestDetails;
+  request: WebRequestOnBeforeRequestDetails;
   tab?: Tab;
   deletesHistoryContainer: boolean;
 }
@@ -106,7 +107,7 @@ export class MultiAccountContainers {
 
   async maybeReopenConfirmPage(
     macAssignment: MacAssignment,
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails,
+    request: WebRequestOnBeforeRequestDetails,
     tab: Tab | undefined,
     isolation = false
   ): Promise<boolean | { clean: true }> {

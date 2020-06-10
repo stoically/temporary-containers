@@ -7,7 +7,13 @@ import { delay } from './lib';
 import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
-import { PreferencesSchema, Tab, Debug, OnBeforeRequestResult } from '~/types';
+import {
+  PreferencesSchema,
+  Tab,
+  Debug,
+  OnBeforeRequestResult,
+  WebRequestOnBeforeRequestDetails,
+} from '~/types';
 import { Utils } from './utils';
 
 export class Request {
@@ -65,7 +71,7 @@ export class Request {
   }
 
   async webRequestOnBeforeRequest(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+    request: WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
     this.debug('[webRequestOnBeforeRequest] incoming request', request);
     const requestIdUrl = `${request.requestId}+${request.url}`;
@@ -119,7 +125,7 @@ export class Request {
   }
 
   async handleRequest(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
+    request: WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
     if (request.tabId === -1) {
       this.debug(
@@ -296,9 +302,7 @@ export class Request {
     return { cancel: true };
   }
 
-  cancelRequest(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
-  ): boolean {
+  cancelRequest(request: WebRequestOnBeforeRequestDetails): boolean {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
@@ -359,9 +363,7 @@ export class Request {
     }
   }
 
-  shouldCancelRequest(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
-  ): boolean {
+  shouldCancelRequest(request: WebRequestOnBeforeRequestDetails): boolean {
     if (
       !request ||
       typeof request.requestId === 'undefined' ||
@@ -382,9 +384,7 @@ export class Request {
     return false;
   }
 
-  cleanupCanceled(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
-  ): void {
+  cleanupCanceled(request: WebRequestOnBeforeRequestDetails): void {
     if (this.canceledTabs[request.tabId]) {
       delete this.canceledTabs[request.tabId];
     }
@@ -395,7 +395,7 @@ export class Request {
     tab,
     openerTab,
   }: {
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request: WebRequestOnBeforeRequestDetails;
     tab?: Tab;
     openerTab?: Tab;
   }): Promise<boolean> {

@@ -15,6 +15,7 @@ import {
   Debug,
   TmpTabOptions,
   CreateTabOptions,
+  WebRequestOnBeforeRequestDetails,
 } from '~/types';
 
 export class Container {
@@ -106,7 +107,7 @@ export class Container {
     deletesHistory,
   }: {
     url?: string;
-    request?: false | browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request?: false | WebRequestOnBeforeRequestDetails;
     deletesHistory?: boolean;
   }): Promise<browser.contextualIdentities.ContextualIdentity> {
     const containerOptions = this.generateContainerNameIconColor(
@@ -271,7 +272,7 @@ export class Container {
     url?: string;
     active?: boolean;
     deletesHistory?: boolean;
-    request?: browser.webRequest.WebRequestOnBeforeRequestDetails;
+    request?: WebRequestOnBeforeRequestDetails;
     macConfirmPage?: boolean;
     dontPin?: boolean;
   }): Promise<undefined | Tab> {

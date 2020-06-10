@@ -9,6 +9,7 @@ import {
   Debug,
   ClickType,
   ClickMessage,
+  WebRequestOnBeforeRequestDetails,
 } from '~/types';
 
 export class MouseClick {
@@ -202,9 +203,7 @@ export class MouseClick {
     );
   }
 
-  beforeHandleRequest(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
-  ): void {
+  beforeHandleRequest(request: WebRequestOnBeforeRequestDetails): void {
     if (!this.isolated[request.url]) {
       return;
     }
@@ -215,9 +214,7 @@ export class MouseClick {
     this.isolated[request.url].abortController.abort();
   }
 
-  afterHandleRequest(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
-  ): void {
+  afterHandleRequest(request: WebRequestOnBeforeRequestDetails): void {
     if (!this.isolated[request.url]) {
       return;
     }

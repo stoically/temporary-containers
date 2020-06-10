@@ -1,16 +1,23 @@
 import { TemporaryContainers } from './tmp';
-import { Debug, PreferencesSchema } from '~/types';
+import {
+  Debug,
+  PreferencesSchema,
+  WebRequestOnBeforeRequestDetails,
+} from '~/types';
 import { Utils } from './utils';
+import { Container } from './container';
 
 export class Scripts {
   private background: TemporaryContainers;
   private debug: Debug;
   private pref!: PreferencesSchema;
+  private container: Container;
   private utils!: Utils;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
+    this.container = background.container;
   }
 
   initialize(): void {
@@ -18,9 +25,7 @@ export class Scripts {
     this.utils = this.background.utils;
   }
 
-  async maybeExecute(
-    request: browser.webRequest.WebRequestOnBeforeRequestDetails
-  ): Promise<void> {
+  async maybeExecute(request: WebRequestOnBeforeRequestDetails): Promise<void> {
     if (!Object.keys(this.pref.scripts.domain).length) {
       return;
     }

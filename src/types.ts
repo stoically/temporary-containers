@@ -42,7 +42,7 @@ export interface TmpTabOptions {
   tab?: Tab;
   url?: string;
   active?: boolean;
-  request?: false | browser.webRequest.WebRequestOnBeforeRequestDetails;
+  request?: false | WebRequestOnBeforeRequestDetails;
   dontPin?: boolean;
   deletesHistory?: boolean;
   macConfirmPage?: boolean;
@@ -267,3 +267,8 @@ export interface RuntimeMessage {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Debug = (...args: any[]) => Promise<void>;
+
+export interface WebRequestOnBeforeRequestDetails
+  extends browser.webRequest.WebRequestOnBeforeRequestDetails {
+  cookieStoreId: string;
+}
