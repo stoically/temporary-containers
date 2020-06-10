@@ -30,6 +30,10 @@ export class Scripts {
       return;
     }
 
+    if (!this.container.isTemporary(request.cookieStoreId)) {
+      return;
+    }
+
     for (const domainPattern in this.pref.scripts.domain) {
       if (!this.utils.matchDomainPattern(request.url, domainPattern)) {
         continue;
