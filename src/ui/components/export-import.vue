@@ -29,6 +29,11 @@ interface ExportedPreferences {
   preferences: PreferencesSchema;
 }
 
+interface ImportedPreferences {
+  version: string;
+  preferences: PreferencesSchema;
+}
+
 export default mixins(mixin).extend({
   props: {
     app: {
@@ -220,21 +225,26 @@ export default mixins(mixin).extend({
         return;
       }
 
-      const importPreferences = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsText(file, 'UTF-8');
-        reader.onload = async (event): Promise<void> => {
-          try {
-            if (!event.target || typeof event.target.result !== 'string') {
-              throw new Error('invalid input');
+      const importPreferences: ImportedPreferences = await new Promise(
+        (resolve) => {
+          const reader = new FileReader();
+          reader.readAsText(file, 'UTF-8');
+          reader.onload = async (event): Promise<void> => {
+            try {
+              if (!event.target || typeof event.target.result !== 'string') {
+                throw new Error('invalid input');
+              }
+              resolve(JSON.parse(event.target.result));
+            } catch (error) {
+              console.error('error while importing preferences', error);
+              this.$root.$emit(
+                'showError',
+                'Error while importing preferences!'
+              );
             }
-            resolve(JSON.parse(event.target.result));
-          } catch (error) {
-            console.error('error while importing preferences', error);
-            this.$root.$emit('showError', 'Error while importing preferences!');
-          }
-        };
-      });
+          };
+        }
+      );
 
       if (this.confirmedImportPreferences(importPreferences, file.name)) {
         this.saveImportedPreferences(importPreferences);
@@ -242,8 +252,10 @@ export default mixins(mixin).extend({
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async saveImportedPreferences(importedPreferences: any): Promise<void> {
-      // TODO file firefox bug, we're in a input handler, so requesting permissions should work
+    async saveImportedPreferences(
+      importedPreferences: ImportedPreferences
+    ): Promise<void> {
+      // firefox can't request permissions after async calls in user input handlers
       if (!this.permissions.notifications) {
         importedPreferences.preferences.notifications = false;
       }
@@ -253,6 +265,9 @@ export default mixins(mixin).extend({
       }
       if (!this.permissions.history) {
         importedPreferences.preferences.deletesHistory.active = false;
+      }
+      if (!this.permissions.webNavigation) {
+        importedPreferences.preferences.scripts.active = false;
       }
 
       await browser.runtime.sendMessage({
