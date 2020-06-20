@@ -167,7 +167,7 @@ export class EventListeners {
   }
 
   registerPermissionedListener(permissions?: Permissions): void {
-    (!permissions || permissions?.webNavigation) &&
+    permissions?.webNavigation &&
       browser.webNavigation?.onCommitted.addListener(
         this.wrap(
           browser.webNavigation?.onCommitted,
