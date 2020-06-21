@@ -159,6 +159,7 @@ export interface PreferencesSchema {
   iconColor: ToolbarIconColor;
   isolation: {
     active: boolean;
+    autoIsolateDelay: number;
     global: IsolationGlobal;
     domain: IsolationDomain[];
     mac: {

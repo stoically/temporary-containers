@@ -97,12 +97,12 @@ export class BrowserAction {
     });
   }
 
-  async addIsolationInactiveBadge(): Promise<void> {
+  async addIsolationInactiveBadge(num?: number): Promise<void> {
     browser.browserAction.setBadgeBackgroundColor({
       color: 'red',
     });
     browser.browserAction.setBadgeText({
-      text: '!',
+      text: num ? num.toString() : '!',
     });
 
     const tabs = await browser.tabs.query({

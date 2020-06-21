@@ -121,14 +121,7 @@ export class Commands {
         if (!this.pref.keyboardShortcuts.AltI) {
           return;
         }
-        this.storage.local.preferences.isolation.active = !this.pref.isolation
-          .active;
-        this.storage.persist();
-        if (this.pref.isolation.active) {
-          this.background.browseraction.removeIsolationInactiveBadge();
-        } else {
-          this.background.browseraction.addIsolationInactiveBadge();
-        }
+        this.background.isolation.setIsolation(!this.pref.isolation.active);
         this.pageaction.showOrHide();
         break;
     }

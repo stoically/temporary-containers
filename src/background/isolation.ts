@@ -23,10 +23,14 @@ export class Isolation {
   private mac!: MultiAccountContainers;
   private management!: Management;
   private utils!: Utils;
+  private intervalIsolationTarget: number;
+  private intervalIsolationInterval: number;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
+    this.intervalIsolationTarget = 0;
+    this.intervalIsolationInterval = 0;
   }
 
   initialize(): void {
@@ -587,5 +591,49 @@ export class Isolation {
         }
     }
     return false;
+  }
+
+  // Moved logic from commands.ts to create this utility function.
+  // preferences.ts might be able to use this as well, but I'm not sure how the Vue persistence might get in the way
+  setIsolation(active: boolean): void {
+    this.background.storage.local.preferences.isolation.active = active;
+    this.background.storage.persist();
+    if (this.background.storage.local.preferences.isolation.active) {
+      this.background.browseraction.removeIsolationInactiveBadge();
+      this.intervalIsolationStop();
+    } else {
+      this.background.browseraction.addIsolationInactiveBadge();
+      this.intervalIsolationStart();
+    }
+  }
+
+  intervalIsolationMethod(): void {
+    const diff: number = this.intervalIsolationTarget - new Date().getTime();
+    this.debug('[interval] isolation', diff, 'milliseconds');
+    if (diff <= 0) {
+      this.intervalIsolationStop();
+      this.setIsolation(true);
+    } else {
+      this.background.browseraction.addIsolationInactiveBadge(
+        Math.round(diff / 1000)
+      );
+    }
+  }
+
+  intervalIsolationStart(): void {
+    if (this.pref.isolation.autoIsolateDelay > 0) {
+      this.intervalIsolationTarget =
+        new Date().getTime() + this.pref.isolation.autoIsolateDelay * 1000;
+      this.intervalIsolationInterval = window.setInterval(() => {
+        this.intervalIsolationMethod();
+      }, 1000);
+    }
+  }
+
+  intervalIsolationStop(): void {
+    if (this.intervalIsolationInterval) {
+      window.clearInterval(this.intervalIsolationInterval);
+      this.intervalIsolationInterval = 0;
+    }
   }
 }
