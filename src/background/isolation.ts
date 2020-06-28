@@ -4,6 +4,9 @@ import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
 import { Request } from './request';
+import { BrowserAction } from './browseraction';
+import { PageAction } from './pageaction';
+import { Storage } from './storage';
 import { Utils } from './utils';
 import {
   PreferencesSchema,
@@ -23,14 +26,15 @@ export class Isolation {
   private mac!: MultiAccountContainers;
   private management!: Management;
   private utils!: Utils;
-  private intervalIsolationTarget: number;
-  private intervalIsolationInterval: number;
+  private browseraction!: BrowserAction;
+  private pageaction!: PageAction;
+  private storage!: Storage;
+  private autoEnableInterval: number;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
-    this.intervalIsolationTarget = 0;
-    this.intervalIsolationInterval = 0;
+    this.autoEnableInterval = 0;
   }
 
   initialize(): void {
@@ -41,6 +45,18 @@ export class Isolation {
     this.mac = this.background.mac;
     this.management = this.background.management;
     this.utils = this.background.utils;
+    this.browseraction = this.background.browseraction;
+    this.pageaction = this.background.pageaction;
+    this.storage = this.background.storage;
+    this.debug(
+      '[initialize] isolation initialized',
+      this.storage.local.isolation
+    );
+    if (this.storage.local.isolation.autoEnableTargetTime) {
+      this.setActiveState(
+        this.storage.local.isolation.autoEnableTargetTime < new Date().getTime()
+      );
+    }
   }
 
   async maybeIsolate({
@@ -593,47 +609,76 @@ export class Isolation {
     return false;
   }
 
-  // Moved logic from commands.ts to create this utility function.
-  // preferences.ts might be able to use this as well, but I'm not sure how the Vue persistence might get in the way
-  setIsolation(active: boolean): void {
-    this.background.storage.local.preferences.isolation.active = active;
-    this.background.storage.persist();
-    if (this.background.storage.local.preferences.isolation.active) {
-      this.background.browseraction.removeIsolationInactiveBadge();
-      this.intervalIsolationStop();
+  // Handler to update the browser badge after a change to isolation.active
+  handleActiveState(active: boolean): void {
+    if (active) {
+      this.browseraction.removeIsolationInactiveBadge();
+      this.autoEnableStopInterval();
     } else {
-      this.background.browseraction.addIsolationInactiveBadge();
-      this.intervalIsolationStart();
+      this.browseraction.addIsolationInactiveBadge();
+      this.autoEnableStartInterval();
     }
+    this.pageaction.showOrHide();
   }
 
-  intervalIsolationMethod(): void {
-    const diff: number = this.intervalIsolationTarget - new Date().getTime();
-    this.debug('[interval] isolation', diff, 'milliseconds');
+  // Moved logic from commands.ts and preferences.ts to create this utility function.
+  // Sets the isolation.active to the specified value, persists it, and updates the browser badge
+  setActiveState(active: boolean): void {
+    this.debug('[setActiveState] isolation', active);
+    this.storage.local.preferences.isolation.active = active;
+    this.storage.persist();
+    this.handleActiveState(active);
+  }
+
+  // useful for debugging test cases
+  autoEnableGetDebug(): Record<string, any> {
+    return {
+      active: this.storage.local.preferences.isolation.active,
+      target: this.storage.local.isolation.autoEnableTargetTime,
+      now: new Date().getTime(),
+      diff:
+        this.storage.local.isolation.autoEnableTargetTime -
+        new Date().getTime(),
+    };
+  }
+
+  autoEnableCheckTarget(): void {
+    const diff: number = Math.round(
+      (this.storage.local.isolation.autoEnableTargetTime -
+        new Date().getTime()) /
+        1000
+    );
     if (diff <= 0) {
-      this.intervalIsolationStop();
-      this.setIsolation(true);
-    } else {
-      this.background.browseraction.addIsolationInactiveBadge(
-        Math.round(diff / 1000)
-      );
+      this.autoEnableStopInterval();
+      this.setActiveState(true);
+    } else if (diff <= 30 || diff % 10 == 0) {
+      // this.debug('[interval] isolation', diff, 'milliseconds');
+      this.browseraction.addIsolationInactiveBadge(diff);
     }
   }
 
-  intervalIsolationStart(): void {
-    if (this.pref.isolation.autoIsolateDelay > 0) {
-      this.intervalIsolationTarget =
-        new Date().getTime() + this.pref.isolation.autoIsolateDelay * 1000;
-      this.intervalIsolationInterval = window.setInterval(() => {
-        this.intervalIsolationMethod();
+  autoEnableStartInterval(): void {
+    if (this.pref.isolation.autoEnableDelay > 0) {
+      this.debug(
+        '[autoEnableStartInterval] isolation',
+        this.storage.local.isolation
+      );
+      const autoEnableTargetTime: number = this.storage.local.isolation
+        .autoEnableTargetTime;
+      this.storage.local.isolation.autoEnableTargetTime = autoEnableTargetTime
+        ? autoEnableTargetTime
+        : new Date().getTime() + this.pref.isolation.autoEnableDelay * 1000;
+      this.autoEnableInterval = window.setInterval(() => {
+        this.autoEnableCheckTarget();
       }, 1000);
     }
   }
 
-  intervalIsolationStop(): void {
-    if (this.intervalIsolationInterval) {
-      window.clearInterval(this.intervalIsolationInterval);
-      this.intervalIsolationInterval = 0;
+  autoEnableStopInterval(): void {
+    if (this.autoEnableInterval) {
+      window.clearInterval(this.autoEnableInterval);
+      this.autoEnableInterval = 0;
     }
+    this.storage.local.isolation.autoEnableTargetTime = 0;
   }
 }

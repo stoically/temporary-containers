@@ -30,6 +30,10 @@ export class Storage {
           urlsDeleted: 0,
         },
       },
+      isolation: {
+        // active: true,
+        autoEnableTargetTime: 0,
+      },
       preferences: background.preferences.defaults,
       lastFileExport: false,
       version: false,

@@ -134,6 +134,10 @@ export interface StorageLocal {
       urlsDeleted: number;
     };
   };
+  isolation: {
+    // active: boolean;
+    autoEnableTargetTime: number;
+  };
   preferences: PreferencesSchema;
   lastFileExport: false;
   version: false | string;
@@ -159,7 +163,7 @@ export interface PreferencesSchema {
   iconColor: ToolbarIconColor;
   isolation: {
     active: boolean;
-    autoIsolateDelay: number;
+    autoEnableDelay: number;
     global: IsolationGlobal;
     domain: IsolationDomain[];
     mac: {

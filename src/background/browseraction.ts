@@ -109,14 +109,16 @@ export class BrowserAction {
       currentWindow: true,
       active: true,
     });
-    browser.browserAction.setBadgeBackgroundColor({
-      color: 'red',
-      tabId: tabs[0].id,
-    });
-    browser.browserAction.setBadgeText({
-      text: null,
-      tabId: tabs[0].id,
-    });
+    if (tabs[0]) {
+      browser.browserAction.setBadgeBackgroundColor({
+        color: 'red',
+        tabId: tabs[0].id,
+      });
+      browser.browserAction.setBadgeText({
+        text: null,
+        tabId: tabs[0].id,
+      });
+    }
   }
 
   removeIsolationInactiveBadge(): void {

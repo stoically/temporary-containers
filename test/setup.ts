@@ -26,7 +26,7 @@ const preferencesTestSet = [
 ];
 
 if (!process.listenerCount('unhandledRejection')) {
-  process.on('unhandledRejection', r => {
+  process.on('unhandledRejection', (r) => {
     console.log('unhandledRejection', r);
   });
 }
@@ -42,7 +42,7 @@ import { Helper } from './helper';
 
 const virtualConsole = new jsdom.VirtualConsole();
 virtualConsole.sendTo(console);
-virtualConsole.on('jsdomError', error => {
+virtualConsole.on('jsdomError', (error) => {
   // eslint-disable-next-line no-console
   console.error(error);
 });
@@ -52,7 +52,14 @@ const fakeBrowser = (): {
   clock: sinon.SinonFakeTimers;
 } => {
   const clock = sinon.useFakeTimers({
-    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
+    toFake: [
+      'setTimeout',
+      'clearTimeout',
+      'setInterval',
+      'clearInterval',
+      'Date',
+    ],
+    now: new Date(),
   });
   const html = '<!DOCTYPE html><html><head></head><body></body></html>';
 
@@ -96,7 +103,7 @@ chai.use(sinonChai);
 
 const { expect } = chai;
 const nextTick = (): Promise<void> => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     process.nextTick(resolve);
   });
 };

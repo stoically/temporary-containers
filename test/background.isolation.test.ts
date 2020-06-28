@@ -1,7 +1,7 @@
 import { preferencesTestSet, loadBackground, Background } from './setup';
 import { Tab, IsolationDomain } from '~/types';
 
-preferencesTestSet.map(preferences => {
+preferencesTestSet.map((preferences) => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     let bg: Background, tab: Tab;
 
@@ -33,14 +33,14 @@ preferencesTestSet.map(preferences => {
       excludedContainers: {},
     };
 
-    ['tmp', 'permanent'].map(originContainerType => {
+    ['tmp', 'permanent'].map((originContainerType) => {
       describe(`originContainerType: ${originContainerType}`, () => {
         [
           'sametab.global',
           'sametab.perdomain',
           'newtab.global',
           'newtab.perdomain',
-        ].map(navigatingIn => {
+        ].map((navigatingIn) => {
           describe(`navigatingIn: ${navigatingIn}`, () => {
             const navigateTo = async (url: string): Promise<void> => {
               bg.tmp.container.markUnclean(tab.id);
@@ -356,6 +356,83 @@ preferencesTestSet.map(preferences => {
 
                   it('should not open two Temporary Containers', async () => {
                     bg.browser.tabs.create.should.have.been.calledOnce;
+                  });
+                });
+              });
+
+              describe('toggle isolation off', () => {
+                beforeEach(async () => {
+                  bg.tmp.storage.local.preferences.isolation.global.navigation.action =
+                    'always';
+                  bg.tmp.storage.local.preferences.isolation.active = true; // default to true
+                  bg.tmp.isolation.setActiveState(false); // toggle off
+                });
+
+                describe('if its the exact same domain', () => {
+                  beforeEach(async () => {
+                    await navigateTo('https://example.com/moo');
+                  });
+
+                  it('should not open a new Temporary Container', async () => {
+                    bg.browser.tabs.create.should.not.have.been.called;
+                  });
+                });
+
+                describe('if its the same domain', () => {
+                  beforeEach(async () => {
+                    await navigateTo('https://sub.example.com');
+                  });
+
+                  it('should not open a new Temporary Container', async () => {
+                    bg.browser.tabs.create.should.not.have.been.called;
+                  });
+                });
+
+                describe('if its not the same domain', () => {
+                  beforeEach(async () => {
+                    await navigateTo('https://notexample.com');
+                  });
+
+                  it('should not open a new Temporary Container', async () => {
+                    bg.browser.tabs.create.should.not.have.been.called;
+                  });
+                });
+
+                afterEach(async () => {
+                  bg.tmp.isolation.setActiveState(true);
+                });
+              });
+
+              describe('when auto-enable isolation is turned on with action = always', () => {
+                beforeEach(async () => {
+                  // console.log();
+                  // console.log(['before 1', bg.tmp.isolation.autoEnableGetDebug()]);
+                  const dbg: Record<
+                    string,
+                    any
+                  > = bg.tmp.isolation.autoEnableGetDebug();
+                  bg.tmp.storage.local.preferences.isolation.global.navigation.action =
+                    'always';
+                  bg.tmp.storage.local.preferences.isolation.autoEnableDelay = 3;
+                });
+
+                describe('when isolation is disabled', () => {
+                  beforeEach(async () => {
+                    bg.tmp.isolation.setActiveState(false);
+                  });
+
+                  it('should not open a Temporary Container when immediately navigating anywhere', async () => {
+                    await navigateTo('https://example.com/moo');
+                    bg.browser.tabs.create.should.not.have.been.called;
+                  });
+
+                  it('should open a Temporary Container after waiting for auto-enable to trigger', async () => {
+                    bg.clock.tick(5000);
+                    bg.tmp.storage.local.preferences.isolation.active.should.equal(
+                      true
+                    );
+                    await navigateTo('https://example.com/moo');
+                    bg.browser.tabs.create.should.have.been.called;
                   });
                 });
               });
