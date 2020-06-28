@@ -29,12 +29,12 @@ export class Isolation {
   private browseraction!: BrowserAction;
   private pageaction!: PageAction;
   private storage!: Storage;
-  private autoEnableInterval: number;
+  private automaticReactivateInterval: number;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
-    this.autoEnableInterval = 0;
+    this.automaticReactivateInterval = 0;
   }
 
   initialize(): void {
@@ -52,9 +52,10 @@ export class Isolation {
       '[initialize] isolation initialized',
       this.storage.local.isolation
     );
-    if (this.storage.local.isolation.autoEnableTargetTime) {
+    if (this.storage.local.isolation.automaticReactivateTargetTime) {
       this.setActiveState(
-        this.storage.local.isolation.autoEnableTargetTime < new Date().getTime()
+        this.storage.local.isolation.automaticReactivateTargetTime <
+          new Date().getTime()
       );
     }
   }
@@ -609,20 +610,17 @@ export class Isolation {
     return false;
   }
 
-  // Handler to update the browser badge after a change to isolation.active
   handleActiveState(active: boolean): void {
     if (active) {
       this.browseraction.removeIsolationInactiveBadge();
-      this.autoEnableStopInterval();
+      this.automaticReactivateStopInterval();
     } else {
       this.browseraction.addIsolationInactiveBadge();
-      this.autoEnableStartInterval();
+      this.automaticReactivateStartInterval();
     }
     this.pageaction.showOrHide();
   }
 
-  // Moved logic from commands.ts and preferences.ts to create this utility function.
-  // Sets the isolation.active to the specified value, persists it, and updates the browser badge
   setActiveState(active: boolean): void {
     this.debug('[setActiveState] isolation', active);
     this.storage.local.preferences.isolation.active = active;
@@ -630,55 +628,43 @@ export class Isolation {
     this.handleActiveState(active);
   }
 
-  // useful for debugging test cases
-  autoEnableGetDebug(): Record<string, any> {
-    return {
-      active: this.storage.local.preferences.isolation.active,
-      target: this.storage.local.isolation.autoEnableTargetTime,
-      now: new Date().getTime(),
-      diff:
-        this.storage.local.isolation.autoEnableTargetTime -
-        new Date().getTime(),
-    };
-  }
-
-  autoEnableCheckTarget(): void {
+  automaticReactivateCheckTarget(): void {
     const diff: number = Math.round(
-      (this.storage.local.isolation.autoEnableTargetTime -
+      (this.storage.local.isolation.automaticReactivateTargetTime -
         new Date().getTime()) /
         1000
     );
     if (diff <= 0) {
-      this.autoEnableStopInterval();
+      this.automaticReactivateStopInterval();
       this.setActiveState(true);
     } else if (diff <= 30 || diff % 10 == 0) {
-      // this.debug('[interval] isolation', diff, 'milliseconds');
       this.browseraction.addIsolationInactiveBadge(diff);
     }
   }
 
-  autoEnableStartInterval(): void {
-    if (this.pref.isolation.autoEnableDelay > 0) {
+  automaticReactivateStartInterval(): void {
+    if (this.pref.isolation.automaticReactivateDelay > 0) {
       this.debug(
-        '[autoEnableStartInterval] isolation',
+        '[automaticReactivateStartInterval] isolation',
         this.storage.local.isolation
       );
-      const autoEnableTargetTime: number = this.storage.local.isolation
-        .autoEnableTargetTime;
-      this.storage.local.isolation.autoEnableTargetTime = autoEnableTargetTime
-        ? autoEnableTargetTime
-        : new Date().getTime() + this.pref.isolation.autoEnableDelay * 1000;
-      this.autoEnableInterval = window.setInterval(() => {
-        this.autoEnableCheckTarget();
+      const automaticReactivateTargetTime: number = this.storage.local.isolation
+        .automaticReactivateTargetTime;
+      this.storage.local.isolation.automaticReactivateTargetTime = automaticReactivateTargetTime
+        ? automaticReactivateTargetTime
+        : new Date().getTime() +
+          this.pref.isolation.automaticReactivateDelay * 1000;
+      this.automaticReactivateInterval = window.setInterval(() => {
+        this.automaticReactivateCheckTarget();
       }, 1000);
     }
   }
 
-  autoEnableStopInterval(): void {
-    if (this.autoEnableInterval) {
-      window.clearInterval(this.autoEnableInterval);
-      this.autoEnableInterval = 0;
+  automaticReactivateStopInterval(): void {
+    if (this.automaticReactivateInterval) {
+      window.clearInterval(this.automaticReactivateInterval);
+      this.automaticReactivateInterval = 0;
     }
-    this.storage.local.isolation.autoEnableTargetTime = 0;
+    this.storage.local.isolation.automaticReactivateTargetTime = 0;
   }
 }

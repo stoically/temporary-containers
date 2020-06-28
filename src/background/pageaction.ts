@@ -45,7 +45,7 @@ export class PageAction {
       );
       color = container.color;
     }
-    if (activatedTab && activatedTab.id) {
+    if (activatedTab?.id) {
       browser.pageAction.setIcon({
         path: {
           '19': `icons/pageaction-${color}-19.svg`,

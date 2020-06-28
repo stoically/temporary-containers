@@ -136,7 +136,7 @@ export interface StorageLocal {
   };
   isolation: {
     // active: boolean;
-    autoEnableTargetTime: number;
+    automaticReactivateTargetTime: number;
   };
   preferences: PreferencesSchema;
   lastFileExport: false;
@@ -163,7 +163,7 @@ export interface PreferencesSchema {
   iconColor: ToolbarIconColor;
   isolation: {
     active: boolean;
-    autoEnableDelay: number;
+    automaticReactivateDelay: number;
     global: IsolationGlobal;
     domain: IsolationDomain[];
     mac: {

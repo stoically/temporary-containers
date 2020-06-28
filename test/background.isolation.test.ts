@@ -405,15 +405,9 @@ preferencesTestSet.map((preferences) => {
 
               describe('when auto-enable isolation is turned on with action = always', () => {
                 beforeEach(async () => {
-                  // console.log();
-                  // console.log(['before 1', bg.tmp.isolation.autoEnableGetDebug()]);
-                  const dbg: Record<
-                    string,
-                    any
-                  > = bg.tmp.isolation.autoEnableGetDebug();
                   bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                     'always';
-                  bg.tmp.storage.local.preferences.isolation.autoEnableDelay = 3;
+                  bg.tmp.storage.local.preferences.isolation.automaticReactivateDelay = 3;
                 });
 
                 describe('when isolation is disabled', () => {

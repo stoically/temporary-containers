@@ -26,7 +26,7 @@ export class Preferences {
     iconColor: 'default',
     isolation: {
       active: true,
-      autoEnableDelay: 0,
+      automaticReactivateDelay: 0,
       global: {
         navigation: {
           action: 'never',
