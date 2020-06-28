@@ -135,7 +135,6 @@ export interface StorageLocal {
     };
   };
   isolation: {
-    // active: boolean;
     automaticReactivateTargetTime: number;
   };
   preferences: PreferencesSchema;

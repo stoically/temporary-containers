@@ -31,7 +31,6 @@ export class Storage {
         },
       },
       isolation: {
-        // active: true,
         automaticReactivateTargetTime: 0,
       },
       preferences: background.preferences.defaults,
