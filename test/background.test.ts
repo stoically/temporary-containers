@@ -370,17 +370,18 @@ preferencesTestSet.map((preferences) => {
       });
 
       describe('Toggle Isolation', () => {
-        it('should not toggle active isolation by default', async () => {
+        it('should not toggle active isolation when AltI preference is disabled', async () => {
           const { tmp: background, browser } = await loadBackground({
             preferences,
           });
+          background.storage.local.preferences.keyboardShortcuts.AltI = false;
           browser.commands.onCommand.addListener.yield('toggle_isolation');
           await nextTick();
           background.storage.local.preferences.isolation.active.should.equal(
             true
           );
         });
-        it('should toggle active isolation when AltI preference is true', async () => {
+        it('should toggle active isolation when AltI preference is enabled', async () => {
           const { tmp: background, browser } = await loadBackground({
             preferences,
           });

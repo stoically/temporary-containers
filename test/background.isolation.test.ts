@@ -364,8 +364,11 @@ preferencesTestSet.map((preferences) => {
                 beforeEach(async () => {
                   bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                     'always';
-                  bg.tmp.storage.local.preferences.isolation.active = true; // default to true
-                  bg.tmp.isolation.setActiveState(false); // toggle off
+                  bg.tmp.storage.local.preferences.isolation.active = true;
+                  bg.tmp.storage.local.preferences.keyboardShortcuts.AltI = true;
+                  bg.browser.commands.onCommand.addListener.yield(
+                    'toggle_isolation'
+                  );
                 });
 
                 describe('if its the exact same domain', () => {
@@ -397,10 +400,6 @@ preferencesTestSet.map((preferences) => {
                     bg.browser.tabs.create.should.not.have.been.called;
                   });
                 });
-
-                afterEach(async () => {
-                  bg.tmp.isolation.setActiveState(true);
-                });
               });
 
               describe('when auto-enable isolation is turned on with action = always', () => {
@@ -408,19 +407,27 @@ preferencesTestSet.map((preferences) => {
                   bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                     'always';
                   bg.tmp.storage.local.preferences.isolation.automaticReactivateDelay = 3;
+                  bg.tmp.storage.local.preferences.isolation.active = true;
                 });
 
-                describe('when isolation is disabled', () => {
+                describe('when isolation is deactivated', () => {
                   beforeEach(async () => {
-                    bg.tmp.isolation.setActiveState(false);
+                    bg.tmp.storage.local.preferences.keyboardShortcuts.AltI = true;
+                    bg.browser.commands.onCommand.addListener.yield(
+                      'toggle_isolation'
+                    );
                   });
 
-                  it('should not open a Temporary Container when immediately navigating anywhere', async () => {
+                  it('should not open a Temporary Container when navigating before auto-isolate triggers', async () => {
+                    bg.clock.tick(1000);
+                    bg.tmp.storage.local.preferences.isolation.active.should.equal(
+                      false
+                    );
                     await navigateTo('https://example.com/moo');
                     bg.browser.tabs.create.should.not.have.been.called;
                   });
 
-                  it('should open a Temporary Container after waiting for auto-enable to trigger', async () => {
+                  it('should open a Temporary Container when navigating after auto-isolate triggers', async () => {
                     bg.clock.tick(5000);
                     bg.tmp.storage.local.preferences.isolation.active.should.equal(
                       true
