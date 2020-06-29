@@ -3,7 +3,6 @@ import { Container } from './container';
 import { Storage } from './storage';
 import { Tabs } from './tabs';
 import { PreferencesSchema, Tab, Permissions, Debug } from '~/types';
-import { PageAction } from './pageaction';
 
 export class Commands {
   private background: TemporaryContainers;
@@ -13,7 +12,6 @@ export class Commands {
   private container!: Container;
   private permissions!: Permissions;
   private tabs!: Tabs;
-  private pageaction!: PageAction;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
@@ -26,7 +24,6 @@ export class Commands {
     this.container = this.background.container;
     this.permissions = this.background.permissions;
     this.tabs = this.background.tabs;
-    this.pageaction = this.background.pageaction;
   }
 
   async onCommand(name: string): Promise<void> {
@@ -121,15 +118,7 @@ export class Commands {
         if (!this.pref.keyboardShortcuts.AltI) {
           return;
         }
-        this.storage.local.preferences.isolation.active = !this.pref.isolation
-          .active;
-        this.storage.persist();
-        if (this.pref.isolation.active) {
-          this.background.browseraction.removeIsolationInactiveBadge();
-        } else {
-          this.background.browseraction.addIsolationInactiveBadge();
-        }
-        this.pageaction.showOrHide();
+        this.background.isolation.setActiveState(!this.pref.isolation.active);
         break;
     }
   }

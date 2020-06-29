@@ -97,26 +97,28 @@ export class BrowserAction {
     });
   }
 
-  async addIsolationInactiveBadge(): Promise<void> {
+  async addIsolationInactiveBadge(num?: number): Promise<void> {
     browser.browserAction.setBadgeBackgroundColor({
       color: 'red',
     });
     browser.browserAction.setBadgeText({
-      text: '!',
+      text: num ? num.toString() : '!',
     });
 
     const tabs = await browser.tabs.query({
       currentWindow: true,
       active: true,
     });
-    browser.browserAction.setBadgeBackgroundColor({
-      color: 'red',
-      tabId: tabs[0].id,
-    });
-    browser.browserAction.setBadgeText({
-      text: null,
-      tabId: tabs[0].id,
-    });
+    if (tabs[0]) {
+      browser.browserAction.setBadgeBackgroundColor({
+        color: 'red',
+        tabId: tabs[0].id,
+      });
+      browser.browserAction.setBadgeText({
+        text: null,
+        tabId: tabs[0].id,
+      });
+    }
   }
 
   removeIsolationInactiveBadge(): void {

@@ -4,6 +4,9 @@ import { MultiAccountContainers } from './mac';
 import { Management } from './management';
 import { MouseClick } from './mouseclick';
 import { Request } from './request';
+import { BrowserAction } from './browseraction';
+import { PageAction } from './pageaction';
+import { Storage } from './storage';
 import { Utils } from './utils';
 import {
   PreferencesSchema,
@@ -24,10 +27,15 @@ export class Isolation {
   private mac!: MultiAccountContainers;
   private management!: Management;
   private utils!: Utils;
+  private browseraction!: BrowserAction;
+  private pageaction!: PageAction;
+  private storage!: Storage;
+  private automaticReactivateInterval: number;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
+    this.automaticReactivateInterval = 0;
   }
 
   initialize(): void {
@@ -38,6 +46,19 @@ export class Isolation {
     this.mac = this.background.mac;
     this.management = this.background.management;
     this.utils = this.background.utils;
+    this.browseraction = this.background.browseraction;
+    this.pageaction = this.background.pageaction;
+    this.storage = this.background.storage;
+    this.debug(
+      '[initialize] isolation initialized',
+      this.storage.local.isolation
+    );
+    if (this.storage.local.isolation.automaticReactivateTargetTime) {
+      this.setActiveState(
+        this.storage.local.isolation.automaticReactivateTargetTime <
+          new Date().getTime()
+      );
+    }
   }
 
   async maybeIsolate({
@@ -602,5 +623,63 @@ export class Isolation {
         }
     }
     return false;
+  }
+
+  handleActiveState(active: boolean): void {
+    if (active) {
+      this.browseraction.removeIsolationInactiveBadge();
+      this.automaticReactivateStopInterval();
+    } else {
+      this.browseraction.addIsolationInactiveBadge();
+      this.automaticReactivateStartInterval();
+    }
+    this.pageaction.showOrHide();
+  }
+
+  setActiveState(active: boolean): void {
+    this.debug('[setActiveState] isolation', active);
+    this.storage.local.preferences.isolation.active = active;
+    this.storage.persist();
+    this.handleActiveState(active);
+  }
+
+  automaticReactivateCheckTarget(): void {
+    const diff: number = Math.round(
+      (this.storage.local.isolation.automaticReactivateTargetTime -
+        new Date().getTime()) /
+        1000
+    );
+    if (diff <= 0) {
+      this.automaticReactivateStopInterval();
+      this.setActiveState(true);
+    } else if (diff <= 30 || diff % 10 == 0) {
+      this.browseraction.addIsolationInactiveBadge(diff);
+    }
+  }
+
+  automaticReactivateStartInterval(): void {
+    if (this.pref.isolation.automaticReactivateDelay > 0) {
+      this.debug(
+        '[automaticReactivateStartInterval] isolation',
+        this.storage.local.isolation
+      );
+      const automaticReactivateTargetTime: number = this.storage.local.isolation
+        .automaticReactivateTargetTime;
+      this.storage.local.isolation.automaticReactivateTargetTime = automaticReactivateTargetTime
+        ? automaticReactivateTargetTime
+        : new Date().getTime() +
+          this.pref.isolation.automaticReactivateDelay * 1000;
+      this.automaticReactivateInterval = window.setInterval(() => {
+        this.automaticReactivateCheckTarget();
+      }, 1000);
+    }
+  }
+
+  automaticReactivateStopInterval(): void {
+    if (this.automaticReactivateInterval) {
+      window.clearInterval(this.automaticReactivateInterval);
+      this.automaticReactivateInterval = 0;
+    }
+    this.storage.local.isolation.automaticReactivateTargetTime = 0;
   }
 }

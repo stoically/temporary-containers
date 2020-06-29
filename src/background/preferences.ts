@@ -27,6 +27,7 @@ export class Preferences {
     iconColor: 'default',
     isolation: {
       active: true,
+      automaticReactivateDelay: 0,
       global: {
         navigation: {
           action: 'never',
@@ -140,12 +141,9 @@ export class Preferences {
       this.pageaction.showOrHide();
     }
     if (oldPreferences.isolation.active !== newPreferences.isolation.active) {
-      this.pageaction.showOrHide();
-      if (newPreferences.isolation.active) {
-        this.browseraction.removeIsolationInactiveBadge();
-      } else {
-        this.browseraction.addIsolationInactiveBadge();
-      }
+      this.background.isolation.handleActiveState(
+        newPreferences.isolation.active
+      );
     }
     if (!this.permissions.notifications && newPreferences.notifications) {
       this.permissions.notifications = true;

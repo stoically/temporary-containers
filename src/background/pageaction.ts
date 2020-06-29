@@ -45,17 +45,19 @@ export class PageAction {
       );
       color = container.color;
     }
-    browser.pageAction.setIcon({
-      path: {
-        '19': `icons/pageaction-${color}-19.svg`,
-        '38': `icons/pageaction-${color}-38.svg`,
-      },
-      tabId: activatedTab.id,
-    });
-    if (!this.pref.pageAction) {
-      browser.pageAction.hide(activatedTab.id);
-    } else {
-      browser.pageAction.show(activatedTab.id);
+    if (activatedTab?.id) {
+      browser.pageAction.setIcon({
+        path: {
+          '19': `icons/pageaction-${color}-19.svg`,
+          '38': `icons/pageaction-${color}-38.svg`,
+        },
+        tabId: activatedTab.id,
+      });
+      if (!this.pref.pageAction) {
+        browser.pageAction.hide(activatedTab.id);
+      } else {
+        browser.pageAction.show(activatedTab.id);
+      }
     }
   }
 }

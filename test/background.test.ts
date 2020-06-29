@@ -8,7 +8,7 @@ import {
 } from './setup';
 import { Tab } from '~/types';
 
-preferencesTestSet.map(preferences => {
+preferencesTestSet.map((preferences) => {
   describe(`preferences: ${JSON.stringify(preferences)}`, () => {
     it('should register event listeners', async () => {
       const { browser, tmp: background } = await loadBackground({
@@ -366,6 +366,31 @@ preferencesTestSet.map(preferences => {
           browser.tabs.create.should.have.been.calledWithMatch({
             cookieStoreId: container.cookieStoreId,
           });
+        });
+      });
+
+      describe('Toggle Isolation', () => {
+        it('should not toggle active isolation when AltI preference is disabled', async () => {
+          const { tmp: background, browser } = await loadBackground({
+            preferences,
+          });
+          background.storage.local.preferences.keyboardShortcuts.AltI = false;
+          browser.commands.onCommand.addListener.yield('toggle_isolation');
+          await nextTick();
+          background.storage.local.preferences.isolation.active.should.equal(
+            true
+          );
+        });
+        it('should toggle active isolation when AltI preference is enabled', async () => {
+          const { tmp: background, browser } = await loadBackground({
+            preferences,
+          });
+          background.storage.local.preferences.keyboardShortcuts.AltI = true;
+          browser.commands.onCommand.addListener.yield('toggle_isolation');
+          await nextTick();
+          background.storage.local.preferences.isolation.active.should.equal(
+            false
+          );
         });
       });
     });

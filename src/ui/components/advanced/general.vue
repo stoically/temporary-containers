@@ -1,6 +1,5 @@
 <script lang="ts">
 import Vue from 'vue';
-
 import DomainPattern from '../domainpattern.vue';
 import { App } from '~/ui/root';
 
@@ -382,6 +381,17 @@ export default Vue.extend({
               <strong>slack-redir.net</strong> (Slack)</label
             >
           </div>
+        </div>
+        <div class="field">
+          <label
+            >Automatically re-enable Isolation after n seconds (0 =
+            disabled)</label
+          >
+          <input
+            id="automaticReactivateDelay"
+            v-model="preferences.isolation.automaticReactivateDelay"
+            type="text"
+          />
         </div>
         <div class="m-b" />
       </div>

@@ -52,7 +52,14 @@ const fakeBrowser = (): {
   clock: sinon.SinonFakeTimers;
 } => {
   const clock = sinon.useFakeTimers({
-    toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval'],
+    toFake: [
+      'setTimeout',
+      'clearTimeout',
+      'setInterval',
+      'clearInterval',
+      'Date',
+    ],
+    now: new Date(),
   });
   const html = '<!DOCTYPE html><html><head></head><body></body></html>';
 
