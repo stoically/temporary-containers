@@ -143,6 +143,14 @@ export class Migration {
       }
     }
 
+    if (this.updatedFromVersionEqualToOrLessThan('1.8')) {
+      this.debug(
+        '[migrate] updated from version <= 1.8, migrate isolation.active'
+      );
+      this.storage.local.isolation.active = preferences.isolation.active;
+      delete preferences.isolation.active;
+    }
+
     // hint: don't use preferences/storage-defaults here, ^
     // always hardcode, because the defaults change over time.
     // also keep in mind that missing keys get added before migration

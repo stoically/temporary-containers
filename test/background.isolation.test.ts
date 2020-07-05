@@ -364,7 +364,7 @@ preferencesTestSet.map((preferences) => {
                 beforeEach(async () => {
                   bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                     'always';
-                  bg.tmp.storage.local.preferences.isolation.active = true;
+                  bg.tmp.storage.local.isolation.active = true;
                   bg.tmp.storage.local.preferences.keyboardShortcuts.AltI = true;
                   bg.browser.commands.onCommand.addListener.yield(
                     'toggle_isolation'
@@ -407,7 +407,7 @@ preferencesTestSet.map((preferences) => {
                   bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                     'always';
                   bg.tmp.storage.local.preferences.isolation.automaticReactivateDelay = 3;
-                  bg.tmp.storage.local.preferences.isolation.active = true;
+                  bg.tmp.storage.local.isolation.active = true;
                 });
 
                 describe('when isolation is deactivated', () => {
@@ -420,18 +420,14 @@ preferencesTestSet.map((preferences) => {
 
                   it('should not open a Temporary Container when navigating before auto-isolate triggers', async () => {
                     bg.clock.tick(1000);
-                    bg.tmp.storage.local.preferences.isolation.active.should.equal(
-                      false
-                    );
+                    bg.tmp.storage.local.isolation.active.should.equal(false);
                     await navigateTo('https://example.com/moo');
                     bg.browser.tabs.create.should.not.have.been.called;
                   });
 
                   it('should open a Temporary Container when navigating after auto-isolate triggers', async () => {
                     bg.clock.tick(5000);
-                    bg.tmp.storage.local.preferences.isolation.active.should.equal(
-                      true
-                    );
+                    bg.tmp.storage.local.isolation.active.should.equal(true);
                     await navigateTo('https://example.com/moo');
                     bg.browser.tabs.create.should.have.been.called;
                   });

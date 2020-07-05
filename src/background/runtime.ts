@@ -8,6 +8,7 @@ import { Migration } from './migration';
 import { MouseClick } from './mouseclick';
 import { Preferences } from './preferences';
 import { Storage } from './storage';
+import { Isolation } from './isolation';
 import { Utils } from './utils';
 import { PreferencesSchema, Tab, Debug, RuntimeMessage } from '~/types';
 import { delay } from './lib';
@@ -16,6 +17,7 @@ export class Runtime {
   private background: TemporaryContainers;
   private debug: Debug;
   private storage: Storage;
+  private isolation!: Isolation;
   private pref!: PreferencesSchema;
   private preferences!: Preferences;
   private container!: Container;
@@ -43,6 +45,7 @@ export class Runtime {
     this.contextmenu = this.background.contextmenu;
     this.cleanup = this.background.cleanup;
     this.convert = this.background.convert;
+    this.isolation = this.background.isolation;
     this.utils = this.background.utils;
   }
 
@@ -61,8 +64,13 @@ export class Runtime {
         this.mouseclick.linkClicked(message.payload, sender);
         break;
 
+      case 'saveIsolation':
+        this.debug('[onMessage] saveIsolation');
+        this.isolation.setActiveState(message.payload.isolation.active);
+        break;
+
       case 'savePreferences':
-        this.debug('[onMessage] saving preferences');
+        this.debug('[onMessage] savePreferences');
         await this.preferences.handleChanges({
           oldPreferences: this.pref,
           newPreferences: message.payload.preferences,

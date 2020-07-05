@@ -21,7 +21,7 @@ export class BrowserAction {
     if (this.pref.iconColor !== 'default') {
       this.setIcon(this.pref.iconColor);
     }
-    if (!this.pref.isolation.active) {
+    if (!this.background.isolation.getActiveState()) {
       this.addIsolationInactiveBadge();
     }
   }
@@ -62,7 +62,7 @@ export class BrowserAction {
   }
 
   addBadge(tabId: TabId): void {
-    if (!this.pref.isolation.active) {
+    if (!this.background.isolation.getActiveState()) {
       return;
     }
 
@@ -81,7 +81,7 @@ export class BrowserAction {
   }
 
   removeBadge(tabId: TabId): void {
-    if (!this.pref.isolation.active) {
+    if (!this.background.isolation.getActiveState()) {
       return;
     }
 

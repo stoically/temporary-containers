@@ -377,9 +377,7 @@ preferencesTestSet.map((preferences) => {
           background.storage.local.preferences.keyboardShortcuts.AltI = false;
           browser.commands.onCommand.addListener.yield('toggle_isolation');
           await nextTick();
-          background.storage.local.preferences.isolation.active.should.equal(
-            true
-          );
+          background.storage.local.isolation.active.should.equal(true);
         });
         it('should toggle active isolation when AltI preference is enabled', async () => {
           const { tmp: background, browser } = await loadBackground({
@@ -388,9 +386,7 @@ preferencesTestSet.map((preferences) => {
           background.storage.local.preferences.keyboardShortcuts.AltI = true;
           browser.commands.onCommand.addListener.yield('toggle_isolation');
           await nextTick();
-          background.storage.local.preferences.isolation.active.should.equal(
-            false
-          );
+          background.storage.local.isolation.active.should.equal(false);
         });
       });
     });
