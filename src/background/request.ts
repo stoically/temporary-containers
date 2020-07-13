@@ -15,6 +15,7 @@ import {
   WebRequestOnBeforeRequestDetails,
 } from '~/types';
 import { Utils } from './utils';
+import { IPContext } from './ipcontext';
 
 export class Request {
   public lastSeenRequestUrl: {
@@ -52,6 +53,7 @@ export class Request {
   private management!: Management;
   private history!: History;
   private utils!: Utils;
+  private ipcontext!: IPContext;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
@@ -68,12 +70,22 @@ export class Request {
     this.management = this.background.management;
     this.history = this.background.history;
     this.utils = this.background.utils;
+    this.ipcontext = this.background.ipcontext;
   }
 
   async webRequestOnBeforeRequest(
     request: WebRequestOnBeforeRequestDetails
   ): Promise<OnBeforeRequestResult> {
     this.debug('[webRequestOnBeforeRequest] incoming request', request);
+
+    // potentially cancel requests based on ipcontext
+    const { cancel } = await this.ipcontext.onBeforeRequest(request);
+    if (cancel) {
+      return { cancel };
+    }
+
+    // workaround for requests that have the same request id and url, which
+    // should never happen but did in the past
     const requestIdUrl = `${request.requestId}+${request.url}`;
     if (requestIdUrl in this.requestIdUrlSeen) {
       return false;

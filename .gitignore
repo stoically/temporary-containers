@@ -9,3 +9,5 @@
 /.web-ext-artifacts
 /dist
 /*.todo
+/target
+ipcontext.db

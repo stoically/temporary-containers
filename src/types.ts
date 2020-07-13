@@ -254,6 +254,8 @@ export type OnBeforeRequestResult =
   | boolean
   | { clean?: boolean; cancel?: boolean };
 
+export type IPContextOnBeforeRequestResult = { cancel?: boolean };
+
 export type ClickType = 'middle' | 'left' | 'ctrlleft';
 export interface ClickEvent {
   button: number;
@@ -278,4 +280,15 @@ export type Debug = (...args: any[]) => Promise<void>;
 export interface WebRequestOnBeforeRequestDetails
   extends browser.webRequest.WebRequestOnBeforeRequestDetails {
   cookieStoreId: string;
+}
+
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy/ProxyInfo
+// TODO needs updating firefox-webext-types
+export interface ProxyInfo {
+  type: 'socks' | 'direct';
+  host?: string;
+  port?: string;
+  username?: string;
+  password?: string;
+  proxyDNS?: boolean;
 }
