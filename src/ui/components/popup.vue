@@ -97,8 +97,13 @@ export default Vue.extend({
       window.close();
     },
     toggleIsolation(): void {
-      this.app.preferences.isolation.active = !this.app.preferences.isolation
-        .active;
+      this.app.storage.isolation.active = !this.app.storage.isolation.active;
+      browser.runtime.sendMessage({
+        method: 'saveIsolation',
+        payload: {
+          isolation: this.app.storage.isolation,
+        },
+      });
     },
   },
 });
@@ -152,7 +157,7 @@ export default Vue.extend({
               </a>
               <div class="right menu">
                 <a
-                  v-if="app.preferences.isolation.active"
+                  v-if="app.storage.isolation.active"
                   class="item"
                   title="Disable Isolation"
                   @click="toggleIsolation"

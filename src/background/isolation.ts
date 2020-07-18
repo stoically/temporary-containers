@@ -8,6 +8,7 @@ import { BrowserAction } from './browseraction';
 import { PageAction } from './pageaction';
 import { Storage } from './storage';
 import { Utils } from './utils';
+import { StorageLocal } from '~/types';
 import {
   PreferencesSchema,
   IsolationAction,
@@ -72,7 +73,7 @@ export class Isolation {
     openerTab?: Tab;
     macAssignment?: MacAssignment;
   }): Promise<boolean | { cancel: true }> {
-    if (!this.pref.isolation.active) {
+    if (!this.getActiveState()) {
       this.debug('[maybeIsolate] isolation is disabled');
       return false;
     }
@@ -625,7 +626,14 @@ export class Isolation {
     return false;
   }
 
-  handleActiveState(active: boolean): void {
+  getActiveState(): boolean {
+    return this.storage.local.isolation.active;
+  }
+
+  setActiveState(active: boolean): void {
+    this.debug('[setActiveState] isolation', active);
+    this.storage.local.isolation.active = active;
+    this.storage.persist();
     if (active) {
       this.browseraction.removeIsolationInactiveBadge();
       this.automaticReactivateStopInterval();
@@ -636,11 +644,8 @@ export class Isolation {
     this.pageaction.showOrHide();
   }
 
-  setActiveState(active: boolean): void {
-    this.debug('[setActiveState] isolation', active);
-    this.storage.local.preferences.isolation.active = active;
-    this.storage.persist();
-    this.handleActiveState(active);
+  toggleActiveState(): void {
+    this.setActiveState(!this.getActiveState());
   }
 
   automaticReactivateCheckTarget(): void {
@@ -663,6 +668,7 @@ export class Isolation {
         '[automaticReactivateStartInterval] isolation',
         this.storage.local.isolation
       );
+      this.automaticReactivateStopInterval();
       const automaticReactivateTargetTime: number = this.storage.local.isolation
         .automaticReactivateTargetTime;
       this.storage.local.isolation.automaticReactivateTargetTime = automaticReactivateTargetTime

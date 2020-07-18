@@ -39,12 +39,12 @@ export class TemporaryContainers {
   public mouseclick = new MouseClick(this);
   public tabs = new Tabs(this);
   public commands = new Commands(this);
+  public isolation = new Isolation(this);
   public browseraction = new BrowserAction(this);
   public pageaction = new PageAction(this);
   public contextmenu = new ContextMenu(this);
   public cookies = new Cookies(this);
   public scripts = new Scripts(this);
-  public isolation = new Isolation(this);
   public history = new History(this);
   public cleanup = new Cleanup(this);
   public convert = new Convert(this);
@@ -102,6 +102,7 @@ export class TemporaryContainers {
     this.container.initialize();
     this.mouseclick.initialize();
     this.commands.initialize();
+    this.isolation.initialize();
     this.browseraction.initialize();
     this.pageaction.initialize();
     this.contextmenu.initialize();
@@ -109,7 +110,6 @@ export class TemporaryContainers {
     this.scripts.initialize();
     this.statistics.initialize();
     this.mac.initialize();
-    this.isolation.initialize();
     this.history.initialize();
     this.cleanup.initialize();
     this.convert.initialize();

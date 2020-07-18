@@ -118,7 +118,7 @@ export class Commands {
         if (!this.pref.keyboardShortcuts.AltI) {
           return;
         }
-        this.background.isolation.setActiveState(!this.pref.isolation.active);
+        this.background.isolation.toggleActiveState();
         break;
     }
   }

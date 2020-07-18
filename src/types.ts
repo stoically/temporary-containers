@@ -136,6 +136,7 @@ export interface StorageLocal {
     };
   };
   isolation: {
+    active: boolean;
     automaticReactivateTargetTime: number;
   };
   preferences: PreferencesSchema;
@@ -162,7 +163,6 @@ export interface PreferencesSchema {
   };
   iconColor: ToolbarIconColor;
   isolation: {
-    active: boolean;
     automaticReactivateDelay: number;
     global: IsolationGlobal;
     domain: IsolationDomain[];

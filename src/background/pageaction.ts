@@ -26,7 +26,7 @@ export class PageAction {
     }
 
     let color;
-    if (!this.pref.isolation.active) {
+    if (!this.background.isolation.getActiveState()) {
       color = 'warning-red';
     } else if (
       activatedTab.cookieStoreId ===
