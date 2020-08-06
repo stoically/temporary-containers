@@ -3,8 +3,8 @@
     "{c607c8df-14a7-4f28-894f-29e8722976af}": {
       "updates": [
         {
-          "version": "1.9beta2",
-          "update_link": "https://github.com/stoically/temporary-containers/releases/download/v1.9beta2/temporary_containers-1.9beta2-an+fx.xpi"
+          "version": "1.9",
+          "update_link": "https://addons.mozilla.org/firefox/downloads/file/3621098/temporary_containers-1.9-fx.xpi"
         }
       ]
     }
