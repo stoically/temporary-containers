@@ -22,7 +22,7 @@ export class Scripts {
   }
 
   async maybeExecute(
-    request: browser.webNavigation.WebNavigationOnCommittedDetails
+    request: browser.webNavigation._OnCommittedDetails
   ): Promise<void> {
     if (!Object.keys(this.pref.scripts.domain).length) {
       return;

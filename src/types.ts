@@ -276,6 +276,6 @@ export interface RuntimeMessage {
 export type Debug = (...args: any[]) => Promise<void>;
 
 export interface WebRequestOnBeforeRequestDetails
-  extends browser.webRequest.WebRequestOnBeforeRequestDetails {
+  extends browser.webRequest._OnBeforeRequestDetails {
   cookieStoreId: string;
 }

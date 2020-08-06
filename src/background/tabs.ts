@@ -56,7 +56,7 @@ export class Tabs {
 
   async onUpdated(
     tabId: number,
-    changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo,
+    changeInfo: browser.tabs._OnUpdatedChangeInfo,
     tab: Tab
   ): Promise<void> {
     this.debug('[onUpdated] tab updated', tab, changeInfo);
@@ -95,7 +95,7 @@ export class Tabs {
   }
 
   async onActivated(
-    activeInfo: browser.tabs.onActivatedActiveInfo
+    activeInfo: browser.tabs._OnActivatedActiveInfo
   ): Promise<void> {
     this.debug('[onActivated]', activeInfo);
     delete this.container.lastCreatedInactiveTab[
@@ -217,7 +217,7 @@ export class Tabs {
 
   async maybeCloseRedirectorTab(
     tab: Tab,
-    changeInfo: browser.tabs.TabsOnUpdatedEventChangeInfo
+    changeInfo: browser.tabs._OnUpdatedChangeInfo
   ): Promise<void> {
     if (
       !this.pref.closeRedirectorTabs.active ||

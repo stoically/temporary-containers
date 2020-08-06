@@ -22,8 +22,8 @@ export class Cookies {
   }
 
   async maybeSetAndAddToHeader(
-    request: browser.webRequest.WebRequestOnBeforeSendHeadersDetails
-  ): Promise<void | browser.webRequest.WebRequestOnBeforeSendHeadersDetails> {
+    request: browser.webRequest._OnBeforeSendHeadersDetails
+  ): Promise<void | browser.webRequest._OnBeforeSendHeadersDetails> {
     if (request.tabId < 0 || !Object.keys(this.pref.cookies.domain).length) {
       return;
     }

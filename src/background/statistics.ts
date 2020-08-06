@@ -34,7 +34,7 @@ export class Statistics {
   }
 
   async collect(
-    request: browser.webRequest.WebRequestOnCompletedDetails
+    request: browser.webRequest._OnCompletedDetails
   ): Promise<void> {
     if (!this.pref.statistics && !this.pref.deletesHistory.statistics) {
       return;
