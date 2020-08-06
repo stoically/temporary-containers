@@ -247,24 +247,6 @@ export class Request {
 
     if (
       tab &&
-      tab.cookieStoreId === `${this.background.containerPrefix}-default` &&
-      openerTab
-    ) {
-      this.debug('[handleRequest] default container and openerTab', openerTab);
-      if (
-        !openerTab.url.startsWith('about:') &&
-        !openerTab.url.startsWith('moz-extension:')
-      ) {
-        this.debug(
-          '[handleRequest] request didnt came from about/moz-extension page',
-          openerTab
-        );
-        return false;
-      }
-    }
-
-    if (
-      tab &&
       tab.cookieStoreId !== `${this.background.containerPrefix}-default`
     ) {
       this.debug(
