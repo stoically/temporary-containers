@@ -153,7 +153,7 @@ export class Preferences {
     }
     if (!this.permissions.webNavigation && newPreferences.scripts.active) {
       this.permissions.webNavigation = true;
-      this.eventlisteners.registerPermissionedListener(this.permissions);
+      this.eventlisteners.registerPermissionedListener();
     }
 
     if (

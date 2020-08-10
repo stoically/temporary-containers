@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TemporaryContainers } from './tmp';
-import { Debug, Permissions } from '~/types';
+import { Debug } from '~/types';
 
 // to have persistent listeners we need to register them early+sync
 // and wait for tmp to fully initialize before handling events
@@ -166,15 +166,14 @@ export class EventListeners {
     this.registerPermissionedListener();
   }
 
-  registerPermissionedListener(permissions?: Permissions): void {
-    permissions?.webNavigation &&
-      browser.webNavigation?.onCommitted.addListener(
-        this.wrap(
-          browser.webNavigation?.onCommitted,
-          this.background.scripts,
-          'maybeExecute'
-        )
-      );
+  registerPermissionedListener(): void {
+    browser.webNavigation?.onCommitted.addListener(
+      this.wrap(
+        browser.webNavigation?.onCommitted,
+        this.background.scripts,
+        'maybeExecute'
+      )
+    );
   }
 
   wrap(
