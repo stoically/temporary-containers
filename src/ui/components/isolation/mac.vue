@@ -1,8 +1,9 @@
 <script lang="ts">
-import Vue from 'vue';
 import { App } from '~/ui/root';
+import mixins from 'vue-typed-mixins';
+import { mixin } from '~/ui/mixin';
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   props: {
     app: {
       type: Object as () => App,
@@ -31,11 +32,10 @@ export default Vue.extend({
         class="ui fluid dropdown"
       >
         <option value="disabled">
-          Disabled
+          {{ t('optionsIsolationDisabled') }}
         </option>
         <option value="enabled">
-          Isolate Navigations in Permanent Containers whose Target Domain isn't
-          MAC-"Always open in" assigned to that container
+          {{ t('optionsIsolationMacIsolateNonMac') }}
         </option>
       </select>
     </div>

@@ -1,11 +1,11 @@
 <script lang="ts">
-import Vue from 'vue';
-
+import mixins from 'vue-typed-mixins';
+import { mixin } from '~/ui/mixin';
 import DomainPattern from '../domainpattern.vue';
 import Settings from './settings.vue';
 import { App } from '~/ui/root';
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   components: {
     DomainPattern,
     Settings,
@@ -84,8 +84,8 @@ export default Vue.extend({
     });
     $('#isolationGlobalExcludeContainers').dropdown({
       placeholder: !this.popup
-        ? 'Select Permanent Containers to Exclude from Isolation'
-        : 'Permanent Containers to Exclude',
+        ? this.t('optionsIsolationGlobalSelectExclusionContainers')
+        : this.t('optionsIsolationGlobalExclusionPermanentContainers'),
       values: excludeContainers,
       onAdd: (addedContainer) => {
         if (
@@ -141,7 +141,7 @@ export default Vue.extend({
           <div class="title">
             <h4>
               <i class="dropdown icon" />
-              Navigation
+              {{ t('optionsIsolationNavigation') }}
             </h4>
           </div>
           <div
@@ -149,7 +149,7 @@ export default Vue.extend({
             :class="{ 'ui segment': !popup, 'popup-margin': popup }"
           >
             <settings
-              label="Target Domain"
+              :label="t('optionsIsolationTargetDomain')"
               :action.sync="preferences.isolation.global.navigation.action"
             />
           </div>
@@ -158,7 +158,7 @@ export default Vue.extend({
           <div class="title">
             <h4>
               <i class="dropdown icon" />
-              Mouse Click
+              {{ t('optionsIsolationMouseClick') }}
             </h4>
           </div>
           <div
@@ -166,19 +166,19 @@ export default Vue.extend({
             :class="{ 'ui segment': !popup, 'popup-margin': popup }"
           >
             <settings
-              label="Middle Mouse"
+              :label="t('optionsIsolationMouseClickMiddleMouse')"
               :action.sync="
                 preferences.isolation.global.mouseClick.middle.action
               "
             />
             <settings
-              label="Ctrl/Cmd+Left Mouse"
+              :label="t('optionsIsolationMouseClickCtrlLeftMouse')"
               :action.sync="
                 preferences.isolation.global.mouseClick.ctrlleft.action
               "
             />
             <settings
-              label="Left Mouse"
+              :label="t('optionsIsolationMouseClickLeftMouse')"
               :action.sync="preferences.isolation.global.mouseClick.left.action"
             />
           </div>
@@ -187,7 +187,7 @@ export default Vue.extend({
           <div class="title">
             <h4>
               <i class="dropdown icon" />
-              Exclude Permanent Containers
+              {{ t('optionsIsolationGlobalExcludePermanentContainers') }}
             </h4>
           </div>
           <div
@@ -210,7 +210,7 @@ export default Vue.extend({
           <div class="title">
             <h4>
               <i class="dropdown icon" />
-              Exclude Target Domains
+              {{ t('optionsIsolationExcludeTargetDomains') }}
             </h4>
           </div>
           <div
@@ -229,7 +229,7 @@ export default Vue.extend({
                 />
                 <div class="field">
                   <button class="ui button primary">
-                    Exclude
+                    {{ t('optionsIsolationExclude') }}
                   </button>
                 </div>
               </form>
@@ -239,7 +239,7 @@ export default Vue.extend({
                     !Object.keys(preferences.isolation.global.excluded).length
                   "
                 >
-                  No domains excluded
+                  {{ t('optionsIsolationNoDomainsExcluded') }}
                 </div>
                 <div v-else>
                   <div
@@ -249,7 +249,12 @@ export default Vue.extend({
                   >
                     <div style="margin-top: 5px;" />
                     <span
-                      :data-tooltip="`Remove ${excludedDomainPattern}`"
+                      :data-tooltip="
+                        t(
+                          'optionsIsolationPerDomainRemove',
+                          excludedDomainPattern
+                        )
+                      "
                       data-position="right center"
                       style="color: red; cursor: pointer;"
                       @click="removeExcludedDomain(excludedDomainPattern)"
