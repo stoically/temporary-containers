@@ -1,7 +1,8 @@
 <script lang="ts">
-import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import { mixin } from '~/ui/mixin';
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   props: {
     action: {
       type: String,
@@ -47,19 +48,19 @@ export default Vue.extend({
     </label>
     <select v-model="action" class="ui fluid dropdown">
       <option v-if="perdomain" value="global">
-        Use Global
+        {{ t('optionsIsolationSettingsGlobal') }}
       </option>
       <option value="never">
-        Never
+        {{ t('optionsIsolationSettingsNever') }}
       </option>
       <option value="notsamedomain">
-        Different from Tab Domain & Subdomains
+        {{ t('optionsIsolationSettingsNotSameDomain') }}
       </option>
       <option value="notsamedomainexact">
-        Different from Tab Domain
+        {{ t('optionsIsolationSettingsNotSameDomainExact') }}
       </option>
       <option value="always">
-        Always
+        {{ t('optionsIsolationSettingsAlways') }}
       </option>
     </select>
   </div>

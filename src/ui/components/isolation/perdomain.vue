@@ -156,11 +156,11 @@ export default mixins(mixin).extend({
           rules: [
             {
               type: 'empty',
-              prompt: "Domain Pattern can't be empty",
+              prompt: this.t('optionsIsolationPerDomainPatternNoEmpty'),
             },
             {
               type: 'domainPattern',
-              prompt: 'Domain Pattern already exists',
+              prompt: this.t('optionsIsolationPerDomainPatternExists'),
             },
           ],
         },
@@ -262,9 +262,9 @@ export default mixins(mixin).extend({
 
     remove(index: number, pattern: string): void {
       if (
-        window.confirm(`
-        Remove ${pattern}?
-      `)
+        window.confirm(
+          this.t('optionsIsolationPerDomainRemoveConfirmation', pattern)
+        )
       ) {
         this.$delete(this.preferences.isolation.domain, index);
         if (this.editing && this.domain.pattern === pattern) {
@@ -342,7 +342,7 @@ export default mixins(mixin).extend({
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Always open in
+            {{ t('optionsIsolationPerDomainAlwaysOpenIn') }}
           </h4>
         </div>
         <div
@@ -356,10 +356,10 @@ export default mixins(mixin).extend({
               class="ui fluid dropdown"
             >
               <option value="disabled">
-                Disabled
+                {{ t('optionsIsolationDisabled') }}
               </option>
               <option value="enabled">
-                Enabled
+                {{ t('optionsIsolationEnabled') }}
               </option>
             </select>
             <div v-show="domain.always.action === 'enabled'">
@@ -371,8 +371,8 @@ export default mixins(mixin).extend({
                 <label>
                   {{
                     !popup
-                      ? 'Disable if Navigation in Permanent Containers'
-                      : 'Disable in Permanent Containers'
+                      ? t('optionsIsolationPerDomainDisableIfNavPermContainer')
+                      : t('optionsIsolationPerDomainDisableIfPermContainer')
                   }}
                 </label>
               </div>
@@ -385,8 +385,8 @@ export default mixins(mixin).extend({
                 <label>
                   {{
                     !popup
-                      ? 'Disable if Navigation in Temporary Containers'
-                      : 'Disable in Temporary Containers'
+                      ? t('optionsIsolationPerDomainDisableIfNavTempContainer')
+                      : t('optionsIsolationPerDomainDisableIfTempContainer')
                   }}
                 </label>
               </div>
@@ -396,7 +396,7 @@ export default mixins(mixin).extend({
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Navigation
+            {{ t('optionsIsolationNavigation') }}
           </h4>
         </div>
         <div
@@ -404,7 +404,7 @@ export default mixins(mixin).extend({
           :class="{ 'ui segment': !popup, 'popup-margin': popup }"
         >
           <settings
-            label="Target Domain"
+            :label="t('optionsIsolationTargetDomain')"
             :perdomain="true"
             :action.sync="domain.navigation.action"
           />
@@ -412,7 +412,7 @@ export default mixins(mixin).extend({
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Mouse Click
+            {{ t('optionsIsolationMouseClick') }}
           </h4>
         </div>
         <div
@@ -420,17 +420,17 @@ export default mixins(mixin).extend({
           :class="{ 'ui segment': !popup, 'popup-margin': popup }"
         >
           <settings
-            label="Middle Mouse"
+            :label="t('optionsIsolationMouseClickMiddleMouse')"
             :perdomain="true"
             :action.sync="domain.mouseClick.middle.action"
           />
           <settings
-            label="Ctrl/Cmd+Left Mouse"
+            :label="t('optionsIsolationMouseClickCtrlLeftMouse')"
             :perdomain="true"
             :action.sync="domain.mouseClick.ctrlleft.action"
           />
           <settings
-            label="Left Mouse"
+            :label="t('optionsIsolationMouseClickLeftMouse')"
             :perdomain="true"
             :action.sync="domain.mouseClick.left.action"
           />
@@ -438,7 +438,7 @@ export default mixins(mixin).extend({
         <div class="title">
           <h4>
             <i class="dropdown icon" />
-            Exclude Target Domains
+            {{ t('optionsIsolationExcludeTargetDomains') }}
           </h4>
         </div>
         <div
@@ -458,13 +458,13 @@ export default mixins(mixin).extend({
                 />
                 <div class="field">
                   <button class="ui button primary">
-                    Exclude
+                    {{ t('optionsIsolationExclude') }}
                   </button>
                 </div>
               </form>
               <div style="margin-top: 20px;">
                 <div v-if="!Object.keys(domain.excluded).length">
-                  No Domains Excluded
+                  {{ t('optionsIsolationNoDomainsExcluded') }}
                 </div>
                 <div v-else>
                   <div
@@ -473,7 +473,12 @@ export default mixins(mixin).extend({
                   >
                     <div style="margin-top: 5px;" />
                     <span
-                      :data-tooltip="Remove"
+                      :data-tooltip="
+                        t(
+                          'optionsIsolationPerDomainRemove',
+                          excludedDomainPattern
+                        )
+                      "
                       style="margin-top: 10px; color: red; cursor: pointer;"
                       @click="removeExcludedDomain(excludedDomainPattern)"
                     >
@@ -501,10 +506,14 @@ export default mixins(mixin).extend({
               <i class="check circle icon" />
               Saved
             </span>
-            <span v-if="!saved"> Done editing {{ domain.pattern }} </span>
+            <span v-if="!saved">
+              {{ t('optionsIsolationPerDomainDoneEditing', domain.pattern) }}
+            </span>
           </transition>
         </span>
-        <span v-else> Add {{ domain.pattern }} </span>
+        <span v-else>
+          {{ t('optionsIsolationPerDomainAdd', domain.pattern) }}
+        </span>
       </button>
     </div>
     <br />
@@ -514,7 +523,7 @@ export default mixins(mixin).extend({
         style="margin-top: 10px;"
         :class="{ content: popup }"
       >
-        No Isolated Domains added yet
+        {{ t('optionsIsolationPerDomainNoIsolatedDomainsAdded') }}
       </div>
       <div v-else :class="{ content: popup }">
         <div :class="{ title: popup }">
@@ -531,7 +540,7 @@ export default mixins(mixin).extend({
               v-model="isolationDomainFilter"
               type="text"
               size="15"
-              placeholder="Filter Isolated Domains"
+              :placeholder="t('optionsIsolationPerDomainFilterIsolatedDomains')"
               @focus="expandIsolationDomainFilter"
               @click="expandIsolationDomainFilter"
             />
@@ -541,7 +550,7 @@ export default mixins(mixin).extend({
             />
           </span>
           <span v-else>
-            <strong>Isolated Domains</strong>
+            <strong>{{ t('optionsIsolationPerDomainIsolatedDomains') }}</strong>
           </span>
         </div>
         <div :class="{ content: popup }">
@@ -556,7 +565,9 @@ export default mixins(mixin).extend({
               :key="isolatedDomain.pattern"
             >
               <span
-                :data-tooltip="`Edit ${isolatedDomain.pattern}`"
+                :data-tooltip="
+                  t('optionsIsolationPerDomainEdit', isolatedDomain.pattern)
+                "
                 style="cursor: pointer;"
                 data-position="right center"
                 @click="edit(isolatedDomain._index)"
@@ -564,7 +575,9 @@ export default mixins(mixin).extend({
                 <i class="icon-pencil" style="color: #2185d0;" />
               </span>
               <span
-                :data-tooltip="`Remove ${isolatedDomain.pattern}`"
+                :data-tooltip="
+                  t('optionsIsolationPerDomainRemove', isolatedDomain.pattern)
+                "
                 data-position="right center"
                 style="color: red; cursor: pointer;"
                 @click="remove(isolatedDomain._index, isolatedDomain.pattern)"
@@ -574,7 +587,7 @@ export default mixins(mixin).extend({
               <span
                 :data-tooltip="
                   !popup && isolationDomains.length > 1
-                    ? 'Drag up/down - First in the list matches first'
+                    ? t('optionsIsolationPerDomainDragTooltip')
                     : undefined
                 "
                 data-position="right center"

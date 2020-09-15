@@ -1,6 +1,6 @@
 <script lang="ts">
-import Vue from 'vue';
-
+import mixins from 'vue-typed-mixins';
+import { mixin } from '~/ui/mixin';
 import IsolationGlobal from './isolation/global.vue';
 import IsolationPerDomain from './isolation/perdomain.vue';
 import IsolationMac from './isolation/mac.vue';
@@ -11,7 +11,7 @@ import Breadcrumb from './breadcrumb.vue';
 import Glossary from './glossary/index.vue';
 import { App } from '../root';
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   components: {
     IsolationGlobal,
     IsolationPerDomain,
@@ -208,15 +208,15 @@ export default Vue.extend({
             <message />
 
             <div class="ui tab" data-tab="isolation-global">
-              <breadcrumb tab="Global" />
+              <breadcrumb :tab="t('optionsIsolationTabGlobal')" />
               <isolation-global :app="app" />
             </div>
             <div class="ui tab" data-tab="isolation-per-domain">
-              <breadcrumb tab="Per Domain" />
+              <breadcrumb :tab="t('optionsIsolationTabPerDomain')" />
               <isolation-per-domain :app="app" />
             </div>
             <div class="ui tab" data-tab="isolation-mac">
-              <breadcrumb tab="Multi-Account Containers" />
+              <breadcrumb :tab="t('optionsIsolationTabMac')" />
               <isolation-mac :app="app" />
             </div>
             <div class="ui tab" data-tab="actions">

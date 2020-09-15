@@ -2,9 +2,6 @@
   "automaticMode": {
     "message": "Automatic Mode"
   },
-  "optionsSave": {
-    "message": "Save"
-  },
   "optionsNavGeneral": {
     "message": "General"
   },
@@ -157,5 +154,167 @@
   },
   "optionsGeneralToolbarIconColorWhiteSimple": {
     "message": "white (simple)"
+  },
+  "optionsDomainPattern": {
+    "message": "Domain Pattern"
+  },
+  "optionsExclusionPattern": {
+    "message": "Exclusion Pattern"
+  },
+  "optionsIsolationTabGlobal": {
+    "message": "Global"
+  },
+  "optionsIsolationTabPerDomain": {
+    "message": "Per Domain"
+  },
+  "optionsIsolationTabMac": {
+    "message": "Multi-Account Containers"
+  },
+  "optionsIsolationNavigation": {
+    "message": "Navigation"
+  },
+  "optionsIsolationTargetDomain": {
+    "message": "Target Domain"
+  },
+  "optionsIsolationMouseClick": {
+    "message": "Mouse Click"
+  },
+  "optionsIsolationMouseClickLeftMouse": {
+    "message": "Left Mouse",
+    "description": "Left mouse click"
+  },
+  "optionsIsolationMouseClickCtrlLeftMouse": {
+    "message": "Ctrl/Cmd+Left Mouse",
+    "description": "Ctrl or Cmd key + left mouse click"
+  },
+  "optionsIsolationMouseClickMiddleMouse": {
+    "message": "Middle Mouse",
+    "description": "Middle mouse click"
+  },
+  "optionsIsolationExclude": {
+    "message": "Exclude",
+    "description": "verb"
+  },
+  "optionsIsolationDisabled": {
+    "message": "Disabled"
+  },
+  "optionsIsolationEnabled": {
+    "message": "Enabled"
+  },
+  "optionsIsolationGlobalExcludePermanentContainers": {
+    "message": "Exclude Permanent Containers"
+  },
+  "optionsIsolationGlobalExclusionPermanentContainers": {
+    "message": "Permanent Containers to Exclude"
+  },
+  "optionsIsolationGlobalSelectExclusionContainers": {
+    "message": "Select Permanent Containers to Exclude from Isolation"
+  },
+  "optionsIsolationExcludeTargetDomains": {
+    "message": "Exclude Target Domains"
+  },
+  "optionsIsolationNoDomainsExcluded": {
+    "message": "No domains excluded"
+  },
+  "optionsIsolationMacIsolateNonMac": {
+    "message": "Isolate Navigations in Permanent Containers whose Target Domain isn't MAC-\"Always open in\" assigned to that container"
+  },
+  "optionsIsolationPerDomainPatternNoEmpty": {
+    "message": "Domain Pattern can't be empty"
+  },
+  "optionsIsolationPerDomainPatternExists": {
+    "message": "Domain Pattern already exists"
+  },
+  "optionsIsolationPerDomainAlwaysOpenIn": {
+    "message": "Always open in"
+  },
+  "optionsIsolationPerDomainDisableIfNavPermContainer": {
+    "message": "Disable if Navigation in Permanent Containers"
+  },
+  "optionsIsolationPerDomainDisableIfPermContainer": {
+    "message": "Disable in Permanent Containers"
+  },
+  "optionsIsolationPerDomainDisableIfNavTempContainer": {
+    "message": "Disable if Navigation in Temporary Containers"
+  },
+  "optionsIsolationPerDomainDisableIfTempContainer": {
+    "message": "Disable in Temporary Containers"
+  },
+  "optionsIsolationPerDomainSaved": {
+    "message": "Saved"
+  },
+  "optionsIsolationPerDomainAdd": {
+    "message": "Add $PATTERN$",
+    "description": "To finish adding a new domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "Pattern42"
+      }
+    }
+  },
+  "optionsIsolationPerDomainEdit": {
+    "message": "Edit $PATTERN$",
+    "description": "To start editing a domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheReallyBeautifulPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainDoneEditing": {
+    "message": "Done editing $PATTERN$",
+    "description": "To finish editing a domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheWaitWhyArentMyContainersWorkingPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainRemove": {
+    "message": "Remove $PATTERN$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheBestPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainRemoveConfirmation": {
+    "message": "Remove $PATTERN$?",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsIsolationPerDomainNoIsolatedDomainsAdded": {
+    "message": "No Isolated Domains added yet"
+  },
+  "optionsIsolationPerDomainFilterIsolatedDomains": {
+    "message": "Filter Isolated Domains"
+  },
+  "optionsIsolationPerDomainIsolatedDomains": {
+    "message": "Isolated Domains"
+  },
+  "optionsIsolationPerDomainDragTooltip": {
+    "message": "Drag up/down - First in the list matches first"
+  },
+  "optionsIsolationSettingsGlobal": {
+    "message": "Use Global"
+  },
+  "optionsIsolationSettingsNotSameDomain": {
+    "message": "Different from Tab Domain & Subdomains"
+  },
+  "optionsIsolationSettingsNotSameDomainExact": {
+    "message": "Different from Tab Domain"
+  },
+  "optionsIsolationSettingsAlways": {
+    "message": "Always"
+  },
+  "optionsIsolationSettingsNever": {
+    "message": "Never"
   }
 }

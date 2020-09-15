@@ -1,7 +1,8 @@
 <script lang="ts">
-import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import { mixin } from '~/ui/mixin';
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   props: {
     id: {
       type: String,
@@ -48,11 +49,11 @@ export default Vue.extend({
   >
     <label>
       <span v-if="!exclusion">
-        <span v-if="!glossary">Domain Pattern</span>
+        <span v-if="!glossary">{{ t('optionsDomainPattern') }}</span>
         <span v-else data-glossary="Domain Pattern" />
       </span>
       <span v-else>
-        Exclusion Pattern
+        {{ t('optionsExclusionPattern') }}
       </span>
     </label>
     <input :id="id" v-model="domainPattern" type="text" />
