@@ -8,7 +8,6 @@ import { BrowserAction } from './browseraction';
 import { PageAction } from './pageaction';
 import { Storage } from './storage';
 import { Utils } from './utils';
-import { StorageLocal } from '~/types';
 import {
   PreferencesSchema,
   IsolationAction,
@@ -399,20 +398,29 @@ export class Isolation {
     const parsedRequestURL = new URL(request.url);
 
     for (const patternPreferences of this.pref.isolation.domain) {
-      const domainPattern = patternPreferences.pattern;
+      const targetDomainPattern = patternPreferences.targetPattern;
+      const originDomainPattern = patternPreferences.originPattern;
 
-      if (
-        !this.utils.matchDomainPattern(
-          (tab.url === 'about:blank' &&
-            openerTab &&
-            openerTab.url.startsWith('http') &&
-            openerTab.url) ||
-            tab.url,
-          domainPattern
-        )
-      ) {
+      const originUrl =
+        (tab.url === 'about:blank' &&
+          openerTab &&
+          openerTab.url.startsWith('http') &&
+          openerTab.url) ||
+        tab.url;
+
+      const originUrlMatches = this.utils.matchDomainPattern(
+        originUrl,
+        originDomainPattern
+      );
+      const targetUrlMatches = this.utils.matchDomainPattern(
+        request.url,
+        targetDomainPattern
+      );
+
+      if (!targetUrlMatches || !originUrlMatches) {
         continue;
       }
+
       if (patternPreferences.excluded) {
         for (const excludedDomainPattern of Object.keys(
           patternPreferences.excluded
@@ -435,7 +443,8 @@ export class Isolation {
         const navigationPreferences = patternPreferences.navigation;
         this.debug(
           '[shouldIsolateNavigation] found pattern',
-          domainPattern,
+          targetDomainPattern,
+          originDomainPattern,
           navigationPreferences
         );
 
@@ -485,7 +494,7 @@ export class Isolation {
     }
 
     for (const patternPreferences of this.pref.isolation.domain) {
-      const domainPattern = patternPreferences.pattern;
+      const domainPattern = patternPreferences.targetPattern;
       if (!this.utils.matchDomainPattern(request.url, domainPattern)) {
         continue;
       }
