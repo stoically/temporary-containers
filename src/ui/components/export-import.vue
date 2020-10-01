@@ -113,12 +113,12 @@ export default mixins(mixin).extend({
         date.getFullYear(),
         date.getMonth() + 1,
         date.getDate(),
-      ].join('-');
-      const timeString = [
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-      ].join('.');
+      ]
+        .map((s) => s.toString().padStart(2, '0'))
+        .join('-');
+      const timeString = [date.getHours(), date.getMinutes(), date.getSeconds()]
+        .map((s) => s.toString().padStart(2, '0'))
+        .join('.');
       const blob = new Blob([exportedPreferences], {
         type: 'application/json',
       });
