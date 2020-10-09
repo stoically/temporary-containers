@@ -30,6 +30,7 @@ export class ContextMenu {
           active: false,
           deletesHistory:
             this.pref.deletesHistory.automaticMode === 'automatic',
+          openerTab: tab,
         });
         break;
 
@@ -39,6 +40,7 @@ export class ContextMenu {
           url: info.linkUrl,
           active: false,
           deletesHistory: true,
+          openerTab: tab,
         });
         break;
 

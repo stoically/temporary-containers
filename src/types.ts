@@ -47,6 +47,7 @@ export interface TmpTabOptions {
   dontPin?: boolean;
   deletesHistory?: boolean;
   macConfirmPage?: boolean;
+  openerTab?: Tab;
 }
 
 export type IsolationAction =
