@@ -65,6 +65,7 @@ export class Container {
     dontPin = true,
     deletesHistory = false,
     macConfirmPage = false,
+    openerTab,
   }: TmpTabOptions): Promise<Tab | undefined> {
     if (request && request.requestId) {
       // we saw that request already
@@ -98,6 +99,7 @@ export class Container {
       dontPin,
       macConfirmPage,
       contextualIdentity,
+      openerTab,
     });
   }
 
@@ -165,6 +167,7 @@ export class Container {
     dontPin,
     macConfirmPage,
     contextualIdentity,
+    openerTab,
   }: {
     url?: string;
     tab?: Tab;
@@ -172,6 +175,7 @@ export class Container {
     dontPin?: boolean;
     macConfirmPage?: boolean;
     contextualIdentity: browser.contextualIdentities.ContextualIdentity;
+    openerTab?: Tab;
   }): Promise<Tab> {
     try {
       const newTabOptions: CreateTabOptions = {
@@ -212,7 +216,9 @@ export class Container {
         if (tab.pinned && !dontPin) {
           newTabOptions.pinned = true;
         }
-        if (tab.openerTabId) {
+        if (openerTab) {
+          newTabOptions.openerTabId = openerTab.id;
+        } else if (tab.openerTabId) {
           newTabOptions.openerTabId = tab.openerTabId;
         }
         if (tab.windowId) {
