@@ -406,7 +406,7 @@ preferencesTestSet.map((preferences) => {
                 beforeEach(async () => {
                   bg.tmp.storage.local.preferences.isolation.global.navigation.action =
                     'always';
-                  bg.tmp.storage.local.preferences.isolation.automaticReactivateDelay = 3;
+                  bg.tmp.storage.local.preferences.isolation.reactivateDelay = 3;
                   bg.tmp.storage.local.isolation.active = true;
                 });
 

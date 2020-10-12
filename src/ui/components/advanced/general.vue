@@ -388,8 +388,8 @@ export default Vue.extend({
             disabled)</label
           >
           <input
-            id="automaticReactivateDelay"
-            v-model="preferences.isolation.automaticReactivateDelay"
+            id="reactivateDelay"
+            v-model="preferences.isolation.reactivateDelay"
             type="text"
           />
         </div>

@@ -151,6 +151,22 @@ export class Migration {
       delete preferences.isolation.active;
     }
 
+    if (this.updatedFromVersionEqualToOrLessThan('1.9.1')) {
+      this.debug(
+        '[migrate] updated from version <= 1.9.1, migrate isolation.automaticReactivate'
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.storage.local.isolation.reactivateTargetTime = this.storage.local.isolation.automaticReactivateTargetTime;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete this.storage.local.isolation.automaticReactivateTargetTime;
+
+      preferences.isolation.reactivateDelay =
+        preferences.isolation.automaticReactivateDelay;
+      delete preferences.isolation.automaticReactivateDelay;
+    }
+
     // hint: don't use preferences/storage-defaults here, ^
     // always hardcode, because the defaults change over time.
     // also keep in mind that missing keys get added before migration

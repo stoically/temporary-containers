@@ -31,12 +31,12 @@ export class Isolation {
   private browseraction!: BrowserAction;
   private pageaction!: PageAction;
   private storage!: Storage;
-  private automaticReactivateInterval: number;
+  private reactivateInterval: number;
 
   constructor(background: TemporaryContainers) {
     this.background = background;
     this.debug = background.debug;
-    this.automaticReactivateInterval = 0;
+    this.reactivateInterval = 0;
   }
 
   initialize(): void {
@@ -54,10 +54,9 @@ export class Isolation {
       '[initialize] isolation initialized',
       this.storage.local.isolation
     );
-    if (this.storage.local.isolation.automaticReactivateTargetTime) {
+    if (this.storage.local.isolation.reactivateTargetTime) {
       this.setActiveState(
-        this.storage.local.isolation.automaticReactivateTargetTime <
-          new Date().getTime()
+        this.storage.local.isolation.reactivateTargetTime < new Date().getTime()
       );
     }
   }
@@ -636,10 +635,10 @@ export class Isolation {
     this.storage.persist();
     if (active) {
       this.browseraction.removeIsolationInactiveBadge();
-      this.automaticReactivateStopInterval();
+      this.reactivateStopInterval();
     } else {
       this.browseraction.addIsolationInactiveBadge();
-      this.automaticReactivateStartInterval();
+      this.reactivateStartInterval();
     }
     this.pageaction.showOrHide();
   }
@@ -648,44 +647,43 @@ export class Isolation {
     this.setActiveState(!this.getActiveState());
   }
 
-  automaticReactivateCheckTarget(): void {
+  reactivateCheckTarget(): void {
     const diff: number = Math.round(
-      (this.storage.local.isolation.automaticReactivateTargetTime -
+      (this.storage.local.isolation.reactivateTargetTime -
         new Date().getTime()) /
         1000
     );
     if (diff <= 0) {
-      this.automaticReactivateStopInterval();
+      this.reactivateStopInterval();
       this.setActiveState(true);
     } else if (diff <= 30 || diff % 10 == 0) {
       this.browseraction.addIsolationInactiveBadge(diff);
     }
   }
 
-  automaticReactivateStartInterval(): void {
-    if (this.pref.isolation.automaticReactivateDelay > 0) {
+  reactivateStartInterval(): void {
+    if (this.pref.isolation.reactivateDelay > 0) {
       this.debug(
-        '[automaticReactivateStartInterval] isolation',
+        '[reactivateStartInterval] isolation',
         this.storage.local.isolation
       );
-      this.automaticReactivateStopInterval();
-      const automaticReactivateTargetTime: number = this.storage.local.isolation
-        .automaticReactivateTargetTime;
-      this.storage.local.isolation.automaticReactivateTargetTime = automaticReactivateTargetTime
-        ? automaticReactivateTargetTime
-        : new Date().getTime() +
-          this.pref.isolation.automaticReactivateDelay * 1000;
-      this.automaticReactivateInterval = window.setInterval(() => {
-        this.automaticReactivateCheckTarget();
+      this.reactivateStopInterval();
+      const reactivateTargetTime: number = this.storage.local.isolation
+        .reactivateTargetTime;
+      this.storage.local.isolation.reactivateTargetTime = reactivateTargetTime
+        ? reactivateTargetTime
+        : new Date().getTime() + this.pref.isolation.reactivateDelay * 1000;
+      this.reactivateInterval = window.setInterval(() => {
+        this.reactivateCheckTarget();
       }, 1000);
     }
   }
 
-  automaticReactivateStopInterval(): void {
-    if (this.automaticReactivateInterval) {
-      window.clearInterval(this.automaticReactivateInterval);
-      this.automaticReactivateInterval = 0;
+  reactivateStopInterval(): void {
+    if (this.reactivateInterval) {
+      window.clearInterval(this.reactivateInterval);
+      this.reactivateInterval = 0;
     }
-    this.storage.local.isolation.automaticReactivateTargetTime = 0;
+    this.storage.local.isolation.reactivateTargetTime = 0;
   }
 }
