@@ -3,7 +3,7 @@ import mixins from 'vue-typed-mixins';
 import { mixin } from '../mixin';
 
 import General from './general.vue';
-import Isolation from './isolation/index.vue';
+import Rules from './rules.vue';
 import Advanced from './advanced/index.vue';
 import Statistics from './statistics.vue';
 import ExportImport from './export-import.vue';
@@ -14,7 +14,7 @@ import { App } from '../root';
 export default mixins(mixin).extend({
   components: {
     General,
-    Isolation,
+    Rules,
     Advanced,
     Statistics,
     ExportImport,
@@ -92,9 +92,9 @@ export default mixins(mixin).extend({
           <i class="icon-cog-alt" style="margin-right: 5px;" />
           {{ t('optionsNavGeneral') }}</a
         >
-        <a class="item" data-tab="isolation">
+        <a class="item" data-tab="rules">
           <i class="icon-circle-empty" style="margin-right: 2px;" />
-          {{ t('optionsNavIsolation') }}</a
+          Rules</a
         >
         <a class="item" data-tab="advanced">
           <i class="graduation cap icon" style="margin-right: 5px;" />
@@ -115,8 +115,8 @@ export default mixins(mixin).extend({
       <div class="ui tab segment" data-tab="general">
         <general v-if="app.initialized" :app="app" />
       </div>
-      <div class="ui tab segment" data-tab="isolation">
-        <isolation :app="app" />
+      <div class="ui tab segment" data-tab="rules">
+        <rules v-if="app.initialized" :app="app" />
       </div>
       <div class="ui tab segment" data-tab="advanced">
         <advanced :app="app" />

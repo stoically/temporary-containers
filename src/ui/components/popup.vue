@@ -1,8 +1,7 @@
 <script lang="ts">
 import mixins from 'vue-typed-mixins';
 import { mixin } from '~/ui/mixin';
-import IsolationGlobal from './isolation/global.vue';
-import IsolationPerDomain from './isolation/perdomain.vue';
+import Rules from './rules.vue';
 import Actions from './actions.vue';
 import Statistics from './statistics.vue';
 import Message from './message.vue';
@@ -12,8 +11,7 @@ import { App } from '../root';
 
 export default mixins(mixin).extend({
   components: {
-    IsolationGlobal,
-    IsolationPerDomain,
+    Rules,
     Actions,
     Statistics,
     Message,
@@ -130,11 +128,8 @@ export default mixins(mixin).extend({
     <message v-if="!app.initialized" />
     <div v-if="initialized" v-show="show">
       <div class="ui sidebar vertical menu">
-        <a class="item" @click="changeTab('isolation-global')">
-          <i class="icon-circle-empty" /> Isolation Global
-        </a>
-        <a class="item" @click="changeTab('isolation-per-domain')">
-          <i class="icon-circle-empty" /> Isolation Per Domain
+        <a class="item" @click="changeTab('rules')">
+          <i class="icon-circle-empty" /> Rules
         </a>
         <a class="item" @click="changeTab('actions')">
           <i class="icon-exchange" /> Actions
@@ -202,13 +197,9 @@ export default mixins(mixin).extend({
 
             <message />
 
-            <div class="ui tab" data-tab="isolation-global">
+            <div class="ui tab" data-tab="rules">
               <breadcrumb :tab="t('optionsIsolationTabGlobal')" />
-              <isolation-global :app="app" />
-            </div>
-            <div class="ui tab" data-tab="isolation-per-domain">
-              <breadcrumb :tab="t('optionsIsolationTabPerDomain')" />
-              <isolation-per-domain :app="app" />
+              <rules :app="app" />
             </div>
             <div class="ui tab" data-tab="actions">
               <actions :app="app" />

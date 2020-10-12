@@ -8,6 +8,10 @@ export default mixins(mixin).extend({
       type: String,
       required: true,
     },
+    label: {
+      type: String,
+      default: '',
+    },
     tooltip: {
       type: Object,
       default: (): { hidden: boolean; position: string } => ({
@@ -48,12 +52,15 @@ export default mixins(mixin).extend({
     :class="{ disabled: disabled }"
   >
     <label>
-      <span v-if="!exclusion">
-        <span v-if="!glossary">{{ t('optionsDomainPattern') }}</span>
-        <span v-else data-glossary="Domain Pattern" />
-      </span>
+      <span v-if="!!label">{{ label }}</span>
       <span v-else>
-        {{ t('optionsExclusionPattern') }}
+        <span v-if="!exclusion">
+          <span v-if="!glossary">{{ t('optionsDomainPattern') }}</span>
+          <span v-else data-glossary="Domain Pattern" />
+        </span>
+        <span v-else>
+          {{ t('optionsExclusionPattern') }}
+        </span>
       </span>
     </label>
     <input :id="id" v-model="domainPattern" type="text" />

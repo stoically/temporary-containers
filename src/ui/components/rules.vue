@@ -1,8 +1,7 @@
 <script lang="ts">
 import Draggable from 'vuedraggable';
 import mixins from 'vue-typed-mixins';
-import DomainPattern from '../domainpattern.vue';
-import Settings from './settings.vue';
+import DomainPattern from './domainpattern.vue';
 import { App } from '~/ui/root';
 import { mixin } from '~/ui/mixin';
 import { IsolationDomain } from '~/types';
@@ -38,7 +37,6 @@ interface UIIsolationDomain extends IsolationDomain {
 export default mixins(mixin).extend({
   components: {
     DomainPattern,
-    Settings,
     Draggable,
   },
 
@@ -326,169 +324,108 @@ export default mixins(mixin).extend({
 <template>
   <div v-show="show" id="isolationDomain">
     <div class="ui form">
+      <div class="ui medium header">Cause</div>
+      <div class="field">
+        <div class="ui checkbox">
+          <input v-model="domain.cause" type="checkbox" />
+          <label>Navigation</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Mouse Click</label>
+        <div class="inline fields">
+          <div class="field">
+            <div class="ui checkbox">
+              <input v-model="domain.cause" type="checkbox" />
+              <label>Left</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui checkbox">
+              <input v-model="domain.cause" type="checkbox" />
+              <label>Middle</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui checkbox">
+              <input v-model="domain.cause" type="checkbox" />
+              <label>Cmd/Ctrl+Left</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ui medium header">Origin</div>
       <form id="isolationDomainForm">
         <domain-pattern
           id="isolationDomainPattern"
           :tooltip="!popup ? undefined : { hidden: true }"
           :domain-pattern.sync="domain.pattern"
         />
+
+        <div class="field">
+          <div class="ui checkbox">
+            <input v-model="domain.cause" type="checkbox" />
+            <label>All Permanent Containers</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="ui">
+            <label>[Dropdown] (TC, No Container, Permanent Containers)</label>
+          </div>
+        </div>
       </form>
+
+      <div class="ui medium header">Target</div>
+      <form id="isolationDomainForm">
+        <domain-pattern
+          id="isolationDomainPattern"
+          :tooltip="!popup ? undefined : { hidden: true }"
+          :domain-pattern.sync="domain.pattern"
+        />
+
+        <div class="field">
+          <div class="ui checkbox">
+            <input v-model="domain.cause" type="checkbox" />
+            <label>All Permanent Containers</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="ui">
+            <label>[Dropdown] (TC, No Container, Permanent Containers)</label>
+          </div>
+        </div>
+      </form>
+
+      <div class="ui medium header">Action</div>
       <div
         id="isolationPerDomainAccordion"
         style="margin-top: 15px;"
-        :style="empty ? 'opacity: 0.3; pointer-events: none' : ''"
         class="ui accordion"
       >
-        <div class="title">
-          <h4>
-            <i class="dropdown icon" />
-            {{ t('optionsIsolationPerDomainAlwaysOpenIn') }}
-          </h4>
-        </div>
-        <div
-          class="content"
-          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
-        >
-          <div>
-            <select
-              id="isolationDomainAlways"
-              v-model="domain.always.action"
-              class="ui fluid dropdown"
+        <div class="field">
+          <div class="ui checkbox">
+            <input v-model="domain.cause" type="checkbox" />
+            <label
+              >Reopen in [Dropdown] (TC, No Container, Permanent
+              Containers)</label
             >
-              <option value="disabled">
-                {{ t('optionsIsolationDisabled') }}
-              </option>
-              <option value="enabled">
-                {{ t('optionsIsolationEnabled') }}
-              </option>
-            </select>
-            <div v-show="domain.always.action === 'enabled'">
-              <div class="ui checkbox" style="margin-top: 14px;">
-                <input
-                  v-model="domain.always.allowedInPermanent"
-                  type="checkbox"
-                />
-                <label>
-                  {{
-                    !popup
-                      ? t('optionsIsolationPerDomainDisableIfNavPermContainer')
-                      : t('optionsIsolationPerDomainDisableIfPermContainer')
-                  }}
-                </label>
-              </div>
-              <div />
-              <div class="ui checkbox" style="margin-top: 14px;">
-                <input
-                  v-model="domain.always.allowedInTemporary"
-                  type="checkbox"
-                />
-                <label>
-                  {{
-                    !popup
-                      ? t('optionsIsolationPerDomainDisableIfNavTempContainer')
-                      : t('optionsIsolationPerDomainDisableIfTempContainer')
-                  }}
-                </label>
-              </div>
-            </div>
           </div>
         </div>
-        <div class="title">
-          <h4>
-            <i class="dropdown icon" />
-            {{ t('optionsIsolationNavigation') }}
-          </h4>
+
+        <div class="field">
+          <div class="ui checkbox">
+            <input v-model="domain.cause" type="checkbox" />
+            <label>Ignore</label>
+          </div>
         </div>
-        <div
-          class="content"
-          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
-        >
-          <settings
-            :label="t('optionsIsolationTargetDomain')"
-            :perdomain="true"
-            :action.sync="domain.navigation.action"
-          />
-        </div>
-        <div class="title">
-          <h4>
-            <i class="dropdown icon" />
-            {{ t('optionsIsolationMouseClick') }}
-          </h4>
-        </div>
-        <div
-          class="content"
-          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
-        >
-          <settings
-            :label="t('optionsIsolationMouseClickMiddleMouse')"
-            :perdomain="true"
-            :action.sync="domain.mouseClick.middle.action"
-          />
-          <settings
-            :label="t('optionsIsolationMouseClickCtrlLeftMouse')"
-            :perdomain="true"
-            :action.sync="domain.mouseClick.ctrlleft.action"
-          />
-          <settings
-            :label="t('optionsIsolationMouseClickLeftMouse')"
-            :perdomain="true"
-            :action.sync="domain.mouseClick.left.action"
-          />
-        </div>
-        <div class="title">
-          <h4>
-            <i class="dropdown icon" />
-            {{ t('optionsIsolationExcludeTargetDomains') }}
-          </h4>
-        </div>
-        <div
-          class="content popup-exclude-margin"
-          :class="{ 'ui segment': !popup, 'popup-margin': popup }"
-        >
-          <div>
-            <div class="field">
-              <form id="isolationDomainExcludeDomainsForm" class="ui form">
-                <domain-pattern
-                  id="isolationDomainExcludeDomainPattern"
-                  :tooltip="
-                    !popup ? { position: 'top left' } : { hidden: true }
-                  "
-                  :domain-pattern.sync="excludeDomainPattern"
-                  :exclusion="true"
-                />
-                <div class="field">
-                  <button class="ui button primary">
-                    {{ t('optionsIsolationExclude') }}
-                  </button>
-                </div>
-              </form>
-              <div style="margin-top: 20px;">
-                <div v-if="!Object.keys(domain.excluded).length">
-                  {{ t('optionsIsolationNoDomainsExcluded') }}
-                </div>
-                <div v-else>
-                  <div
-                    v-for="(_, excludedDomainPattern) in domain.excluded"
-                    :key="excludedDomainPattern"
-                  >
-                    <div style="margin-top: 5px;" />
-                    <span
-                      :data-tooltip="
-                        t(
-                          'optionsIsolationPerDomainRemove',
-                          excludedDomainPattern
-                        )
-                      "
-                      style="margin-top: 10px; color: red; cursor: pointer;"
-                      @click="removeExcludedDomain(excludedDomainPattern)"
-                    >
-                      <i class="icon-trash-empty" />
-                    </span>
-                    {{ excludedDomainPattern }}
-                  </div>
-                </div>
-              </div>
-            </div>
+
+        <div class="field">
+          <div class="ui checkbox">
+            <input v-model="domain.cause" type="checkbox" />
+            <label>Close Opener Tab</label>
           </div>
         </div>
       </div>
