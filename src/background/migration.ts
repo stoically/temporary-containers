@@ -167,6 +167,16 @@ export class Migration {
       delete preferences.isolation.automaticReactivateDelay;
     }
 
+    if (this.updatedFromVersionEqualToOrLessThan('1.9.1')) {
+      this.debug(
+        '[migrate] updated from version <= 1.9.1, migrate ui.popupDefaultTab'
+      );
+
+      if (preferences.ui.popupDefaultTab === 'isolation-mac') {
+        preferences.ui.popupDefaultTab = 'isolation-global';
+      }
+    }
+
     // hint: don't use preferences/storage-defaults here, ^
     // always hardcode, because the defaults change over time.
     // also keep in mind that missing keys get added before migration

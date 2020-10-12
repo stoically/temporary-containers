@@ -1,9 +1,10 @@
 <script lang="ts">
-import Vue from 'vue';
+import mixins from 'vue-typed-mixins';
+import { mixin } from '~/ui/mixin';
 import DomainPattern from '../domainpattern.vue';
 import { App } from '~/ui/root';
 
-export default Vue.extend({
+export default mixins(mixin).extend({
   components: {
     DomainPattern,
   },
@@ -161,9 +162,6 @@ export default Vue.extend({
             </option>
             <option value="isolation-per-domain">
               Isolation Per Domain
-            </option>
-            <option value="isolation-mac">
-              Isolation Multi-Account Containers
             </option>
             <option value="actions">
               Actions
@@ -382,6 +380,7 @@ export default Vue.extend({
             >
           </div>
         </div>
+        <div class="m-b" />
         <div class="field">
           <label
             >Automatically re-enable Isolation after n seconds (0 =
@@ -394,6 +393,21 @@ export default Vue.extend({
           />
         </div>
         <div class="m-b" />
+        <div class="field">
+          <label><span data-glossary="Multi-Account Containers" /></label>
+          <select
+            id="isolationMac"
+            v-model="preferences.isolation.mac.action"
+            class="ui fluid dropdown"
+          >
+            <option value="disabled">
+              {{ t('optionsIsolationDisabled') }}
+            </option>
+            <option value="enabled">
+              {{ t('optionsIsolationMacIsolateNonMac') }}
+            </option>
+          </select>
+        </div>
       </div>
       <div class="title">
         <h4>

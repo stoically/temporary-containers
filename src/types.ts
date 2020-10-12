@@ -219,7 +219,6 @@ export interface PreferencesSchema {
     popupDefaultTab:
       | 'isolation-global'
       | 'isolation-per-domain'
-      | 'isolation-mac'
       | 'actions'
       | 'statistics';
   };

@@ -3,7 +3,6 @@ import mixins from 'vue-typed-mixins';
 import { mixin } from '~/ui/mixin';
 import IsolationGlobal from './isolation/global.vue';
 import IsolationPerDomain from './isolation/perdomain.vue';
-import IsolationMac from './isolation/mac.vue';
 import Actions from './actions.vue';
 import Statistics from './statistics.vue';
 import Message from './message.vue';
@@ -15,7 +14,6 @@ export default mixins(mixin).extend({
   components: {
     IsolationGlobal,
     IsolationPerDomain,
-    IsolationMac,
     Actions,
     Statistics,
     Message,
@@ -138,9 +136,6 @@ export default mixins(mixin).extend({
         <a class="item" @click="changeTab('isolation-per-domain')">
           <i class="icon-circle-empty" /> Isolation Per Domain
         </a>
-        <a class="item" @click="changeTab('isolation-mac')">
-          <i class="icon-circle-empty" /> Isolation MAC
-        </a>
         <a class="item" @click="changeTab('actions')">
           <i class="icon-exchange" /> Actions
         </a>
@@ -214,10 +209,6 @@ export default mixins(mixin).extend({
             <div class="ui tab" data-tab="isolation-per-domain">
               <breadcrumb :tab="t('optionsIsolationTabPerDomain')" />
               <isolation-per-domain :app="app" />
-            </div>
-            <div class="ui tab" data-tab="isolation-mac">
-              <breadcrumb :tab="t('optionsIsolationTabMac')" />
-              <isolation-mac :app="app" />
             </div>
             <div class="ui tab" data-tab="actions">
               <actions :app="app" />
