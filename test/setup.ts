@@ -35,7 +35,7 @@ import chai from 'chai';
 import chaiDeepMatch from 'chai-deep-match';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import browserFake, { BrowserFake } from 'webextensions-api-fake';
+import { BrowserFake, WebExtensionsApiFake } from 'webextensions-api-fake';
 import jsdom from 'jsdom';
 import { TemporaryContainers } from '~/background/tmp';
 import { Helper } from './helper';
@@ -46,6 +46,8 @@ virtualConsole.on('jsdomError', (error) => {
   // eslint-disable-next-line no-console
   console.error(error);
 });
+
+const browser = new WebExtensionsApiFake().createBrowser() as BrowserFake;
 
 const fakeBrowser = (): {
   browser: BrowserFake;
@@ -76,12 +78,15 @@ const fakeBrowser = (): {
   global.window = window;
   global.AbortController = window.AbortController;
 
-  const browser = browserFake();
-  global.window._mochaTest = true;
+  browser.sinonSandbox.reset();
+  new WebExtensionsApiFake().fakeApi(browser);
   // FIXME
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   global.browser = browser;
+
+  global.window._mochaTest = true;
+
   global.browser.runtime.getManifest.returns({
     version: '0.1',
   });
