@@ -44,9 +44,8 @@ deploy:
 after_deploy:
   - |
     if [[ $TRAVIS_TAG == *"beta"* ]]; then
-      git clone https://github.com/stoically/temporary-containers.git
+      git clone --depth 1 --branch beta-updates https://github.com/stoically/temporary-containers.git
       cd temporary-containers
-      git checkout beta-updates
       export BETA_VERSION=$(echo $TRAVIS_TAG | sed "s/^v//")
       sed -i -e "s/[0-9]\+\.[0-9]\+\(beta[0-9]\+\)\?/$BETA_VERSION/g" updates.json
       sed -i -e "s/-fx\\.xpi/-an\\+fx\\.xpi/" updates.json
