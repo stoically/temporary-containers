@@ -376,7 +376,8 @@ export default mixins(mixin).extend({
               >Automatically close leftover redirector tabs after 2 seconds:
               <strong>t.co</strong> (Twitter),
               <strong>outgoing.prod.mozaws.net</strong> (AMO),
-              <strong>slack-redir.net</strong> (Slack)</label
+              <strong>slack-redir.net</strong> (Slack),
+              <strong>away.vk.com</strong> (VK)</label
             >
           </div>
         </div>
