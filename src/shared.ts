@@ -56,6 +56,7 @@ export const REDIRECTOR_DOMAINS_DEFAULT = [
   't.co',
   'outgoing.prod.mozaws.net',
   'slack-redir.net',
+  'away.vk.com',
 ];
 
 export const formatBytes = (bytes: number, decimals = 2): string => {
