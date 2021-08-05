@@ -310,7 +310,7 @@ ul {
         </div>
         <div v-show="active === 'Isolation'">
           Cancel <glossary-link to="Navigation" /> and open
-          <glossary-link to="Target Domain" /> in new Temporay Container tab
+          <glossary-link to="Target Domain" /> in new Temporary Container tab
         </div>
 
         <div v-show="active === 'Global'">
