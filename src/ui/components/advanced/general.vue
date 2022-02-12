@@ -224,7 +224,7 @@ export default mixins(mixin).extend({
               v-model="preferences.keyboardShortcuts.AltC"
               type="checkbox"
             />
-            <label>Alt+C - Open a new tab in a new Temporary Container</label>
+            <label>Open a new tab in a new Temporary Container (Default: Alt+C)</label>
           </div>
         </div>
         <div class="field">
@@ -234,8 +234,8 @@ export default mixins(mixin).extend({
               type="checkbox"
             />
             <label
-              >Alt+P - Open a new tab in a new 'Deletes History Temporary
-              Container'</label
+              >Open a new tab in a new 'Deletes History Temporary Container'
+              (Default: Alt+P)</label
             >
           </div>
         </div>
@@ -245,7 +245,7 @@ export default mixins(mixin).extend({
               v-model="preferences.keyboardShortcuts.AltN"
               type="checkbox"
             />
-            <label>Alt+N - Open a new 'No Container' tab</label>
+            <label>Open a new 'No Container' tab (Default: Alt+N)</label>
           </div>
         </div>
         <div class="field">
@@ -255,8 +255,8 @@ export default mixins(mixin).extend({
               type="checkbox"
             />
             <label
-              >Alt+Shift+C - Open a new 'No Container' tab in a new
-              window</label
+              >Open a new 'No Container' tab in a new window
+              (Default: Alt+Shift+C)</label
             >
           </div>
         </div>
@@ -267,8 +267,8 @@ export default mixins(mixin).extend({
               type="checkbox"
             />
             <label
-              >Alt+X - Open a new tab in the same container as the current
-              tab</label
+              >Open a new tab in the same container as the current tab
+              (Default: Alt+X)</label
             >
           </div>
         </div>
@@ -279,8 +279,8 @@ export default mixins(mixin).extend({
               type="checkbox"
             />
             <label
-              >Alt+O - Open current tab URL in a new Temporary Container
-              tab</label
+              >Open current tab URL in a new Temporary Container tab
+              (Default: Alt+O)</label
             >
           </div>
         </div>
@@ -290,7 +290,7 @@ export default mixins(mixin).extend({
               v-model="preferences.keyboardShortcuts.AltI"
               type="checkbox"
             />
-            <label>Alt+I - Toggle isolation ON and OFF</label>
+            <label>Toggle isolation ON and OFF (Default: Alt+I)</label>
           </div>
         </div>
 
