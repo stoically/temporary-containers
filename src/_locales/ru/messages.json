@@ -1,0 +1,320 @@
+{
+  "automaticMode": {
+    "message": "Автоматический режим"
+  },
+  "optionsNavGeneral": {
+    "message": "Общие"
+  },
+  "optionsNavIsolation": {
+    "message": "Изоляция"
+  },
+  "optionsNavAdvanced": {
+    "message": "Расширенные"
+  },
+  "optionsNavStatistics": {
+    "message": "Статистика"
+  },
+  "optionsNavExportImport": {
+    "message": "Экспорт / Импорт"
+  },
+  "optionsGeneralNotifications": {
+    "message": "Уведомлять при удалении временных контейнеров"
+  },
+  "optionsGeneralContainerNamePrefix": {
+    "message": "Префикс имени контейнера"
+  },
+  "optionsGeneralContainerColor": {
+    "message": "Цвет контейнера"
+  },
+  "optionsGeneralContainerColorBlue": {
+    "message": "Синий"
+  },
+  "optionsGeneralContainerColorTurquoise": {
+    "message": "Бирюзовый"
+  },
+  "optionsGeneralContainerColorGreen": {
+    "message": "Зеленый"
+  },
+  "optionsGeneralContainerColorYellow": {
+    "message": "Желтый"
+  },
+  "optionsGeneralContainerColorOrange": {
+    "message": "Оранжевый"
+  },
+  "optionsGeneralContainerColorRed": {
+    "message": "Красный"
+  },
+  "optionsGeneralContainerColorPink": {
+    "message": "Розовый"
+  },
+  "optionsGeneralContainerColorPurple": {
+    "message": "Сиреневый"
+  },
+  "optionsGeneralContainerColorToolbar": {
+    "message": "В зависимости от цвета панели (черный/серый)"
+  },
+  "optionsGeneralContainerRandomColor": {
+    "message": "Случайный цвет контейнера"
+  },
+  "optionsGeneralContainerIcon": {
+    "message": "Значок контейнера"
+  },
+  "optionsGeneralContainerIconFingerprint": {
+    "message": "Отпечаток пальца"
+  },
+  "optionsGeneralContainerIconBriefcase": {
+    "message": "Портфель"
+  },
+  "optionsGeneralContainerIconDollar": {
+    "message": "Доллар"
+  },
+  "optionsGeneralContainerIconCart": {
+    "message": "Корзина"
+  },
+  "optionsGeneralContainerIconCircle": {
+    "message": "Круг"
+  },
+  "optionsGeneralContainerIconGift": {
+    "message": "Подарок"
+  },
+  "optionsGeneralContainerIconVacation": {
+    "message": "Каникулы"
+  },
+  "optionsGeneralContainerIconFood": {
+    "message": "Еда"
+  },
+  "optionsGeneralContainerIconFruit": {
+    "message": "Фрукт"
+  },
+  "optionsGeneralContainerIconPet": {
+    "message": "Питомец"
+  },
+  "optionsGeneralContainerIconTree": {
+    "message": "Дерево"
+  },
+  "optionsGeneralContainerIconChill": {
+    "message": "Расслабон"
+  },
+  "optionsGeneralContainerIconFence": {
+    "message": "Забор"
+  },
+  "optionsGeneralContainerIconRandom": {
+    "message": "Случайный значок контейнера"
+  },
+  "optionsGeneralContainerNumber": {
+    "message": "Номер контейнера"
+  },
+  "optionsGeneralContainerNumberKeepCounting": {
+    "message": "Непрерывная нумерация (по умолчанию)"
+  },
+  "optionsGeneralContainerNumberKeepCountingUntilRestart": {
+    "message": "Непрерывная нумерация до перезапуска браузера"
+  },
+  "optionsGeneralContainerNumberReuseNumbers": {
+    "message": "Повторное использование свободных номеров"
+  },
+  "optionsGeneralContainerNumberHide": {
+    "message": "Скрыть номер"
+  },
+  "optionsGeneralContainerRemoval": {
+    "message": "Удалять неиспользуемые временные контейнеры"
+  },
+  "optionsGeneralContainerRemovalTooltip": {
+    "message": "\"X минут\" позволяет вам \"Отменить закрытие вкладки\" в эти сроки"
+  },
+  "optionsGeneralContainerRemoval15Minutes": {
+    "message": "Через 15 минут после закрытия последней вкладки контейнера (по умолчанию)"
+  },
+  "optionsGeneralContainerRemoval5Minutes": {
+    "message": "Через 5 минут после закрытия последней вкладки контейнера"
+  },
+  "optionsGeneralContainerRemoval2Minutes": {
+    "message": "Через 2 минуты после закрытия последней вкладки контейнера"
+  },
+  "optionsGeneralContainerRemovalInstant": {
+    "message": "Сразу после закрытия последней вкладки контейнера"
+  },
+  "optionsGeneralToolbarIconColor": {
+    "message": "Цвет значка панели инструментов"
+  },
+  "optionsGeneralToolbarIconColorTooltip": {
+    "message": "При переключении обратно на настройки по умолчанию вам может потребоваться перезапустить браузер в зависимости от вашей темы"
+  },
+  "optionsGeneralToolbarIconColorDefault": {
+    "message": "По умолчанию"
+  },
+  "optionsGeneralToolbarIconColorBlackSimple": {
+    "message": "Черный (простой)"
+  },
+  "optionsGeneralToolbarIconColorBlueSimple": {
+    "message": "Синий (простой)"
+  },
+  "optionsGeneralToolbarIconColorRedSimple": {
+    "message": "Красный (простой)"
+  },
+  "optionsGeneralToolbarIconColorWhiteSimple": {
+    "message": "Белый (простой)"
+  },
+  "optionsDomainPattern": {
+    "message": "Шаблон домена"
+  },
+  "optionsExclusionPattern": {
+    "message": "Шаблон исключения"
+  },
+  "optionsIsolationTabGlobal": {
+    "message": "Глобально"
+  },
+  "optionsIsolationTabPerDomain": {
+    "message": "Для отдельных доменов"
+  },
+  "optionsIsolationTabMac": {
+    "message": "Multi-Account Containers"
+  },
+  "optionsIsolationNavigation": {
+    "message": "Навигация"
+  },
+  "optionsIsolationTargetDomain": {
+    "message": "Целевой домен"
+  },
+  "optionsIsolationMouseClick": {
+    "message": "Кнопки мыши"
+  },
+  "optionsIsolationMouseClickLeftMouse": {
+    "message": "Левая кнопка мыши",
+    "description": "Left mouse click"
+  },
+  "optionsIsolationMouseClickCtrlLeftMouse": {
+    "message": "Ctrl / Cmd + Левая кнопка мыши",
+    "description": "Ctrl or Cmd key + left mouse click"
+  },
+  "optionsIsolationMouseClickMiddleMouse": {
+    "message": "Средняя кнопка мыши",
+    "description": "Middle mouse click"
+  },
+  "optionsIsolationExclude": {
+    "message": "Исключить",
+    "description": "verb"
+  },
+  "optionsIsolationDisabled": {
+    "message": "Отключено"
+  },
+  "optionsIsolationEnabled": {
+    "message": "Включено"
+  },
+  "optionsIsolationGlobalExcludePermanentContainers": {
+    "message": "Исключить постоянные контейнеры"
+  },
+  "optionsIsolationGlobalExclusionPermanentContainers": {
+    "message": "Постоянные контейнеры для исключения"
+  },
+  "optionsIsolationGlobalSelectExclusionContainers": {
+    "message": "Выберите постоянные контейнеры для исключения из изоляции"
+  },
+  "optionsIsolationExcludeTargetDomains": {
+    "message": "Исключить целевые домены"
+  },
+  "optionsIsolationNoDomainsExcluded": {
+    "message": "Исключений доменов нет"
+  },
+  "optionsIsolationMacIsolateNonMac": {
+    "message": "Isolate Navigations in Permanent Containers whose Target Domain isn't MAC-\"Always open in\" assigned to that container"
+  },
+  "optionsIsolationPerDomainPatternNoEmpty": {
+    "message": "Шаблон домена не может быть пустым"
+  },
+  "optionsIsolationPerDomainPatternExists": {
+    "message": "Шаблон домена уже существует"
+  },
+  "optionsIsolationPerDomainAlwaysOpenIn": {
+    "message": "Всегда открывать в"
+  },
+  "optionsIsolationPerDomainDisableIfNavPermContainer": {
+    "message": "Отключить, если навигация в постоянных контейнерах"
+  },
+  "optionsIsolationPerDomainDisableIfPermContainer": {
+    "message": "Отключить в постоянных контейнерах"
+  },
+  "optionsIsolationPerDomainDisableIfNavTempContainer": {
+    "message": "Отключить если навигация во временных контейнерах"
+  },
+  "optionsIsolationPerDomainDisableIfTempContainer": {
+    "message": "Отключить во временных контейнерах"
+  },
+  "optionsIsolationPerDomainSaved": {
+    "message": "Сохранено"
+  },
+  "optionsIsolationPerDomainAdd": {
+    "message": "Добавить $PATTERN$",
+    "description": "To finish adding a new domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "Pattern42"
+      }
+    }
+  },
+  "optionsIsolationPerDomainEdit": {
+    "message": "Изменить $PATTERN$",
+    "description": "To start editing a domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheReallyBeautifulPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainDoneEditing": {
+    "message": "Редактирование $PATTERN$ завершено",
+    "description": "To finish editing a domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheWaitWhyArentMyContainersWorkingPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainRemove": {
+    "message": "Удалить $PATTERN$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheBestPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainRemoveConfirmation": {
+    "message": "Удалить $PATTERN$?",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsIsolationPerDomainNoIsolatedDomainsAdded": {
+    "message": "Изолированные домены пока не добавлены"
+  },
+  "optionsIsolationPerDomainFilterIsolatedDomains": {
+    "message": "Фильтр изолированных доменов"
+  },
+  "optionsIsolationPerDomainIsolatedDomains": {
+    "message": "Изолированные домены"
+  },
+  "optionsIsolationPerDomainDragTooltip": {
+    "message": "Перетаскивайте вверх/вниз - верхние в списке в приоритете"
+  },
+  "optionsIsolationSettingsGlobal": {
+    "message": "Использовать глобальные"
+  },
+  "optionsIsolationSettingsNotSameDomain": {
+    "message": "Если не домен и не субдобен вкладки"
+  },
+  "optionsIsolationSettingsNotSameDomainExact": {
+    "message": "Если не домен вкладки"
+  },
+  "optionsIsolationSettingsAlways": {
+    "message": "Всегда"
+  },
+  "optionsIsolationSettingsNever": {
+    "message": "Никогда"
+  }
+}
