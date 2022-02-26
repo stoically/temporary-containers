@@ -1,0 +1,320 @@
+{
+  "automaticMode": {
+    "message": "Otomatik Mod"
+  },
+  "optionsNavGeneral": {
+    "message": "Genel"
+  },
+  "optionsNavIsolation": {
+    "message": "Yalıtım"
+  },
+  "optionsNavAdvanced": {
+    "message": "Gelişmiş"
+  },
+  "optionsNavStatistics": {
+    "message": "İstatistikler"
+  },
+  "optionsNavExportImport": {
+    "message": "Dışa/İçe Aktar"
+  },
+  "optionsGeneralNotifications": {
+    "message": "Geçici Konteynerleri Silerken Bildirimler"
+  },
+  "optionsGeneralContainerNamePrefix": {
+    "message": "Konteyner Adı Ön Eki"
+  },
+  "optionsGeneralContainerColor": {
+    "message": "Konteyner Rengi"
+  },
+  "optionsGeneralContainerColorBlue": {
+    "message": "mavi"
+  },
+  "optionsGeneralContainerColorTurquoise": {
+    "message": "turkuaz"
+  },
+  "optionsGeneralContainerColorGreen": {
+    "message": "yeşil"
+  },
+  "optionsGeneralContainerColorYellow": {
+    "message": "sarı"
+  },
+  "optionsGeneralContainerColorOrange": {
+    "message": "turuncu"
+  },
+  "optionsGeneralContainerColorRed": {
+    "message": "kırmızı"
+  },
+  "optionsGeneralContainerColorPink": {
+    "message": "pembe"
+  },
+  "optionsGeneralContainerColorPurple": {
+    "message": "mor"
+  },
+  "optionsGeneralContainerColorToolbar": {
+    "message": "araç çubuğu (siyah/gri)"
+  },
+  "optionsGeneralContainerRandomColor": {
+    "message": "Rastgele Konteyner Rengi"
+  },
+  "optionsGeneralContainerIcon": {
+    "message": "Konteyner Simgesi"
+  },
+  "optionsGeneralContainerIconFingerprint": {
+    "message": "parmak izi"
+  },
+  "optionsGeneralContainerIconBriefcase": {
+    "message": "çanta"
+  },
+  "optionsGeneralContainerIconDollar": {
+    "message": "dolar"
+  },
+  "optionsGeneralContainerIconCart": {
+    "message": "sepet"
+  },
+  "optionsGeneralContainerIconCircle": {
+    "message": "daire"
+  },
+  "optionsGeneralContainerIconGift": {
+    "message": "hediye"
+  },
+  "optionsGeneralContainerIconVacation": {
+    "message": "tatil"
+  },
+  "optionsGeneralContainerIconFood": {
+    "message": "yiyecek"
+  },
+  "optionsGeneralContainerIconFruit": {
+    "message": "meyve"
+  },
+  "optionsGeneralContainerIconPet": {
+    "message": "hayvan"
+  },
+  "optionsGeneralContainerIconTree": {
+    "message": "ağaç"
+  },
+  "optionsGeneralContainerIconChill": {
+    "message": "ferahlık"
+  },
+  "optionsGeneralContainerIconFence": {
+    "message": "çit"
+  },
+  "optionsGeneralContainerIconRandom": {
+    "message": "Rastgele Konteyner Simgesi"
+  },
+  "optionsGeneralContainerNumber": {
+    "message": "Konteyner Numarası"
+  },
+  "optionsGeneralContainerNumberKeepCounting": {
+    "message": "Saymaya devam et (öntanımlı)"
+  },
+  "optionsGeneralContainerNumberKeepCountingUntilRestart": {
+    "message": "Tarayıcı yeniden başlatılıncaya kadar saymaya devam et"
+  },
+  "optionsGeneralContainerNumberReuseNumbers": {
+    "message": "Kullanılabilir numaraları yeniden kullan"
+  },
+  "optionsGeneralContainerNumberHide": {
+    "message": "Numarayı gizle"
+  },
+  "optionsGeneralContainerRemoval": {
+    "message": "Artık gerekli olmayan geçici konteynerleri sil"
+  },
+  "optionsGeneralContainerRemovalTooltip": {
+    "message": "\"X dakika\", bu zaman çerçevesi içinde \"Sekmeyi Kapatmayı Geri Al\" yapmanızı sağlar"
+  },
+  "optionsGeneralContainerRemoval15Minutes": {
+    "message": "İçindeki son sekme kapandıktan 15 dakika sonra (öntanımlı)"
+  },
+  "optionsGeneralContainerRemoval5Minutes": {
+    "message": "İçindeki son sekme kapandıktan 5 dakika sonra"
+  },
+  "optionsGeneralContainerRemoval2Minutes": {
+    "message": "İçindeki son sekme kapandıktan 2 dakika sonra"
+  },
+  "optionsGeneralContainerRemovalInstant": {
+    "message": "İçindeki son sekme kapandıktan sonra"
+  },
+  "optionsGeneralToolbarIconColor": {
+    "message": "Araç Çubuğu Simge Rengi"
+  },
+  "optionsGeneralToolbarIconColorTooltip": {
+    "message": "Öntanımlı değere geri dönerken, temanıza bağlı olarak tarayıcıyı yeniden başlatmanız gerekebilir."
+  },
+  "optionsGeneralToolbarIconColorDefault": {
+    "message": "öntanımlı"
+  },
+  "optionsGeneralToolbarIconColorBlackSimple": {
+    "message": "siyah (basit)"
+  },
+  "optionsGeneralToolbarIconColorBlueSimple": {
+    "message": "mavi (basit)"
+  },
+  "optionsGeneralToolbarIconColorRedSimple": {
+    "message": "kırmızı (basit)"
+  },
+  "optionsGeneralToolbarIconColorWhiteSimple": {
+    "message": "beyaz (basit)"
+  },
+  "optionsDomainPattern": {
+    "message": "Etki Alanı Kalıbı"
+  },
+  "optionsExclusionPattern": {
+    "message": "Hariç Tutma Kalıbı"
+  },
+  "optionsIsolationTabGlobal": {
+    "message": "Genel"
+  },
+  "optionsIsolationTabPerDomain": {
+    "message": "Etki Alanı Başına"
+  },
+  "optionsIsolationTabMac": {
+    "message": "Çok Hesaplı Konteynerler"
+  },
+  "optionsIsolationNavigation": {
+    "message": "Gezinme"
+  },
+  "optionsIsolationTargetDomain": {
+    "message": "Hedef Etki Alanı"
+  },
+  "optionsIsolationMouseClick": {
+    "message": "Fare Tıklaması"
+  },
+  "optionsIsolationMouseClickLeftMouse": {
+    "message": "Sol Tıklama",
+    "description": "Left mouse click"
+  },
+  "optionsIsolationMouseClickCtrlLeftMouse": {
+    "message": "Ctrl/Cmd+Sol Tıklama",
+    "description": "Ctrl or Cmd key + left mouse click"
+  },
+  "optionsIsolationMouseClickMiddleMouse": {
+    "message": "Orta Tıklama",
+    "description": "Middle mouse click"
+  },
+  "optionsIsolationExclude": {
+    "message": "Hariç Tut",
+    "description": "verb"
+  },
+  "optionsIsolationDisabled": {
+    "message": "Devre Dışı"
+  },
+  "optionsIsolationEnabled": {
+    "message": "Etkin"
+  },
+  "optionsIsolationGlobalExcludePermanentContainers": {
+    "message": "Kalıcı Konteynerleri Hariç Tut"
+  },
+  "optionsIsolationGlobalExclusionPermanentContainers": {
+    "message": "Hariç Tutulacak Kalıcı Konteynerler"
+  },
+  "optionsIsolationGlobalSelectExclusionContainers": {
+    "message": "Yalıtımdan Hariç Tutulacak Kalıcı Konteynerleri Seçin"
+  },
+  "optionsIsolationExcludeTargetDomains": {
+    "message": "Hedef Etki Alanlarını Hariç Tut"
+  },
+  "optionsIsolationNoDomainsExcluded": {
+    "message": "Hariç tutulan etki alanı yok"
+  },
+  "optionsIsolationMacIsolateNonMac": {
+    "message": "Hedef etki alanı o konteynere MAC-\"Her zaman burada aç\" olarak atanmayan kalıcı konteynerlerdeki gezinmeleri yalıt"
+  },
+  "optionsIsolationPerDomainPatternNoEmpty": {
+    "message": "Etki alanı kalıbı boş olamaz"
+  },
+  "optionsIsolationPerDomainPatternExists": {
+    "message": "Etki alanı kalıbı zaten var"
+  },
+  "optionsIsolationPerDomainAlwaysOpenIn": {
+    "message": "Her zaman burada aç"
+  },
+  "optionsIsolationPerDomainDisableIfNavPermContainer": {
+    "message": "Kalıcı Konteynerlerde Geziniliyorsa Devre Dışı Bırak"
+  },
+  "optionsIsolationPerDomainDisableIfPermContainer": {
+    "message": "Kalıcı Konteynerlerde Devre Dışı Bırak"
+  },
+  "optionsIsolationPerDomainDisableIfNavTempContainer": {
+    "message": "Geçici Konteynerlerde Geziniliyorsa Devre Dışı Bırak"
+  },
+  "optionsIsolationPerDomainDisableIfTempContainer": {
+    "message": "Geçici Konteynerlerde Devre Dışı Bırak"
+  },
+  "optionsIsolationPerDomainSaved": {
+    "message": "Kaydedildi"
+  },
+  "optionsIsolationPerDomainAdd": {
+    "message": "$PATTERN$ ekle",
+    "description": "To finish adding a new domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "Pattern42"
+      }
+    }
+  },
+  "optionsIsolationPerDomainEdit": {
+    "message": "$PATTERN$ düzenle",
+    "description": "To start editing a domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheReallyBeautifulPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainDoneEditing": {
+    "message": "$PATTERN$ düzenleme tamamlandı",
+    "description": "To finish editing a domain pattern",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheWaitWhyArentMyContainersWorkingPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainRemove": {
+    "message": "$PATTERN$ kaldır",
+    "placeholders": {
+      "pattern": {
+        "content": "$1",
+        "example": "TheBestPattern"
+      }
+    }
+  },
+  "optionsIsolationPerDomainRemoveConfirmation": {
+    "message": "$PATTERN$ kaldırılsın mı?",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsIsolationPerDomainNoIsolatedDomainsAdded": {
+    "message": "Henüz yalıtılmış etki alanı eklenmedi"
+  },
+  "optionsIsolationPerDomainFilterIsolatedDomains": {
+    "message": "Yalıtılmış Etki Alanlarını Süz"
+  },
+  "optionsIsolationPerDomainIsolatedDomains": {
+    "message": "Yalıtılmış Etki Alanları"
+  },
+  "optionsIsolationPerDomainDragTooltip": {
+    "message": "Yukarı/aşağı sürükleyin - Listede önce olan ilk eşleşir"
+  },
+  "optionsIsolationSettingsGlobal": {
+    "message": "Genel Kullan"
+  },
+  "optionsIsolationSettingsNotSameDomain": {
+    "message": "Sekme Etki Alanı ve Alt Etki Alanlarından Farklı"
+  },
+  "optionsIsolationSettingsNotSameDomainExact": {
+    "message": "Sekme Etki Alanından Farklı"
+  },
+  "optionsIsolationSettingsAlways": {
+    "message": "Her Zaman"
+  },
+  "optionsIsolationSettingsNever": {
+    "message": "Asla"
+  }
+}
