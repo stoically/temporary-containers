@@ -120,7 +120,7 @@
     "message": "Удалять неиспользуемые временные контейнеры"
   },
   "optionsGeneralContainerRemovalTooltip": {
-    "message": "\"X минут\" позволяет вам \"Отменить закрытие вкладки\" в эти сроки"
+    "message": "Задержка позволит вам отменить закрытие вкладки в эти сроки"
   },
   "optionsGeneralContainerRemoval15Minutes": {
     "message": "Через 15 минут после закрытия последней вкладки контейнера (по умолчанию)"
@@ -161,23 +161,17 @@
   "optionsExclusionPattern": {
     "message": "Шаблон исключения"
   },
-  "optionsIsolationTabGlobal": {
-    "message": "Глобально"
-  },
-  "optionsIsolationTabPerDomain": {
-    "message": "Для отдельных доменов"
-  },
   "optionsIsolationTabMac": {
     "message": "Multi-Account Containers"
   },
   "optionsIsolationNavigation": {
-    "message": "Навигация"
+    "message": "Навигация (переходы по ссылкам)"
   },
   "optionsIsolationTargetDomain": {
-    "message": "Целевой домен"
+    "message": "Сопоставление доменов"
   },
   "optionsIsolationMouseClick": {
-    "message": "Кнопки мыши"
+    "message": "Щелчки кнопками мыши"
   },
   "optionsIsolationMouseClickLeftMouse": {
     "message": "Левая кнопка мыши",
@@ -205,19 +199,19 @@
     "message": "Исключить постоянные контейнеры"
   },
   "optionsIsolationGlobalExclusionPermanentContainers": {
-    "message": "Постоянные контейнеры для исключения"
+    "message": "Выберите"
   },
   "optionsIsolationGlobalSelectExclusionContainers": {
-    "message": "Выберите постоянные контейнеры для исключения из изоляции"
+    "message": "Выберите"
   },
   "optionsIsolationExcludeTargetDomains": {
-    "message": "Исключить целевые домены"
+    "message": "Исключить отдельные домены"
   },
   "optionsIsolationNoDomainsExcluded": {
     "message": "Исключений доменов нет"
   },
   "optionsIsolationMacIsolateNonMac": {
-    "message": "Isolate Navigations in Permanent Containers whose Target Domain isn't MAC-\"Always open in\" assigned to that container"
+    "message": "Изолировать навигацию в постоянных контейнерах, если целевой домен не задан в настройках MAC >> \"Всегда открывать в\"."
   },
   "optionsIsolationPerDomainPatternNoEmpty": {
     "message": "Шаблон домена не может быть пустым"
@@ -226,7 +220,7 @@
     "message": "Шаблон домена уже существует"
   },
   "optionsIsolationPerDomainAlwaysOpenIn": {
-    "message": "Всегда открывать в"
+    "message": "Всегда изолировать"
   },
   "optionsIsolationPerDomainDisableIfNavPermContainer": {
     "message": "Отключить, если навигация в постоянных контейнерах"
@@ -291,7 +285,7 @@
     }
   },
   "optionsIsolationPerDomainNoIsolatedDomainsAdded": {
-    "message": "Изолированные домены пока не добавлены"
+    "message": "Изолированных доменов нет"
   },
   "optionsIsolationPerDomainFilterIsolatedDomains": {
     "message": "Фильтр изолированных доменов"
@@ -315,6 +309,6 @@
     "message": "Всегда"
   },
   "optionsIsolationSettingsNever": {
-    "message": "Никогда"
+    "message": "Нет"
   }
 }
