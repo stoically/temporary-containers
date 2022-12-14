@@ -21,7 +21,7 @@ export class Utils {
 
   matchDomainPattern(url: string, domainPattern: string): boolean {
     if (domainPattern.startsWith('/')) {
-      const regexp = domainPattern.match(/^\s*\/(.*)\/([gimsuy]+)?\s*$/);
+      const regexp = domainPattern.match(/^\s*\/(.*)\/\s*$/);
       if (!regexp) {
         return false;
       }
