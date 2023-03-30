@@ -56,6 +56,9 @@
   "optionsGeneralContainerRandomColor": {
     "message": "Random Container Color"
   },
+  "optionsGeneralContainerInheritColor": {
+    "message": "Inherit color after isolation"
+  },
   "optionsGeneralContainerIcon": {
     "message": "Container Icon"
   },
@@ -100,6 +103,9 @@
   },
   "optionsGeneralContainerIconRandom": {
     "message": "Random Container Icon"
+  },
+  "optionsGeneralContainerInheritIcon": {
+    "message": "Inherit icon after isolation"
   },
   "optionsGeneralContainerNumber": {
     "message": "Container Number"

@@ -66,6 +66,7 @@ export class Container {
     deletesHistory = false,
     macConfirmPage = false,
     openerTab,
+    inheritContainerOptions,
   }: TmpTabOptions): Promise<Tab | undefined> {
     if (request && request.requestId) {
       // we saw that request already
@@ -86,10 +87,24 @@ export class Container {
       });
     }
 
+    let inheritedContainerOptions;
+    if (tab && inheritContainerOptions) {
+      if (this.tabs.containerMap.has(tab.id)) {
+        inheritedContainerOptions = this.storage.local.tempContainers[
+          tab.cookieStoreId
+        ];
+      } else {
+        inheritedContainerOptions = await browser.contextualIdentities.get(
+          tab.cookieStoreId
+        );
+      }
+    }
+
     const contextualIdentity = await this.createTempContainer({
       url,
       request,
       deletesHistory,
+      inheritedContainerOptions,
     });
 
     return this.createTab({
@@ -107,10 +122,14 @@ export class Container {
     url,
     request,
     deletesHistory,
+    inheritedContainerOptions,
   }: {
     url?: string;
     request?: false | WebRequestOnBeforeRequestDetails;
     deletesHistory?: boolean;
+    inheritedContainerOptions?:
+      | ContainerOptions
+      | browser.contextualIdentities.ContextualIdentity;
   }): Promise<browser.contextualIdentities.ContextualIdentity> {
     const containerOptions = this.generateContainerNameIconColor(
       (request && request.url) || url
@@ -118,6 +137,15 @@ export class Container {
 
     if (containerOptions.number) {
       this.storage.local.tempContainersNumbers.push(containerOptions.number);
+    }
+
+    if (inheritedContainerOptions) {
+      if (this.pref.container.colorInherit) {
+        containerOptions.color = inheritedContainerOptions.color;
+      }
+      if (this.pref.container.iconInherit) {
+        containerOptions.icon = inheritedContainerOptions.icon;
+      }
     }
 
     if (deletesHistory) {
@@ -276,6 +304,7 @@ export class Container {
     request,
     macConfirmPage,
     dontPin = true,
+    inheritContainerOptions,
   }: {
     tab?: Tab;
     url?: string;
@@ -284,6 +313,7 @@ export class Container {
     request?: WebRequestOnBeforeRequestDetails;
     macConfirmPage?: boolean;
     dontPin?: boolean;
+    inheritContainerOptions?: boolean;
   }): Promise<undefined | Tab> {
     const newTab = await this.createTabInTempContainer({
       tab,
@@ -293,6 +323,7 @@ export class Container {
       deletesHistory,
       request,
       macConfirmPage,
+      inheritContainerOptions,
     });
     if (!tab) {
       return newTab;

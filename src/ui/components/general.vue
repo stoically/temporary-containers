@@ -215,6 +215,12 @@ export default mixins(mixin).extend({
           <label>{{ t('optionsGeneralContainerRandomColor') }}</label>
         </div>
       </div>
+      <div v-show="preferences.container.colorRandom" class="field">
+        <div class="ui checkbox">
+          <input v-model="preferences.container.colorInherit" type="checkbox" />
+          <label>{{ t('optionsGeneralContainerInheritColor') }}</label>
+        </div>
+      </div>
       <div id="containerIcon" class="field">
         <label v-if="!preferences.container.iconRandom">
           {{ t('optionsGeneralContainerIcon') }}
@@ -253,6 +259,12 @@ export default mixins(mixin).extend({
             type="checkbox"
           />
           <label>{{ t('optionsGeneralContainerIconRandom') }}</label>
+        </div>
+      </div>
+      <div v-show="preferences.container.iconRandom" class="field">
+        <div class="ui checkbox">
+          <input v-model="preferences.container.iconInherit" type="checkbox" />
+          <label>{{ t('optionsGeneralContainerInheritIcon') }}</label>
         </div>
       </div>
       <div class="field">

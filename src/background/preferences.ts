@@ -18,9 +18,11 @@ export class Preferences {
       color: 'toolbar',
       colorRandom: false,
       colorRandomExcluded: [],
+      colorInherit: false,
       icon: 'circle',
       iconRandom: false,
       iconRandomExcluded: [],
+      iconInherit: false,
       numberMode: 'keep',
       removal: 900000, // ms
     },
