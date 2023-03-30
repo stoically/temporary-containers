@@ -48,6 +48,7 @@ export interface TmpTabOptions {
   deletesHistory?: boolean;
   macConfirmPage?: boolean;
   openerTab?: Tab;
+  inheritContainerOptions?: boolean;
 }
 
 export type IsolationAction =
@@ -156,9 +157,11 @@ export interface PreferencesSchema {
     color: ContainerColor;
     colorRandom: boolean;
     colorRandomExcluded: ContainerColor[];
+    colorInherit: boolean;
     icon: ContainerIcon;
     iconRandom: boolean;
     iconRandomExcluded: ContainerIcon[];
+    iconInherit: boolean;
     numberMode: 'keep' | 'keepuntilrestart' | 'reuse' | 'hide';
     removal: Milliseconds;
   };
