@@ -53,10 +53,11 @@ export const TOOLBAR_ICON_COLORS = [
 export const IGNORED_DOMAINS_DEFAULT = ['getpocket.com', 'addons.mozilla.org'];
 
 export const REDIRECTOR_DOMAINS_DEFAULT = [
-  't.co',
+  'away.vk.com',
   'outgoing.prod.mozaws.net',
   'slack-redir.net',
-  'away.vk.com',
+  'statics.teams.cdn.office.net',
+  't.co',
 ];
 
 export const formatBytes = (bytes: number, decimals = 2): string => {
